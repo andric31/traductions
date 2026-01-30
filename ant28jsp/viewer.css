@@ -109,6 +109,9 @@ select, input[type="search"]{
   padding:12px 12px;
   outline:none;
 }
+
+/* un peu d'air entre les selects et le bouton Tags */
+.viewer-side .side-group select{margin-bottom:10px}
 select:focus, input[type="search"]:focus{
   border-color: rgba(46,229,157,.5);
   box-shadow:0 0 0 4px rgba(46,229,157,.12);
@@ -180,10 +183,18 @@ select:focus, input[type="search"]:focus{
   background:rgba(0,0,0,.22);
   color:var(--fg);
   cursor:pointer;
+  /* ✅ bouton à gauche (overlay), même bouton pour afficher/masquer */
+  position:fixed;
+  top:88px;
+  left:12px;
+  z-index:200;
+  border-radius:999px;
 }
 .side-toggle:hover{filter:brightness(1.15)}
 .side-toggle:focus{outline:none; box-shadow:0 0 0 4px rgba(46,229,157,.12)}
 .side-toggle-ico{font-size:18px; line-height:1}
+
+/* (left:12px) : toujours accessible, même quand la sidebar est repliée */
 
 .top-actions{
   margin-top:12px;
@@ -224,6 +235,9 @@ select:focus, input[type="search"]:focus{
   background:rgba(124,92,255,.18);
   border:1px solid rgba(124,92,255,.35);
 }
+
+/* Espace pour éviter que Tags soit collé au select (Statut) */
+.viewer-side .tags-btn{margin-top:22px; display:inline-flex}
 .tags-count{
   margin-left:6px;
   padding:2px 8px;
@@ -271,12 +285,15 @@ select:focus, input[type="search"]:focus{
 .card:hover{transform: translateY(-3px); transition: transform .18s ease}
 
 .thumb{
-  width:120px;
-  height:160px;
-  flex:0 0 120px;
+  /* Images souvent en "bandeau" : on donne plus de place au visuel */
+  width:260px;
+  flex:0 0 260px;
+  height:calc(100% - 24px);
+  margin:12px 0 12px 12px;
   object-fit:contain;
   background:rgba(0,0,0,.22);
   filter:saturate(1.05) contrast(1.05);
+  border-radius:16px;
 }
 
 .body{
