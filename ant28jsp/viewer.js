@@ -42,16 +42,12 @@
 
   // ✅ URL page jeu (id central + support collection child) — RELATIF (reste dans /<pseudo>/)
   function buildGameUrl(g) {
-    const coll = (g.collection || "").toString().trim();
     const id = (g.id || "").toString().trim();
     const uid = (g.uid ?? "").toString().trim();
-
-    // Sous-jeu de collection : ./game/?id=<collection>&uid=<uid>
-    if (coll) return `./game/?id=${encodeURIComponent(coll)}&uid=${encodeURIComponent(uid)}`;
-    // Jeu normal / collection parent : ./game/?id=<id>
-    if (id) return `./game/?id=${encodeURIComponent(id)}`;
-    // Fallback uid seul
-    return `./game/?uid=${encodeURIComponent(uid)}`;
+  
+    if (id && uid) return `./?id=${encodeURIComponent(id)}&uid=${encodeURIComponent(uid)}`;
+    if (id) return `./?id=${encodeURIComponent(id)}`;
+    return `./?uid=${encodeURIComponent(uid)}`;
   }
 
   // ✅ Titre affiché (gameData prioritaire si présent)
