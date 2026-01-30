@@ -938,81 +938,245 @@ body.age-gate-active footer {
   user-select: none;
 }
 
-/* ==== Game page styles (scoped) ==== */
+
+/* ============================================================================
+   🎮 GAME PAGE (scopé) — corrigé + plus joli
+   ============================================================================ */
+
+body.page-game{ overflow-x:hidden; }
+
 #gamePage .wrap{
-    #gamePage .topbar{
-    #gamePage .topbar h1{
-    #gamePage .hamburger-btn{
-      width:42px;height:42px;border-radius:12px;border:1px solid var(--border);
-      background:rgba(22,27,34,.8); color:var(--fg); cursor:pointer;
-      display:inline-flex; align-items:center; justify-content:center;
-    }
-    #gamePage .ham-lines span{
-    #gamePage .card{
-      border:1px solid var(--border);
-      background: rgba(22,27,34,.86);
-      border-radius: var(--radius);
-      overflow:hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,.22);
-    }
-    #gamePage .cardInner{
-    #gamePage .hero{
-   #gamePage @media (max-width:720px){
-    #gamePage #cover{
-      width:100%; aspect-ratio: 16/9; object-fit:cover;
-      border-radius: 14px; border:1px solid var(--border);
-      background: rgba(255,255,255,.04);
-    }
-    #gamePage #cover.is-placeholder{
-    #gamePage #title{
-    #gamePage #badges{
-    #gamePage .badge{
-    #gamePage .status-updated{
-    #gamePage .status-outdated{
-    #gamePage #tags{
-    #gamePage .tagPill{
-    #gamePage .btnRow, #gamePage .btnMainRow{
-    #gamePage a.btn{
-      display:inline-flex; align-items:center; justify-content:center;
-      padding:10px 12px; border-radius:12px; text-decoration:none;
-      border:1px solid var(--border); background:rgba(255,255,255,.04);
-      color:var(--fg); font-weight:700;
-    }
-    #gamePage a.btn:hover{
-    #gamePage .btn-discord{
-    #gamePage .btn-f95{
-    #gamePage .f95-white{
-    #gamePage .f95-red{
-    #gamePage .game-block{
-      border:1px solid var(--border);
-      background: rgba(0,0,0,.12);
-      border-radius: var(--radius);
-      padding:12px 12px;
-    }
-    #gamePage .game-block h3{
-    #gamePage #errBox{
-      display:none; margin:16px 0; padding:12px; border-radius:12px;
-      border:1px solid rgba(225,0,15,.35); background: rgba(225,0,15,.08);
-      color: var(--fg);
-    }
-    #gamePage #statsOut{
-    #gamePage .statsLine{
-    #gamePage .statNum{
-    #gamePage .likeWrap{
-    #gamePage #btnLike{
-      width:40px;height:40px;border-radius:12px;border:1px solid var(--border);
-      background:rgba(255,255,255,.04); color:var(--fg); cursor:pointer;
-      font-size:18px;
-    }
-    #gamePage #ratingBox .ratingStar, #gamePage #ratingBox .ratingCancel{
-      border:1px solid var(--border); background:rgba(255,255,255,.04);
-      border-radius:10px; padding:6px 10px; cursor:pointer;
-      color:var(--fg);
-    }
-    #gamePage #topMenuPopover.hidden{
-    #gamePage #topMenuPopover{
-      position:fixed; z-index:9999; min-width: 230px;
-      border:1px solid var(--border); background: rgba(22,27,34,.95);
-      border-radius: 14px; padding:10px;
-      box-shadow: 0 18px 50px rgba(0,0,0,.35);
-    }
+  width: min(980px, calc(100% - 24px));
+  margin: 0 auto;
+  padding: 16px 0 56px;
+}
+
+#gamePage .topbar{
+  position: sticky;
+  top: 10px;
+  z-index: 40;
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(10,14,20,.92), rgba(10,14,20,.65));
+  backdrop-filter: blur(10px);
+}
+
+#gamePage .topbar h1{
+  margin:0;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+
+#gamePage #errBox{
+  margin-top: 12px;
+  display:none;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255,80,80,.28);
+  background: rgba(255,80,80,.08);
+  color: #ffd2d2;
+}
+
+#gamePage #errBox:not(:empty){ display:block; }
+
+#gamePage #card{ margin-top: 12px; }
+
+#gamePage .cardInner{
+  padding: 16px;
+  display:flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#gamePage .hero{
+  display:flex;
+  gap: 14px;
+  align-items:flex-start;
+}
+
+#gamePage #cover{
+  width: 180px;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.03);
+}
+
+#gamePage #cover.is-placeholder{
+  background: linear-gradient(135deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+}
+
+#gamePage #title{
+  margin: 0 0 6px;
+  font-size: 22px;
+  line-height: 1.18;
+}
+
+#gamePage #badges{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin: 6px 0 8px;
+}
+
+#gamePage #tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+#gamePage .tagPill{
+  display:inline-flex;
+  align-items:center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.04);
+  font-size: 12px;
+  color: var(--fg);
+}
+
+#gamePage .btnMainRow,
+#gamePage .btnRow{
+  display:flex;
+  gap: 10px;
+  flex-wrap:wrap;
+}
+
+#gamePage .btnMainRow{ margin-top: 2px; }
+
+#gamePage .btnRow{ align-items:center; }
+
+#gamePage .btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  font-weight: 800;
+  text-decoration:none;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.04);
+  color: var(--fg);
+  transition: transform .12s ease, background .12s ease, border-color .12s ease;
+}
+
+#gamePage .btn:hover{ background: rgba(255,255,255,.07); transform: translateY(-1px); }
+#gamePage .btn:active{ transform: translateY(0px); }
+
+#gamePage .btn-discord{
+  background: rgba(88,101,242,.18);
+  border-color: rgba(88,101,242,.35);
+}
+
+#gamePage .btn-f95{
+  background: rgba(230, 46, 46, .12);
+  border-color: rgba(230, 46, 46, .30);
+}
+
+#gamePage .likeWrap{
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+}
+
+#gamePage #btnLike{
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.04);
+  color: var(--fg);
+  cursor:pointer;
+  font-size: 18px;
+  line-height: 1;
+  transition: background .12s ease, transform .12s ease;
+}
+
+#gamePage #btnLike:hover{ background: rgba(255,255,255,.07); transform: translateY(-1px); }
+#gamePage #btnLike:active{ transform: translateY(0px); }
+
+#gamePage .game-block{
+  padding: 12px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.03);
+}
+
+#gamePage .game-block h3{
+  margin: 0 0 8px;
+  font-size: 14px;
+  letter-spacing: .2px;
+}
+
+#gamePage .statsLine{
+  display:flex;
+  gap: 14px;
+  flex-wrap:wrap;
+  font-size: 14px;
+}
+
+#gamePage .statNum{ font-weight: 900; }
+
+#gamePage #archiveBox{ margin-top: -4px; }
+
+#gamePage .collection-list{
+  margin: 0;
+  padding-left: 18px;
+}
+
+#gamePage .collection-list a,
+#gamePage .collection-parent-link,
+#gamePage .btn-link{
+  color: var(--accent);
+  text-decoration: none;
+}
+
+#gamePage .collection-list a:hover,
+#gamePage .collection-parent-link:hover,
+#gamePage .btn-link:hover{ text-decoration: underline; }
+
+#gamePage .ratingStar{
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.04);
+  border-radius: 12px;
+  padding: 8px 10px;
+  cursor:pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+
+#gamePage .ratingStar:hover{ background: rgba(255,255,255,.07); }
+
+#gamePage .ratingCancel{
+  border: 1px solid rgba(255,120,120,.35);
+  background: rgba(255,120,120,.10);
+  border-radius: 12px;
+  padding: 8px 10px;
+  cursor:pointer;
+}
+
+#gamePage .ratingCancel:hover{ background: rgba(255,120,120,.15); }
+
+@media (max-width: 720px){
+  #gamePage #title{ font-size: 20px; }
+  #gamePage #cover{ width: 150px; }
+}
+
+@media (max-width: 620px){
+  #gamePage .hero{ flex-direction: column; }
+  #gamePage #cover{
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+  #gamePage .likeWrap{ margin-left: 0; }
+}
