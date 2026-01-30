@@ -1227,3 +1227,229 @@ body.page-game{ overflow-x:hidden; }
   }
   #gamePage .likeWrap{ margin-left: 0; }
 }
+
+/* =========================================================
+   NEO AURORA UI (VISUEL ONLY) — 2026-01-30
+   Look totalement différent (aurora + glass + néon)
+   Sans toucher à la logique : mêmes IDs/classes.
+   ========================================================= */
+
+:root{
+  --neo-bg0:#070812;
+  --neo-bg1:#0b1022;
+  --neo-bg2:#090c18;
+  --neo-glass: rgba(255,255,255,.06);
+  --neo-glass2: rgba(255,255,255,.10);
+  --neo-border: rgba(255,255,255,.14);
+  --neo-border2: rgba(255,255,255,.22);
+  --neo-text: rgba(255,255,255,.92);
+  --neo-muted: rgba(255,255,255,.65);
+  --neo-accent: #7cf7ff;
+  --neo-accent2:#a78bfa;
+  --neo-accent3:#34d399;
+  --neo-shadow: 0 18px 70px rgba(0,0,0,.55);
+  --neo-radius: 18px;
+}
+
+@keyframes neoFloat{
+  0%{ transform: translate3d(0,0,0); }
+  50%{ transform: translate3d(0,-2px,0); }
+  100%{ transform: translate3d(0,0,0); }
+}
+
+@keyframes neoGlow{
+  0%{ filter: drop-shadow(0 0 0 rgba(124,247,255,0)); }
+  50%{ filter: drop-shadow(0 0 14px rgba(124,247,255,.22)); }
+  100%{ filter: drop-shadow(0 0 0 rgba(124,247,255,0)); }
+}
+
+/* ===== Fond aurora + léger grain ===== */
+body{
+  background:
+    radial-gradient(1200px 600px at 10% 10%, rgba(124,247,255,.14), transparent 55%),
+    radial-gradient(900px 520px at 90% 15%, rgba(167,139,250,.16), transparent 60%),
+    radial-gradient(900px 520px at 55% 95%, rgba(52,211,153,.14), transparent 60%),
+    linear-gradient(180deg, var(--neo-bg0), var(--neo-bg1) 38%, var(--neo-bg2));
+  color: var(--neo-text) !important;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0 1px, transparent 1px 6px);
+  opacity:.12;
+  mix-blend-mode: overlay;
+}
+
+a{ color: var(--neo-accent) !important; }
+
+/* ===== Topbar façon verre + liseré néon ===== */
+.topbar{
+  background: rgba(10,12,24,.72) !important;
+  backdrop-filter: blur(12px) saturate(140%);
+  border-bottom: 1px solid rgba(255,255,255,.08) !important;
+}
+
+.topbar::after{
+  content:"";
+  position:absolute;
+  left:0; right:0; bottom:-1px;
+  height:1px;
+  background: linear-gradient(90deg, transparent, rgba(124,247,255,.55), rgba(167,139,250,.55), transparent);
+  opacity:.55;
+}
+
+.top-title-row h1{
+  letter-spacing:.4px;
+  text-transform: none;
+}
+
+/* ===== Inputs/selects : style “holo” ===== */
+input, select, textarea{
+  background: rgba(255,255,255,.06) !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+  color: var(--neo-text) !important;
+  border-radius: 14px !important;
+}
+
+input:focus, select:focus, textarea:focus{
+  outline: none !important;
+  border-color: rgba(124,247,255,.35) !important;
+  box-shadow: 0 0 0 4px rgba(124,247,255,.10) !important;
+}
+
+/* ===== Cards viewer : contour dégradé + verre + glow ===== */
+#viewerPage .grid .card{
+  position: relative;
+  background: rgba(255,255,255,.05) !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+  border-radius: var(--neo-radius) !important;
+  box-shadow: 0 0 0 rgba(0,0,0,0) !important;
+}
+
+#viewerPage .grid .card::before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  border-radius: calc(var(--neo-radius) + 1px);
+  background: linear-gradient(135deg, rgba(124,247,255,.42), rgba(167,139,250,.42), rgba(52,211,153,.35));
+  opacity:.18;
+  pointer-events:none;
+}
+
+#viewerPage .grid .card::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius: var(--neo-radius);
+  background: radial-gradient(650px 220px at 12% 10%, rgba(124,247,255,.12), transparent 55%);
+  opacity:.9;
+  pointer-events:none;
+}
+
+#viewerPage .grid .card:hover{
+  transform: translateY(-3px) scale(1.003) !important;
+  box-shadow: var(--neo-shadow) !important;
+  border-color: rgba(255,255,255,.18) !important;
+  animation: neoGlow 1.2s ease-in-out infinite;
+}
+
+#viewerPage .grid .thumb{
+  filter: saturate(1.05) contrast(1.02);
+}
+
+#viewerPage .grid .name{
+  font-size: 1.05rem !important;
+  letter-spacing: .2px;
+}
+
+/* ===== Badges : chips vitrés, pas “pastilles” classiques ===== */
+.badge{
+  background: rgba(255,255,255,.06) !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+  color: rgba(255,255,255,.92) !important;
+}
+
+.badge.cat-vn,
+.badge.cat-collection,
+.badge.eng-renpy,
+.badge.eng-rpgm,
+.badge.eng-unity,
+.badge.eng-others,
+.badge.eng-wolfrpg,
+.badge.eng-unrealengine,
+.badge.eng-html,
+.badge.eng-java,
+.badge.eng-flash,
+.badge.eng-qsp,
+.badge.eng-webgl,
+.badge.eng-rags,
+.badge.eng-tads,
+.badge.eng-adrift,
+.badge.status-completed,
+.badge.status-abandoned,
+.badge.status-onhold,
+.badge.status-encours{
+  background: rgba(255,255,255,.06) !important;
+  color: rgba(255,255,255,.92) !important;
+}
+
+.badge.eng-renpy{ border-color: rgba(167,139,250,.35) !important; }
+.badge.eng-unity{ border-color: rgba(124,247,255,.32) !important; }
+.badge.eng-rpgm{ border-color: rgba(52,211,153,.30) !important; }
+
+/* ===== Boutons : néon soft ===== */
+.btn,
+.top-actions button,
+.hamburger-btn,
+.menu-item{
+  background: rgba(255,255,255,.06) !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  color: rgba(255,255,255,.92) !important;
+}
+
+.btn:hover,
+.top-actions button:hover,
+.hamburger-btn:hover,
+.menu-item:hover{
+  border-color: rgba(124,247,255,.30) !important;
+  box-shadow: 0 0 0 4px rgba(124,247,255,.10);
+}
+
+.btn:active,
+.top-actions button:active,
+.hamburger-btn:active{
+  transform: translateY(1px);
+}
+
+/* ===== Page jeu : cartes “glass” + séparation plus marquée ===== */
+#gamePage .card{
+  background: rgba(255,255,255,.05) !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+  border-radius: var(--neo-radius) !important;
+  box-shadow: 0 10px 40px rgba(0,0,0,.25);
+}
+
+#gamePage .hero{
+  border-radius: calc(var(--neo-radius) + 2px);
+}
+
+#gamePage #title{
+  letter-spacing: .25px;
+}
+
+#gamePage #cover{
+  border-radius: 16px !important;
+  box-shadow: 0 18px 70px rgba(0,0,0,.55);
+}
+
+/* ===== Modal/panels ===== */
+.modal{
+  background: rgba(12,14,28,.84) !important;
+  backdrop-filter: blur(14px) saturate(140%);
+}
+
+
