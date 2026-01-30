@@ -1,0 +1,30 @@
+/* =========================================================
+   Multi-trad THEME (par /<pseudo>/config.json)
+   Variables modifiées par JS (viewer.js / game.js)
+   ========================================================= */
+:root{
+  --accent:#58a6ff;
+  --accent2:#2f81f7;
+  --bgTop:#0e1117;
+  --bgBottom:#0e1117;
+  --card:#161b22;
+  --border:#30363d;
+  --fg:#e6edf3;
+  --muted:rgba(230,237,243,.72);
+  --radius:14px;
+}
+
+/* Overrides soft (ne casse pas ton CSS existant) */
+body{
+  background: radial-gradient(1200px 800px at 10% 0%, var(--bgTop), var(--bgBottom)) !important;
+  color: var(--fg) !important;
+}
+a{ color: var(--accent) !important; }
+.card{
+  background: var(--card) !important;
+  border-color: var(--border) !important;
+  border-radius: var(--radius) !important;
+}
+.topbar{
+  border-bottom-color: var(--border) !important;
+}

@@ -2,28 +2,56 @@
 // (menu ☰ délégué à viewer.menu.js + modules viewer.menu.about.js / viewer.menu.extension.js)
 // + Tags multi (popover + save)
 // ✅ UID ONLY pour stats (aligné sur game.js)
-// ✅ MULTI-TRADUCTEUR : charge ./config.json si présent + URLs game relatives + storage séparé par traducteur
 (() => {
   const DEFAULT_URL = "https://raw.githubusercontent.com/andric31/f95list/main/f95list.json";
 
-  const $ = (sel) => document.querySelector(sel);
-
-  // ✅ Owner (pour séparer storage / compteur page)
+  // ✅ Multi-trad : owner (défini par index.html via window.VIEWER_OWNER)
   const OWNER = (window.VIEWER_OWNER || "").toString().trim() || "default";
 
-  // ✅ URL page jeu (id central + support collection child)
-  // IMPORTANT: URL RELATIVE (pas de /game/), pour que /ant28jsp/ -> /ant28jsp/game/
+  // ✅ Config par traducteur : ./config.json (listUrl + theme + titre)
+  async function loadOwnerConfig() {
+    try {
+      const r = await fetch("./config.json", { cache: "no-store" });
+      if (!r.ok) return null;
+      return await r.json();
+    } catch {
+      return null;
+    }
+  }
+
+  function applyTheme(theme) {
+    if (!theme) return;
+    const root = document.documentElement;
+    const set = (k, v) => {
+      if (v !== undefined && v !== null && String(v).trim() !== "") {
+        root.style.setProperty(k, String(v));
+      }
+    };
+    set("--accent", theme.accent);
+    set("--accent2", theme.accent2);
+    set("--bgTop", theme.bgTop);
+    set("--bgBottom", theme.bgBottom);
+    set("--card", theme.card);
+    set("--border", theme.border);
+    set("--fg", theme.fg);
+    set("--muted", theme.muted);
+    set("--radius", theme.radius);
+  }
+
+  const $ = (sel) => document.querySelector(sel);
+
+  // ✅ URL page jeu (id central + support collection child) — RELATIF (reste dans /<pseudo>/)
   function buildGameUrl(g) {
     const coll = (g.collection || "").toString().trim();
     const id = (g.id || "").toString().trim();
     const uid = (g.uid ?? "").toString().trim();
 
-    // Sous-jeu de collection : game/?id=<collection>&uid=<uid>
-    if (coll) return `game/?id=${encodeURIComponent(coll)}&uid=${encodeURIComponent(uid)}`;
-    // Jeu normal / collection parent : game/?id=<id>
-    if (id) return `game/?id=${encodeURIComponent(id)}`;
+    // Sous-jeu de collection : ./game/?id=<collection>&uid=<uid>
+    if (coll) return `./game/?id=${encodeURIComponent(coll)}&uid=${encodeURIComponent(uid)}`;
+    // Jeu normal / collection parent : ./game/?id=<id>
+    if (id) return `./game/?id=${encodeURIComponent(id)}`;
     // Fallback uid seul
-    return `game/?uid=${encodeURIComponent(uid)}`;
+    return `./game/?uid=${encodeURIComponent(uid)}`;
   }
 
   // ✅ Titre affiché (gameData prioritaire si présent)
@@ -49,8 +77,7 @@
   // ✅ Compteur vues page principale (Viewer)
   // =========================
 
-  // ✅ sépare les vues par traducteur (sinon tous partagent "__viewer_main__")
-  const MAIN_PAGE_ID = `__viewer_main__:${OWNER}`;
+  const MAIN_PAGE_ID = `${OWNER}|__viewer_main__`;
   let MAIN_VIEW_HIT_DONE = false;
 
   function formatInt(n) {
@@ -64,11 +91,11 @@
   }
 
   // =========================
-  // ✅ UID ONLY — clés compteurs
+  // ✅ UID ONLY — clés compteurs (séparées par traducteur)
   // =========================
   function counterKeyOfUid(uid) {
     const u = String(uid ?? "").trim();
-    return u ? `uid:${u}` : "";
+    return u ? `${OWNER}|uid:${u}` : "";
   }
 
   function counterKeyOfEntry(rawEntry) {
@@ -80,7 +107,7 @@
   // =========================
 
   const GAME_STATS = {
-    views: new Map(), // key(uid:xxx) -> number
+    views: new Map(), // key(owner|uid:xxx) -> number
     mega: new Map(),
     likes: new Map(),
     loaded: false,
@@ -106,7 +133,6 @@
   async function ensureGameStatsLoaded() {
     if (GAME_STATS.loaded) return;
 
-    // ✅ on envoie uid:<uid> (comme game.js)
     const keys = state.all.map((g) => counterKeyOfUid(g.uid)).filter(Boolean);
     const stats = await fetchGameStatsBulk(keys);
 
@@ -133,7 +159,6 @@
     if (!el) return;
 
     try {
-      // ✅ 1 seul "hit" par chargement de page
       const op = MAIN_VIEW_HIT_DONE ? "get" : "hit";
       const r = await fetch(
         `/api/counter?op=${op}&kind=view&id=${encodeURIComponent(MAIN_PAGE_ID)}`,
@@ -267,25 +292,18 @@
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
-        try {
-          window.ViewerMenu?.closeMenu?.();
-        } catch {}
-        try {
-          window.ViewerMenuAbout?.close?.();
-        } catch {}
-        try {
-          window.ViewerMenuExtension?.close?.();
-        } catch {}
+        try { window.ViewerMenu?.closeMenu?.(); } catch {}
+        try { window.ViewerMenuAbout?.close?.(); } catch {}
+        try { window.ViewerMenuExtension?.close?.(); } catch {}
         closeTagsPopover();
       }
     });
   }
 
   // =========================
-  // ✅ TAGS MULTI (popover + save)
+  // ✅ TAGS MULTI (popover + save) — séparé par traducteur
   // =========================
 
-  // ✅ storage séparé par traducteur
   const TAGS_STORE_KEY = `viewerSelectedTags:${OWNER}`;
 
   function escapeHtml(s) {
@@ -464,40 +482,26 @@
   // Helpers URL / prefs / list
   // =========================
 
-  // ✅ Multi-traducteur :
-  // 1) ?src=...
-  // 2) ./config.json -> listUrl
-  // 3) localStorage f95listUrl (fallback legacy)
-  // 4) DEFAULT_URL
-  async function getListUrlSmart() {
-    // 1) ?src=
+  async function getListUrl(ownerCfg) {
+    // 1) ?src=... (override)
     try {
       const p = new URLSearchParams(location.search);
       const src = (p.get("src") || "").trim();
       if (src) return src;
     } catch {}
 
-    // 2) ./config.json
-    try {
-      const r = await fetch("./config.json", { cache: "no-store" });
-      if (r.ok) {
-        const cfg = await r.json();
-        const listUrl = (cfg?.listUrl || "").toString().trim();
-        if (listUrl) return listUrl;
-      }
-    } catch {}
+    // 2) config.json (recommandé)
+    const cfgUrl = (ownerCfg?.listUrl || "").toString().trim();
+    if (cfgUrl) return cfgUrl;
 
-    // 3) legacy localStorage
+    // 3) legacy localStorage (séparé par traducteur)
     try {
-      const ls = (localStorage.getItem("f95listUrl") || "").trim();
-      if (ls) return ls;
-    } catch {}
-
-    // 4) fallback
-    return DEFAULT_URL;
+      return (localStorage.getItem(`f95listUrl:${OWNER}`) || "").trim() || DEFAULT_URL;
+    } catch {
+      return DEFAULT_URL;
+    }
   }
 
-  // ✅ cols séparé par traducteur
   async function getViewerCols() {
     try {
       return (localStorage.getItem(`viewerCols:${OWNER}`) || "auto").trim() || "auto";
@@ -512,8 +516,8 @@
     } catch {}
   }
 
-  async function loadList() {
-    const url = await getListUrlSmart();
+  async function loadList(ownerCfg) {
+    const url = await getListUrl(ownerCfg);
     const r = await fetch(url, { cache: "no-store" });
     if (!r.ok) throw new Error("HTTP " + r.status);
     return r.json();
@@ -557,21 +561,9 @@
     if (!str) return null;
     const s = String(str).trim().toLowerCase();
     const months = {
-      janvier: 0,
-      fevrier: 1,
-      février: 1,
-      mars: 2,
-      avril: 3,
-      mai: 4,
-      juin: 5,
-      juillet: 6,
-      aout: 7,
-      août: 7,
-      septembre: 8,
-      octobre: 9,
-      novembre: 10,
-      decembre: 11,
-      décembre: 11,
+      janvier: 0, fevrier: 1, février: 1, mars: 2, avril: 3, mai: 4, juin: 5,
+      juillet: 6, aout: 7, août: 7, septembre: 8, octobre: 9, novembre: 10,
+      decembre: 11, décembre: 11,
     };
     const m = s.match(/^(\d{1,2})\s+([a-zêéèûôîïùç]+)\s+(\d{4})$/i);
     if (!m) return null;
@@ -624,10 +616,7 @@
 
       if (norm === "wolf") break;
 
-      if (norm === "flash") {
-        cut = i + 1;
-        continue;
-      }
+      if (norm === "flash") { cut = i + 1; continue; }
 
       if (norm === "others" || norm === "other") {
         if (!engines.includes("Others")) engines.push("Others");
@@ -720,12 +709,11 @@
     const updatedAtLocalTs = !Number.isNaN(updatedAtLocalParsed) ? updatedAtLocalParsed : 0;
     const createdAtLocalTs = !Number.isNaN(createdAtLocalParsed) ? createdAtLocalParsed : 0;
 
-    // ✅ clé compteur UID ONLY
     const ckey = counterKeyOfUid(uid);
 
     return {
       uid,
-      ckey, // ✅ on garde la clé déjà calculée
+      ckey,
       collection: coll,
       id: String(game.id || ""),
       rawTitle: displayTitleRaw,
@@ -796,7 +784,6 @@
       return;
     }
 
-    // ✅ tri stats = UID key
     if (k === "views") {
       state.filtered.sort((a, b) => {
         const da = GAME_STATS.views.get(a.ckey) || 0;
@@ -851,11 +838,7 @@
     const ft = state.filterTags;
 
     state.filtered = state.all.filter((g) => {
-      const mq =
-        !q ||
-        g.title.toLowerCase().includes(q) ||
-        String(g.id || "").includes(q) ||
-        String(g.uid || "").includes(q);
+      const mq = !q || g.title.toLowerCase().includes(q) || String(g.id || "").includes(q) || String(g.uid || "").includes(q);
 
       const mc =
         fc === "all" || (Array.isArray(g.categories) ? g.categories.includes(fc) : g.category === fc);
@@ -931,13 +914,13 @@
       const card = document.createElement("article");
       card.className = "card";
 
-      const imgSrc = (g.image || "").trim() || "/favicon.png";
+      const imgSrc = (g.image || "").trim() || "./favicon.png";
       const pageHref = buildGameUrl(g.__raw || g);
 
       card.innerHTML = `
         <img src="${imgSrc}" class="thumb" alt=""
              referrerpolicy="no-referrer"
-             onerror="this.onerror=null;this.src='/favicon.png';this.classList.add('is-fallback');">
+             onerror="this.onerror=null;this.src='./favicon.png';this.classList.add('is-fallback');">
         <div class="body">
           <h3 class="name clamp-2">${escapeHtml(getDisplayTitle(g.__raw || g))}</h3>
           <div class="badges-line one-line">${badgesLineHtml(g)}</div>
@@ -1058,21 +1041,14 @@
     updateTagsCountBadge();
     closeTagsPopover();
 
-    try {
-      window.ViewerMenu?.closeMenu?.();
-    } catch {}
-    try {
-      window.ViewerMenuAbout?.close?.();
-    } catch {}
-    try {
-      window.ViewerMenuExtension?.close?.();
-    } catch {}
+    try { window.ViewerMenu?.closeMenu?.(); } catch {}
+    try { window.ViewerMenuAbout?.close?.(); } catch {}
+    try { window.ViewerMenuExtension?.close?.(); } catch {}
 
     state.pageSize = 50;
     const ps = $("#pageSize");
     if (ps) ps.value = "50";
 
-    // ✅ reset cache stats
     GAME_STATS.loaded = false;
     GAME_STATS.views.clear();
     GAME_STATS.mega.clear();
@@ -1092,11 +1068,16 @@
     try {
       initHeaderMenuAndDisplayTools();
 
+      const ownerCfg = await loadOwnerConfig();
+      if (ownerCfg?.theme) applyTheme(ownerCfg.theme);
+      const h1 = document.querySelector(".top-title-row h1");
+      if (h1 && ownerCfg?.theme?.title) h1.textContent = ownerCfg.theme.title;
+
       state.cols = await getViewerCols();
       const colsSel = $("#cols");
       if (colsSel) colsSel.value = state.cols;
 
-      const raw = await loadList();
+      const raw = await loadList(ownerCfg);
       state.all = Array.isArray(raw) ? raw.map(normalizeGame) : [];
 
       if (!state.filterTags || !state.filterTags.length) {

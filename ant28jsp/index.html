@@ -4,17 +4,17 @@
   <meta charset="utf-8" />
   <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Traductions</title>
 
-  <!-- ✅ SEUL TRUC À CHANGER PAR TRADUCTEUR -->
-  <meta name="viewer-owner" content="ant28jsp">
-
-  <title>f95list_viewer</title>
-
-  <!-- ✅ Assets partagés à la racine du domaine traductions.pages.dev -->
-  <link rel="icon" href="/favicon.png" />
-  <link rel="stylesheet" href="/viewer.css" />
+  <link rel="icon" href="./favicon.png" />
+  <link rel="stylesheet" href="./viewer.css" />
 </head>
 <body>
+
+  <!-- ✅ Owner (pour thème + stats + localStorage séparés) -->
+  <script>
+    window.VIEWER_OWNER = "ant28jsp";
+  </script>
 
   <!-- 🔞 AGE GATE -->
   <div id="age-gate" style="display:none;">
@@ -32,8 +32,7 @@
 
   <header class="topbar" role="banner">
     <div class="top-title-row">
-      <!-- ✅ Titre dynamique -->
-      <h1 id="viewerTitle">f95list_viewer</h1>
+      <h1>Traductions</h1>
     </div>
 
     <div class="top-actions">
@@ -106,47 +105,27 @@
   <main role="main">
     <section id="gridMode" class="grid-wrap" aria-label="Vignettes des jeux">
 
-      <!-- ✅ BANDEAU ANNONCE ICI (au-dessus des tuiles) -->
       <div id="viewerAnnonceHost"></div>
 
       <div id="grid" class="grid"></div>
       <div id="gridEmpty" class="empty hidden">Aucun résultat.</div>
     </section>
 
-    <!-- ✅ Footer stats -->
     <footer class="viewer-footer">
       👁️ Vues de la page : <strong id="mainViews">—</strong>
     </footer>
   </main>
 
-  <!-- ✅ Titre dynamique selon le traducteur -->
-  <script>
-    (function () {
-      const meta = document.querySelector('meta[name="viewer-owner"]');
-      const owner = (meta?.getAttribute("content") || "").trim() || "viewer";
-      const label = `f95list_${owner}_viewer`;
+  <!-- ✅ tout relatif -->
+  <script src="./viewer.menu.js"></script>
+  <script src="./viewer.menu.about.js"></script>
+  <script src="./viewer.menu.extension.js"></script>
 
-      document.title = label;
+  <script src="./viewer.annonce.js"></script>
 
-      const h1 = document.getElementById("viewerTitle");
-      if (h1) h1.textContent = label;
-
-      // Optionnel : exposer pour viewer.js si tu veux l’utiliser plus tard
-      window.VIEWER_OWNER = owner;
-    })();
-  </script>
-
-  <script src="/viewer.menu.js"></script>
-  <script src="/viewer.menu.about.js"></script>
-  <script src="/viewer.menu.extension.js"></script>
-
-  <!-- ✅ charge le bandeau (indépendant de f95list.json) -->
-  <script src="/viewer.annonce.js"></script>
-
-  <script src="/viewer.js"></script>
-
-  <!-- 🔞 Age gate -->
-  <script src="/viewer.agegate.js"></script>
+  <script src="./viewer.js"></script>
+  <script src="./viewer.agegate.js"></script>
 
 </body>
 </html>
+
