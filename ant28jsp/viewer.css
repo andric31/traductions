@@ -176,19 +176,21 @@ select:focus, input[type="search"]:focus{
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  width:42px;
-  height:42px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,.16);
-  background:rgba(0,0,0,.22);
+  border:1px solid rgba(255,255,255,.18);
+  border-left:none;
+  background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(0,0,0,.22));
   color:var(--fg);
   cursor:pointer;
-  /* ✅ bouton à gauche (overlay), même bouton pour afficher/masquer */
+  /* ✅ bouton SOLO tout à gauche (overlay), toujours visible */
   position:fixed;
-  top:88px;
-  left:12px;
+  top:120px;
+  left:0;
   z-index:200;
-  border-radius:999px;
+  width:34px;
+  height:54px;
+  border-radius:0 16px 16px 0;
+  box-shadow: 0 18px 40px rgba(0,0,0,.35);
+  backdrop-filter: blur(10px);
 }
 .side-toggle:hover{filter:brightness(1.15)}
 .side-toggle:focus{outline:none; box-shadow:0 0 0 4px rgba(46,229,157,.12)}
@@ -227,7 +229,7 @@ select:focus, input[type="search"]:focus{
 .btn:hover{filter:brightness(1.10)}
 .btn:active{transform:translateY(1px)}
 
-#refresh.btn{width:100%}
+#refresh.btn{width:100%; margin-top:22px}
 
 .tags-btn{
   border-radius:999px;
@@ -237,7 +239,8 @@ select:focus, input[type="search"]:focus{
 }
 
 /* Espace pour éviter que Tags soit collé au select (Statut) */
-.viewer-side .tags-btn{margin-top:22px; display:inline-flex}
+#filterStatus{margin-bottom:18px}
+.viewer-side .tags-btn{margin-top:16px; display:inline-flex; width:100%; justify-content:center}
 .tags-count{
   margin-left:6px;
   padding:2px 8px;
