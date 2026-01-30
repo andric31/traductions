@@ -5,7 +5,9 @@
   ✅ Thème via /<pseudo>/config.json
   ✅ Stats séparées par traducteur: `${OWNER}|uid:<uid>`
   ✅ LocalStorage séparé (likes/cooldowns/rating)
-  ✅ Liens internes RELATIFS à /<pseudo>/game/ (./?id=..., ./?uid=...)
+  ✅ MODE "sans /game" :
+     - les liens internes vont vers /<owner>/?id=...
+     - si on est sur /<owner>/game/?id=... => redirection automatique vers /<owner>/?id=...
 */
 
 const DEFAULT_URL = "../f95list.json";
@@ -19,9 +21,7 @@ function inferOwnerFromPath() {
     const p = String(location.pathname || "/");
     // Ex: /ant28jsp/game/  -> owner = ant28jsp
     const parts = p.split("/").filter(Boolean);
-    // si on est sur /<owner>/game/...
     if (parts.length >= 2 && parts[1] === "game") return parts[0];
-    // si on est sur /<owner>/...
     if (parts.length >= 1) return parts[0];
   } catch {}
   return "default";
@@ -49,9 +49,30 @@ function getOwnerBasePath() {
 }
 
 function ownerUrl(relPath) {
-  // relPath relatif à /<owner>/ (pas à /game/)
+  // relPath relatif à /<owner>/
   const base = getOwnerBasePath();
   return new URL(String(relPath || ""), location.origin + base).toString();
+}
+
+// =========================
+// ✅ Redirection automatique: /game/?... -> /?...
+// =========================
+
+function redirectGameToRootIfNeeded() {
+  try {
+    const p = String(location.pathname || "/");
+    if (!p.includes("/game/")) return;
+
+    const qs = location.search || "";
+    // /<owner>/game/  -> /<owner>/
+    const base = getOwnerBasePath(); // "/<owner>/"
+    const target = location.origin + base + qs;
+
+    // évite boucle
+    if (location.href !== target) {
+      location.replace(target);
+    }
+  } catch {}
 }
 
 // =========================
@@ -161,15 +182,13 @@ function buildGameUrl(g) {
   const id = (g.id || "").toString().trim();
   const uid = (g.uid ?? "").toString().trim();
 
-  // ✅ liens internes à /<owner>/game/
-  if (coll) return `./?id=${encodeURIComponent(coll)}&uid=${encodeURIComponent(uid)}`;
-  if (id) return `./?id=${encodeURIComponent(id)}`;
-  return `./?uid=${encodeURIComponent(uid)}`;
+  // ✅ MODE sans /game : on remonte vers /<owner>/
+  if (coll) return `../?id=${encodeURIComponent(coll)}&uid=${encodeURIComponent(uid)}`;
+  if (id) return `../?id=${encodeURIComponent(id)}`;
+  return `../?uid=${encodeURIComponent(uid)}`;
 }
 
 function getDisplayTitle(g) {
-  // Règle: si c'est un enfant de collection (id vide + collection non vide),
-  // on affiche UNIQUEMENT le titre du gameData (le title principal est celui de la collection).
   const id = (g?.id || "").toString().trim();
   const col = (g?.collection || "").toString().trim();
   if (!id && col) {
@@ -179,7 +198,6 @@ function getDisplayTitle(g) {
 }
 
 function getCollectionChildTitle(g) {
-  // Strict: pas de fallback vers g.title (sinon doublons "Collection ...")
   return (g?.gameData?.title || "").toString().trim();
 }
 
@@ -204,13 +222,11 @@ function buildSeriesIndex(games) {
       ownerId: owner?.id || "",
     };
 
-    // refs déclarées
     for (const ref of serieObj.refs) {
       if (!map.has(ref)) map.set(ref, []);
       map.get(ref).push(serieObj);
     }
 
-    // rendre visible sur la page du owner (id central)
     for (const selfRef of getEntryRefs(owner)) {
       if (!map.has(selfRef)) map.set(selfRef, []);
       map.get(selfRef).push(serieObj);
@@ -258,7 +274,6 @@ function resolveGamePage(params, games) {
   const id = (params?.id || "").toString().trim();
   const uid = (params?.uid || "").toString().trim();
 
-  // 1) Sous-jeu de collection
   if (id && uid) {
     const child = (games || []).find(
       (g) => String(g?.uid) === String(uid) && String(g?.collection) === String(id)
@@ -273,7 +288,6 @@ function resolveGamePage(params, games) {
     return { kind: "collectionChild", idParam: id, uidParam: uid, entry: child, parent, siblings };
   }
 
-  // 2) id seul
   if (id) {
     const parentOrGame =
       (games || []).find((g) => String(g?.id) === String(id) && !g?.collection) || null;
@@ -287,7 +301,6 @@ function resolveGamePage(params, games) {
     return { kind: "normal", idParam: id, entry: parentOrGame };
   }
 
-  // 3) uid seul
   if (uid) {
     const g = (games || []).find((x) => String(x?.uid) === String(uid)) || null;
     if (!g) return { kind: "notfound" };
@@ -297,8 +310,7 @@ function resolveGamePage(params, games) {
   return { kind: "notfound" };
 }
 
-// ====== Related container: insertion après tags
-// ✅ Ton ordre final: tags -> related -> description -> video -> boutons -> mega -> notes -> archive
+// ====== Related container
 function ensureRelatedContainer() {
   const anchor = document.getElementById("tags");
   if (!anchor) return null;
@@ -317,7 +329,7 @@ function ensureRelatedContainer() {
 
 function renderCollectionBlockForChild(parent) {
   const parentId = parent?.id ? String(parent.id) : "";
-  const href = parentId ? `./?id=${encodeURIComponent(parentId)}` : "";
+  const href = parentId ? `../?id=${encodeURIComponent(parentId)}` : ""; // ✅ sans /game
   const label = parent ? (parent.cleanTitle || parent.title || parentId) : "Voir la collection";
 
   return `
@@ -334,7 +346,7 @@ function renderCollectionBlockForParent(parent, children) {
   const items = children
     .map((g) => {
       const t = escapeHtml(getDisplayTitle(g, "collectionChild"));
-      const href = `./?id=${encodeURIComponent(parent.id)}&uid=${encodeURIComponent(g.uid)}`;
+      const href = `../?id=${encodeURIComponent(parent.id)}&uid=${encodeURIComponent(g.uid)}`; // ✅ sans /game
       return `<li><a href="${href}">${t}</a></li>`;
     })
     .join("");
@@ -429,11 +441,6 @@ function setHref(id, href) {
   }
 }
 
-/**
- * IMPORTANT:
- * - Si pas d'image => on laisse la cover en "placeholder" (PAS de favicon)
- * - Si image cassée => on repasse en placeholder (PAS de favicon)
- */
 function setCover(url) {
   const img = $("cover");
   if (!img) return;
@@ -622,24 +629,20 @@ function renderBadgesFromGame(display, entry, isCollectionChild) {
   const childTitle = String(display?.title || "");
   const parentTitle = String(entry?.title || "");
 
-  // ✅ Enfant => badge Collection
   if (isCollectionChild) {
     wrap.appendChild(makeBadge("cat", "Collection"));
   }
 
   let c = cleanTitle(isCollectionChild ? childTitle : parentTitle);
 
-  // Parent collection => badge Collection
   if (!isCollectionChild && c.categories.includes("Collection")) {
     wrap.appendChild(makeBadge("cat", "Collection"));
   }
 
-  // VN seulement si pas enfant
   if (!isCollectionChild && c.categories.includes("VN")) {
     wrap.appendChild(makeBadge("cat", "VN"));
   }
 
-  // Enfant => moteur/status priorité gameData
   if (isCollectionChild) {
     if (display?.engine) {
       const eng = ENGINE_RAW[slug(display.engine)] || display.engine;
@@ -657,15 +660,10 @@ function renderBadgesFromGame(display, entry, isCollectionChild) {
     }
   }
 
-  for (const eng of c.engines || []) {
-    wrap.appendChild(makeBadge("eng", eng));
-  }
+  for (const eng of c.engines || []) wrap.appendChild(makeBadge("eng", eng));
   if (c.status) wrap.appendChild(makeBadge("status", c.status));
 }
 
-/**
- * ✅ Traduction status : badge uniquement (dans #badges)
- */
 async function renderTranslationStatus(game) {
   if (!game?.url || !game?.title) return;
 
@@ -692,9 +690,7 @@ async function renderTranslationStatus(game) {
 
     const wrap = $("badges");
     if (wrap) wrap.appendChild(badge);
-  } catch {
-    // silencieux
-  }
+  } catch {}
 }
 
 // ============================================================================
@@ -771,18 +767,10 @@ function initHamburgerMenu() {
 
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
-    try {
-      window.ViewerMenu?.closeMenu?.();
-    } catch {}
-    try {
-      window.ViewerMenu?.closeAbout?.();
-    } catch {}
-    try {
-      window.ViewerMenu?.closeExtension?.();
-    } catch {}
-    try {
-      window.ViewerMenuExtension?.close?.();
-    } catch {}
+    try { window.ViewerMenu?.closeMenu?.(); } catch {}
+    try { window.ViewerMenu?.closeAbout?.(); } catch {}
+    try { window.ViewerMenu?.closeExtension?.(); } catch {}
+    try { window.ViewerMenuExtension?.close?.(); } catch {}
   });
 }
 
@@ -791,11 +779,7 @@ function initHamburgerMenu() {
 function formatInt(n) {
   const x = Number(n);
   if (!Number.isFinite(x)) return "0";
-  try {
-    return x.toLocaleString("fr-FR");
-  } catch {
-    return String(Math.floor(x));
-  }
+  try { return x.toLocaleString("fr-FR"); } catch { return String(Math.floor(x)); }
 }
 
 function showStatsBox() {
@@ -829,21 +813,14 @@ async function counterUnhit(id, kind) {
 
 // ✅ localStorage séparé par traducteur
 function getMyLike(gameId) {
-  try {
-    return localStorage.getItem(`like_${OWNER}:${gameId}`) === "1";
-  } catch {
-    return false;
-  }
+  try { return localStorage.getItem(`like_${OWNER}:${gameId}`) === "1"; } catch { return false; }
 }
 function setMyLike(gameId, v) {
-  try {
-    localStorage.setItem(`like_${OWNER}:${gameId}`, v ? "1" : "0");
-  } catch {}
+  try { localStorage.setItem(`like_${OWNER}:${gameId}`, v ? "1" : "0"); } catch {}
 }
 function updateLikeBtn(gameId) {
   const b = $("btnLike");
   if (!b) return;
-
   const liked = getMyLike(gameId);
   b.textContent = liked ? "❤️" : "🤍";
   b.setAttribute("aria-label", liked ? "Je n’aime plus" : "J’aime");
@@ -873,10 +850,9 @@ function inCooldown(kind, gameId, ms) {
 }
 
 async function initCounters(gameId, megaHref, archiveHref) {
-  const VIEW_COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes
-  const MEGA_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes
+  const VIEW_COOLDOWN_MS = 10 * 60 * 1000;
+  const MEGA_COOLDOWN_MS = 5 * 60 * 1000;
 
-  // 1) Vue (anti-refresh abusif)
   const skipViewHit = inCooldown("view", gameId, VIEW_COOLDOWN_MS);
 
   try {
@@ -904,7 +880,6 @@ async function initCounters(gameId, megaHref, archiveHref) {
     }
   }
 
-  // 2) 📥 Téléchargements (MEGA + Archives → même compteur)
   const bindDownload = (btnId, href) => {
     if (!href) return;
     const btn = $(btnId);
@@ -917,7 +892,6 @@ async function initCounters(gameId, megaHref, archiveHref) {
       "click",
       async () => {
         if (inCooldown("megaClick", gameId, MEGA_COOLDOWN_MS)) return;
-
         try {
           const j = await counterHit(gameId, "mega");
           if (j?.ok) {
@@ -933,7 +907,6 @@ async function initCounters(gameId, megaHref, archiveHref) {
   bindDownload("btnMega", megaHref);
   bindDownload("archiveLink", archiveHref);
 
-  // 3) ❤️ Like toggle
   const btnLike = $("btnLike");
   if (btnLike && $("statLikes")) {
     updateLikeBtn(gameId);
@@ -966,9 +939,7 @@ async function initCounters(gameId, megaHref, archiveHref) {
           updateLikeBtn(gameId);
           showStatsBox();
         }
-      } catch {
-        // silencieux
-      }
+      } catch {}
     });
   }
 }
@@ -1134,7 +1105,7 @@ function renderRating4UI(gameId, data) {
 }
 
 // =========================
-// ✅ Blocs "nouveaux champs" (ordre demandé)
+// ✅ Blocs "nouveaux champs"
 // =========================
 
 function ensureBlockAfter(anchorEl, id) {
@@ -1177,9 +1148,12 @@ function renderVideoBlock({ id, videoUrl }) {
 
 (async function main() {
   try {
+    // ✅ si on arrive sur /game/?... on redirige vers /?...
+    redirectGameToRootIfNeeded();
+    // (si redirection => le script est stoppé par navigation)
+
     initHamburgerMenu();
 
-    // ✅ Charge config + applique thème
     const ownerCfg = await loadOwnerConfigGame();
     if (ownerCfg?.theme) applyThemeGame(ownerCfg.theme);
 
@@ -1187,7 +1161,7 @@ function renderVideoBlock({ id, videoUrl }) {
 
     if (!idParam && !uidParam) {
       showError(
-        "Aucun paramètre dans l’URL. Exemples : /game/?id=215277  ou  /game/?id=17373&uid=898  ou  /game/?uid=898"
+        "Aucun paramètre dans l’URL. Exemples : /?id=215277  ou  /?id=17373&uid=898  ou  /?uid=898"
       );
       return;
     }
@@ -1203,14 +1177,10 @@ function renderVideoBlock({ id, videoUrl }) {
       return;
     }
 
-    // entry = objet principal (discord/mega/notes/description)
     const entry = page.entry;
-
-    // display = données "jeu" (gameData si présent)
     const display = entry?.gameData ? entry.gameData : entry;
 
     const counterKey = buildCounterKeyFromEntry(entry);
-
     const isCollectionChild = page.kind === "collectionChild" && entry && entry.gameData;
 
     const title = (getDisplayTitle(entry) || getDisplayTitle(display) || `Jeu ${idParam || uidParam}`).trim();
@@ -1225,12 +1195,10 @@ function renderVideoBlock({ id, videoUrl }) {
     renderBadgesFromGame(display, entry, isCollectionChild);
     renderTranslationStatus(entry);
 
-    // ✅ ANCRAGES HTML existants
+    // ANCRAGES
     const tagsEl = document.getElementById("tags");
 
-    // =========================
-    // 2) Related (après tags)
-    // =========================
+    // 2) Related
     const relatedOut = ensureRelatedContainer();
     if (relatedOut) {
       const parts = [];
@@ -1251,13 +1219,10 @@ function renderVideoBlock({ id, videoUrl }) {
       else canonicalKey = `uid:${String(entry.uid).trim()}`;
 
       parts.push(renderSeriesBlocks(seriesList, list, canonicalKey));
-
       relatedOut.innerHTML = parts.filter(Boolean).join("");
     }
 
-    // =========================
-    // 3) Description (juste après related, avant vidéo)
-    // =========================
+    // 3) Description
     const descAnchor = relatedOut || tagsEl;
     const descBox = document.getElementById("descriptionBox");
     const descTextEl = document.getElementById("descriptionText");
@@ -1274,9 +1239,7 @@ function renderVideoBlock({ id, videoUrl }) {
       descBox.style.display = "none";
     }
 
-    // =========================
-    // 4) Vidéo (si présent) sous description
-    // =========================
+    // 4) Vidéo
     const videoAnchor = (descBox && descBox.style.display !== "none") ? descBox : (relatedOut || tagsEl);
     const videoHost = ensureBlockAfter(videoAnchor, "videoHost");
     renderVideoBlock({
@@ -1284,9 +1247,7 @@ function renderVideoBlock({ id, videoUrl }) {
       videoUrl: (entry.videoUrl || "").trim(),
     });
 
-    // =========================
-    // 5) Boutons Discord + F95 (inchangés)
-    // =========================
+    // 5) Boutons
     setHref("btnDiscord", (entry.discordlink || "").trim());
     if ($("btnDiscord")) {
       $("btnDiscord").textContent = "💬 Discord";
@@ -1299,17 +1260,13 @@ function renderVideoBlock({ id, videoUrl }) {
       $("btnF95").classList.add("btn-f95");
     }
 
-    // =========================
-    // 6) MEGA (bouton existant)
-    // =========================
+    // 6) MEGA
     const megaHref = (entry.translation || "").trim();
     const archiveHref = (entry.translationsArchive || "").trim();
     setHref("btnMega", megaHref);
     if ($("btnMega")) $("btnMega").textContent = "📥 Télécharger la traduction (MEGA)";
 
-    // =========================
-    // 7) Informations (encadré sous la notation)
-    // =========================
+    // 7) Notes
     const notes = (entry.notes || "").trim();
     if (notes) {
       setHtml("notesText", escapeHtml(notes).replace(/\n/g, "<br>"));
@@ -1318,16 +1275,13 @@ function renderVideoBlock({ id, videoUrl }) {
       show("notesBox", false);
     }
 
-    // =========================
-    // 8) Archives (bouton HTML existant sous Notes) — SANS encadré
-    // =========================
+    // 8) Archives
     setHref("archiveLink", archiveHref);
     if ($("archiveLink")) $("archiveLink").textContent = "📦 Archives de la traduction";
 
     const ab = $("archiveBox");
     if (ab) ab.style.display = archiveHref ? "flex" : "none";
 
-    // ⛔ Bloquer clic droit sur ARCHIVES
     const archiveLink = document.getElementById("archiveLink");
     if (archiveLink) {
       archiveLink.addEventListener("contextmenu", (e) => {
@@ -1336,14 +1290,10 @@ function renderVideoBlock({ id, videoUrl }) {
       });
     }
 
-    // =========================
-    // ✅ Analytics key (unique)
-    // =========================
+    // Analytics
     const analyticsKey = counterKey;
-
     await initCounters(counterKey, megaHref, archiveHref);
 
-    // ⛔ Bloquer clic droit sur MEGA
     const btnMega = document.getElementById("btnMega");
     if (btnMega) {
       btnMega.addEventListener("contextmenu", (e) => {
@@ -1358,16 +1308,14 @@ function renderVideoBlock({ id, videoUrl }) {
       if (j?.ok) renderRating4UI(analyticsKey, j);
     } catch {}
 
-    // =========================
-    // ⭐ Déplacer la notation en bas de l'encadré principal
-    // =========================
+    // Move rating
     const cardInner = document.querySelector(".cardInner");
     const ratingBoxEl = document.getElementById("ratingBox");
     if (cardInner && ratingBoxEl) {
       cardInner.appendChild(ratingBoxEl);
     }
-
   } catch (e) {
     showError(`Erreur: ${e?.message || e}`);
   }
 })();
+
