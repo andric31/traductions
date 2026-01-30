@@ -8,7 +8,7 @@
   ✅ Liens internes RELATIFS à /<pseudo>/game/ (./?id=..., ./?uid=...)
 */
 
-const DEFAULT_URL = "https://raw.githubusercontent.com/andric31/f95list/main/f95list.json";
+const DEFAULT_URL = "../f95list.json";
 
 // =========================
 // ✅ Owner + base path helpers
