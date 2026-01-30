@@ -273,6 +273,7 @@ select:focus, input[type="search"]:focus{
   box-shadow: 0 18px 40px rgba(0,0,0,.35);
   display:flex;
   min-height:180px;
+  min-width:0; /* évite la coupe du contenu en flex */
 }
 
 .card::before{
@@ -288,9 +289,13 @@ select:focus, input[type="search"]:focus{
 .card:hover{transform: translateY(-3px); transition: transform .18s ease}
 
 .thumb{
-  /* Images souvent en "bandeau" : on donne plus de place au visuel */
-  width:260px;
-  flex:0 0 260px;
+  /*
+    Images souvent en "bandeau" : on donne de la place au visuel,
+    MAIS en responsive (sinon le contenu à droite se fait couper
+    quand la carte devient trop étroite / colonnes élevées).
+  */
+  width:clamp(150px, 38%, 260px);
+  flex:0 0 auto;
   height:calc(100% - 24px);
   margin:12px 0 12px 12px;
   object-fit:contain;
@@ -307,6 +312,17 @@ select:focus, input[type="search"]:focus{
   flex-direction:column;
   gap:10px;
   flex:1;
+  min-width:0; /* autorise le wrap/clamp au lieu de couper */
+}
+
+/* En carte très étroite, on empile (image au-dessus) */
+@media (max-width: 720px){
+  .card{flex-direction:column;}
+  .thumb{
+    width:calc(100% - 24px);
+    height:160px;
+    margin:12px;
+  }
 }
 
 .name{
