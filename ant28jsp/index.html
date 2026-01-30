@@ -15,176 +15,222 @@
        VIEWER (page principale)
        ======================================================= -->
   <div id="viewerPage">
-    <header class="topbar" role="banner">
-      <div class="top-title-row">
-        <h1>Traductions</h1>
-
-        <!-- (le menu ☰ est injecté par viewer.js) -->
-      </div>
-
-      <div class="top-actions">
-        <div class="search-wrap">
-          <input id="search" type="search" placeholder="Rechercher un jeu." autocomplete="off" />
-          <span class="stat-in-bar total-inline">Total : <strong id="countTotal">0</strong></span>
+    <!-- Nouvelle interface (visuel) : shell + sidebar + header compact.
+         ✅ On garde les mêmes IDs/éléments pour que viewer.js continue de fonctionner. -->
+    <div class="viewer-shell">
+      <aside class="viewer-side" aria-label="Filtres">
+        <div class="side-brand">
+          <div class="brand-title">Traductions</div>
+          <!-- (le menu ☰ est injecté par viewer.js dans .top-title-row ;
+               on garde aussi un emplacement visuel ici via CSS) -->
+          <div class="brand-sub">Recherche · Filtres · Tags</div>
         </div>
 
-        <select id="sort" title="Trier">
-          <option value="updatedAtLocal-desc">Date de mise à jour (local) ↓</option>
-          <option value="updatedAtLocal-asc">Date de mise à jour (local) ↑</option>
-          <option value="updatedAt-desc">Date de mise à jour ↓</option>
-          <option value="updatedAt-asc">Date de mise à jour ↑</option>
-          <option value="releaseDate-desc">Date de sortie ↓</option>
-          <option value="releaseDate-asc">Date de sortie ↑</option>
-          <option value="title-asc">Titre A→Z</option>
-          <option value="title-desc">Titre Z→A</option>
-          <option value="views-desc">Vues ↓</option>
-          <option value="views-asc">Vues ↑</option>
-          <option value="mega-desc">Téléchargements ↓</option>
-          <option value="mega-asc">Téléchargements ↑</option>
-          <option value="likes-desc">J’aime ↓</option>
-          <option value="likes-asc">J’aime ↑</option>
-        </select>
+        <div class="side-group">
+          <div class="side-label">Catégorie</div>
+          <select id="filterCat" title="Catégorie">
+            <option value="all">Toutes</option>
+            <option value="VN">VN</option>
+            <option value="Collection">Collection</option>
+          </select>
+        </div>
 
-        <select id="filterCat" title="Catégorie">
-          <option value="all">Catégorie : toutes</option>
-          <option value="VN">VN</option>
-          <option value="Collection">Collection</option>
-        </select>
+        <div class="side-group">
+          <div class="side-label">Moteur</div>
+          <select id="filterEngine" title="Moteur">
+            <option value="all">Tous</option>
+            <option value="Ren'Py">Ren'Py</option>
+            <option value="RPGM">RPGM</option>
+            <option value="Unity">Unity</option>
+            <option value="Unreal Engine">Unreal Engine</option>
+            <option value="HTML">HTML</option>
+            <option value="Java">Java</option>
+            <option value="Flash">Flash</option>
+            <option value="QSP">QSP</option>
+            <option value="WebGL">WebGL</option>
+            <option value="RAGS">RAGS</option>
+            <option value="Tads">Tads</option>
+            <option value="ADRIFT">ADRIFT</option>
+            <option value="Others">Others</option>
+            <option value="Wolf RPG">Wolf RPG</option>
+          </select>
+        </div>
 
-        <select id="filterEngine" title="Moteur">
-          <option value="all">Moteur : tous</option>
-          <option value="Ren'Py">Ren'Py</option>
-          <option value="RPGM">RPGM</option>
-          <option value="Unity">Unity</option>
-          <option value="Unreal Engine">Unreal Engine</option>
-          <option value="HTML">HTML</option>
-          <option value="Java">Java</option>
-          <option value="Flash">Flash</option>
-          <option value="QSP">QSP</option>
-          <option value="WebGL">WebGL</option>
-          <option value="RAGS">RAGS</option>
-          <option value="Tads">Tads</option>
-          <option value="ADRIFT">ADRIFT</option>
-          <option value="Others">Others</option>
-          <option value="Wolf RPG">Wolf RPG</option>
-        </select>
+        <div class="side-group">
+          <div class="side-label">Statut</div>
+          <select id="filterStatus" title="Statut">
+            <option value="all">Tous</option>
+            <option value="En cours">En cours</option>
+            <option value="Completed">Completed</option>
+            <option value="Abandoned">Abandoned</option>
+            <option value="Onhold">Onhold</option>
+          </select>
+        </div>
 
-        <select id="filterStatus" title="Statut">
-          <option value="all">Statut : tous</option>
-          <option value="En cours">En cours</option>
-          <option value="Completed">Completed</option>
-          <option value="Abandoned">Abandoned</option>
-          <option value="Onhold">Onhold</option>
-        </select>
+        <div class="side-row">
+          <div class="side-group">
+            <div class="side-label">Colonnes</div>
+            <select id="cols" title="Colonnes">
+              <option value="auto">Auto</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+            </select>
+          </div>
 
-        <select id="cols" title="Colonnes">
-          <option value="auto">Colonnes : auto</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-        </select>
+          <div class="side-group">
+            <div class="side-label">Page</div>
+            <select id="pageSize" title="Pagination">
+              <option value="50">50</option>
+              <option value="100">100</option>
+              <option value="200">200</option>
+              <option value="all">Tout</option>
+            </select>
+          </div>
+        </div>
 
-        <select id="pageSize" title="Pagination">
-          <option value="50">50</option>
-          <option value="100">100</option>
-          <option value="200">200</option>
-          <option value="all">Tout</option>
-        </select>
+        <div class="side-group">
+          <div class="side-label">Tri</div>
+          <select id="sort" title="Trier">
+            <option value="updatedAtLocal-desc">Maj (local) ↓</option>
+            <option value="updatedAtLocal-asc">Maj (local) ↑</option>
+            <option value="updatedAt-desc">Maj ↓</option>
+            <option value="updatedAt-asc">Maj ↑</option>
+            <option value="releaseDate-desc">Sortie ↓</option>
+            <option value="releaseDate-asc">Sortie ↑</option>
+            <option value="title-asc">Titre A→Z</option>
+            <option value="title-desc">Titre Z→A</option>
+            <option value="views-desc">Vues ↓</option>
+            <option value="views-asc">Vues ↑</option>
+            <option value="mega-desc">Téléchargements ↓</option>
+            <option value="mega-asc">Téléchargements ↑</option>
+            <option value="likes-desc">J’aime ↓</option>
+            <option value="likes-asc">J’aime ↑</option>
+          </select>
+        </div>
 
-        <button id="refresh" class="btn" type="button" title="Rafraîchir">🔄</button>
-      </div>
+        <div class="side-footer">
+          <div class="side-metrics">
+            <div class="metric"><span>Total</span> <strong id="countTotal">0</strong></div>
+            <div class="metric"><span>Vues page</span> <strong id="mainViews">0</strong></div>
+          </div>
+          <button id="refresh" class="btn" type="button" title="Rafraîchir">🔄 Rafraîchir</button>
+        </div>
+      </aside>
 
-      <div class="viewer-statsbar">
-        <span class="viewer-stat">👀 Vues page : <strong id="mainViews">0</strong></span>
-      </div>
-    </header>
+      <section class="viewer-main">
+        <header class="viewer-top" role="banner">
+          <div class="top-title-row top-title-flex">
+            <h1>Traductions</h1>
+            <!-- (le menu ☰ est injecté par viewer.js) -->
+            <div class="top-title-tools"></div>
+          </div>
 
-    <!-- grille -->
-    <main class="wrap">
-      <section id="grid" class="grid"></section>
-      <div id="gridEmpty" class="grid-empty hidden">Aucun résultat</div>
-    </main>
+          <!-- ✅ On garde .top-actions car viewer.js s'en sert pour insérer le bouton Tags si besoin -->
+          <div class="top-actions">
+            <div class="search-wrap">
+              <input id="search" type="search" placeholder="Rechercher (titre, tags…)" autocomplete="off" />
+              <span class="stat-in-bar total-inline">Résultats : <strong id="countFound">0</strong></span>
+            </div>
+            <!-- place pour tagsBtn injecté automatiquement -->
+          </div>
+        </header>
+
+        <main class="wrap">
+          <section id="grid" class="grid"></section>
+          <div id="gridEmpty" class="grid-empty hidden">Aucun résultat</div>
+        </main>
+      </section>
+    </div>
+
   </div>
 
   <!-- =======================================================
        GAME (page jeu) — même URL, bascule via ?id / ?uid
        ======================================================= -->
   <div id="gamePage" style="display:none">
-    <div class="wrap">
-      <!-- ☰ topbar -->
-      <div class="topbar">
+    <!-- Nouvelle interface (visuel) : page jeu en 2 colonnes + actions sticky.
+         ✅ IDs conservés pour game.js. -->
+    <div class="game-shell">
+      <header class="game-top">
         <button id="hamburgerBtn" class="hamburger-btn" aria-label="Ouvrir le menu" aria-haspopup="menu" aria-expanded="false">
           <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
         </button>
-        <h1>Traductions</h1>
-      </div>
+        <div class="game-top-title">Traductions</div>
+        <div class="game-top-spacer"></div>
+      </header>
 
       <div id="topMenuPopover" class="hidden"></div>
       <div id="errBox"></div>
 
-      <section id="card" class="card">
-        <div class="cardInner">
-
-          <div class="hero">
+      <div id="card" class="game-layout">
+        <!-- Colonne gauche : cover + infos + actions -->
+        <aside class="game-aside">
+          <div class="game-cover-wrap">
             <img id="cover" class="is-placeholder" alt="">
-            <div>
-              <h2 id="title">—</h2>
-              <div id="badges"></div>
-              <div id="tags"></div>
-            </div>
           </div>
 
-          <div id="descriptionBox" class="game-block" style="display:none;">
+          <div class="game-head">
+            <h2 id="title">—</h2>
+            <div id="badges"></div>
+            <div id="tags"></div>
+          </div>
+
+          <div class="game-actions">
+            <div class="btnMainRow">
+              <a id="btnDiscord" class="btn btn-discord" target="_blank" rel="noopener" href="#">💬 Discord</a>
+              <a id="btnF95" class="btn btn-f95" target="_blank" rel="noopener" href="#"><span class="f95-white"> F95</span><span class="f95-red">Zone</span></a>
+            </div>
+
+            <div class="btnRow">
+              <a id="btnMega" class="btn" target="_blank" rel="noopener" href="#">📥 Télécharger la traduction (MEGA)</a>
+              <div class="likeWrap">
+                <button id="btnLike" type="button" aria-label="J’aime">🤍</button>
+              </div>
+            </div>
+
+            <div id="archiveBox" class="archiveRow" style="display:none;">
+              <a id="archiveLink" class="btn" target="_blank" rel="noopener" href="#">📦 Archives de la traduction</a>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Colonne droite : contenu -->
+        <main class="game-content">
+          <section id="descriptionBox" class="game-panel" style="display:none;">
             <h3>📜 Description</h3>
-            <div id="descriptionText" style="color:var(--muted); line-height:1.45;"></div>
-          </div>
+            <div id="descriptionText" class="game-text"></div>
+          </section>
 
-          <div class="btnMainRow">
-            <a id="btnDiscord" class="btn btn-discord" target="_blank" rel="noopener" href="#">💬 Discord</a>
-            <a id="btnF95" class="btn btn-f95" target="_blank" rel="noopener" href="#"><span class="f95-white"> F95</span><span class="f95-red">Zone</span></a>
-          </div>
-
-          <div class="btnRow">
-            <a id="btnMega" class="btn" target="_blank" rel="noopener" href="#">📥 Télécharger la traduction (MEGA)</a>
-            <div class="likeWrap">
-              <button id="btnLike" type="button" aria-label="J’aime">🤍</button>
-            </div>
-          </div>
-
-          <div id="statsOut" class="game-block">
+          <section id="statsOut" class="game-panel">
             <h3>📊 Statistiques</h3>
             <div class="statsLine">
-              👁️ Vues : <span id="statViews" class="statNum">0</span>
-              📥 Téléchargements : <span id="statMegaClicks" class="statNum">0</span>
-              ❤️ J’aime : <span id="statLikes" class="statNum">0</span>
+              <span>👁️ Vues : <strong id="statViews" class="statNum">0</strong></span>
+              <span>📥 Téléchargements : <strong id="statMegaClicks" class="statNum">0</strong></span>
+              <span>❤️ J’aime : <strong id="statLikes" class="statNum">0</strong></span>
             </div>
-          </div>
+          </section>
 
-          <div id="notesBox" class="game-block" style="display:none;">
+          <section id="notesBox" class="game-panel" style="display:none;">
             <h3>📝 Notes</h3>
-            <div id="notesText" style="color:var(--muted); line-height:1.45;"></div>
-          </div>
+            <div id="notesText" class="game-text"></div>
+          </section>
 
-          <div id="archiveBox" style="display:none; align-items:center; gap:10px;">
-            <a id="archiveLink" class="btn" target="_blank" rel="noopener" href="#">📦 Archives de la traduction</a>
-          </div>
-
-          <div id="ratingBox" class="game-block">
+          <section id="ratingBox" class="game-panel">
             <h3>⭐ Note de la traduction</h3>
-            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+            <div class="ratingRow">
               <div>
                 Moyenne : <strong id="ratingAvg">—</strong> · Votes : <strong id="ratingCount">0</strong>
               </div>
-              <div id="ratingChoices" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+              <div id="ratingChoices" class="ratingChoices"></div>
             </div>
-            <div id="ratingMsg" style="margin-top:8px; color:var(--muted); font-size:13px;"></div>
-          </div>
-
-        </div>
-      </section>
+            <div id="ratingMsg" class="ratingMsg"></div>
+          </section>
+        </main>
+      </div>
     </div>
   </div>
 
