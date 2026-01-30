@@ -3,6 +3,12 @@
 // + Tags multi (popover + save)
 // ✅ UID ONLY pour stats (aligné sur game.js)
 (() => {
+  // ✅ Si on est sur une page jeu (?id ou ?uid), on ne lance pas le viewer.
+  try {
+    const _p = new URLSearchParams(location.search);
+    if (_p.has("id") || _p.has("uid")) return;
+  } catch {}
+
   // ✅ Base LOCALE (dans /ant28jsp/f95list.json)
   const DEFAULT_URL = "./f95list.json";
 

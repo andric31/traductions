@@ -4,46 +4,213 @@
   <meta charset="utf-8" />
   <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Traductions ant28jsp</title>
+  <title>Traductions</title>
 
   <link rel="icon" href="./favicon.png" />
   <link rel="stylesheet" href="./viewer.css" />
 </head>
 <body>
 
-<!-- ================= VIEWER ================= -->
-<div id="viewerPage">
-  <!-- ton HTML viewer normal (topbar, filtres, grid, etc.) -->
-</div>
+  <!-- =======================================================
+       VIEWER (page principale)
+       ======================================================= -->
+  <div id="viewerPage">
+    <header class="topbar" role="banner">
+      <div class="top-title-row">
+        <h1>Traductions</h1>
 
-<!-- ================= GAME ================= -->
-<div id="gamePage" style="display:none;">
-  <!-- ton HTML de page jeu (celui que tu as déjà collé est OK) -->
-</div>
+        <!-- (le menu ☰ est injecté par viewer.js) -->
+      </div>
 
-<script>
-(function () {
-  const p = new URLSearchParams(location.search);
-  const isGame = p.has("id") || p.has("uid");
+      <div class="top-actions">
+        <div class="search-wrap">
+          <input id="search" type="search" placeholder="Rechercher un jeu." autocomplete="off" />
+          <span class="stat-in-bar total-inline">Total : <strong id="countTotal">0</strong></span>
+        </div>
 
-  const viewer = document.getElementById("viewerPage");
-  const game   = document.getElementById("gamePage");
+        <select id="sort" title="Trier">
+          <option value="updatedAtLocal-desc">Date de mise à jour (local) ↓</option>
+          <option value="updatedAtLocal-asc">Date de mise à jour (local) ↑</option>
+          <option value="updatedAt-desc">Date de mise à jour ↓</option>
+          <option value="updatedAt-asc">Date de mise à jour ↑</option>
+          <option value="releaseDate-desc">Date de sortie ↓</option>
+          <option value="releaseDate-asc">Date de sortie ↑</option>
+          <option value="title-asc">Titre A→Z</option>
+          <option value="title-desc">Titre Z→A</option>
+          <option value="views-desc">Vues ↓</option>
+          <option value="views-asc">Vues ↑</option>
+          <option value="mega-desc">Téléchargements ↓</option>
+          <option value="mega-asc">Téléchargements ↑</option>
+          <option value="likes-desc">J’aime ↓</option>
+          <option value="likes-asc">J’aime ↑</option>
+        </select>
 
-  if (viewer) viewer.style.display = isGame ? "none" : "";
-  if (game)   game.style.display   = isGame ? "" : "none";
+        <select id="filterCat" title="Catégorie">
+          <option value="all">Catégorie : toutes</option>
+          <option value="VN">VN</option>
+          <option value="Collection">Collection</option>
+        </select>
 
-  const s = document.createElement("script");
-  s.src = isGame ? "./game.js" : "./viewer.js";
-  document.body.appendChild(s);
-})();
-</script>
+        <select id="filterEngine" title="Moteur">
+          <option value="all">Moteur : tous</option>
+          <option value="Ren'Py">Ren'Py</option>
+          <option value="RPGM">RPGM</option>
+          <option value="Unity">Unity</option>
+          <option value="Unreal Engine">Unreal Engine</option>
+          <option value="HTML">HTML</option>
+          <option value="Java">Java</option>
+          <option value="Flash">Flash</option>
+          <option value="QSP">QSP</option>
+          <option value="WebGL">WebGL</option>
+          <option value="RAGS">RAGS</option>
+          <option value="Tads">Tads</option>
+          <option value="ADRIFT">ADRIFT</option>
+          <option value="Others">Others</option>
+          <option value="Wolf RPG">Wolf RPG</option>
+        </select>
 
-<!-- scripts communs -->
-<script src="./viewer.annonce.js"></script>
-<script src="./viewer.menu.js"></script>
-<script src="./viewer.menu.about.js"></script>
-<script src="./viewer.menu.extension.js"></script>
+        <select id="filterStatus" title="Statut">
+          <option value="all">Statut : tous</option>
+          <option value="En cours">En cours</option>
+          <option value="Completed">Completed</option>
+          <option value="Abandoned">Abandoned</option>
+          <option value="Onhold">Onhold</option>
+        </select>
 
+        <select id="cols" title="Colonnes">
+          <option value="auto">Colonnes : auto</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+        </select>
+
+        <select id="pageSize" title="Pagination">
+          <option value="50">50</option>
+          <option value="100">100</option>
+          <option value="200">200</option>
+          <option value="all">Tout</option>
+        </select>
+
+        <button id="refresh" class="btn" type="button" title="Rafraîchir">🔄</button>
+      </div>
+
+      <div class="viewer-statsbar">
+        <span class="viewer-stat">👀 Vues page : <strong id="mainViews">0</strong></span>
+      </div>
+    </header>
+
+    <!-- grille -->
+    <main class="wrap">
+      <section id="grid" class="grid"></section>
+      <div id="gridEmpty" class="grid-empty hidden">Aucun résultat</div>
+    </main>
+  </div>
+
+  <!-- =======================================================
+       GAME (page jeu) — même URL, bascule via ?id / ?uid
+       ======================================================= -->
+  <div id="gamePage" style="display:none">
+    <div class="wrap">
+      <!-- ☰ topbar -->
+      <div class="topbar">
+        <button id="hamburgerBtn" class="hamburger-btn" aria-label="Ouvrir le menu" aria-haspopup="menu" aria-expanded="false">
+          <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
+        </button>
+        <h1>Traductions</h1>
+      </div>
+
+      <div id="topMenuPopover" class="hidden"></div>
+      <div id="errBox"></div>
+
+      <section id="card" class="card">
+        <div class="cardInner">
+
+          <div class="hero">
+            <img id="cover" class="is-placeholder" alt="">
+            <div>
+              <h2 id="title">—</h2>
+              <div id="badges"></div>
+              <div id="tags"></div>
+            </div>
+          </div>
+
+          <div id="descriptionBox" class="game-block" style="display:none;">
+            <h3>📜 Description</h3>
+            <div id="descriptionText" style="color:var(--muted); line-height:1.45;"></div>
+          </div>
+
+          <div class="btnMainRow">
+            <a id="btnDiscord" class="btn btn-discord" target="_blank" rel="noopener" href="#">💬 Discord</a>
+            <a id="btnF95" class="btn btn-f95" target="_blank" rel="noopener" href="#"><span class="f95-white"> F95</span><span class="f95-red">Zone</span></a>
+          </div>
+
+          <div class="btnRow">
+            <a id="btnMega" class="btn" target="_blank" rel="noopener" href="#">📥 Télécharger la traduction (MEGA)</a>
+            <div class="likeWrap">
+              <button id="btnLike" type="button" aria-label="J’aime">🤍</button>
+            </div>
+          </div>
+
+          <div id="statsOut" class="game-block">
+            <h3>📊 Statistiques</h3>
+            <div class="statsLine">
+              👁️ Vues : <span id="statViews" class="statNum">0</span>
+              📥 Téléchargements : <span id="statMegaClicks" class="statNum">0</span>
+              ❤️ J’aime : <span id="statLikes" class="statNum">0</span>
+            </div>
+          </div>
+
+          <div id="notesBox" class="game-block" style="display:none;">
+            <h3>📝 Notes</h3>
+            <div id="notesText" style="color:var(--muted); line-height:1.45;"></div>
+          </div>
+
+          <div id="archiveBox" style="display:none; align-items:center; gap:10px;">
+            <a id="archiveLink" class="btn" target="_blank" rel="noopener" href="#">📦 Archives de la traduction</a>
+          </div>
+
+          <div id="ratingBox" class="game-block">
+            <h3>⭐ Note de la traduction</h3>
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+              <div>
+                Moyenne : <strong id="ratingAvg">—</strong> · Votes : <strong id="ratingCount">0</strong>
+              </div>
+              <div id="ratingChoices" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+            </div>
+            <div id="ratingMsg" style="margin-top:8px; color:var(--muted); font-size:13px;"></div>
+          </div>
+
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- =======================================================
+       Bascule Viewer/Game + scripts
+       ======================================================= -->
+  <script>
+    (function() {
+      const p = new URLSearchParams(location.search);
+      const hasGame = !!(p.get("id") || p.get("uid"));
+      const vp = document.getElementById("viewerPage");
+      const gp = document.getElementById("gamePage");
+      if (vp) vp.style.display = hasGame ? "none" : "";
+      if (gp) gp.style.display = hasGame ? "" : "none";
+      document.body.classList.toggle("page-game", hasGame);
+    })();
+  </script>
+
+  <!-- Scripts communs -->
+  <script src="./viewer.annonce.js"></script>
+  <script src="./viewer.menu.js"></script>
+  <script src="./viewer.menu.about.js"></script>
+  <script src="./viewer.menu.extension.js"></script>
+
+  <!-- Viewer / Game -->
+  <script src="./viewer.js"></script>
+  <script src="./game.js"></script>
 </body>
 </html>
-
