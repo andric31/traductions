@@ -4,153 +4,46 @@
   <meta charset="utf-8" />
   <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>f95list_andric31_viewer</title>
+  <title>Traductions ant28jsp</title>
 
   <link rel="icon" href="./favicon.png" />
   <link rel="stylesheet" href="./viewer.css" />
 </head>
 <body>
-  <div id="viewerPage">
+
+<!-- ================= VIEWER ================= -->
+<div id="viewerPage">
+  <!-- ton HTML viewer normal (topbar, filtres, grid, etc.) -->
+</div>
+
+<!-- ================= GAME ================= -->
+<div id="gamePage" style="display:none;">
+  <!-- ton HTML de page jeu (celui que tu as déjà collé est OK) -->
+</div>
+
 <script>
 (function () {
   const p = new URLSearchParams(location.search);
+  const isGame = p.has("id") || p.has("uid");
 
-  // 🎮 si on a id ou uid → page jeu
-  if (p.has("id") || p.has("uid")) {
-    const qs = p.toString();
-    location.replace("./game/game.html?" + qs);
-    return;
-  }
+  const viewer = document.getElementById("viewerPage");
+  const game   = document.getElementById("gamePage");
 
-  // 👀 sinon → viewer normal
+  if (viewer) viewer.style.display = isGame ? "none" : "";
+  if (game)   game.style.display   = isGame ? "" : "none";
+
   const s = document.createElement("script");
-  s.src = "./viewer.js";
+  s.src = isGame ? "./game.js" : "./viewer.js";
   document.body.appendChild(s);
 })();
 </script>
-  </div>
 
-  <div id="gamePage" style="display:none">
-<div class="wrap">
+<!-- scripts communs -->
+<script src="./viewer.annonce.js"></script>
+<script src="./viewer.menu.js"></script>
+<script src="./viewer.menu.about.js"></script>
+<script src="./viewer.menu.extension.js"></script>
 
-    <!-- ☰ topbar -->
-    <div class="topbar">
-      <button id="hamburgerBtn" class="hamburger-btn" aria-label="Ouvrir le menu" aria-haspopup="menu" aria-expanded="false">
-        <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
-      </button>
-      <h1>Traductions</h1>
-    </div>
-
-    <!-- popover menu (si ton viewer.menu.js existe dans /ant28jsp/) -->
-    <div id="topMenuPopover" class="hidden"></div>
-
-    <div id="errBox"></div>
-
-    <section id="card" class="card">
-      <div class="cardInner">
-
-        <!-- HERO -->
-        <div class="hero">
-          <img id="cover" class="is-placeholder" alt="">
-          <div>
-            <h2 id="title">—</h2>
-            <div id="badges"></div>
-            <div id="tags"></div>
-          </div>
-        </div>
-
-        <!-- related auto inject -->
-        <!-- (game.js va créer #relatedOut juste après #tags) -->
-
-        <!-- description (existe déjà, game.js déplace le bloc) -->
-        <div id="descriptionBox" class="game-block" style="display:none;">
-          <h3>📜 Description</h3>
-          <div id="descriptionText" style="color:var(--muted); line-height:1.45;"></div>
-        </div>
-
-        <!-- boutons -->
-        <div class="btnMainRow">
-          <a id="btnDiscord" class="btn btn-discord" target="_blank" rel="noopener" href="#">💬 Discord</a>
-          <a id="btnF95" class="btn btn-f95" target="_blank" rel="noopener" href="#"><span class="f95-white"> F95</span><span class="f95-red">Zone</span></a>
-        </div>
-
-        <!-- MEGA -->
-        <div class="btnRow">
-          <a id="btnMega" class="btn" target="_blank" rel="noopener" href="#">📥 Télécharger la traduction (MEGA)</a>
-
-          <div class="likeWrap">
-            <button id="btnLike" type="button" aria-label="J’aime">🤍</button>
-          </div>
-        </div>
-
-        <!-- Stats -->
-        <div id="statsOut" class="game-block">
-          <h3>📊 Statistiques</h3>
-          <div class="statsLine">
-            👁️ Vues : <span id="statViews" class="statNum">0</span>
-            📥 Téléchargements : <span id="statMegaClicks" class="statNum">0</span>
-            ❤️ J’aime : <span id="statLikes" class="statNum">0</span>
-          </div>
-        </div>
-
-        <!-- Notes -->
-        <div id="notesBox" class="game-block" style="display:none;">
-          <h3>📝 Notes</h3>
-          <div id="notesText" style="color:var(--muted); line-height:1.45;"></div>
-        </div>
-
-        <!-- Archives -->
-        <div id="archiveBox" style="display:none; align-items:center; gap:10px;">
-          <a id="archiveLink" class="btn" target="_blank" rel="noopener" href="#">📦 Archives de la traduction</a>
-        </div>
-
-        <!-- Rating -->
-        <div id="ratingBox" class="game-block">
-          <h3>⭐ Note de la traduction</h3>
-          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
-            <div>
-              Moyenne : <strong id="ratingAvg">—</strong> · Votes : <strong id="ratingCount">0</strong>
-            </div>
-            <div id="ratingChoices" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
-          </div>
-          <div id="ratingMsg" style="margin-top:8px; color:var(--muted); font-size:13px;"></div>
-        </div>
-
-      </div>
-    </section>
-  </div>
-
-  <!-- ✅ Si tu as ces scripts dans /ant28jsp/, tu peux les activer -->
-  <!--
-
-
-
-  -->
-
-  <!-- ✅ le principal -->
-
-  </div>
-
-  <script>
-    (function() {
-      const p = new URLSearchParams(location.search);
-      const hasGame = (p.get("id") || p.get("uid"));
-      const vp = document.getElementById("viewerPage");
-      const gp = document.getElementById("gamePage");
-      if (vp) vp.style.display = hasGame ? "none" : "";
-      if (gp) gp.style.display = hasGame ? "" : "none";
-      document.body.classList.toggle("page-game", !!hasGame);
-    })();
-  </script>
-
-  <!-- Scripts communs -->
-  <script src="./viewer.annonce.js"></script>
-  <script src="./viewer.menu.js"></script>
-  <script src="./viewer.menu.about.js"></script>
-  <script src="./viewer.menu.extension.js"></script>
-
-  <!-- Viewer / Game (chacun s'auto-désactive si pas sur sa page) -->
-  <script src="./viewer.js"></script>
-  <script src="./game.js"></script>
 </body>
 </html>
+
