@@ -3,6 +3,13 @@
 // + Tags multi (popover + save)
 // ✅ UID ONLY pour stats (aligné sur game.js)
 (() => {
+// ✅ Si on est sur une page jeu (?id ou ?uid), le viewer ne s'initialise pas
+try {
+  const p = new URLSearchParams(location.search);
+  if ((p.get("id") || "").trim() || (p.get("uid") || "").trim()) return;
+} catch {}
+
+
   const DEFAULT_URL = "https://raw.githubusercontent.com/andric31/f95list/main/f95list.json";
 
   // ✅ Multi-trad : owner (défini par index.html via window.VIEWER_OWNER)
@@ -42,12 +49,16 @@
 
   // ✅ URL page jeu (id central + support collection child) — RELATIF (reste dans /<pseudo>/)
   function buildGameUrl(g) {
+    const coll = (g.collection || "").toString().trim();
     const id = (g.id || "").toString().trim();
     const uid = (g.uid ?? "").toString().trim();
-  
-    if (id && uid) return `./?id=${encodeURIComponent(id)}&uid=${encodeURIComponent(uid)}`;
-    if (id) return `./?id=${encodeURIComponent(id)}`;
-    return `./?uid=${encodeURIComponent(uid)}`;
+
+    // Sous-jeu de collection : ./game/?id=<collection>&uid=<uid>
+    if (coll) return `./game/?id=${encodeURIComponent(coll)}&uid=${encodeURIComponent(uid)}`;
+    // Jeu normal / collection parent : ./game/?id=<id>
+    if (id) return `./game/?id=${encodeURIComponent(id)}`;
+    // Fallback uid seul
+    return `./game/?uid=${encodeURIComponent(uid)}`;
   }
 
   // ✅ Titre affiché (gameData prioritaire si présent)

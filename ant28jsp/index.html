@@ -4,126 +4,153 @@
   <meta charset="utf-8" />
   <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ant28jsp — Traductions</title>
+  <title>f95list_andric31_viewer</title>
 
   <link rel="icon" href="./favicon.png" />
   <link rel="stylesheet" href="./viewer.css" />
-
-  <!-- ✅ ROUTING : si ?id ou ?uid → page jeu -->
-  <script>
-  (function () {
-    const p = new URLSearchParams(location.search);
-    if (p.has("id") || p.has("uid")) {
-      location.replace("./game/game.html?" + p.toString());
-    }
-  })();
-  </script>
 </head>
-
 <body>
+  <div id="viewerPage">
+<script>
+(function () {
+  const p = new URLSearchParams(location.search);
 
-  <!-- 🔞 AGE GATE (si tu l’utilises) -->
-  <div id="age-gate" style="display:none;">
-    <div class="age-box">
-      <h2>🔞 Contenu réservé aux adultes</h2>
-      <p>
-        Ce site contient des images et contenus destinés à un public majeur.<br>
-        En continuant, vous confirmez avoir <strong>18 ans ou plus</strong>.
-      </p>
-      <button id="age-yes">J’ai 18 ans</button>
-      <button id="age-no">Quitter</button>
-    </div>
+  // 🎮 si on a id ou uid → page jeu
+  if (p.has("id") || p.has("uid")) {
+    const qs = p.toString();
+    location.replace("./game/game.html?" + qs);
+    return;
+  }
+
+  // 👀 sinon → viewer normal
+  const s = document.createElement("script");
+  s.src = "./viewer.js";
+  document.body.appendChild(s);
+})();
+</script>
   </div>
 
-  <header class="topbar" role="banner">
-    <div class="top-title-row">
-      <h1>ant28jsp — Traductions</h1>
-    </div>
+  <div id="gamePage" style="display:none">
+<div class="wrap">
 
-    <div class="top-actions">
-      <div class="search-wrap">
-        <input id="search" type="search" placeholder="Rechercher un jeu." autocomplete="off" />
-        <span class="stat-in-bar total-inline">Total : <strong id="countTotal">0</strong></span>
-      </div>
-
-      <select id="sort" title="Trier">
-        <option value="updatedAtLocal-desc">Date de la traduction</option>
-        <option value="views-desc">👁️ Vues</option>
-        <option value="likes-desc">❤️ J'aime</option>
-        <option value="mega-desc">📥 Téléchargements</option>
-        <option value="title-asc">Titre A→Z</option>
-        <option value="title-desc">Titre Z→A</option>
-        <option value="updatedAt-desc">Date Thread F95 (Maj)</option>
-      </select>
-
-      <select id="filterCat" title="Catégorie">
-        <option value="all">Catégorie : Toutes</option>
-        <option value="VN">VN</option>
-        <option value="Collection">Collection</option>
-      </select>
-
-      <select id="filterEngine" title="Moteur">
-        <option value="all">Moteur : Tous</option>
-        <option value="Ren'Py">Ren'Py</option>
-        <option value="RPGM">RPGM</option>
-        <option value="Unity">Unity</option>
-        <option value="Others">Others</option>
-        <option value="Wolf RPG">Wolf RPG</option>
-      </select>
-
-      <select id="filterStatus" title="Statut">
-        <option value="all">Statut : Tous</option>
-        <option value="Completed">Completed</option>
-        <option value="Abandoned">Abandoned</option>
-        <option value="Onhold">Onhold</option>
-        <option value="En cours">En cours</option>
-      </select>
-
-      <button id="tagsBtn" type="button" class="tags-btn" aria-haspopup="menu" aria-expanded="false">
-        🏷️ Tags <span id="tagsCount" class="tags-count hidden">0</span>
+    <!-- ☰ topbar -->
+    <div class="topbar">
+      <button id="hamburgerBtn" class="hamburger-btn" aria-label="Ouvrir le menu" aria-haspopup="menu" aria-expanded="false">
+        <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
       </button>
-
-      <select id="cols" title="Vignettes par ligne">
-        <option value="auto">Vignettes/ligne : Auto</option>
-        <option value="1">1 par ligne</option>
-        <option value="2">2 par ligne</option>
-        <option value="3">3 par ligne</option>
-        <option value="4">4 par ligne</option>
-        <option value="5">5 par ligne</option>
-        <option value="6">6 par ligne</option>
-        <option value="7">7 par ligne</option>
-        <option value="8">8 par ligne</option>
-        <option value="9">9 par ligne</option>
-        <option value="10">10 par ligne</option>
-      </select>
-
-      <select id="pageSize" title="Affichage progressif">
-        <option value="50">Afficher par 50</option>
-        <option value="100">Afficher par 100</option>
-        <option value="all">Tout afficher</option>
-      </select>
-
-      <button id="refresh" type="button">Rafraîchir</button>
+      <h1>Traductions</h1>
     </div>
-  </header>
 
-  <main role="main">
-    <section id="gridMode" class="grid-wrap" aria-label="Vignettes des jeux">
-      <div id="viewerAnnonceHost"></div>
-      <div id="grid" class="grid"></div>
-      <div id="gridEmpty" class="empty hidden">Aucun résultat.</div>
+    <!-- popover menu (si ton viewer.menu.js existe dans /ant28jsp/) -->
+    <div id="topMenuPopover" class="hidden"></div>
+
+    <div id="errBox"></div>
+
+    <section id="card" class="card">
+      <div class="cardInner">
+
+        <!-- HERO -->
+        <div class="hero">
+          <img id="cover" class="is-placeholder" alt="">
+          <div>
+            <h2 id="title">—</h2>
+            <div id="badges"></div>
+            <div id="tags"></div>
+          </div>
+        </div>
+
+        <!-- related auto inject -->
+        <!-- (game.js va créer #relatedOut juste après #tags) -->
+
+        <!-- description (existe déjà, game.js déplace le bloc) -->
+        <div id="descriptionBox" class="game-block" style="display:none;">
+          <h3>📜 Description</h3>
+          <div id="descriptionText" style="color:var(--muted); line-height:1.45;"></div>
+        </div>
+
+        <!-- boutons -->
+        <div class="btnMainRow">
+          <a id="btnDiscord" class="btn btn-discord" target="_blank" rel="noopener" href="#">💬 Discord</a>
+          <a id="btnF95" class="btn btn-f95" target="_blank" rel="noopener" href="#"><span class="f95-white"> F95</span><span class="f95-red">Zone</span></a>
+        </div>
+
+        <!-- MEGA -->
+        <div class="btnRow">
+          <a id="btnMega" class="btn" target="_blank" rel="noopener" href="#">📥 Télécharger la traduction (MEGA)</a>
+
+          <div class="likeWrap">
+            <button id="btnLike" type="button" aria-label="J’aime">🤍</button>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div id="statsOut" class="game-block">
+          <h3>📊 Statistiques</h3>
+          <div class="statsLine">
+            👁️ Vues : <span id="statViews" class="statNum">0</span>
+            📥 Téléchargements : <span id="statMegaClicks" class="statNum">0</span>
+            ❤️ J’aime : <span id="statLikes" class="statNum">0</span>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div id="notesBox" class="game-block" style="display:none;">
+          <h3>📝 Notes</h3>
+          <div id="notesText" style="color:var(--muted); line-height:1.45;"></div>
+        </div>
+
+        <!-- Archives -->
+        <div id="archiveBox" style="display:none; align-items:center; gap:10px;">
+          <a id="archiveLink" class="btn" target="_blank" rel="noopener" href="#">📦 Archives de la traduction</a>
+        </div>
+
+        <!-- Rating -->
+        <div id="ratingBox" class="game-block">
+          <h3>⭐ Note de la traduction</h3>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+            <div>
+              Moyenne : <strong id="ratingAvg">—</strong> · Votes : <strong id="ratingCount">0</strong>
+            </div>
+            <div id="ratingChoices" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+          </div>
+          <div id="ratingMsg" style="margin-top:8px; color:var(--muted); font-size:13px;"></div>
+        </div>
+
+      </div>
     </section>
+  </div>
 
-    <footer class="viewer-footer">
-      👁️ Vues de la page : <strong id="mainViews">—</strong>
-    </footer>
-  </main>
+  <!-- ✅ Si tu as ces scripts dans /ant28jsp/, tu peux les activer -->
+  <!--
 
-  <!-- ⚠️ Mets seulement les scripts qui existent vraiment chez ant28jsp -->
+
+
+  -->
+
+  <!-- ✅ le principal -->
+
+  </div>
+
+  <script>
+    (function() {
+      const p = new URLSearchParams(location.search);
+      const hasGame = (p.get("id") || p.get("uid"));
+      const vp = document.getElementById("viewerPage");
+      const gp = document.getElementById("gamePage");
+      if (vp) vp.style.display = hasGame ? "none" : "";
+      if (gp) gp.style.display = hasGame ? "" : "none";
+      document.body.classList.toggle("page-game", !!hasGame);
+    })();
+  </script>
+
+  <!-- Scripts communs -->
+  <script src="./viewer.annonce.js"></script>
+  <script src="./viewer.menu.js"></script>
+  <script src="./viewer.menu.about.js"></script>
+  <script src="./viewer.menu.extension.js"></script>
+
+  <!-- Viewer / Game (chacun s'auto-désactive si pas sur sa page) -->
   <script src="./viewer.js"></script>
-
-  <!-- si tu as l’age gate -->
-  <!-- <script src="./viewer.agegate.js"></script> -->
-
+  <script src="./game.js"></script>
 </body>
 </html>
