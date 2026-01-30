@@ -52,6 +52,11 @@ a:hover{text-decoration:underline}
   grid-template-columns: var(--sidebar-w) 1fr;
 }
 
+/* Sidebar collapsed */
+.viewer-shell.side-collapsed{grid-template-columns: 1fr}
+.viewer-shell.side-collapsed .viewer-side{display:none}
+.viewer-shell.side-collapsed .side-toggle-ico{transform:scaleX(-1)}
+
 .viewer-side{
   position:sticky;
   top:0;
@@ -81,7 +86,7 @@ a:hover{text-decoration:underline}
   font-size:12px;
 }
 
-.side-group{margin-top:14px}
+.side-group{margin-top:18px}
 .side-label{
   font-size:12px;
   color:var(--muted);
@@ -89,7 +94,7 @@ a:hover{text-decoration:underline}
 }
 
 .side-row{
-  margin-top:14px;
+  margin-top:22px;
   display:grid;
   grid-template-columns: 1fr 1fr;
   gap:12px;
@@ -163,6 +168,23 @@ select:focus, input[type="search"]:focus{
 
 .top-title-tools{margin-left:auto; display:flex; gap:10px; align-items:center}
 
+/* Toggle sidebar (UI only) */
+.side-toggle{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:42px;
+  height:42px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.16);
+  background:rgba(0,0,0,.22);
+  color:var(--fg);
+  cursor:pointer;
+}
+.side-toggle:hover{filter:brightness(1.15)}
+.side-toggle:focus{outline:none; box-shadow:0 0 0 4px rgba(46,229,157,.12)}
+.side-toggle-ico{font-size:18px; line-height:1}
+
 .top-actions{
   margin-top:12px;
   display:flex;
@@ -233,7 +255,7 @@ select:focus, input[type="search"]:focus{
   background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
   box-shadow: 0 18px 40px rgba(0,0,0,.35);
   display:flex;
-  min-height:160px;
+  min-height:180px;
 }
 
 .card::before{
@@ -249,9 +271,11 @@ select:focus, input[type="search"]:focus{
 .card:hover{transform: translateY(-3px); transition: transform .18s ease}
 
 .thumb{
-  width:110px;
-  flex:0 0 110px;
-  object-fit:cover;
+  width:120px;
+  height:160px;
+  flex:0 0 120px;
+  object-fit:contain;
+  background:rgba(0,0,0,.22);
   filter:saturate(1.05) contrast(1.05);
 }
 
@@ -460,20 +484,22 @@ select:focus, input[type="search"]:focus{
 }
 
 .game-cover-wrap{
-  height:260px;
+  aspect-ratio: 16 / 9;
+  height:auto;
   background:rgba(0,0,0,.22);
 }
 #cover{
   width:100%;
-  height:260px;
-  object-fit:cover;
+  height:100%;
+  object-fit:contain;
   display:block;
 }
 
 .game-head{padding:14px 14px 6px}
 #title{margin:0 0 10px; font-size:18px; line-height:1.2; font-weight:950}
 
-#badges, #tags{margin-top:8px}
+#badges{margin-top:10px}
+#tags{margin-top:16px}
 
 .game-actions{padding:12px 14px 16px}
 .btnMainRow{display:grid; grid-template-columns: 1fr 1fr; gap:10px}

@@ -47,6 +47,34 @@
 
   const $ = (sel) => document.querySelector(sel);
 
+  // =========================
+  // UI only — Sidebar toggle
+  // =========================
+  const SIDEBAR_STORE_KEY = `viewer:${OWNER}:sidebarCollapsed`;
+  function initSidebarToggle() {
+    const shell = document.querySelector(".viewer-shell");
+    const btn = document.getElementById("sideToggle");
+    if (!shell || !btn) return;
+
+    let collapsed = false;
+    try { collapsed = localStorage.getItem(SIDEBAR_STORE_KEY) === "1"; } catch {}
+
+    const apply = () => {
+      shell.classList.toggle("side-collapsed", collapsed);
+      btn.setAttribute("aria-pressed", collapsed ? "true" : "false");
+      const ico = btn.querySelector(".side-toggle-ico");
+      if (ico) ico.textContent = collapsed ? "⫸" : "⫷";
+    };
+
+    btn.addEventListener("click", () => {
+      collapsed = !collapsed;
+      try { localStorage.setItem(SIDEBAR_STORE_KEY, collapsed ? "1" : "0"); } catch {}
+      apply();
+    });
+
+    apply();
+  }
+
   // ✅ URL page jeu (SANS /game) — reste à la racine
   function buildGameUrl(g) {
     const id = (g.id || "").toString().trim();
@@ -872,6 +900,9 @@
       if (ownerCfg?.theme) applyTheme(ownerCfg.theme);
       const h1 = document.querySelector(".top-title-row h1");
       if (h1 && ownerCfg?.theme?.title) h1.textContent = ownerCfg.theme.title;
+
+      // UI only: sidebar toggle (keeps all existing logic intact)
+      initSidebarToggle();
 
       state.cols = await getViewerCols();
       const colsSel = $("#cols");
