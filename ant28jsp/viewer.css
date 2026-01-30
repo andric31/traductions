@@ -20,7 +20,10 @@ body{
   color: var(--fg) !important;
 }
 a{ color: var(--accent) !important; }
-.card{
+
+/* ⚠️ On limite l'override "theme" à la page jeu pour ne pas écraser
+   le nouveau rendu des cartes dans le viewer. */
+#gamePage .card{
   background: var(--card) !important;
   border-color: var(--border) !important;
   border-radius: var(--radius) !important;
@@ -46,7 +49,15 @@ a{ color: var(--accent) !important; }
   --badges-h: 28px;
 
   /* ✅ un peu plus compact qu’avant */
-  --topbar-h: 78px;
+  /* topbar + dock (visuel) */
+  --topbar-h: 128px;
+
+  /* ===== Nouveau look "liste magazine" ===== */
+  --wrap-max: 1280px;
+  --tile-h: 150px;
+  --tile-thumb-w: 220px;
+  --tile-gap: 12px;
+  --tile-shadow: 0 18px 55px rgba(0,0,0,.35);
 }
 
 *{box-sizing:border-box}
@@ -245,10 +256,16 @@ body{
   flex-wrap:nowrap;
   gap:6px;
   align-items:center;
-  padding:6px 12px 8px;
-  border-top:1px solid rgba(255,255,255,0.03);
-  width:100%;
+  padding:10px 10px;
+  margin: 0 12px 12px;
+  width: calc(100% - 24px);
   overflow-x:auto;
+
+  /* Nouveau look : "dock" flottant */
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.28);
 }
 
 /* Barre de recherche stretch */
@@ -306,32 +323,48 @@ main{
   padding: calc(var(--topbar-h) + 36px) 12px 16px;
 }
 
+/* ✅ wrap centré + largeur max (changement purement visuel) */
+.wrap{
+  max-width: var(--wrap-max);
+  margin: 0 auto;
+}
+
 /* ----- GRID ----- */
 .grid{
   display:grid;
-  gap:12px;
-  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap: var(--tile-gap);
+  /* Nouveau rendu : cartes "liste" (2 colonnes max sur grands écrans) */
+  grid-template-columns:repeat(auto-fit,minmax(520px,1fr));
 }
 
 .grid[data-cols="1"]{
   grid-template-columns:repeat(1,minmax(0,1fr)) !important;
 }
 
-/* ----- CARDS ----- */
-.card{
-  background:var(--card);
+/* ----- CARDS (Viewer) : "liste magazine" ----- */
+#viewerPage .grid .card{
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
   border:1px solid var(--border);
-  border-radius:14px;
+  border-radius:16px;
   overflow:hidden;
 
   display:grid;
-  grid-template-rows: var(--thumb-h) 1fr;
-  min-height: calc(var(--thumb-h) + 160px);
+  grid-template-columns: var(--tile-thumb-w) 1fr;
+  min-height: var(--tile-h);
+
+  box-shadow: 0 0 0 rgba(0,0,0,0);
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
 }
 
-.thumb{
+#viewerPage .grid .card:hover{
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,0.12);
+  box-shadow: var(--tile-shadow);
+}
+
+#viewerPage .grid .thumb{
   width:100%;
-  height:var(--thumb-h);
+  height:100%;
   object-fit:cover;
   background:#1c1f2e;
 }
@@ -341,31 +374,31 @@ main{
   background:#0f0f10;
 }
 
-.body{
-  padding:12px;
+#viewerPage .grid .body{
+  padding:14px 14px 12px;
   display:flex;
   flex-direction:column;
   min-height:0;
 }
 
-.name{
+#viewerPage .grid .name{
   margin:0 0 6px 0;
-  font-size:1rem;
-  line-height:var(--name-lh);
+  font-size:1.02rem;
+  line-height:1.25rem;
   color:#fff;
 
   display:-webkit-box;
   -webkit-box-orient:vertical;
   -webkit-line-clamp:var(--name-lines);
   overflow:hidden;
-  min-height: calc(var(--name-lh) * var(--name-lines));
+  min-height: calc(1.25rem * 2);
 }
 
-.badges-line{
+#viewerPage .grid .badges-line{
   display:flex;
   gap:6px;
   flex-wrap:wrap;
-  margin:6px 0 10px 0;
+  margin:8px 0 10px 0;
   align-items:flex-start;
   overflow:hidden;
   min-height:var(--badges-h);
@@ -409,11 +442,13 @@ main{
 .badge.status-onhold{ background:#03A9F4; color:#000; }
 .badge.status-encours{ background:#607D8B; }
 
-.actions{
+#viewerPage .grid .actions{
   margin-top:auto;
   display:flex;
-  flex-direction:column;
-  align-items:stretch;
+  flex-direction:row;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
 }
 
 .btn{
@@ -437,9 +472,18 @@ main{
   filter:brightness(1.05);      /* ⬅ hover plus doux */
 }
 
-.btn.btn-page{
-  width:100%;
-  padding:6px 8px;              /* cohérent */
+#viewerPage .grid .btn.btn-page{
+  width:auto;
+  padding:6px 10px;
+}
+
+/* ✅ Sur petits écrans : on repasse en carte verticale */
+@media (max-width: 620px){
+  .grid{ grid-template-columns:repeat(1,minmax(0,1fr)) !important; }
+  #viewerPage .grid .card{ grid-template-columns: 1fr; }
+  #viewerPage .grid .thumb{ height: 160px; }
+  #viewerPage .grid .actions{ justify-content:stretch; }
+  #viewerPage .grid .btn.btn-page{ width:100%; justify-content:center; }
 }
 
 .btn[aria-disabled="true"]{ opacity:.6; pointer-events:none }
@@ -788,11 +832,12 @@ main{
 
 /* Collection child (page /game/?id=...&uid=...) */
 .collection-child-block {
-  border: 1px solid rgba(255,255,255,.25);
-  padding: 12px;
-  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 14px;
+  border-radius: 16px;
   margin: 16px 0;
-  background: rgba(0,0,0,.15);
+  background: rgba(255,255,255,0.035);
+  box-shadow: 0 10px 30px rgba(0,0,0,.22);
 }
 .collection-child-block h3 {
   margin-top: 0;
@@ -801,11 +846,12 @@ main{
 
 /* Serie block */
 .serie-block {
-  border: 1px solid rgba(255,255,255,.25);
-  padding: 12px;
-  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 14px;
+  border-radius: 16px;
   margin: 16px 0;
-  background: rgba(0,0,0,.15);
+  background: rgba(255,255,255,0.035);
+  box-shadow: 0 10px 30px rgba(0,0,0,.22);
 }
 .serie-block h3 {
   margin-top: 0;
@@ -813,11 +859,12 @@ main{
 
 /* ✅ Bloc générique (page game + autres) */
 .game-block{
-  border: 1px solid rgba(255,255,255,.25);
-  padding: 12px;
-  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 14px;
+  border-radius: 16px;
   margin: 12px 0;
-  background: rgba(0,0,0,.15);
+  background: rgba(255,255,255,0.035);
+  box-shadow: 0 10px 30px rgba(0,0,0,.22);
 }
 .game-block h3{
   margin: 0 0 8px 0;
