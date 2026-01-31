@@ -607,41 +607,63 @@ select:focus, input[type="search"]:focus{
   .viewer-side{position:relative; height:auto; border-right:none; border-bottom:1px solid var(--stroke)}
 }
 
-/* 1) La carte ne doit pas couper le contenu */
-.game-card, .game-tile, .card {
+/* =========================================================
+   ✅ PATCH "VIGNETTES COMME L'ORIGINAL" (adaptive, JS intact)
+   - AUCUN changement viewer.js
+   ========================================================= */
+
+/* 1) La grille reste fluide en auto, et le JS garde la main en mode "cols" */
+.grid{
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+/* 2) Card: stop layout rigide (plus de grid interne + plus de min-height artificiel) */
+.card{
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
   height: auto !important;
+  overflow: hidden;
+}
+
+/* 3) Image: adaptative, pas de hauteur fixe -> ratio propre */
+.thumb{
+  width: 100%;
+  height: auto !important;         /* ❗ enlève l'effet "bandeau forcé" */
+  aspect-ratio: 16 / 9;            /* rendu stable et propre */
+  object-fit: cover;               /* "comme l’original" = vignette remplie */
+  background: #1c1f2e;
+}
+
+/* Si image fallback (favicon), on évite un crop dégueu */
+.thumb.is-fallback{
+  object-fit: contain;
+  background: #0f0f10;
+}
+
+/* 4) Body: laisse respirer le texte, sans être écrasé */
+.body{
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  min-height: 0;
+}
+
+/* 5) Titre: 2 lignes max (comme tu as déjà), mais sans hauteur imposée trop agressive */
+.name{
+  margin: 0 0 8px 0;
+  min-height: 0 !important;
+}
+
+/* 6) Badges: wrap propre (pas d’écrasement) */
+.badges-line{
+  margin: 6px 0 12px 0;
   max-height: none !important;
   overflow: visible !important;
 }
 
-/* 2) Le conteneur texte doit être visible */
-.game-card .content, .game-tile .content, .card .content,
-.game-card .info,    .game-tile .info,    .card .info,
-.game-card .meta,    .game-tile .meta,    .card .meta,
-.game-card .right,   .game-tile .right,   .card .right {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  width: auto !important;
-  min-width: 0 !important;   /* important en flex */
-  flex: 1 1 auto !important; /* reprend de la place */
+/* 7) Bouton action: en bas naturellement */
+.actions{
+  margin-top: auto;
 }
-
-/* 3) Si la carte est en flex, empêcher la zone texte d'être "écrasée" */
-.game-card, .game-tile, .card {
-  min-width: 0 !important;
-}
-
-/* 4) Au cas où un overlay passe au-dessus du texte */
-.game-card .content, .game-tile .content, .card .content {
-  position: relative !important;
-  z-index: 2 !important;
-}
-
-/* 5) Sécurité: si l'image a été mise en absolute et prend tout */
-.game-card .thumb, .game-tile .thumb, .card .thumb,
-.game-card img, .game-tile img, .card img {
-  position: relative !important;
-  z-index: 1 !important;
-}
-
