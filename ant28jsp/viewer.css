@@ -673,3 +673,43 @@ select:focus, input[type="search"]:focus{
   gap: 6px;
 }
 
+/* ===== PATCH URGENCE: remettre le texte à droite / sous l'image ===== */
+
+/* 1) La carte ne doit pas couper le contenu */
+.game-card, .game-tile, .card {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+/* 2) Le conteneur texte doit être visible */
+.game-card .content, .game-tile .content, .card .content,
+.game-card .info,    .game-tile .info,    .card .info,
+.game-card .meta,    .game-tile .meta,    .card .meta,
+.game-card .right,   .game-tile .right,   .card .right {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: auto !important;
+  min-width: 0 !important;   /* important en flex */
+  flex: 1 1 auto !important; /* reprend de la place */
+}
+
+/* 3) Si la carte est en flex, empêcher la zone texte d'être "écrasée" */
+.game-card, .game-tile, .card {
+  min-width: 0 !important;
+}
+
+/* 4) Au cas où un overlay passe au-dessus du texte */
+.game-card .content, .game-tile .content, .card .content {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* 5) Sécurité: si l'image a été mise en absolute et prend tout */
+.game-card .thumb, .game-tile .thumb, .card .thumb,
+.game-card img, .game-tile img, .card img {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
