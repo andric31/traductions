@@ -667,3 +667,37 @@ select:focus, input[type="search"]:focus{
 .actions{
   margin-top: auto;
 }
+
+/* ===== Bouton "Ouvrir la page" plus discret ===== */
+
+/* zone actions */
+.actions{
+  gap: 6px;                /* moins d'espace entre boutons */
+}
+
+/* bouton ouvrir */
+.actions .open,
+.actions .open-page,
+.actions a.open,
+.actions a[href*="/game/"]{
+  padding: 6px 10px !important;
+  font-size: 12px !important;
+  line-height: 1.1;
+  border-radius: 6px;
+  font-weight: 500;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.15);
+}
+
+/* au hover : léger, pas envahissant */
+.actions .open:hover,
+.actions .open-page:hover,
+.actions a.open:hover,
+.actions a[href*="/game/"]:hover{
+  background: rgba(255,255,255,.15);
+}
+
+/* optionnel : mode icône seule si tu veux encore plus discret */
+.actions.compact .open span{
+  display: none;
+}
