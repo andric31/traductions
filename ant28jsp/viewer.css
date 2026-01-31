@@ -1,24 +1,20 @@
 /* =========================================================
-   ant28 — Refonte COMPLETE (VISUEL)
+   ant28 — Viewer UI (FINAL CLEAN)
    ---------------------------------------------------------
-   - Aucun changement de logique : mêmes IDs, JS inchangé.
-   - Viewer : sidebar fixe + main, cartes "poster".
-   - Game   : layout 2 colonnes, aside sticky.
+   - VISUEL ONLY
+   - Logique / JS inchangés
+   - Vignettes adaptatives comme l’original
    ========================================================= */
 
 :root{
   --bg0:#070815;
   --bg1:#0a0f23;
-  --bg2:#0a1732;
   --fg:#eaf0ff;
   --muted:rgba(234,240,255,.72);
-  --panel:rgba(255,255,255,.06);
-  --panel2:rgba(255,255,255,.10);
   --stroke:rgba(255,255,255,.14);
-  --shadow:0 20px 50px rgba(0,0,0,.45);
+  --shadow:0 18px 40px rgba(0,0,0,.35);
   --accent:#7c5cff;
   --accent2:#2ee59d;
-  --danger:#ff4d6d;
   --radius:18px;
   --radius2:26px;
   --sidebar-w:320px;
@@ -26,24 +22,23 @@
 
 *{box-sizing:border-box}
 html,body{height:100%}
+
 body{
   margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial;
   color:var(--fg);
   background:
     radial-gradient(1200px 700px at 10% 0%, #101a44 0%, rgba(16,26,68,0) 60%),
     radial-gradient(900px 600px at 95% 15%, rgba(124,92,255,.35) 0%, rgba(124,92,255,0) 55%),
-    radial-gradient(700px 500px at 20% 95%, rgba(46,229,157,.25) 0%, rgba(46,229,157,0) 55%),
     linear-gradient(180deg, var(--bg1), var(--bg0));
 }
 
 a{color:var(--accent2); text-decoration:none}
 a:hover{text-decoration:underline}
-
-.hidden{display:none !important}
+.hidden{display:none!important}
 
 /* =========================================================
-   VIEWER — Shell
+   LAYOUT
    ========================================================= */
 
 .viewer-shell{
@@ -52,284 +47,145 @@ a:hover{text-decoration:underline}
   grid-template-columns: var(--sidebar-w) 1fr;
 }
 
-/* Sidebar collapsed */
-.viewer-shell.side-collapsed{grid-template-columns: 1fr}
-.viewer-shell.side-collapsed .viewer-side{display:none}
-.viewer-shell.side-collapsed .side-toggle-ico{transform:scaleX(-1)}
+.viewer-shell.side-collapsed{
+  grid-template-columns:1fr;
+}
+.viewer-shell.side-collapsed .viewer-side{
+  display:none;
+}
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
 
 .viewer-side{
   position:sticky;
   top:0;
-  align-self:start;
   height:100vh;
   padding:18px 16px;
   background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
   border-right:1px solid var(--stroke);
-  backdrop-filter: blur(10px);
-}
-
-.side-brand{
-  padding:14px 14px 12px;
-  border-radius: var(--radius2);
-  background:linear-gradient(180deg, rgba(124,92,255,.20), rgba(255,255,255,.04));
-  border:1px solid rgba(255,255,255,.14);
-  box-shadow: var(--shadow);
-}
-.brand-title{
-  font-size:20px;
-  font-weight:800;
-  letter-spacing:.2px;
-}
-.brand-sub{
-  margin-top:6px;
-  color:var(--muted);
-  font-size:12px;
+  backdrop-filter:blur(10px);
 }
 
 .side-group{margin-top:18px}
 .side-label{
   font-size:12px;
   color:var(--muted);
-  margin:0 0 8px 2px;
+  margin-bottom:6px;
 }
 
-.side-row{
-  margin-top:22px;
-  display:grid;
-  grid-template-columns: 1fr 1fr;
-  gap:12px;
-}
-
-select, input[type="search"]{
+select,input[type="search"]{
   width:100%;
+  padding:10px 12px;
   border-radius:14px;
   border:1px solid rgba(255,255,255,.14);
   background:rgba(0,0,0,.22);
   color:var(--fg);
-  padding:12px 12px;
-  outline:none;
 }
 
-/* un peu d'air entre les selects et le bouton Tags */
-.viewer-side .side-group select{margin-bottom:10px}
-select:focus, input[type="search"]:focus{
-  border-color: rgba(46,229,157,.5);
-  box-shadow:0 0 0 4px rgba(46,229,157,.12);
-}
+#filterStatus{margin-bottom:16px}
 
-.side-footer{
-  margin-top:16px;
-  padding-top:14px;
-  border-top:1px dashed rgba(255,255,255,.14);
+.tags-btn{
+  width:100%;
+  margin-top:14px;
+  padding:10px;
+  border-radius:999px;
+  background:rgba(124,92,255,.18);
+  border:1px solid rgba(124,92,255,.35);
 }
-.side-metrics{
-  display:grid;
-  gap:10px;
-}
-.metric{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px 12px;
-  border-radius:16px;
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.10);
-}
-.metric span{color:var(--muted); font-size:12px}
-.metric strong{font-size:14px}
 
 /* =========================================================
-   Viewer — Top (main)
+   SIDEBAR TOGGLE
    ========================================================= */
 
-.viewer-main{
-  min-height:100vh;
+.side-toggle{
+  position:fixed;
+  left:0;
+  top:120px;
+  width:34px;
+  height:54px;
+  border-radius:0 16px 16px 0;
+  border:1px solid rgba(255,255,255,.18);
+  background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(0,0,0,.22));
+  color:var(--fg);
+  cursor:pointer;
+  z-index:200;
 }
+
+/* =========================================================
+   TOP BAR
+   ========================================================= */
 
 .viewer-top{
   position:sticky;
   top:0;
   z-index:50;
-  padding:16px 18px 12px;
-  backdrop-filter: blur(10px);
+  padding:14px 18px;
+  backdrop-filter:blur(10px);
   background:linear-gradient(180deg, rgba(7,8,21,.75), rgba(7,8,21,.25));
   border-bottom:1px solid rgba(255,255,255,.12);
 }
 
-.top-title-row{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-.top-title-row h1{
-  margin:0;
-  font-size:16px;
-  font-weight:800;
-  color:rgba(234,240,255,.92);
-  letter-spacing:.2px;
-}
-
-.top-title-tools{margin-left:auto; display:flex; gap:10px; align-items:center}
-
-/* Toggle sidebar (UI only) */
-.side-toggle{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  border:1px solid rgba(255,255,255,.18);
-  border-left:none;
-  background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(0,0,0,.22));
-  color:var(--fg);
-  cursor:pointer;
-  /* ✅ bouton SOLO tout à gauche (overlay), toujours visible */
-  position:fixed;
-  top:120px;
-  left:0;
-  z-index:200;
-  width:34px;
-  height:54px;
-  border-radius:0 16px 16px 0;
-  box-shadow: 0 18px 40px rgba(0,0,0,.35);
-  backdrop-filter: blur(10px);
-}
-.side-toggle:hover{filter:brightness(1.15)}
-.side-toggle:focus{outline:none; box-shadow:0 0 0 4px rgba(46,229,157,.12)}
-.side-toggle-ico{font-size:18px; line-height:1}
-
-/* (left:12px) : toujours accessible, même quand la sidebar est repliée */
-
 .top-actions{
-  margin-top:12px;
   display:flex;
   gap:12px;
   align-items:center;
   flex-wrap:wrap;
 }
-.search-wrap{flex:1 1 380px; display:flex; gap:10px; align-items:center}
-.search-wrap input{flex:1}
-.stat-in-bar{color:var(--muted); font-size:12px; white-space:nowrap}
 
-/* =========================================================
-   Buttons (shared)
-   ========================================================= */
-
-.btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  padding:12px 14px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,.14);
-  background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
-  color:var(--fg);
-  cursor:pointer;
-  user-select:none;
-}
-.btn:hover{filter:brightness(1.10)}
-.btn:active{transform:translateY(1px)}
-
-#refresh.btn{width:100%; margin-top:22px}
-
-.tags-btn{
-  border-radius:999px;
-  padding:10px 14px;
-  background:rgba(124,92,255,.18);
-  border:1px solid rgba(124,92,255,.35);
-}
-
-/* Espace pour éviter que Tags soit collé au select (Statut) */
-#filterStatus{margin-bottom:18px}
-.viewer-side .tags-btn{margin-top:16px; display:inline-flex; width:100%; justify-content:center}
-.tags-count{
-  margin-left:6px;
-  padding:2px 8px;
-  border-radius:999px;
-  background:rgba(46,229,157,.22);
-  border:1px solid rgba(46,229,157,.38);
-  font-size:12px;
+.search-wrap{
+  flex:1;
+  display:flex;
+  gap:10px;
 }
 
 /* =========================================================
-   GRID + Cards
+   GRID + VIGNETTES (COMME L’ORIGINAL)
    ========================================================= */
 
-.wrap{
-  padding:18px 18px 40px;
-}
+.wrap{padding:18px}
 
 .grid{
   display:grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap:16px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap:12px;
 }
 
 .card{
-  position:relative;
-  overflow:hidden;
-  border-radius: var(--radius2);
+  display:flex;
+  flex-direction:column;
+  border-radius:var(--radius2);
   border:1px solid rgba(255,255,255,.14);
   background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-  box-shadow: 0 18px 40px rgba(0,0,0,.35);
-  display:flex;
-  min-height:180px;
-  min-width:0; /* évite la coupe du contenu en flex */
+  box-shadow:var(--shadow);
+  overflow:hidden;
 }
-
-.card::before{
-  content:"";
-  position:absolute;
-  inset:-2px;
-  background:radial-gradient(600px 200px at 20% 0%, rgba(124,92,255,.35), rgba(124,92,255,0) 60%),
-             radial-gradient(500px 220px at 90% 110%, rgba(46,229,157,.22), rgba(46,229,157,0) 60%);
-  opacity:.55;
-  pointer-events:none;
-}
-
-.card:hover{transform: translateY(-3px); transition: transform .18s ease}
 
 .thumb{
-  /*
-    Images souvent en "bandeau" : on donne de la place au visuel,
-    MAIS en responsive (sinon le contenu à droite se fait couper
-    quand la carte devient trop étroite / colonnes élevées).
-  */
-  width:clamp(150px, 38%, 260px);
-  flex:0 0 auto;
-  height:calc(100% - 24px);
-  margin:12px 0 12px 12px;
+  width:100%;
+  aspect-ratio:16/9;
+  object-fit:cover;
+  background:#1c1f2e;
+}
+
+.thumb.is-fallback{
   object-fit:contain;
-  background:rgba(0,0,0,.22);
-  filter:saturate(1.05) contrast(1.05);
-  border-radius:16px;
+  background:#0f0f10;
 }
 
 .body{
-  position:relative;
-  z-index:1;
-  padding:14px 14px 14px 14px;
+  padding:12px;
   display:flex;
   flex-direction:column;
-  gap:10px;
-  flex:1;
-  min-width:0; /* autorise le wrap/clamp au lieu de couper */
-}
-
-/* En carte très étroite, on empile (image au-dessus) */
-@media (max-width: 720px){
-  .card{flex-direction:column;}
-  .thumb{
-    width:calc(100% - 24px);
-    height:160px;
-    margin:12px;
-  }
+  gap:8px;
 }
 
 .name{
-  margin:0;
   font-size:14px;
-  line-height:1.25;
   font-weight:800;
+  line-height:1.25;
+  margin:0;
 }
 
 .clamp-2{
@@ -341,363 +197,56 @@ select:focus, input[type="search"]:focus{
 
 .badges-line{
   display:flex;
-  gap:6px;
   flex-wrap:wrap;
-  align-items:center;
+  gap:6px;
 }
 
 .badge{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  padding:4px 9px;
-  border-radius:999px;
+  padding:4px 8px;
   font-size:12px;
-  border:1px solid rgba(255,255,255,.16);
+  border-radius:999px;
   background:rgba(0,0,0,.18);
+  border:1px solid rgba(255,255,255,.16);
 }
 
-.actions{margin-top:auto}
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:auto;
+}
+
 .btn-page{
-  width:100%;
-  border-radius:18px;
-  background:linear-gradient(180deg, rgba(46,229,157,.18), rgba(255,255,255,.06));
-  border:1px solid rgba(46,229,157,.28);
-}
-
-.load-more-wrap{grid-column:1/-1; display:flex; justify-content:center; padding:12px 0 0}
-.load-more-btn{
-  border-radius:999px;
-  padding:12px 18px;
-  border:1px solid rgba(255,255,255,.18);
-  background:rgba(0,0,0,.18);
-  color:var(--fg);
-  cursor:pointer;
-}
-.load-more-btn:hover{filter:brightness(1.1)}
-
-.grid-empty{
-  padding:18px;
-  border-radius:18px;
-  border:1px dashed rgba(255,255,255,.22);
-  color:var(--muted);
-}
-
-/* =========================================================
-   Tags popover (viewer.js)
-   ========================================================= */
-
-.tag-popover{
-  position:fixed;
-  width:340px;
-  max-height:420px;
-  overflow:hidden;
-  z-index:2000;
-  border-radius:22px;
-  border:1px solid rgba(255,255,255,.18);
-  background:rgba(10,15,35,.78);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 30px 80px rgba(0,0,0,.55);
-}
-.tag-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:14px 14px 10px;
-  border-bottom:1px solid rgba(255,255,255,.12);
-}
-.tag-title{font-weight:900; letter-spacing:.2px}
-.tag-clear{
-  border:1px solid rgba(255,255,255,.14);
-  background:rgba(0,0,0,.22);
-  color:var(--fg);
-  padding:8px 10px;
+  width:fit-content;
+  padding:6px 10px;
+  font-size:12px;
+  line-height:1.1;
   border-radius:12px;
-  cursor:pointer;
-}
-.tag-clear:hover{filter:brightness(1.12)}
-
-.tag-list{padding:10px; overflow:auto; max-height:360px}
-.tag-item{
-  width:100%;
-  text-align:left;
-  border:1px solid rgba(255,255,255,.12);
-  background:rgba(255,255,255,.06);
-  color:var(--fg);
-  padding:10px 10px;
-  border-radius:14px;
-  margin-bottom:8px;
-  cursor:pointer;
-}
-.tag-item:hover{filter:brightness(1.08)}
-.tag-item.active{border-color:rgba(46,229,157,.45); background:rgba(46,229,157,.14)}
-.tag-check{display:inline-block; width:18px; text-align:center; opacity:.9}
-
-/* =========================================================
-   BADGES (couleurs existantes)
-   ========================================================= */
-
-.badge.cat-vn{ background:#D32F2F; }
-.badge.cat-collection{ background:#616161; }
-
-.badge.eng-renpy{ background:#B069E8; }
-.badge.eng-rpgm{ background:#2196F3; color:#000; }
-.badge.eng-unity{ background:#FE5901; color:#000; }
-.badge.eng-others{ background:#8BC34A; color:#000; }
-.badge.eng-wolfrpg{ background:#4CAF50; }
-
-.badge.eng-unrealengine{ background:#0D47A1; }
-.badge.eng-html{ background:#689F38; color:#000; }
-.badge.eng-java{ background:#52A6B0; color:#000; }
-.badge.eng-flash{ background:#616161; }
-.badge.eng-qsp{ background:#D32F2F; }
-.badge.eng-webgl{ background:#FE5901; color:#000; }
-.badge.eng-rags{ background:#FF9800; color:#000; }
-
-.badge.st-completed{ background:#2e7d32; }
-.badge.st-abandoned{ background:#b71c1c; }
-.badge.st-onhold{ background:#6d4c41; }
-.badge.st-encours{ background:#1565c0; }
-
-/* =========================================================
-   GAME PAGE
-   ========================================================= */
-
-.page-game body{background:linear-gradient(180deg, var(--bg2), var(--bg0))}
-
-.game-shell{
-  min-height:100vh;
-  padding:16px 16px 34px;
-}
-
-.game-top{
-  position:sticky;
-  top:0;
-  z-index:60;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:12px 12px;
-  border-radius:22px;
-  border:1px solid rgba(255,255,255,.12);
-  background:rgba(7,8,21,.55);
-  backdrop-filter: blur(10px);
-}
-.game-top-title{font-weight:900; letter-spacing:.2px}
-.game-top-spacer{flex:1}
-
-.hamburger-btn{
-  width:40px;
-  height:40px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,.14);
-  background:rgba(255,255,255,.06);
-  color:var(--fg);
-  cursor:pointer;
-}
-.hamburger-btn:hover{filter:brightness(1.12)}
-.hamburger-btn:active{transform:translateY(1px)}
-
-.ham-lines{width:18px; height:13px; display:flex; flex-direction:column; justify-content:space-between}
-.ham-lines span{display:block; height:2px; border-radius:2px; background:rgba(234,240,255,.85)}
-
-.game-layout{
-  margin-top:14px;
-  display:grid;
-  grid-template-columns: 380px 1fr;
-  gap:16px;
-}
-
-.game-aside{
-  position:sticky;
-  top:86px;
-  align-self:start;
-  border-radius: var(--radius2);
-  border:1px solid rgba(255,255,255,.14);
-  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-  overflow:hidden;
-  box-shadow: 0 22px 60px rgba(0,0,0,.40);
-}
-
-.game-cover-wrap{
-  aspect-ratio: 16 / 9;
-  height:auto;
-  background:rgba(0,0,0,.22);
-}
-#cover{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  display:block;
-}
-
-.game-head{padding:14px 14px 6px}
-#title{margin:0 0 10px; font-size:18px; line-height:1.2; font-weight:950}
-
-#badges{margin-top:10px}
-#tags{margin-top:16px}
-
-.game-actions{padding:12px 14px 16px}
-.btnMainRow{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
-.btnRow{display:grid; grid-template-columns: 1fr 54px; gap:10px; margin-top:10px}
-.likeWrap{display:flex; justify-content:center; align-items:center}
-#btnLike{
-  width:54px;
-  height:48px;
-  border-radius:16px;
+  background:rgba(255,255,255,.08);
   border:1px solid rgba(255,255,255,.16);
-  background:rgba(0,0,0,.22);
   color:var(--fg);
-  cursor:pointer;
-  font-size:18px;
-}
-#btnLike:hover{filter:brightness(1.1)}
-
-.btn-discord{background:rgba(124,92,255,.18); border-color:rgba(124,92,255,.32)}
-.btn-f95{background:rgba(255,77,109,.14); border-color:rgba(255,77,109,.26)}
-
-.archiveRow{margin-top:10px}
-
-.game-content{
-  display:flex;
-  flex-direction:column;
-  gap:16px;
 }
 
-.game-panel{
-  border-radius: var(--radius2);
-  border:1px solid rgba(255,255,255,.14);
-  background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
-  box-shadow: 0 18px 40px rgba(0,0,0,.25);
-  padding:14px 14px;
-}
-.game-panel h3{margin:0 0 10px; font-size:14px; letter-spacing:.2px}
-.game-text{color:var(--muted); line-height:1.55}
-
-.statsLine{display:flex; gap:16px; flex-wrap:wrap; color:var(--muted)}
-.statNum{color:var(--fg)}
-
-.ratingRow{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; color:var(--muted)}
-.ratingChoices{display:flex; gap:8px; flex-wrap:wrap}
-.ratingMsg{margin-top:8px; color:var(--muted); font-size:13px}
-
-/* rating buttons created by game.js */
-.ratingChoices button{
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,.16);
-  background:rgba(0,0,0,.18);
-  color:var(--fg);
-  padding:8px 12px;
-  cursor:pointer;
-}
-.ratingChoices button:hover{filter:brightness(1.12)}
-
-/* =========================================================
-   Responsive
-   ========================================================= */
-
-@media (max-width: 980px){
-  :root{--sidebar-w:290px}
-  .game-layout{grid-template-columns: 1fr}
-  .game-aside{position:relative; top:auto}
-}
-
-@media (max-width: 860px){
-  .viewer-shell{grid-template-columns: 1fr}
-  .viewer-side{position:relative; height:auto; border-right:none; border-bottom:1px solid var(--stroke)}
+.btn-page:hover{
+  background:rgba(255,255,255,.14);
 }
 
 /* =========================================================
-   ✅ PATCH "VIGNETTES COMME L'ORIGINAL" (adaptive, JS intact)
-   - AUCUN changement viewer.js
+   RESPONSIVE
    ========================================================= */
 
-/* 1) La grille reste fluide en auto, et le JS garde la main en mode "cols" */
-.grid{
-  gap: 12px;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-}
-
-/* 2) Card: stop layout rigide (plus de grid interne + plus de min-height artificiel) */
-.card{
-  display: flex !important;
-  flex-direction: column !important;
-  min-height: 0 !important;
-  height: auto !important;
-  overflow: hidden;
-}
-
-/* 3) Image: adaptative, pas de hauteur fixe -> ratio propre */
-.thumb{
-  width: 100%;
-  height: auto !important;         /* ❗ enlève l'effet "bandeau forcé" */
-  aspect-ratio: 16 / 9;            /* rendu stable et propre */
-  object-fit: cover;               /* "comme l’original" = vignette remplie */
-  background: #1c1f2e;
-}
-
-/* Si image fallback (favicon), on évite un crop dégueu */
-.thumb.is-fallback{
-  object-fit: contain;
-  background: #0f0f10;
-}
-
-/* 4) Body: laisse respirer le texte, sans être écrasé */
-.body{
-  display: flex;
-  flex-direction: column;
-  padding: 12px;
-  min-height: 0;
-}
-
-/* 5) Titre: 2 lignes max (comme tu as déjà), mais sans hauteur imposée trop agressive */
-.name{
-  margin: 0 0 8px 0;
-  min-height: 0 !important;
-}
-
-/* 6) Badges: wrap propre (pas d’écrasement) */
-.badges-line{
-  margin: 6px 0 12px 0;
-  max-height: none !important;
-  overflow: visible !important;
-}
-
-/* 7) Bouton action: en bas naturellement */
-.actions{
-  margin-top: auto;
-}
-
-/* ===== Bouton "Ouvrir la page" plus discret ===== */
-
-/* zone actions */
-.actions{
-  gap: 6px;                /* moins d'espace entre boutons */
-}
-
-/* bouton ouvrir */
-.actions .open,
-.actions .open-page,
-.actions a.open,
-.actions a[href*="/game/"]{
-  padding: 6px 10px !important;
-  font-size: 12px !important;
-  line-height: 1.1;
-  border-radius: 6px;
-  font-weight: 500;
-  background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.15);
-}
-
-/* au hover : léger, pas envahissant */
-.actions .open:hover,
-.actions .open-page:hover,
-.actions a.open:hover,
-.actions a[href*="/game/"]:hover{
-  background: rgba(255,255,255,.15);
-}
-
-/* optionnel : mode icône seule si tu veux encore plus discret */
-.actions.compact .open span{
-  display: none;
+@media (max-width:860px){
+  .viewer-shell{
+    grid-template-columns:1fr;
+  }
+  .viewer-side{
+    position:relative;
+    height:auto;
+    border-right:none;
+    border-bottom:1px solid var(--stroke);
+  }
 }
