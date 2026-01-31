@@ -1,20 +1,24 @@
 /* =========================================================
-   ant28 — Viewer UI (FINAL CLEAN)
+   ant28 — Refonte COMPLETE (VISUEL)
    ---------------------------------------------------------
-   - VISUEL ONLY
-   - Logique / JS inchangés
-   - Vignettes adaptatives comme l’original
+   - Aucun changement de logique : mêmes IDs, JS inchangé.
+   - Viewer : sidebar fixe + main, cartes "poster".
+   - Game   : layout 2 colonnes, aside sticky.
    ========================================================= */
 
 :root{
   --bg0:#070815;
   --bg1:#0a0f23;
+  --bg2:#0a1732;
   --fg:#eaf0ff;
   --muted:rgba(234,240,255,.72);
+  --panel:rgba(255,255,255,.06);
+  --panel2:rgba(255,255,255,.10);
   --stroke:rgba(255,255,255,.14);
-  --shadow:0 18px 40px rgba(0,0,0,.35);
+  --shadow:0 20px 50px rgba(0,0,0,.45);
   --accent:#7c5cff;
   --accent2:#2ee59d;
+  --danger:#ff4d6d;
   --radius:18px;
   --radius2:26px;
   --sidebar-w:320px;
@@ -22,23 +26,24 @@
 
 *{box-sizing:border-box}
 html,body{height:100%}
-
 body{
   margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial;
   color:var(--fg);
   background:
     radial-gradient(1200px 700px at 10% 0%, #101a44 0%, rgba(16,26,68,0) 60%),
     radial-gradient(900px 600px at 95% 15%, rgba(124,92,255,.35) 0%, rgba(124,92,255,0) 55%),
+    radial-gradient(700px 500px at 20% 95%, rgba(46,229,157,.25) 0%, rgba(46,229,157,0) 55%),
     linear-gradient(180deg, var(--bg1), var(--bg0));
 }
 
 a{color:var(--accent2); text-decoration:none}
 a:hover{text-decoration:underline}
-.hidden{display:none!important}
+
+.hidden{display:none !important}
 
 /* =========================================================
-   LAYOUT
+   VIEWER — Shell
    ========================================================= */
 
 .viewer-shell{
@@ -47,104 +52,211 @@ a:hover{text-decoration:underline}
   grid-template-columns: var(--sidebar-w) 1fr;
 }
 
-.viewer-shell.side-collapsed{
-  grid-template-columns:1fr;
-}
-.viewer-shell.side-collapsed .viewer-side{
-  display:none;
-}
-
-/* =========================================================
-   SIDEBAR
-   ========================================================= */
+/* Sidebar collapsed */
+.viewer-shell.side-collapsed{grid-template-columns: 1fr}
+.viewer-shell.side-collapsed .viewer-side{display:none}
+.viewer-shell.side-collapsed .side-toggle-ico{transform:scaleX(-1)}
 
 .viewer-side{
   position:sticky;
   top:0;
+  align-self:start;
   height:100vh;
   padding:18px 16px;
   background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
   border-right:1px solid var(--stroke);
-  backdrop-filter:blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.side-brand{
+  padding:14px 14px 12px;
+  border-radius: var(--radius2);
+  background:linear-gradient(180deg, rgba(124,92,255,.20), rgba(255,255,255,.04));
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow: var(--shadow);
+}
+.brand-title{
+  font-size:20px;
+  font-weight:800;
+  letter-spacing:.2px;
+}
+.brand-sub{
+  margin-top:6px;
+  color:var(--muted);
+  font-size:12px;
 }
 
 .side-group{margin-top:18px}
 .side-label{
   font-size:12px;
   color:var(--muted);
-  margin-bottom:6px;
+  margin:0 0 8px 2px;
 }
 
-select,input[type="search"]{
+.side-row{
+  margin-top:22px;
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:12px;
+}
+
+select, input[type="search"]{
   width:100%;
-  padding:10px 12px;
   border-radius:14px;
   border:1px solid rgba(255,255,255,.14);
   background:rgba(0,0,0,.22);
   color:var(--fg);
+  padding:12px 12px;
+  outline:none;
 }
 
-#filterStatus{margin-bottom:16px}
-
-.tags-btn{
-  width:100%;
-  margin-top:14px;
-  padding:10px;
-  border-radius:999px;
-  background:rgba(124,92,255,.18);
-  border:1px solid rgba(124,92,255,.35);
+/* un peu d'air entre les selects et le bouton Tags */
+.viewer-side .side-group select{margin-bottom:10px}
+select:focus, input[type="search"]:focus{
+  border-color: rgba(46,229,157,.5);
+  box-shadow:0 0 0 4px rgba(46,229,157,.12);
 }
+
+.side-footer{
+  margin-top:16px;
+  padding-top:14px;
+  border-top:1px dashed rgba(255,255,255,.14);
+}
+.side-metrics{
+  display:grid;
+  gap:10px;
+}
+.metric{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 12px;
+  border-radius:16px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.10);
+}
+.metric span{color:var(--muted); font-size:12px}
+.metric strong{font-size:14px}
 
 /* =========================================================
-   SIDEBAR TOGGLE
+   Viewer — Top (main)
    ========================================================= */
 
-.side-toggle{
-  position:fixed;
-  left:0;
-  top:120px;
-  width:34px;
-  height:54px;
-  border-radius:0 16px 16px 0;
-  border:1px solid rgba(255,255,255,.18);
-  background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(0,0,0,.22));
-  color:var(--fg);
-  cursor:pointer;
-  z-index:200;
+.viewer-main{
+  min-height:100vh;
 }
-
-/* =========================================================
-   TOP BAR
-   ========================================================= */
 
 .viewer-top{
   position:sticky;
   top:0;
   z-index:50;
-  padding:14px 18px;
-  backdrop-filter:blur(10px);
+  padding:16px 18px 12px;
+  backdrop-filter: blur(10px);
   background:linear-gradient(180deg, rgba(7,8,21,.75), rgba(7,8,21,.25));
   border-bottom:1px solid rgba(255,255,255,.12);
 }
 
+.top-title-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.top-title-row h1{
+  margin:0;
+  font-size:16px;
+  font-weight:800;
+  color:rgba(234,240,255,.92);
+  letter-spacing:.2px;
+}
+
+.top-title-tools{margin-left:auto; display:flex; gap:10px; align-items:center}
+
+/* Toggle sidebar (UI only) */
+.side-toggle{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(255,255,255,.18);
+  border-left:none;
+  background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(0,0,0,.22));
+  color:var(--fg);
+  cursor:pointer;
+  /* ✅ bouton SOLO tout à gauche (overlay), toujours visible */
+  position:fixed;
+  top:120px;
+  left:0;
+  z-index:200;
+  width:34px;
+  height:54px;
+  border-radius:0 16px 16px 0;
+  box-shadow: 0 18px 40px rgba(0,0,0,.35);
+  backdrop-filter: blur(10px);
+}
+.side-toggle:hover{filter:brightness(1.15)}
+.side-toggle:focus{outline:none; box-shadow:0 0 0 4px rgba(46,229,157,.12)}
+.side-toggle-ico{font-size:18px; line-height:1}
+
+/* (left:12px) : toujours accessible, même quand la sidebar est repliée */
+
 .top-actions{
+  margin-top:12px;
   display:flex;
   gap:12px;
   align-items:center;
   flex-wrap:wrap;
 }
+.search-wrap{flex:1 1 380px; display:flex; gap:10px; align-items:center}
+.search-wrap input{flex:1}
+.stat-in-bar{color:var(--muted); font-size:12px; white-space:nowrap}
 
-.search-wrap{
-  flex:1;
-  display:flex;
-  gap:10px;
+/* =========================================================
+   Buttons (shared)
+   ========================================================= */
+
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:12px 14px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+  color:var(--fg);
+  cursor:pointer;
+  user-select:none;
+}
+.btn:hover{filter:brightness(1.10)}
+.btn:active{transform:translateY(1px)}
+
+#refresh.btn{width:100%; margin-top:22px}
+
+.tags-btn{
+  border-radius:999px;
+  padding:10px 14px;
+  background:rgba(124,92,255,.18);
+  border:1px solid rgba(124,92,255,.35);
+}
+
+/* Espace pour éviter que Tags soit collé au select (Statut) */
+#filterStatus{margin-bottom:18px}
+.viewer-side .tags-btn{margin-top:16px; display:inline-flex; width:100%; justify-content:center}
+.tags-count{
+  margin-left:6px;
+  padding:2px 8px;
+  border-radius:999px;
+  background:rgba(46,229,157,.22);
+  border:1px solid rgba(46,229,157,.38);
+  font-size:12px;
 }
 
 /* =========================================================
-   GRID + VIGNETTES (COMME L’ORIGINAL)
+   GRID + Cards (FINAL PROPRE)
    ========================================================= */
 
-.wrap{padding:18px}
+.wrap{
+  padding:18px 18px 40px;
+}
 
 .grid{
   display:grid;
@@ -153,39 +265,62 @@ select,input[type="search"]{
 }
 
 .card{
-  display:flex;
-  flex-direction:column;
-  border-radius:var(--radius2);
+  position:relative;
+  overflow:hidden;
+  border-radius: var(--radius2);
   border:1px solid rgba(255,255,255,.14);
   background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-  box-shadow:var(--shadow);
-  overflow:hidden;
+  box-shadow: 0 18px 40px rgba(0,0,0,.35);
+  display:flex;
+  flex-direction:column;
+  min-width:0;
 }
 
+.card::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  background:
+    radial-gradient(600px 200px at 20% 0%, rgba(124,92,255,.35), rgba(124,92,255,0) 60%),
+    radial-gradient(500px 220px at 90% 110%, rgba(46,229,157,.22), rgba(46,229,157,0) 60%);
+  opacity:.55;
+  pointer-events:none;
+}
+
+.card:hover{
+  transform: translateY(-3px);
+  transition: transform .18s ease;
+}
+
+/* Image vignette — comportement ORIGINAL */
 .thumb{
   width:100%;
-  aspect-ratio:16/9;
+  aspect-ratio:16 / 9;
   object-fit:cover;
   background:#1c1f2e;
 }
 
+/* fallback image */
 .thumb.is-fallback{
   object-fit:contain;
   background:#0f0f10;
 }
 
 .body{
+  position:relative;
+  z-index:1;
   padding:12px;
   display:flex;
   flex-direction:column;
   gap:8px;
+  min-width:0;
 }
 
 .name{
-  font-size:14px;
-  font-weight:800;
-  line-height:1.25;
   margin:0;
+  font-size:14px;
+  line-height:1.25;
+  font-weight:800;
 }
 
 .clamp-2{
@@ -197,22 +332,23 @@ select,input[type="search"]{
 
 .badges-line{
   display:flex;
-  flex-wrap:wrap;
   gap:6px;
+  flex-wrap:wrap;
+  align-items:center;
 }
 
 .badge{
-  padding:4px 8px;
-  font-size:12px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 9px;
   border-radius:999px;
-  background:rgba(0,0,0,.18);
+  font-size:12px;
   border:1px solid rgba(255,255,255,.16);
+  background:rgba(0,0,0,.18);
 }
 
-/* =========================================================
-   ACTIONS
-   ========================================================= */
-
+/* Actions */
 .actions{
   display:flex;
   flex-wrap:wrap;
@@ -220,33 +356,21 @@ select,input[type="search"]{
   margin-top:auto;
 }
 
+/* Bouton "Ouvrir la page" — FINAL */
 .btn-page{
   width:fit-content;
   padding:6px 10px;
   font-size:12px;
   line-height:1.1;
+  font-weight:600;
   border-radius:12px;
   background:rgba(255,255,255,.08);
   border:1px solid rgba(255,255,255,.16);
   color:var(--fg);
+  box-shadow:none;
 }
 
 .btn-page:hover{
   background:rgba(255,255,255,.14);
 }
 
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
-
-@media (max-width:860px){
-  .viewer-shell{
-    grid-template-columns:1fr;
-  }
-  .viewer-side{
-    position:relative;
-    height:auto;
-    border-right:none;
-    border-bottom:1px solid var(--stroke);
-  }
-}
