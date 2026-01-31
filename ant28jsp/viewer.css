@@ -374,3 +374,105 @@ select:focus, input[type="search"]:focus{
   background:rgba(255,255,255,.14);
 }
 
+/* =========================================================
+   TAGS — Style INTERIEUR (popover) [RESTORE]
+   ========================================================= */
+
+.tag-popover *{
+  box-sizing:border-box;
+}
+
+/* zone scroll interne (si ton JS utilise un conteneur) */
+.tag-list{
+  padding:10px;
+  overflow:auto;
+  max-height:360px;
+}
+
+/* champ recherche éventuel dans le popover */
+.tag-popover input[type="search"],
+.tag-popover input[type="text"]{
+  width:100%;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(0,0,0,.22);
+  color:var(--fg);
+  padding:10px 12px;
+  outline:none;
+  margin:10px 10px 0;
+}
+.tag-popover input[type="search"]:focus,
+.tag-popover input[type="text"]:focus{
+  border-color: rgba(46,229,157,.5);
+  box-shadow:0 0 0 4px rgba(46,229,157,.12);
+}
+
+/* items : layout + alignements (label + count + check) */
+.tag-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+/* partie gauche : check + nom */
+.tag-item .tag-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+
+/* “check” (si ton JS met un span) */
+.tag-check{
+  display:inline-flex;
+  width:18px;
+  height:18px;
+  align-items:center;
+  justify-content:center;
+  border-radius:6px;
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(0,0,0,.18);
+  font-size:12px;
+  line-height:1;
+  flex:0 0 auto;
+}
+
+/* nom du tag */
+.tag-name{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-weight:650;
+}
+
+/* compteur à droite (si ton JS le met) */
+.tag-count{
+  flex:0 0 auto;
+  font-size:12px;
+  color:var(--muted);
+  padding:2px 8px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.06);
+}
+
+/* état actif */
+.tag-item.active .tag-check{
+  border-color:rgba(46,229,157,.55);
+  background:rgba(46,229,157,.18);
+}
+.tag-item.active .tag-count{
+  border-color:rgba(46,229,157,.35);
+  background:rgba(46,229,157,.12);
+}
+
+/* scrollbar (optionnel, mais propre) */
+.tag-list::-webkit-scrollbar{width:10px}
+.tag-list::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,.14);
+  border-radius:999px;
+  border:2px solid rgba(10,15,35,.78);
+}
+
