@@ -1164,21 +1164,7 @@ body.mode-game /* Hover : léger éclaircissement, body.mode-game sans mouvement
 body.mode-game #ratingBox{ padding-top:14px; }
 body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12px; }
 
-/* ===== Topbar hamburger ===== */
-.menuBtn{
-  width:34px;
-  height:34px;
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,0.12);
-  background:rgba(255,255,255,0.06);
-  display:inline-flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  gap:4px;
-  margin-right:10px;
-  cursor:pointer;
-}
+
 .menuBtn:hover{ background:rgba(255,255,255,0.10); }
 .menuBtn .line{
   width:16px;
@@ -1191,4 +1177,84 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
   display:flex;
   align-items:center;
   gap:10px;
+}
+
+
+/* ===== Topbar hamburger (main) ===== */
+.top-title-row{
+  padding:14px 12px 12px;
+}
+
+.top-title-row.top-title-flex{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.top-title-tools{
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:nowrap;
+}
+
+.hamburger-btn{
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background: var(--btn);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  user-select:none;
+  flex:0 0 auto;
+}
+
+.ham-lines{
+  width:16px;
+  height:12px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+
+.ham-lines span{
+  display:block;
+  height:2px;
+  border-radius:999px;
+  background:#ffffff;
+  opacity:0.92;
+}
+
+.menu-popover{
+  position:fixed;
+  z-index:2000;
+  min-width: 220px;
+  background: rgba(20,24,38,0.98);
+  border:1px solid var(--border);
+  border-radius:12px;
+  box-shadow: 0 18px 45px rgba(0,0,0,.45);
+  padding:6px;
+}
+
+.menu-popover.hidden{ display:none !important; }
+
+.menu-item{
+  width:100%;
+  text-align:left;
+  padding:10px 10px;
+  border-radius:10px;
+  border:1px solid transparent;
+  background: transparent;
+  color: var(--fg);
+  cursor:pointer;
+  font-weight:700;
+}
+
+.menu-item:hover{
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.06);
 }
