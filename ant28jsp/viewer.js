@@ -1158,5 +1158,15 @@
 })();
 
 
-// init topbar tools + hamburger (ant28jsp)
-try{ initTopTitleToolsAnt28jsp(); initHamburgerMenuAnt28jsp(); }catch(e){}
+
+// init top row controls + hamburger (ant28jsp)
+document.addEventListener("DOMContentLoaded", () => {
+  try{
+    initHamburgerMenuAnt28jsp();
+    // Wait a tick for viewer UI to build selects, then sync
+    setTimeout(() => {
+      syncTopControlsAnt28jsp();
+      installTopControlsObserverAnt28jsp();
+    }, 50);
+  }catch(e){}
+});
