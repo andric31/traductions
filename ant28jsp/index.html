@@ -4,10 +4,100 @@
   <meta charset="utf-8" />
   <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ant28jsp — viewer</title>
+  <title>f95list_Ant28jsp_viewer</title>
 
   <link rel="icon" href="/favicon.png" />
   <link rel="stylesheet" href="./viewer.css" />
+
+  <!-- ✅ Styles page jeu (rendu comme sur andric31-traductions, sans dossier /game) -->
+  <style>
+    /* En mode jeu : centre la carte et remet un scroll global (comme /game/index.html) */
+    body.mode-game{
+      min-height: 100vh;
+      margin: 0;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      overflow-y:auto;
+      padding: 18px 0;
+    }
+    body.mode-game #page-viewer{ display:none !important; }
+
+    body.mode-game #page-game .wrap{
+      width: 820px;
+      max-width: 92vw;
+      padding: 18px;
+    }
+
+    body.mode-game #page-game .cardPreview{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow:hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,.35);
+    }
+
+    body.mode-game #page-game .cardInner{
+      padding: 16px 16px 18px 16px;
+    }
+
+    /* Ligne du haut : bouton ☰ + like + badges */
+    body.mode-game #page-game .headRow{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:10px;
+      flex-wrap:wrap;
+    }
+    body.mode-game #page-game .badgesRow{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin:0;
+    }
+
+    /* Bouton hamburger */
+    body.mode-game #page-game .hamburger-btn{
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      user-select:none;
+      flex:0 0 auto;
+    }
+    body.mode-game #page-game .hamburger-btn:hover{ filter: brightness(1.10); }
+    body.mode-game #page-game .hamburger-btn:active{ transform: translateY(1px); }
+    body.mode-game #page-game .ham-lines{ width:16px; height:12px; display:flex; flex-direction:column; justify-content:space-between; }
+    body.mode-game #page-game .ham-lines span{ display:block; height:2px; border-radius:999px; background:#ffffff; opacity:0.92; }
+
+    /* Cover : même rendu que sur ta page jeu (pas de full-bleed bizarre) */
+    body.mode-game #page-game .cover{
+      width:100%;
+      height:auto;
+      display:block;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      margin: 10px 0 12px;
+      object-fit: cover;
+    }
+
+    /* Encadrés info */
+    body.mode-game #page-game .infoBlock{
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+    body.mode-game #page-game .infoBlock h3{ margin:0 0 8px 0; font-size:14px; }
+  </style>
 </head>
 <body>
 
@@ -31,7 +121,7 @@
 
   <header class="topbar" role="banner">
     <div class="top-title-row">
-      <h1>f95list_andric31_viewer</h1>
+      <h1>f95list_Ant28jsp_viewer</h1>
     </div>
 
     <div class="top-actions">
@@ -116,18 +206,6 @@
       👁️ Vues de la page : <strong id="mainViews">—</strong>
     </footer>
   </main>
-
-  <script src="/viewer.menu.js"></script>
-  <script src="/viewer.menu.about.js"></script>
-  <script src="/viewer.menu.extension.js"></script>
-
-  <!-- ✅ charge le bandeau (indépendant de f95list.json) -->
-  <script src="/viewer.annonce.js"></script>
-
-  <script src="/viewer.js"></script>
-
-  <!-- 🔞 Age gate -->
-  <script src="/viewer.agegate.js"></script>
 
   </div>
 
@@ -242,11 +320,6 @@
     })();
   </script>
 
-  <script src="../viewer.menu.js"></script>
-  <script src="../viewer.menu.about.js"></script>
-  <script src="../viewer.menu.extension.js"></script>
-  <script src="./game.js"></script>
-
     <div style="text-align:center; margin: 14px 0;">
       <a class="btn" href="/ant28jsp/" style="display:inline-block; text-decoration:none;">← Retour à la liste</a>
     </div>
@@ -262,9 +335,11 @@
     const v = document.getElementById("page-viewer");
     const g = document.getElementById("page-game");
     if (hasGame) {
+      document.body.classList.add("mode-game");
       if (v) v.style.display = "none";
       if (g) g.style.display = "";
     } else {
+      document.body.classList.remove("mode-game");
       if (g) g.style.display = "none";
       if (v) v.style.display = "";
     }
