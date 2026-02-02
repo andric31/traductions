@@ -2,7 +2,8 @@
 // (menu ☰ délégué à viewer.menu.js + modules viewer.menu.about.js / viewer.menu.extension.js)
 // + Tags multi (popover + save)
 // ✅ UID ONLY pour stats (aligné sur game.js)
-(() => {
+// NOTE: IIFE async pour pouvoir récupérer le nom exact (casse) depuis /index.html
+(async () => {
 
   // ===================== Multi-traducteurs (g�n�rique) =====================
   // URL attendue : https://traductions.pages.dev/<slug>/
@@ -16,20 +17,57 @@
   }
   const SITE_SLUG = getSiteSlug();
 
+  // Récupère le nom affiché (respect de la casse) depuis /index.html (cards)
+  // Exemple card racine : <a href="/ant28jsp/">Ant28jsp</a>
+  async function resolveTranslatorName(slug){
+    const wanted = String(slug || "").trim();
+    if (!wanted) return "";
+    const wantedLc = wanted.toLowerCase();
+
+    try {
+      const r = await fetch("/index.html", { cache: "no-store" });
+      if (!r.ok) throw 0;
+      const html = await r.text();
+
+      const tmp = document.createElement("div");
+      tmp.innerHTML = html;
+
+      const links = [...tmp.querySelectorAll('a[href^="/"]')];
+      const map = new Map(); // slug lower -> display name
+
+      for (const a of links) {
+        const href = (a.getAttribute("href") || "").trim();
+        // On veut uniquement des liens "dossier" : /X/
+        const m = href.match(/^\/([^\/]+)\/$/);
+        if (!m) continue;
+        const slugKey = decodeURIComponent(m[1]).trim();
+        const name = (a.textContent || "").trim();
+        if (!slugKey || !name) continue;
+        map.set(slugKey.toLowerCase(), name);
+      }
+
+      return map.get(wantedLc) || wanted;
+    } catch {
+      return wanted;
+    }
+  }
+
   function getListUrlGeneric(){
     return `/f95list_${SITE_SLUG}.json`;
   }
 
-  function setViewerTitles(){
+  // Titre + bouton retour liste (dépend du slug)
+  const SITE_NAME = await resolveTranslatorName(SITE_SLUG);
+  (function setViewerTitles(){
     try{
-      document.title = `f95list__viewer`;
+      const title = `f95list_${SITE_NAME}_viewer`;
+      document.title = title;
       const h1 = document.querySelector(".topbar h1");
-      if (h1) h1.textContent = `f95list__viewer`;
+      if (h1) h1.textContent = title;
       const back = document.getElementById("backToList");
-      if (back) back.href = `//`;
+      if (back) back.href = `/${SITE_SLUG}/`;
     }catch{}
-  }
-  setViewerTitles();
+  })();
 
 
   // 🔞 Age gate (intégré ici pour éviter d'avoir un fichier séparé)
