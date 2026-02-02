@@ -906,6 +906,22 @@ main{
   border: 1px solid rgba(255,152,0,0.42);
 }
 
+
+/* =========================
+   Page jeu : tags (encadrés)
+   ========================= */
+.tagsBox{ margin-top: 12px; padding: 12px; }
+.tagsRow{ display:flex; flex-wrap:wrap; gap:8px; }
+.tagPill{
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.04);
+  color:#fff;
+  border-radius: 999px;
+  font-size: 12px;
+  padding: 6px 10px;
+  user-select:none;
+}
+
 /* =========================
    Page jeu : notation (étoiles)
    ========================= */

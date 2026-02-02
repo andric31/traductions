@@ -869,9 +869,9 @@ async function initCounters(gameId, megaHref, archiveHref) {
         showStatsBox();
       }
     } catch {
-      setText("statViews", "0");
-      setText("statMegaClicks", "0");
-      if ($("statLikes")) setText("statLikes", "0");
+      setText("statViews", "—");
+      setText("statMegaClicks", "—");
+      if ($("statLikes")) setText("statLikes", "—");
       showStatsBox();
     }
   }
@@ -1001,7 +1001,7 @@ function setMyVote4(gameId, v) {
   } catch {}
 }
 
-function renderRating4UI(gameId, data) {
+function renderRating4UI(gameId, data, enabled = true) {
   const choices = $("ratingChoices");
   const avgEl = $("ratingAvg");
   const countEl = $("ratingCount");
@@ -1012,10 +1012,28 @@ function renderRating4UI(gameId, data) {
   const count = Number(data?.count) || 0;
   const myVote = getMyVote4(gameId);
 
+  enabled = !!enabled && !!data?.ok;
+
   avgEl.textContent = avg > 0 ? avg.toFixed(1) + "/4" : "—";
   countEl.textContent = String(count);
 
   choices.innerHTML = "";
+
+  if (!enabled) {
+    // ⭐ Affiche les étoiles même si l'API n'est pas disponible (mode désactivé)
+    for (let i = 1; i <= 4; i++) {
+      const star = document.createElement("button");
+      star.type = "button";
+      star.className = "ratingStar";
+      star.textContent = "☆";
+      star.disabled = true;
+      star.setAttribute("aria-label", `${i}/4`);
+      choices.appendChild(star);
+    }
+    if (msgEl) msgEl.textContent = "Notation désactivée.";
+    return;
+  }
+
 
   const setVisual = (hoverValue) => {
     const v =
@@ -1392,8 +1410,11 @@ function renderVideoBlock({ id, videoUrl }) {
     // Rating
     try {
       const j = await rating4Get(analyticsKey);
-      if (j?.ok) renderRating4UI(analyticsKey, j);
-    } catch {}
+      if (j?.ok) renderRating4UI(analyticsKey, j, true);
+    } catch {
+      // API non dispo → on affiche quand même les étoiles (désactivées)
+      renderRating4UI(analyticsKey, { ok: false, avg: 0, count: 0 }, false);
+    }
 
     // =========================
     // ⭐ Déplacer la notation en bas de l'encadré principal
