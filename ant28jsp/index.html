@@ -120,8 +120,12 @@
   </div>
 
   <header class="topbar" role="banner">
-    <div class="top-title-row">
+    <div class="top-title-row top-title-flex">
+      <button id="hamburgerBtn" class="hamburger-btn" type="button" aria-label="Menu" title="Menu" aria-expanded="false">
+        <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
+      </button>
       <h1>f95list_Ant28jsp_viewer</h1>
+      <div id="topTitleTools" class="top-title-tools"></div>
     </div>
 
     <div class="top-actions">
@@ -345,6 +349,5 @@
   })();
   </script>
 
-  <script src="viewer.menu.js"></script>
 </body>
 </html>
