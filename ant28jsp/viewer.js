@@ -193,32 +193,59 @@
   function initHeaderMenuAndDisplayTools() {
     const row = document.querySelector(".top-title-row");
     if (!row) return;
-    if (document.getElementById("hamburgerBtn")) return;
 
     const h1 = row.querySelector("h1");
     if (!h1) return;
 
     row.classList.add("top-title-flex");
 
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.id = "hamburgerBtn";
-    btn.className = "hamburger-btn";
-    btn.setAttribute("aria-label", "Ouvrir le menu");
-    btn.setAttribute("aria-haspopup", "menu");
-    btn.setAttribute("aria-expanded", "false");
-    btn.innerHTML = `
-      <span class="ham-lines" aria-hidden="true">
-        <span></span><span></span><span></span>
-      </span>
-    `;
+    // ✅ Récupère (ou crée) le bouton menu
+    let btn = document.getElementById("hamburgerBtn");
+    if (!btn) {
+      btn = document.createElement("button");
+      btn.type = "button";
+      btn.id = "hamburgerBtn";
+      btn.className = "hamburger-btn";
+      btn.setAttribute("aria-label", "Ouvrir le menu");
+      btn.setAttribute("aria-haspopup", "menu");
+      btn.setAttribute("aria-expanded", "false");
+      btn.innerHTML = `
+        <span class="ham-lines" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </span>
+      `;
+    }
 
-    const tools = document.createElement("div");
-    tools.className = "top-title-tools";
+    // ✅ Récupère (ou crée) le conteneur outils (Total / colonnes / page)
+    let tools =
+      document.getElementById("topTitleTools") ||
+      row.querySelector(".top-title-tools");
 
-    row.insertBefore(btn, h1);
-    row.appendChild(tools);
+    if (!tools) {
+      tools = document.createElement("div");
+      tools.id = "topTitleTools";
+      tools.className = "top-title-tools";
+    }
 
+    // ✅ Conteneur à droite (tools + hamburger)
+    let right = row.querySelector(".top-right-box");
+    if (!right) {
+      right = document.createElement("div");
+      right.className = "top-right-box";
+    }
+
+    // ✅ Met le titre à gauche, et tout le menu/outil tout en haut à droite
+    if (row.firstChild !== h1) row.insertBefore(h1, row.firstChild);
+
+    // Déplace tools + btn dans le bloc de droite (ordre : tools puis hamburger)
+    right.appendChild(tools);
+    right.appendChild(btn);
+
+    // Si le bloc de droite n'est pas déjà dans la row, on l'ajoute à la fin
+    if (!row.contains(right)) row.appendChild(right);
+    else row.appendChild(right); // le remet en dernier si besoin
+
+    // ✅ Déplace Total + Vignettes/ligne + Afficher par ...
     const total = document.querySelector("#countTotal")?.closest(".total-inline");
     const cols = document.getElementById("cols");
     const pageSize = document.getElementById("pageSize");
@@ -231,6 +258,7 @@
       window.ViewerMenu?.init?.();
     } catch {}
 
+    // ====== Events menu ======
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -1124,3 +1152,39 @@
 
   init();
 })();
+
+// ===== simple menu (hamburger) =====
+(function(){
+  const btn = document.getElementById("btnMenu");
+  if(!btn) return;
+  let panel = document.getElementById("menuPanel");
+  if(!panel){
+    panel = document.createElement("div");
+    panel.id = "menuPanel";
+    panel.style.position = "fixed";
+    panel.style.top = "64px";
+    panel.style.left = "14px";
+    panel.style.zIndex = "9999";
+    panel.style.minWidth = "220px";
+    panel.style.padding = "10px";
+    panel.style.borderRadius = "14px";
+    panel.style.border = "1px solid rgba(255,255,255,0.12)";
+    panel.style.background = "rgba(16,18,28,0.98)";
+    panel.style.boxShadow = "0 18px 40px rgba(0,0,0,0.45)";
+    panel.style.display = "none";
+    panel.innerHTML = `
+      <a class="btn" style="justify-content:flex-start; width:100%; margin-bottom:8px;" href="/index.html">🏠 Accueil</a>
+      <a class="btn" style="justify-content:flex-start; width:100%;" href="/ant28jsp/index.html">📚 Viewer</a>
+    `;
+    document.body.appendChild(panel);
+  }
+  btn.addEventListener("click", (e)=>{
+    e.stopPropagation();
+    panel.style.display = (panel.style.display === "none") ? "block" : "none";
+  });
+  document.addEventListener("click", ()=>{ panel.style.display = "none"; });
+})();
+
+
+// init topbar tools + hamburger (ant28jsp)
+try{ initTopTitleToolsAnt28jsp(); initHamburgerMenuAnt28jsp(); }catch(e){}
