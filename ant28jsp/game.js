@@ -1429,3 +1429,22 @@ function renderVideoBlock({ id, videoUrl }) {
     showError(`Erreur: ${e?.message || e}`);
   }
 })();
+
+
+// ===== Buttons helpers (forced styling) =====
+function makeBtn(href, label, cls, emoji){
+  const a = document.createElement("a");
+  a.className = `btn ${cls}`;
+  a.target = "_blank";
+  a.rel = "noopener noreferrer";
+  a.href = href || "#";
+  if(!href) a.classList.add("disabled");
+  const ico = document.createElement("span");
+  ico.className = "ico";
+  ico.textContent = emoji || "";
+  const txt = document.createElement("span");
+  txt.textContent = label;
+  a.appendChild(ico);
+  a.appendChild(txt);
+  return a;
+}

@@ -1002,3 +1002,45 @@ body.age-gate-active footer {
   pointer-events: none;
   user-select: none;
 }
+
+
+/* ===================== Buttons (Discord / F95 / MEGA / etc.) ===================== */
+.btnRow{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:10px;
+}
+.btn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 14px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.12);
+  background:rgba(255,255,255,0.06);
+  color:#fff;
+  text-decoration:none;
+  font-weight:700;
+  line-height:1;
+  user-select:none;
+  transition:transform .08s ease, background .15s ease, border-color .15s ease;
+}
+.btn:hover{
+  background:rgba(255,255,255,0.10);
+  border-color:rgba(255,255,255,0.22);
+  transform:translateY(-1px);
+}
+.btn:active{ transform:translateY(0px); }
+.btn .ico{
+  width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;opacity:.95;
+}
+.btn.discord{ background:rgba(88,101,242,0.18); border-color:rgba(88,101,242,0.35); }
+.btn.discord:hover{ background:rgba(88,101,242,0.26); }
+.btn.f95{ background:rgba(255,152,0,0.14); border-color:rgba(255,152,0,0.30); }
+.btn.f95:hover{ background:rgba(255,152,0,0.22); }
+.btn.mega{ background:rgba(0,200,83,0.14); border-color:rgba(0,200,83,0.30); }
+.btn.mega:hover{ background:rgba(0,200,83,0.22); }
+.btn.archives{ background:rgba(156,39,176,0.14); border-color:rgba(156,39,176,0.30); }
+.btn.archives:hover{ background:rgba(156,39,176,0.22); }
+.btn.disabled{ opacity:.45; pointer-events:none; }
