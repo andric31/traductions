@@ -985,72 +985,87 @@ body.age-gate-active footer {
   user-select: none;
 }
 
-/* ===== Buttons (identique andric31) ===== */
-.actions{
-  margin-top:auto;
-  display:flex;
-  flex-direction:column;
-  align-items:stretch;
-}
+/* ===== Boutons page jeu (pixel like andric31) ===== */
+body.mode-game .btnRow{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top: 16px;
+    }
 
-.btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:6px 8px;              /* ⬅ moins haut */
-  border-radius:8px;            /* ⬅ un peu plus fin */
-  background:#2e3652;
-  color:#ffffff;
-  border:1px solid #3c466a;
-  text-decoration:none;
-  font-size:13px;               /* ⬅ texte plus petit */
-  font-weight:600;              /* ⬅ moins “bold” */
-  transition:0.15s ease;
-}
+body.mode-game .btnMainRow{
+      display:flex;
+      justify-content:center;
+      margin-top: 12px;
+    }
 
-.btn:hover{
-  background:#3b4568;
-  border-color:#4d5a84;
-  filter:brightness(1.05);      /* ⬅ hover plus doux */
-}
+body.mode-game .btnLike{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      color:#fff;
+      text-decoration:none;
+      font-weight: 700;
+      cursor:pointer;
+      user-select:none;
+    }
 
-.btn.btn-page{
-  width:100%;
-  padding:6px 8px;              /* cohérent */
-}
+body.mode-game .btnLike:hover{ filter: brightness(1.08); }
 
-.btn[aria-disabled="true"]{ opacity:.6; pointer-events:none }
+body.mode-game #btnDiscord.btn-discord{
+      background:#5865F2;
+      border-color:#5865F2;
+      color:#fff;
+    }
 
-.btn:hover{ filter:brightness(1.07) }
+body.mode-game #btnDiscord.btn-discord:hover{
+      background:#4752C4;
+      border-color:#4752C4;
+    }
 
-/* =========================
-   Boutons liens externes
-   ========================= */
+body.mode-game /* Texte F95Zone bicolore (logo-like) */
+    #btnF95 .f95-white{
+      color:#ffffff;
+      font-weight:800;
+    }
 
-/* 💬 Discord — bleu Discord */
-.btn-discord{
-  background: #5865F2;
-  border-color: #5865F2;
-  color: #fff;
-}
+body.mode-game #btnF95 .f95-red{
+      color:#8b2d2d;
+      font-weight:800;
+    }
 
-.btn-discord:hover{
-  background: #4752C4;
-  border-color: #4752C4;
-}
+body.mode-game /* Style bouton (comme avant) */
+    #btnF95.btn-f95{
+      position: relative;
+      background: linear-gradient(180deg, #222222 0%, #161616 100%);
+      border-color: rgba(255,255,255,.04);
+      color:#ffffff;
+      box-shadow: 0 8px 18px rgba(0,0,0,.35);
+      overflow: hidden;
+      transform: none;
+    }
 
-/* 🌐 F95Zone — noir / rouge */
-.btn-f95{
-  background: #0b0b0b;
-  border-color: #b71c1c;
-  color: #ffffff;
-}
+body.mode-game /* Assure que le texte reste au-dessus */
+    #btnF95.btn-f95 span{
+      position: relative;
+      z-index: 1;
+    }
 
-.btn-f95:hover{
-  background: #1a1a1a;
-  border-color: #d32f2f;
-}
+body.mode-game /* ✅ SUPPRIME la languette rouge */
+    #btnF95.btn-f95::before{
+      content: none !important;
+      display: none !important;
+    }
 
-#btnF95 .f95-red{
-  margin-left: 2px;   /* 🔥 parfait */
-}
+body.mode-game /* Hover (comme avant) */
+    #btnF95.btn-f95:hover{
+      background: linear-gradient(180deg, #1a1a1a 0%, #111111 100%);
+      border-color: rgba(255,255,255,.04);
+      transform: none;
+    }

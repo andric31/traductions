@@ -2,6 +2,21 @@
 
 
 
+
+
+// ===== Boutons (pixel like andric31) =====
+function setBtn(id, href){
+  const el = document.getElementById(id);
+  if(!el) return;
+  if(href){
+    el.href = href;
+    el.style.display = "";
+  }else{
+    el.removeAttribute("href");
+    el.style.display = "none";
+  }
+}
+
 // ===== Actions (identique andric31) =====
 function renderActionsIdenticalAndric31(game){
   const wrap = document.createElement("div");
@@ -1469,3 +1484,24 @@ function makeBtn(href, label, emoji){
   a.textContent = (emoji ? (emoji + " ") : "") + label;
   return a;
 }
+
+
+  try{
+    setBtn("btnDiscord", game.discordlink || "");
+    setBtn("btnF95", game.url || "");
+    // MEGA / translation
+    const dl = (game.translation || game.mega || "");
+    setBtn("btnMega", dl);
+    // Archives
+    const arch = (game.translationsArchive || "");
+    const box = document.getElementById("archiveBox");
+    const link = document.getElementById("archiveLink");
+    if(box && link){
+      if(arch){
+        link.href = arch;
+        box.style.display = "flex";
+      }else{
+        box.style.display = "none";
+      }
+    }
+  }catch(e){}
