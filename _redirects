@@ -1,5 +1,12 @@
+# 1) Assets / fichiers directs
 /app/* /app/:splat 200
 /favicon.png /favicon.png 200
-/f95list_* /f95list_:splat 200
+
+# 2) JSON f95list_*.json (IMPORTANT: garder le "_" !)
+# ex: /f95list_ant28jsp.json -> /f95list_ant28jsp.json
+/f95list_*.json /f95list_:splat.json 200
+
+# 3) Pages "slug" -> viewer SPA
+/:slug /app/viewer.html 200
 /:slug/ /app/viewer.html 200
 /:slug/* /app/viewer.html 200
