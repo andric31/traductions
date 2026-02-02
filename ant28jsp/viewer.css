@@ -985,7 +985,7 @@ body.age-gate-active footer {
   user-select: none;
 }
 
-/* ===== Boutons page jeu (pixel like andric31) ===== */
+/* ===== Boutons page jeu (EXACT main CSS) ===== */
 body.mode-game .btnRow{
       display:flex;
       gap:10px;
@@ -1066,6 +1066,29 @@ body.mode-game /* ✅ SUPPRIME la languette rouge */
 body.mode-game /* Hover (comme avant) */
     #btnF95.btn-f95:hover{
       background: linear-gradient(180deg, #1a1a1a 0%, #111111 100%);
+      border-color: rgba(255,255,255,.04);
+      transform: none;
+    }
+
+body.mode-game #btnMega{
+      background: linear-gradient(
+        180deg,
+        #b71c1c 0%,
+        #8e0e0e 100%
+      );
+      border: 1px solid rgba(255,255,255,.04);
+      color:#ffffff;
+      box-shadow: 0 8px 18px rgba(0,0,0,.40);
+      transform: none;
+    }
+
+body.mode-game /* Hover : léger éclaircissement, body.mode-game sans mouvement */
+    #btnMega:hover{
+      background: linear-gradient(
+        180deg,
+        #c62828 0%,
+        #9f1b1b 100%
+      );
       border-color: rgba(255,255,255,.04);
       transform: none;
     }
