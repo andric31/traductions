@@ -4,6 +4,34 @@
 // ✅ UID ONLY pour stats (aligné sur game.js)
 (() => {
 
+  // ===================== Multi-traducteurs (g�n�rique) =====================
+  // URL attendue : https://traductions.pages.dev/<slug>/
+  // JSON attendu : /f95list_<slug>.json
+  function getSiteSlug(){
+    const parts = (location.pathname || "/").split("/").filter(Boolean);
+    const first = (parts[0] || "").trim();
+    // Si jamais on est sur "/app/..." (asset/preview), on retombe sur un slug par d�faut.
+    if (!first || first.toLowerCase() === "app") return "ant28jsp";
+    return first;
+  }
+  const SITE_SLUG = getSiteSlug();
+
+  function getListUrlGeneric(){
+    return `/f95list_.json`;
+  }
+
+  function setViewerTitles(){
+    try{
+      document.title = `f95list__viewer`;
+      const h1 = document.querySelector(".topbar h1");
+      if (h1) h1.textContent = `f95list__viewer`;
+      const back = document.getElementById("backToList");
+      if (back) back.href = `//`;
+    }catch{}
+  }
+  setViewerTitles();
+
+
   // 🔞 Age gate (intégré ici pour éviter d'avoir un fichier séparé)
   (function initAgeGate(){
     const KEY = "ageVerified";
@@ -59,12 +87,12 @@
     const id = (g.id || "").toString().trim();
     const uid = (g.uid ?? "").toString().trim();
 
-    // Sous-jeu de collection : /game/?id=<collection>&uid=<uid>
-    if (coll) return `/ant28jsp/?id=${encodeURIComponent(coll)}&uid=${encodeURIComponent(uid)}`;
-    // Jeu normal / collection parent : /game/?id=<id>
-    if (id) return `/ant28jsp/?id=${encodeURIComponent(id)}`;
+    // Sous-jeu de collection : /<slug>/?id=<collection>&uid=<uid>
+    if (coll) return `/${SITE_SLUG}/?id=${encodeURIComponent(coll)}&uid=${encodeURIComponent(uid)}`;
+    // Jeu normal / collection parent : /<slug>/?id=<id>
+    if (id) return `/${SITE_SLUG}/?id=${encodeURIComponent(id)}`;
     // Fallback uid seul
-    return `/ant28jsp/?uid=${encodeURIComponent(uid)}`;
+    return `/${SITE_SLUG}/?uid=${encodeURIComponent(uid)}`;
   }
 
   // ✅ Titre affiché (gameData prioritaire si présent)

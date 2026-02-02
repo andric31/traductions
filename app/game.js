@@ -62,7 +62,7 @@ function renderActionsIdenticalAndric31(game){
 
 const DEFAULT_URL = getListUrlGeneric();
 // Base path de cette mini-app (pas de dossier /game)
-const APP_PATH = "/ant28jsp/";
+const APP_PATH = `/${(getTranslatorSlug() || "ant28jsp")}/`;
 
 // ====== Helpers URL / JSON ======
 
