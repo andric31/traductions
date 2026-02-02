@@ -4,20 +4,20 @@
 // âœ… UID ONLY pour stats (alignÃ© sur game.js)
 (() => {
 
-  // ===================== Multi-traducteurs (générique) =====================
+  // ===================== Multi-traducteurs (gï¿½nï¿½rique) =====================
   // URL attendue : https://traductions.pages.dev/<slug>/
   // JSON attendu : /f95list_<slug>.json
   function getSiteSlug(){
     const parts = (location.pathname || "/").split("/").filter(Boolean);
     const first = (parts[0] || "").trim();
-    // Si jamais on est sur "/app/..." (asset/preview), on retombe sur un slug par défaut.
+    // Si jamais on est sur "/app/..." (asset/preview), on retombe sur un slug par dï¿½faut.
     if (!first || first.toLowerCase() === "app") return "ant28jsp";
     return first;
   }
   const SITE_SLUG = getSiteSlug();
 
   function getListUrlGeneric(){
-    return `/f95list_.json`;
+    return `/f95list_${SITE_SLUG}.json`;
   }
 
   function setViewerTitles(){
