@@ -1124,39 +1124,3 @@
 
   init();
 })();
-
-// ===== simple menu (hamburger) =====
-(function(){
-  const btn = document.getElementById("btnMenu");
-  if(!btn) return;
-  let panel = document.getElementById("menuPanel");
-  if(!panel){
-    panel = document.createElement("div");
-    panel.id = "menuPanel";
-    panel.style.position = "fixed";
-    panel.style.top = "64px";
-    panel.style.left = "14px";
-    panel.style.zIndex = "9999";
-    panel.style.minWidth = "220px";
-    panel.style.padding = "10px";
-    panel.style.borderRadius = "14px";
-    panel.style.border = "1px solid rgba(255,255,255,0.12)";
-    panel.style.background = "rgba(16,18,28,0.98)";
-    panel.style.boxShadow = "0 18px 40px rgba(0,0,0,0.45)";
-    panel.style.display = "none";
-    panel.innerHTML = `
-      <a class="btn" style="justify-content:flex-start; width:100%; margin-bottom:8px;" href="/index.html">🏠 Accueil</a>
-      <a class="btn" style="justify-content:flex-start; width:100%;" href="/ant28jsp/index.html">📚 Viewer</a>
-    `;
-    document.body.appendChild(panel);
-  }
-  btn.addEventListener("click", (e)=>{
-    e.stopPropagation();
-    panel.style.display = (panel.style.display === "none") ? "block" : "none";
-  });
-  document.addEventListener("click", ()=>{ panel.style.display = "none"; });
-})();
-
-
-// init topbar tools + hamburger (ant28jsp)
-try{ initTopTitleToolsAnt28jsp(); initHamburgerMenuAnt28jsp(); }catch(e){}
