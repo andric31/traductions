@@ -1,6 +1,8 @@
 "use strict";
 
 const DEFAULT_URL = "/f95list_ant28jsp.json";
+// Base path de cette mini-app (pas de dossier /game)
+const APP_PATH = "/ant28jsp/";
 
 // ====== Helpers URL / JSON ======
 
@@ -41,6 +43,37 @@ function extractGames(raw) {
   return [];
 }
 
+// "25 décembre 2024" -> timestamp (ms)
+function parseFrenchDateFR(s) {
+  const str = String(s || "").trim().toLowerCase();
+  if (!str) return 0;
+  const months = {
+    "janvier": 0,
+    "février": 1,
+    "fevrier": 1,
+    "mars": 2,
+    "avril": 3,
+    "mai": 4,
+    "juin": 5,
+    "juillet": 6,
+    "août": 7,
+    "aout": 7,
+    "septembre": 8,
+    "octobre": 9,
+    "novembre": 10,
+    "décembre": 11,
+    "decembre": 11,
+  };
+  const m = str.match(/(\d{1,2})\s+([a-zéûîôàèùç]+)\s+(\d{4})/i);
+  if (!m) return 0;
+  const day = parseInt(m[1], 10);
+  const mon = months[m[2]];
+  const year = parseInt(m[3], 10);
+  if (!Number.isFinite(day) || !Number.isFinite(year) || mon === undefined) return 0;
+  const d = new Date(year, mon, day, 12, 0, 0);
+  return d.getTime();
+}
+
 function escapeHtml(s) {
   return String(s ?? "")
     .replace(/&/g, "&amp;")
@@ -69,9 +102,9 @@ function buildGameUrl(g) {
   const id = (g.id || "").toString().trim();
   const uid = (g.uid ?? "").toString().trim();
 
-  if (coll) return `/game/?id=${encodeURIComponent(coll)}&uid=${encodeURIComponent(uid)}`;
-  if (id) return `/game/?id=${encodeURIComponent(id)}`;
-  return `/game/?uid=${encodeURIComponent(uid)}`;
+  if (coll) return `${APP_PATH}?id=${encodeURIComponent(coll)}&uid=${encodeURIComponent(uid)}`;
+  if (id) return `${APP_PATH}?id=${encodeURIComponent(id)}`;
+  return `${APP_PATH}?uid=${encodeURIComponent(uid)}`;
 }
 
 function getDisplayTitle(g) {
@@ -225,7 +258,7 @@ function ensureRelatedContainer() {
 
 function renderCollectionBlockForChild(parent) {
   const parentId = parent?.id ? String(parent.id) : "";
-  const href = parentId ? `/game/?id=${encodeURIComponent(parentId)}` : "";
+  const href = parentId ? `${APP_PATH}?id=${encodeURIComponent(parentId)}` : "";
   const label = parent ? (parent.cleanTitle || parent.title || parentId) : "Voir la collection";
 
   return `
@@ -242,7 +275,7 @@ function renderCollectionBlockForParent(parent, children) {
   const items = children
     .map((g) => {
       const t = escapeHtml(getDisplayTitle(g, "collectionChild"));
-      const href = `/game/?id=${encodeURIComponent(parent.id)}&uid=${encodeURIComponent(g.uid)}`;
+      const href = `${APP_PATH}?id=${encodeURIComponent(parent.id)}&uid=${encodeURIComponent(g.uid)}`;
       return `<li><a href="${href}">${t}</a></li>`;
     })
     .join("");
@@ -590,18 +623,48 @@ async function renderTranslationStatus(game) {
     const badge = document.createElement("span");
     badge.classList.add("badge");
 
+    const maj = document.getElementById("majState");
+    if (maj) {
+      maj.style.display = "";
+      maj.classList.remove("maj-ok", "maj-ko");
+    }
+
     if (j.isUpToDate) {
       badge.textContent = "✅ Traduction à jour";
       badge.classList.add("status-updated");
+      if (maj) {
+        maj.textContent = "✅ À jour";
+        maj.classList.add("maj-ok");
+      }
     } else {
       badge.textContent = "🔄 Traduction non à jour";
       badge.classList.add("status-outdated");
+      if (maj) {
+        maj.textContent = "🔄 Pas à jour";
+        maj.classList.add("maj-ko");
+      }
     }
 
     const wrap = $("badges");
     if (wrap) wrap.appendChild(badge);
   } catch {
-    // silencieux
+    // Fallback local (si l'API n'est pas dispo) : compare "updatedAt" (F95) vs "updatedAtLocal" (ta date de traduction)
+    try {
+      const maj = document.getElementById("majState");
+      const f95Ts = parseFrenchDateFR(game.updatedAt || "");
+      const trdTs = Date.parse(game.updatedAtLocal || "");
+      if (!maj) return;
+      if (!f95Ts || !Number.isFinite(trdTs)) return;
+      maj.style.display = "";
+      maj.classList.remove("maj-ok", "maj-ko");
+      if (trdTs >= f95Ts) {
+        maj.textContent = "✅ À jour";
+        maj.classList.add("maj-ok");
+      } else {
+        maj.textContent = "🔄 Pas à jour";
+        maj.classList.add("maj-ko");
+      }
+    } catch {}
   }
 }
 
@@ -1156,7 +1219,7 @@ function renderVideoBlock({ id, videoUrl }) {
 
     if (!idParam && !uidParam) {
       showError(
-        "Aucun paramètre dans l’URL. Exemples : /game/?id=215277  ou  /game/?id=17373&uid=898  ou  /game/?uid=898"
+        `Aucun paramètre dans l’URL. Exemples : ${APP_PATH}?id=215277  ou  ${APP_PATH}?id=17373&uid=898  ou  ${APP_PATH}?uid=898`
       );
       return;
     }
