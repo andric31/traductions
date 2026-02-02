@@ -121,6 +121,7 @@
 
   <header class="topbar" role="banner">
     <div class="top-title-row">
+      <button id="btnMenu" class="menuBtn" type="button" aria-label="Menu" title="Menu"><span class="line"></span><span class="line"></span><span class="line"></span></button>
       <h1>f95list_Ant28jsp_viewer</h1>
     </div>
 
@@ -237,6 +238,23 @@
 
         <div class="infoBlock tagsBox" id="tagsBox"><div class="tagsRow" id="tags"></div></div>
 
+        
+
+        <!-- 📺 Vidéo (encadré séparé) -->
+        <div id="videoBox" class="infoBlock" style="display:none;">
+          <h3>📺 Vidéo</h3>
+          <iframe id="videoFrame"
+            style="width:100%; aspect-ratio:16/9; border-radius:12px; border:1px solid var(--border);"
+            loading="lazy"
+            allowfullscreen>
+          </iframe>
+        </div>
+
+        <!-- 📝 Description (encadré séparé) -->
+        <div id="descriptionBox" class="infoBlock" style="display:none;">
+          <div id="descriptionText" class="infoText"></div>
+        </div>
+
         <div class="btnRow">
   <a class="btnLike btn-discord" id="btnDiscord" target="_blank" rel="noopener" style="display:none;">💬 Discord</a>
   <a class="btnLike btn-f95" id="btnF95" target="_blank" rel="noopener" style="display:none;">
@@ -254,47 +272,10 @@
   </a>
 </div>
 
-        <!-- 📺 Vidéo (encadré séparé) -->
-        <div id="videoBox" class="infoBlock" style="display:none;">
-          <h3>📺 Vidéo</h3>
-          <iframe id="videoFrame"
-            style="width:100%; aspect-ratio:16/9; border-radius:12px; border:1px solid var(--border);"
-            loading="lazy"
-            allowfullscreen>
-          </iframe>
-        </div>
-
-        <!-- 📝 Description (encadré séparé) -->
-        <div id="descriptionBox" class="infoBlock" style="display:none;">
-          <div id="descriptionText" class="infoText"></div>
-        </div>
-
         <!-- ⭐ Notation -->
         <div id="ratingBox" class="infoBlock" style="text-align:center;">
-
-          <div style="color:var(--muted); font-size:12px; margin-bottom:6px;">
-            
-      
-<div class="btnRow">
-  <a class="btnLike btn-discord" id="btnDiscord" target="_blank" rel="noopener" style="display:none;">💬 Discord</a>
-  <a class="btnLike" id="btnF95" target="_blank" rel="noopener" style="display:none;">
-    <span class="f95-white">F95</span><span class="f95-red">Zone</span>
-  </a>
-</div>
-
-<div class="btnMainRow">
-  <a class="btnLike btnMega" id="btnMega" target="_blank" rel="noopener" style="display:none;">📥 Télécharger la traduction (MEGA)</a>
-</div>
-
-<div id="archiveBox" style="display:none; margin-top:12px; justify-content:center;">
-  <a id="archiveLink" class="btnLike" target="_blank" rel="noopener" style="justify-content:center;">🗂️ Archives</a>
-</div>
-
-Note de la traduction :
-            <strong id="ratingAvg">—</strong>
-            (<span id="ratingCount">0</span> votes)
-          </div>
-        
+          <div class="ratingTitle">Note de la traduction : <strong id="ratingAvg">—</strong> (<span id="ratingCount">0</span> votes)</div>
+          
           <div id="ratingChoices" style="display:flex; justify-content:center; gap:8px;"></div>
           <div id="ratingMsg" style="margin-top:6px; color:var(--muted); font-size:12px;"></div>
         </div>
