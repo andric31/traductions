@@ -9,8 +9,8 @@
     if (_p.has("id") || _p.has("uid")) return;
   } catch {}
 
-  // ✅ Base LOCALE (dans /ant28jsp/f95list.json)
-  const DEFAULT_URL = "./f95list.json";
+  // ✅ Base LOCALE (dans /ant28jsp/f95list_ant28jsp.json)
+  const DEFAULT_URL = "./f95list_ant28jsp.json";
 
   // ✅ Multi-trad : owner (défini par index.html via window.VIEWER_OWNER)
   const OWNER = (window.VIEWER_OWNER || "").toString().trim() || "default";

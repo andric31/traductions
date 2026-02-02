@@ -2,14 +2,14 @@
 
 /*
   game.js — page jeu à la RACINE (SANS /game)
-  ✅ Base LOCALE: ./f95list.json
+  ✅ Base LOCALE: ./f95list_ant28jsp.json
   ✅ Thème via ./config.json
   ✅ Stats séparées par traducteur: `${OWNER}|uid:<uid>`
   ✅ LocalStorage séparé (likes/cooldowns/rating)
   ✅ Liens internes: ./?id=... ./?uid=...
 */
 
-const DEFAULT_URL = "./f95list.json";
+const DEFAULT_URL = "./f95list_ant28jsp.json";
 
 // ✅ Multi-trad : owner (défini par index.html via window.VIEWER_OWNER)
 const OWNER = (window.VIEWER_OWNER || "").toString().trim() || "default";
@@ -894,7 +894,7 @@ function renderVideoBlock({ id, videoUrl }) {
 
     const page = resolveGamePage({ id: idParam, uid: uidParam }, list);
     if (page.kind === "notfound") {
-      showError(`Jeu introuvable (id=${idParam || "-"} uid=${uidParam || "-"}) dans f95list.json`);
+      showError(`Jeu introuvable (id=${idParam || "-"} uid=${uidParam || "-"}) dans f95list_ant28jsp.json`);
       return;
     }
 
