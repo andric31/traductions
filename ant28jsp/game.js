@@ -1,5 +1,32 @@
 "use strict";
 
+
+
+// ===== Actions (identique andric31) =====
+function renderActionsIdenticalAndric31(game){
+  const wrap = document.createElement("div");
+  wrap.className = "actions";
+
+  // Discord + F95
+  const rowTop = document.createElement("div");
+  rowTop.style.display = "flex";
+  rowTop.style.gap = "8px";
+  rowTop.style.flexWrap = "wrap";
+  rowTop.appendChild(makeBtn(game.discordlink, "Discord", "💬"));
+  rowTop.appendChild(makeBtn(game.url, "F95Zone", "🌐"));
+  wrap.appendChild(rowTop);
+
+  // Téléchargement
+  const dl = (game.translation || game.mega || game.translationsExtra || "");
+  wrap.appendChild(makeBtn(dl, "Télécharger la traduction (MEGA)", "📥"));
+
+  // Archives (si champ)
+  const arch = (game.translationsArchive || game.archive || game.archives || "");
+  if(arch) wrap.appendChild(makeBtn(arch, "Archives", "🗂️"));
+
+  return wrap;
+}
+
 const DEFAULT_URL = "/f95list_ant28jsp.json";
 // Base path de cette mini-app (pas de dossier /game)
 const APP_PATH = "/ant28jsp/";
@@ -1432,19 +1459,13 @@ function renderVideoBlock({ id, videoUrl }) {
 
 
 // ===== Buttons helpers (forced styling) =====
-function makeBtn(href, label, cls, emoji){
+function makeBtn(href, label, emoji){
   const a = document.createElement("a");
-  a.className = `btn ${cls}`;
+  a.className = "btn";
   a.target = "_blank";
   a.rel = "noopener noreferrer";
   a.href = href || "#";
   if(!href) a.classList.add("disabled");
-  const ico = document.createElement("span");
-  ico.className = "ico";
-  ico.textContent = emoji || "";
-  const txt = document.createElement("span");
-  txt.textContent = label;
-  a.appendChild(ico);
-  a.appendChild(txt);
+  a.textContent = (emoji ? (emoji + " ") : "") + label;
   return a;
 }
