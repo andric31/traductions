@@ -1,67 +1,17 @@
 "use strict";
 
-/*
-  game.js — page jeu à la RACINE (SANS /game)
-  ✅ Base LOCALE: ./f95list_ant28jsp.json
-  ✅ Thème via ./config.json
-  ✅ Stats séparées par traducteur: `${OWNER}|uid:<uid>`
-  ✅ LocalStorage séparé (likes/cooldowns/rating)
-  ✅ Liens internes: ./?id=... ./?uid=...
-*/
-
-const DEFAULT_URL = "./f95list_ant28jsp.json";
-
-// ✅ Multi-trad : owner (défini par index.html via window.VIEWER_OWNER)
-const OWNER = (window.VIEWER_OWNER || "").toString().trim() || "default";
-
-// =========================
-// Config + thème
-// =========================
-async function loadOwnerConfigGame() {
-  try {
-    const r = await fetch("./config.json", { cache: "no-store" });
-    if (!r.ok) return null;
-    return await r.json();
-  } catch {
-    return null;
-  }
-}
-
-function applyThemeGame(theme) {
-  if (!theme) return;
-  const root = document.documentElement;
-  const set = (k, v) => {
-    if (v !== undefined && v !== null && String(v).trim() !== "") {
-      root.style.setProperty(k, String(v));
-    }
-  };
-  set("--accent", theme.accent);
-  set("--accent2", theme.accent2);
-  set("--bgTop", theme.bgTop);
-  set("--bgBottom", theme.bgBottom);
-  set("--card", theme.card);
-  set("--border", theme.border);
-  set("--fg", theme.fg);
-  set("--muted", theme.muted);
-  set("--radius", theme.radius);
-}
+const DEFAULT_URL = "/f95list_ant28jsp.json";
 
 // ====== Helpers URL / JSON ======
-function getListUrl(ownerCfg) {
-  // 1) ?src=... (override)
+
+function getListUrl() {
   try {
     const p = new URLSearchParams(location.search);
     const src = (p.get("src") || "").trim();
     if (src) return src;
   } catch {}
-
-  // 2) config.json
-  const cfgUrl = (ownerCfg?.listUrl || "").toString().trim();
-  if (cfgUrl) return cfgUrl;
-
-  // 3) localStorage séparé
   try {
-    return (localStorage.getItem(`f95listUrl:${OWNER}`) || "").trim() || DEFAULT_URL;
+    return (localStorage.getItem("f95listUrl") || "").trim() || DEFAULT_URL;
   } catch {
     return DEFAULT_URL;
   }
@@ -110,103 +60,33 @@ function show(id, cond) {
   if (el) el.style.display = cond ? "" : "none";
 }
 
-async function fetchJson(url) {
-  const r = await fetch(url, { cache: "no-store" });
-  if (!r.ok) throw new Error(`HTTP ${r.status} sur ${url}`);
-  return await r.json();
-}
-
-function $(id) {
-  return document.getElementById(id);
-}
-
-function showError(msg) {
-  const err = $("errBox");
-  const card = $("card");
-  const stats = $("statsOut");
-  if (card) card.style.display = "none";
-  if (stats) stats.style.display = "none";
-  if (err) {
-    err.style.display = "block";
-    err.textContent = msg;
-  }
-}
-
-function setText(id, text) {
-  const el = $(id);
-  if (el) el.textContent = text ?? "";
-}
-
-function setHref(id, href) {
-  const el = $(id);
-  if (!el) return;
-  if (!href) {
-    el.style.display = "none";
-    el.removeAttribute("href");
-  } else {
-    el.style.display = "";
-    el.href = href;
-  }
-}
-
-function setCover(url) {
-  const img = $("cover");
-  if (!img) return;
-
-  const u = (url || "").trim();
-  img.referrerPolicy = "no-referrer";
-
-  if (!u) {
-    img.removeAttribute("src");
-    img.classList.add("is-placeholder");
-    return;
-  }
-
-  img.classList.remove("is-placeholder");
-  img.src = u;
-
-  img.onerror = () => {
-    img.onerror = null;
-    img.removeAttribute("src");
-    img.classList.add("is-placeholder");
-  };
-}
-
-function renderTags(tags) {
-  const box = $("tags");
-  if (!box) return;
-  box.innerHTML = "";
-  (tags || []).forEach((t) => {
-    if (!t) return;
-    const s = document.createElement("span");
-    s.className = "tagPill";
-    s.textContent = String(t);
-    box.appendChild(s);
-  });
-}
-
 // =========================
-// Routing (id central) + Collections + Séries
+// ✅ Routing (id central) + Collections + Séries
 // =========================
+
 function buildGameUrl(g) {
   const coll = (g.collection || "").toString().trim();
   const id = (g.id || "").toString().trim();
   const uid = (g.uid ?? "").toString().trim();
 
-  // ✅ liens internes à la RACINE
-  if (coll) return `./?id=${encodeURIComponent(coll)}&uid=${encodeURIComponent(uid)}`;
-  if (id) return `./?id=${encodeURIComponent(id)}`;
-  return `./?uid=${encodeURIComponent(uid)}`;
+  if (coll) return `/game/?id=${encodeURIComponent(coll)}&uid=${encodeURIComponent(uid)}`;
+  if (id) return `/game/?id=${encodeURIComponent(id)}`;
+  return `/game/?uid=${encodeURIComponent(uid)}`;
 }
 
 function getDisplayTitle(g) {
+  // Règle: si c'est un enfant de collection (id vide + collection non vide),
+  // on affiche UNIQUEMENT le titre du gameData (le title principal est celui de la collection).
   const id = (g?.id || "").toString().trim();
   const col = (g?.collection || "").toString().trim();
-  if (!id && col) return (g?.gameData?.title || "").toString().trim();
+  if (!id && col) {
+    return (g?.gameData?.title || "").toString().trim();
+  }
   return (g?.cleanTitle || g?.title || "").toString().trim();
 }
 
 function getCollectionChildTitle(g) {
+  // Strict: pas de fallback vers g.title (sinon doublons "Collection ...")
   return (g?.gameData?.title || "").toString().trim();
 }
 
@@ -219,7 +99,7 @@ function getEntryRefs(g) {
 }
 
 function buildSeriesIndex(games) {
-  const map = new Map();
+  const map = new Map(); // ref => [serieObj]
   for (const owner of games || []) {
     const s = owner?.serie;
     if (!s?.name || !Array.isArray(s.refs)) continue;
@@ -231,11 +111,13 @@ function buildSeriesIndex(games) {
       ownerId: owner?.id || "",
     };
 
+    // refs déclarées
     for (const ref of serieObj.refs) {
       if (!map.has(ref)) map.set(ref, []);
       map.get(ref).push(serieObj);
     }
 
+    // rendre visible sur la page du owner (id central)
     for (const selfRef of getEntryRefs(owner)) {
       if (!map.has(selfRef)) map.set(selfRef, []);
       map.get(selfRef).push(serieObj);
@@ -245,7 +127,9 @@ function buildSeriesIndex(games) {
 }
 
 function getCurrentPageRefs({ kind, idParam, uidParam, entry }) {
-  if (kind === "collectionChild") return [`id:${String(idParam)}`, `uid:${String(uidParam)}`];
+  if (kind === "collectionChild") {
+    return [`id:${String(idParam)}`, `uid:${String(uidParam)}`];
+  }
   return getEntryRefs(entry);
 }
 
@@ -256,7 +140,9 @@ function getSeriesForCurrentPage(pageRefs, seriesIndex) {
     if (arr) found.push(...arr);
   }
   const uniq = new Map();
-  for (const s of found) uniq.set(`${s.name}|${s.ownerUid}`, s);
+  for (const s of found) {
+    uniq.set(`${s.name}|${s.ownerUid}`, s);
+  }
   return [...uniq.values()];
 }
 
@@ -296,7 +182,8 @@ function resolveGamePage(params, games) {
 
   // 2) id seul
   if (id) {
-    const parentOrGame = (games || []).find((g) => String(g?.id) === String(id) && !g?.collection) || null;
+    const parentOrGame =
+      (games || []).find((g) => String(g?.id) === String(id) && !g?.collection) || null;
     if (!parentOrGame) return { kind: "notfound" };
 
     const children = (games || [])
@@ -317,7 +204,8 @@ function resolveGamePage(params, games) {
   return { kind: "notfound" };
 }
 
-// ====== Related container
+// ====== Related container: on va l'insérer après les tags OU après description (selon ton ordre)
+// ✅ Ton ordre final: tags -> related -> description -> video -> boutons -> mega -> notes -> archive
 function ensureRelatedContainer() {
   const anchor = document.getElementById("tags");
   if (!anchor) return null;
@@ -329,6 +217,7 @@ function ensureRelatedContainer() {
     out.style.marginTop = "12px";
     out.style.display = "grid";
     out.style.gap = "10px";
+    // insertion juste après tags (ordre demandé)
     anchor.parentNode.insertBefore(out, anchor.nextSibling);
   }
   return out;
@@ -336,7 +225,7 @@ function ensureRelatedContainer() {
 
 function renderCollectionBlockForChild(parent) {
   const parentId = parent?.id ? String(parent.id) : "";
-  const href = parentId ? `./?id=${encodeURIComponent(parentId)}` : "";
+  const href = parentId ? `/game/?id=${encodeURIComponent(parentId)}` : "";
   const label = parent ? (parent.cleanTitle || parent.title || parentId) : "Voir la collection";
 
   return `
@@ -352,8 +241,8 @@ function renderCollectionBlockForParent(parent, children) {
 
   const items = children
     .map((g) => {
-      const t = escapeHtml(getDisplayTitle(g));
-      const href = `./?id=${encodeURIComponent(parent.id)}&uid=${encodeURIComponent(g.uid)}`;
+      const t = escapeHtml(getDisplayTitle(g, "collectionChild"));
+      const href = `/game/?id=${encodeURIComponent(parent.id)}&uid=${encodeURIComponent(g.uid)}`;
       return `<li><a href="${href}">${t}</a></li>`;
     })
     .join("");
@@ -407,7 +296,90 @@ function renderSeriesBlocks(seriesList, games, currentCanonicalKey) {
     .join("");
 }
 
-// ====== Badges (ton bloc complet inchangé) ======
+async function fetchJson(url) {
+  const r = await fetch(url, { cache: "no-store" });
+  if (!r.ok) throw new Error(`HTTP ${r.status} sur ${url}`);
+  return await r.json();
+}
+
+// ====== UI helpers ======
+
+function $(id) {
+  return document.getElementById(id);
+}
+
+function showError(msg) {
+  const err = $("errBox");
+  const card = $("card");
+  const stats = $("statsOut");
+  if (card) card.style.display = "none";
+  if (stats) stats.style.display = "none";
+  if (err) {
+    err.style.display = "block";
+    err.textContent = msg;
+  }
+}
+
+function setText(id, text) {
+  const el = $(id);
+  if (el) el.textContent = text ?? "";
+}
+
+function setHref(id, href) {
+  const el = $(id);
+  if (!el) return;
+  if (!href) {
+    el.style.display = "none";
+    el.removeAttribute("href");
+  } else {
+    el.style.display = "";
+    el.href = href;
+  }
+}
+
+/**
+ * IMPORTANT:
+ * - Si pas d'image => on laisse la cover en "placeholder" (PAS de favicon)
+ * - Si image cassée => on repasse en placeholder (PAS de favicon)
+ */
+function setCover(url) {
+  const img = $("cover");
+  if (!img) return;
+
+  const u = (url || "").trim();
+  img.referrerPolicy = "no-referrer";
+
+  if (!u) {
+    img.removeAttribute("src");
+    img.classList.add("is-placeholder");
+    return;
+  }
+
+  img.classList.remove("is-placeholder");
+  img.src = u;
+
+  img.onerror = () => {
+    img.onerror = null;
+    img.removeAttribute("src");
+    img.classList.add("is-placeholder");
+  };
+}
+
+function renderTags(tags) {
+  const box = $("tags");
+  if (!box) return;
+  box.innerHTML = "";
+  (tags || []).forEach((t) => {
+    if (!t) return;
+    const s = document.createElement("span");
+    s.className = "tagPill";
+    s.textContent = String(t);
+    box.appendChild(s);
+  });
+}
+
+// ====== Badges ======
+
 const CAT_ALLOWED = ["VN", "Collection"];
 const ENGINE_ALLOWED = ["Ren'Py", "RPGM", "Unity", "Unreal Engine", "HTML", "Java", "Flash", "QSP", "WebGL", "RAGS", "Tads", "ADRIFT", "Others", "Wolf RPG"];
 const STATUS_ALLOWED = ["Completed", "Abandoned", "Onhold"];
@@ -421,7 +393,7 @@ const ENGINE_RAW = {
   rpgmakermz: "RPGM",
   unity: "Unity",
   unreal: "Unreal Engine",
-  unrealengine: "Unreal Engine",
+  "unrealengine": "Unreal Engine",
   "unreal engine": "Unreal Engine",
   ue4: "Unreal Engine",
   ue5: "Unreal Engine",
@@ -441,8 +413,11 @@ const ENGINE_RAW = {
   wolfrpg: "Wolf RPG",
 };
 
-function slug(s) { return String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, ""); }
-const SEP_RE = /[\u2014\u2013\-:]/;
+function slug(s) {
+  return String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+}
+
+const SEP_RE = /[\u2014\u2013\-:]/; // — – - :
 const ucFirst = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
 function cleanTitle(raw) {
@@ -462,35 +437,61 @@ function cleanTitle(raw) {
   let cut = 0;
 
   for (let i = 0; i < tokens.length; i++) {
-    const w = tokens[i].toLowerCase();
+    const wRaw = tokens[i];
+    const w = wRaw.toLowerCase();
     const norm = w.replace(/[^\w']/g, "");
 
-    if (norm === "vn") { if (!categories.includes("VN")) categories.push("VN"); cut = i + 1; continue; }
-
-    if (norm === "wolf" && tokens[i + 1] && tokens[i + 1].toLowerCase().replace(/[^\w']/g, "") === "rpg") {
-      if (!engines.includes("Wolf RPG")) engines.push("Wolf RPG");
-      cut = i + 2; i++; continue;
+    if (norm === "vn") {
+      if (!categories.includes("VN")) categories.push("VN");
+      cut = i + 1;
+      continue;
     }
+
+    if (
+      norm === "wolf" &&
+      tokens[i + 1] &&
+      tokens[i + 1].toLowerCase().replace(/[^\w']/g, "") === "rpg"
+    ) {
+      if (!engines.includes("Wolf RPG")) engines.push("Wolf RPG");
+      cut = i + 2;
+      i++;
+      continue;
+    }
+
     if (norm === "wolf") break;
 
-    if (norm === "flash") { if (!engines.includes("Flash")) engines.push("Flash"); cut = i + 1; continue; }
+    if (norm === "flash") {
+      if (!engines.includes("Flash")) engines.push("Flash");
+      cut = i + 1;
+      continue;
+    }
 
     if (norm === "others" || norm === "other") {
       if (!engines.includes("Others")) engines.push("Others");
       othersExplicit = true;
-      cut = i + 1; continue;
+      cut = i + 1;
+      continue;
     }
 
     if (ENGINE_RAW[norm] !== undefined) {
       const eng = ENGINE_RAW[norm];
       if (eng && !engines.includes(eng)) engines.push(eng);
-      cut = i + 1; continue;
+      cut = i + 1;
+      continue;
     }
 
     const pretty = ucFirst(norm);
-    if (STATUS_ALLOWED.includes(pretty)) { status = pretty; cut = i + 1; continue; }
+    if (STATUS_ALLOWED.includes(pretty)) {
+      status = pretty;
+      cut = i + 1;
+      continue;
+    }
 
-    if (w === "&" || w === "and" || w === "/") { cut = i + 1; continue; }
+    if (w === "&" || w === "and" || w === "/") {
+      cut = i + 1;
+      continue;
+    }
+
     break;
   }
 
@@ -502,8 +503,10 @@ function cleanTitle(raw) {
 
   if (!status) status = "En cours";
 
-  categories = categories.filter((c) => CAT_ALLOWED.includes(c));
-  engines = engines.filter((e) => ENGINE_ALLOWED.includes(e));
+  const allowedCat = new Set(CAT_ALLOWED);
+  const allowedEng = new Set(ENGINE_ALLOWED);
+  categories = categories.filter((c) => allowedCat.has(c));
+  engines = engines.filter((e) => allowedEng.has(e));
 
   if (!othersExplicit && engines.includes("Others") && engines.some((e) => e !== "Others")) {
     engines = engines.filter((e) => e !== "Others");
@@ -527,13 +530,24 @@ function renderBadgesFromGame(display, entry, isCollectionChild) {
   const childTitle = String(display?.title || "");
   const parentTitle = String(entry?.title || "");
 
-  if (isCollectionChild) wrap.appendChild(makeBadge("cat", "Collection"));
+  // ✅ Enfant => badge Collection
+  if (isCollectionChild) {
+    wrap.appendChild(makeBadge("cat", "Collection"));
+  }
 
   let c = cleanTitle(isCollectionChild ? childTitle : parentTitle);
 
-  if (!isCollectionChild && c.categories.includes("Collection")) wrap.appendChild(makeBadge("cat", "Collection"));
-  if (!isCollectionChild && c.categories.includes("VN")) wrap.appendChild(makeBadge("cat", "VN"));
+  // Parent collection => badge Collection
+  if (!isCollectionChild && c.categories.includes("Collection")) {
+    wrap.appendChild(makeBadge("cat", "Collection"));
+  }
 
+  // VN seulement si pas enfant
+  if (!isCollectionChild && c.categories.includes("VN")) {
+    wrap.appendChild(makeBadge("cat", "VN"));
+  }
+
+  // Enfant => moteur/status priorité gameData
   if (isCollectionChild) {
     if (display?.engine) {
       const eng = ENGINE_RAW[slug(display.engine)] || display.engine;
@@ -543,30 +557,39 @@ function renderBadgesFromGame(display, entry, isCollectionChild) {
       c.engines = cp.engines || [];
     }
 
-    if (display?.status) c.status = display.status;
-    else if (!c.status) {
+    if (display?.status) {
+      c.status = display.status;
+    } else if (!c.status) {
       const cp = cleanTitle(parentTitle);
       if (cp.status) c.status = cp.status;
     }
   }
 
-  for (const eng of c.engines || []) wrap.appendChild(makeBadge("eng", eng));
+  for (const eng of c.engines || []) {
+    wrap.appendChild(makeBadge("eng", eng));
+  }
   if (c.status) wrap.appendChild(makeBadge("status", c.status));
 }
 
+/**
+ * ✅ Traduction status : badge uniquement (dans #badges)
+ */
 async function renderTranslationStatus(game) {
   if (!game?.url || !game?.title) return;
+
   try {
     const r = await fetch(
       `/api/f95status?url=${encodeURIComponent(game.url)}&storedTitle=${encodeURIComponent(game.title)}`,
       { cache: "no-store" }
     );
     if (!r.ok) return;
+
     const j = await r.json();
     if (!j?.ok || !j?.currentTitle) return;
 
     const badge = document.createElement("span");
     badge.classList.add("badge");
+
     if (j.isUpToDate) {
       badge.textContent = "✅ Traduction à jour";
       badge.classList.add("status-updated");
@@ -574,17 +597,113 @@ async function renderTranslationStatus(game) {
       badge.textContent = "🔄 Traduction non à jour";
       badge.classList.add("status-outdated");
     }
+
     const wrap = $("badges");
     if (wrap) wrap.appendChild(badge);
-  } catch {}
+  } catch {
+    // silencieux
+  }
 }
 
-// =========================
-// Counters (stats séparées par OWNER)
+// ============================================================================
+// ✅ MENU ☰ (page game) — réutilise menu racine
+// ============================================================================
+
+function positionPopover(pop, anchorBtn) {
+  const r = anchorBtn.getBoundingClientRect();
+  const margin = 8;
+
+  let left = Math.round(r.left);
+  let top = Math.round(r.bottom + margin);
+
+  const widthGuess = pop.getBoundingClientRect().width || 260;
+  const maxLeft = window.innerWidth - widthGuess - 10;
+
+  if (left > maxLeft) left = Math.max(10, maxLeft);
+  if (left < 10) left = 10;
+
+  pop.style.left = left + "px";
+  pop.style.top = top + "px";
+}
+
+function initHamburgerMenu() {
+  const btn = $("hamburgerBtn");
+  if (!btn) return;
+
+  try {
+    window.ViewerMenu?.init?.();
+  } catch {}
+
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const pop = document.getElementById("topMenuPopover");
+    if (!pop) return;
+
+    const isOpen = !pop.classList.contains("hidden");
+    if (isOpen) {
+      try {
+        window.ViewerMenu?.closeMenu?.();
+      } catch {
+        pop.classList.add("hidden");
+      }
+      btn.setAttribute("aria-expanded", "false");
+      return;
+    }
+
+    pop.classList.remove("hidden");
+    btn.setAttribute("aria-expanded", "true");
+    positionPopover(pop, btn);
+  });
+
+  document.addEventListener("click", (e) => {
+    const pop = document.getElementById("topMenuPopover");
+    if (!pop) return;
+
+    const target = e.target;
+    if (!pop.contains(target) && !btn.contains(target)) {
+      try {
+        window.ViewerMenu?.closeMenu?.();
+      } catch {
+        pop.classList.add("hidden");
+      }
+      btn.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  window.addEventListener("resize", () => {
+    const pop = document.getElementById("topMenuPopover");
+    if (pop && !pop.classList.contains("hidden")) positionPopover(pop, btn);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    try {
+      window.ViewerMenu?.closeMenu?.();
+    } catch {}
+    try {
+      window.ViewerMenu?.closeAbout?.();
+    } catch {}
+    try {
+      window.ViewerMenu?.closeExtension?.();
+    } catch {}
+    try {
+      window.ViewerMenuExtension?.close?.();
+    } catch {}
+  });
+}
+
+// ====== Counters ======
+
 function formatInt(n) {
   const x = Number(n);
   if (!Number.isFinite(x)) return "0";
-  try { return x.toLocaleString("fr-FR"); } catch { return String(Math.floor(x)); }
+  try {
+    return x.toLocaleString("fr-FR");
+  } catch {
+    return String(Math.floor(x));
+  }
 }
 
 function showStatsBox() {
@@ -597,26 +716,41 @@ async function counterGet(id) {
   if (!r.ok) throw new Error("counter get HTTP " + r.status);
   return await r.json();
 }
+
 async function counterHit(id, kind) {
-  const r = await fetch(`/api/counter?op=hit&kind=${encodeURIComponent(kind)}&id=${encodeURIComponent(id)}`, { cache: "no-store" });
+  const r = await fetch(
+    `/api/counter?op=hit&kind=${encodeURIComponent(kind)}&id=${encodeURIComponent(id)}`,
+    { cache: "no-store" }
+  );
   if (!r.ok) throw new Error("counter hit HTTP " + r.status);
   return await r.json();
 }
+
 async function counterUnhit(id, kind) {
-  const r = await fetch(`/api/counter?op=unhit&kind=${encodeURIComponent(kind)}&id=${encodeURIComponent(id)}`, { cache: "no-store" });
+  const r = await fetch(
+    `/api/counter?op=unhit&kind=${encodeURIComponent(kind)}&id=${encodeURIComponent(id)}`,
+    { cache: "no-store" }
+  );
   if (!r.ok) throw new Error("counter unhit HTTP " + r.status);
   return await r.json();
 }
 
 function getMyLike(gameId) {
-  try { return localStorage.getItem(`like_${OWNER}:${gameId}`) === "1"; } catch { return false; }
+  try {
+    return localStorage.getItem(`like_${gameId}`) === "1";
+  } catch {
+    return false;
+  }
 }
 function setMyLike(gameId, v) {
-  try { localStorage.setItem(`like_${OWNER}:${gameId}`, v ? "1" : "0"); } catch {}
+  try {
+    localStorage.setItem(`like_${gameId}`, v ? "1" : "0");
+  } catch {}
 }
 function updateLikeBtn(gameId) {
   const b = $("btnLike");
   if (!b) return;
+
   const liked = getMyLike(gameId);
   b.textContent = liked ? "❤️" : "🤍";
   b.setAttribute("aria-label", liked ? "Je n’aime plus" : "J’aime");
@@ -628,7 +762,9 @@ function setLikesFromJson(j) {
   setText("statLikes", Number.isFinite(val) ? formatInt(val) : "0");
 }
 
-function cooldownKey(kind, gameId) { return `cooldown_${OWNER}_${kind}_${gameId}`; }
+function cooldownKey(kind, gameId) {
+  return `cooldown_${kind}_${gameId}`;
+}
 
 function inCooldown(kind, gameId, ms) {
   try {
@@ -638,13 +774,17 @@ function inCooldown(kind, gameId, ms) {
     if (now - last < ms) return true;
     localStorage.setItem(k, String(now));
     return false;
-  } catch { return false; }
+  } catch {
+    // si localStorage bloqué, on ne bloque pas
+    return false;
+  }
 }
 
 async function initCounters(gameId, megaHref, archiveHref) {
-  const VIEW_COOLDOWN_MS = 10 * 60 * 1000;
-  const MEGA_COOLDOWN_MS = 5 * 60 * 1000;
+  const VIEW_COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes
+  const MEGA_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes
 
+  // 1) Vue (anti-refresh abusif)
   const skipViewHit = inCooldown("view", gameId, VIEW_COOLDOWN_MS);
 
   try {
@@ -656,6 +796,7 @@ async function initCounters(gameId, megaHref, archiveHref) {
       showStatsBox();
     }
   } catch {
+    // fallback basique
     try {
       const j = await counterGet(gameId);
       if (j?.ok) {
@@ -672,36 +813,49 @@ async function initCounters(gameId, megaHref, archiveHref) {
     }
   }
 
+  // 2) 📥 Téléchargements (MEGA + Archives → même compteur)
   const bindDownload = (btnId, href) => {
     if (!href) return;
     const btn = $(btnId);
     if (!btn) return;
-    if (btn.dataset.boundMega === "1") return;
+
+    if (btn.dataset.boundMega === "1") return; // ✅ anti-double bind
     btn.dataset.boundMega = "1";
 
-    btn.addEventListener("click", async () => {
-      if (inCooldown("megaClick", gameId, MEGA_COOLDOWN_MS)) return;
-      try {
-        const j = await counterHit(gameId, "mega");
-        if (j?.ok) {
-          setText("statMegaClicks", formatInt(j.mega));
-          showStatsBox();
-        }
-      } catch {}
-    }, { passive: true });
+    btn.addEventListener(
+      "click",
+      async () => {
+        // ✅ anti spam clic (local)
+        if (inCooldown("megaClick", gameId, MEGA_COOLDOWN_MS)) return;
+
+        try {
+          const j = await counterHit(gameId, "mega");
+          if (j?.ok) {
+            setText("statMegaClicks", formatInt(j.mega));
+            showStatsBox();
+          }
+        } catch {}
+      },
+      { passive: true }
+    );
   };
 
   bindDownload("btnMega", megaHref);
   bindDownload("archiveLink", archiveHref);
 
+  // 3) ❤️ Like toggle
   const btnLike = $("btnLike");
   if (btnLike && $("statLikes")) {
     updateLikeBtn(gameId);
+
+    // ✅ anti double bind (si initCounters est rappelée)
     if (btnLike.dataset.boundLike === "1") return;
     btnLike.dataset.boundLike = "1";
 
     btnLike.addEventListener("click", async () => {
+      // ✅ anti spam like (local)
       if (inCooldown("likeClick", gameId, 1500)) return;
+
       const liked = getMyLike(gameId);
 
       try {
@@ -716,6 +870,7 @@ async function initCounters(gameId, megaHref, archiveHref) {
           }
           return;
         }
+
         j = await counterUnhit(gameId, "like");
         if (j?.ok) {
           setMyLike(gameId, false);
@@ -723,38 +878,64 @@ async function initCounters(gameId, megaHref, archiveHref) {
           updateLikeBtn(gameId);
           showStatsBox();
         }
-      } catch {}
+      } catch {
+        // silencieux (unhit pas supporté)
+      }
     });
   }
 }
 
+// ============================================================================
+// ✅ COMPTEUR UID ONLY (OPTION A)
+// - id est ignoré pour les stats
+// - uid est TOUJOURS présent dans ta base
+// - garantit un compteur unique quel que soit l’URL
+// ============================================================================
 function buildCounterKeyFromEntry(entry) {
   const uid = String(entry?.uid ?? "").trim();
-  return uid ? `${OWNER}|uid:${uid}` : "";
+  return uid ? `uid:${uid}` : "";
 }
 
-// ====== Rating 4 (identique à ton code) ======
-const RATING4_LABELS = { 1:"Traduction à refaire", 2:"Traduction avec des défauts", 3:"Traduction correcte", 4:"Bonne traduction" };
+// ====== Rating 4 ======
+
+const RATING4_LABELS = {
+  1: "Traduction à refaire",
+  2: "Traduction avec des défauts",
+  3: "Traduction correcte",
+  4: "Bonne traduction",
+};
 
 async function rating4Get(id) {
   const r = await fetch(`/api/rating4?op=get&id=${encodeURIComponent(id)}`, { cache: "no-store" });
   if (!r.ok) throw new Error("rating4 get HTTP " + r.status);
   return await r.json();
 }
+
 async function rating4Vote(id, v, prev) {
-  const qs = new URLSearchParams({ op:"vote", id:String(id), v:String(v), prev:String(prev || 0) });
+  const qs = new URLSearchParams({
+    op: "vote",
+    id: String(id),
+    v: String(v),
+    prev: String(prev || 0),
+  });
   const r = await fetch(`/api/rating4?${qs.toString()}`, { cache: "no-store" });
   if (!r.ok) throw new Error("rating4 vote HTTP " + r.status);
   return await r.json();
 }
+
 function getMyVote4(gameId) {
   try {
-    const v = Number(localStorage.getItem(`rating4_${OWNER}:${gameId}`) || "0");
+    const v = Number(localStorage.getItem(`rating4_${gameId}`) || "0");
     return Number.isFinite(v) ? v : 0;
-  } catch { return 0; }
+  } catch {
+    return 0;
+  }
 }
+
 function setMyVote4(gameId, v) {
-  try { localStorage.setItem(`rating4_${OWNER}:${gameId}`, String(v)); } catch {}
+  try {
+    localStorage.setItem(`rating4_${gameId}`, String(v));
+  } catch {}
 }
 
 function renderRating4UI(gameId, data) {
@@ -770,10 +951,13 @@ function renderRating4UI(gameId, data) {
 
   avgEl.textContent = avg > 0 ? avg.toFixed(1) + "/4" : "—";
   countEl.textContent = String(count);
+
   choices.innerHTML = "";
 
   const setVisual = (hoverValue) => {
-    const v = (hoverValue === 0 || typeof hoverValue === "number") ? hoverValue : (getMyVote4(gameId) || 0);
+    const v =
+      hoverValue === 0 || typeof hoverValue === "number" ? hoverValue : getMyVote4(gameId) || 0;
+
     [...choices.querySelectorAll(".ratingStar")].forEach((btn, idx) => {
       btn.textContent = idx + 1 <= v ? "★" : "☆";
     });
@@ -794,8 +978,14 @@ function renderRating4UI(gameId, data) {
     cancel.textContent = "🗑️";
     cancel.setAttribute("aria-label", "Annuler ma note");
 
-    cancel.addEventListener("mouseenter", () => { setVisual(0); if (msgEl) msgEl.textContent = "Annuler ma note"; });
-    cancel.addEventListener("mouseleave", () => { setVisual(null); restoreMsg(); });
+    cancel.addEventListener("mouseenter", () => {
+      setVisual(0);
+      if (msgEl) msgEl.textContent = "Annuler ma note";
+    });
+    cancel.addEventListener("mouseleave", () => {
+      setVisual(null);
+      restoreMsg();
+    });
 
     cancel.addEventListener("click", async () => {
       const prev = getMyVote4(gameId);
@@ -803,7 +993,9 @@ function renderRating4UI(gameId, data) {
       try {
         const res = await rating4Vote(gameId, 0, prev);
         if (res?.ok) {
-          try { localStorage.removeItem(`rating4_${OWNER}:${gameId}`); } catch {}
+          try {
+            localStorage.removeItem(`rating4_${gameId}`);
+          } catch {}
           renderRating4UI(gameId, res);
           if (msgEl) msgEl.textContent = "Note supprimée ✅";
         }
@@ -822,12 +1014,21 @@ function renderRating4UI(gameId, data) {
     star.textContent = "☆";
     star.setAttribute("aria-label", `${i}/4 — ${RATING4_LABELS[i]}`);
 
-    star.addEventListener("mouseenter", () => { setVisual(i); if (msgEl) msgEl.textContent = `${i}/4 — ${RATING4_LABELS[i]}`; });
-    star.addEventListener("mouseleave", () => { setVisual(null); restoreMsg(); });
+    star.addEventListener("mouseenter", () => {
+      setVisual(i);
+      if (msgEl) msgEl.textContent = `${i}/4 — ${RATING4_LABELS[i]}`;
+    });
+    star.addEventListener("mouseleave", () => {
+      setVisual(null);
+      restoreMsg();
+    });
 
     star.addEventListener("click", async () => {
       const prev = getMyVote4(gameId);
-      if (prev === i) { if (msgEl) msgEl.textContent = "C’est déjà ta note actuelle ✅"; return; }
+      if (prev === i) {
+        if (msgEl) msgEl.textContent = "C’est déjà ta note actuelle ✅";
+        return;
+      }
       try {
         const res = await rating4Vote(gameId, i, prev);
         if (res?.ok) {
@@ -847,9 +1048,14 @@ function renderRating4UI(gameId, data) {
   restoreMsg();
 }
 
-// ====== Video block ======
+// =========================
+// ✅ Blocs "nouveaux champs" (ordre demandé)
+// Chaque champ = son encadré (game-block)
+// =========================
+
 function ensureBlockAfter(anchorEl, id) {
   if (!anchorEl || !anchorEl.parentNode) return null;
+
   let el = document.getElementById(id);
   if (!el) {
     el = document.createElement("div");
@@ -859,10 +1065,72 @@ function ensureBlockAfter(anchorEl, id) {
   return el;
 }
 
+function ensureBlockBefore(anchorEl, id) {
+  if (!anchorEl || !anchorEl.parentNode) return null;
+
+  let el = document.getElementById(id);
+  if (!el) {
+    el = document.createElement("div");
+    el.id = id;
+    anchorEl.parentNode.insertBefore(el, anchorEl);
+  }
+  return el;
+}
+
+function renderTextBlock({ id, title, text, muted }) {
+  const t = (text || "").trim();
+  if (!t) {
+    show(id, false);
+    return;
+  }
+  const htmlText = escapeHtml(t).replace(/\n/g, "<br>");
+  setHtml(
+    id,
+    `
+    <div class="game-block">
+      <h3>${escapeHtml(title)}</h3>
+      <div style="color:${muted ? "var(--muted)" : "var(--fg)"}; font-size:${muted ? "13px" : "14px"}; line-height:1.45;">
+        ${htmlText}
+      </div>
+    </div>
+  `
+  );
+  show(id, true);
+}
+
+function renderLinkBlock({ id, title, href, label }) {
+  const u = (href || "").trim();
+  if (!u) {
+    show(id, false);
+    return;
+  }
+
+  const linkId = `btn_${id}`; // ex: btn_archiveHost
+
+  setHtml(
+    id,
+    `
+    <div class="game-block">
+      <h3>${escapeHtml(title)}</h3>
+      <a id="${linkId}" class="btnLike" target="_blank" rel="noopener"
+         href="${escapeHtml(u)}" style="display:inline-flex;">
+        ${escapeHtml(label)}
+      </a>
+    </div>
+  `
+  );
+  show(id, true);
+}
+
 function renderVideoBlock({ id, videoUrl }) {
   const u = (videoUrl || "").trim();
-  if (!u) { show(id, false); return; }
-  setHtml(id, `
+  if (!u) {
+    show(id, false);
+    return;
+  }
+  setHtml(
+    id,
+    `
     <div class="game-block">
       <iframe
         src="${escapeHtml(u)}"
@@ -873,58 +1141,80 @@ function renderVideoBlock({ id, videoUrl }) {
         allowfullscreen>
       </iframe>
     </div>
-  `);
+  `
+  );
   show(id, true);
 }
 
-// ====== MAIN ======
+// ====== Main ======
+
 (async function main() {
   try {
+    initHamburgerMenu();
+
     const { id: idParam, uid: uidParam } = getParamsFromUrl();
 
-    // ✅ IMPORTANT: si pas de params => on ne fait rien (c’est le viewer qui doit tourner)
-    if (!idParam && !uidParam) return;
+    if (!idParam && !uidParam) {
+      showError(
+        "Aucun paramètre dans l’URL. Exemples : /game/?id=215277  ou  /game/?id=17373&uid=898  ou  /game/?uid=898"
+      );
+      return;
+    }
 
-    const ownerCfg = await loadOwnerConfigGame();
-    if (ownerCfg?.theme) applyThemeGame(ownerCfg.theme);
-
-    const listUrl = getListUrl(ownerCfg);
+    const listUrl = getListUrl();
     const raw = await fetchJson(listUrl);
     const list = extractGames(raw);
 
     const page = resolveGamePage({ id: idParam, uid: uidParam }, list);
+
     if (page.kind === "notfound") {
-      showError(`Jeu introuvable (id=${idParam || "-"} uid=${uidParam || "-"}) dans f95list_ant28jsp.json`);
+      showError(`Jeu introuvable (id=${idParam || "-"} uid=${uidParam || "-"}) dans f95list.json`);
       return;
     }
 
+    // entry = objet principal (discord/mega/notes/description)
     const entry = page.entry;
+
+    // display = données "jeu" (gameData si présent)
     const display = entry?.gameData ? entry.gameData : entry;
+
     const counterKey = buildCounterKeyFromEntry(entry);
+
     const isCollectionChild = page.kind === "collectionChild" && entry && entry.gameData;
 
     const title = (getDisplayTitle(entry) || getDisplayTitle(display) || `Jeu ${idParam || uidParam}`).trim();
     document.title = title;
 
-    // ✅ ici tu relies tes éléments DOM "page jeu" existants
+    // 1) Titre + cover + tags
     setText("title", title);
     setCover(display.imageUrl || entry.imageUrl || "");
     renderTags(display.tags || entry.tags || []);
+
+    // badges
     renderBadgesFromGame(display, entry, isCollectionChild);
     renderTranslationStatus(entry);
 
+    // ✅ ANCRAGES HTML existants
     const tagsEl = document.getElementById("tags");
+    const btnRow = document.querySelector(".btnRow");
+    const btnMainRow = document.querySelector(".btnMainRow");
+    const ratingBox = document.getElementById("ratingBox");
 
-    // Related
+    // =========================
+    // 2) Related (après tags)
+    // =========================
     const relatedOut = ensureRelatedContainer();
     if (relatedOut) {
       const parts = [];
 
-      if (page.kind === "collectionParent") parts.push(renderCollectionBlockForParent(entry, page.children));
-      else if (page.kind === "collectionChild") parts.push(renderCollectionBlockForChild(page.parent));
+      if (page.kind === "collectionParent") {
+        parts.push(renderCollectionBlockForParent(entry, page.children));
+      } else if (page.kind === "collectionChild") {
+        parts.push(renderCollectionBlockForChild(page.parent));
+      }
 
       const seriesIndex = buildSeriesIndex(list);
-      const pageRefs = getCurrentPageRefs({ kind: page.kind, idParam, uidParam, entry });
+      const pageRefs = getCurrentPageRefs({ kind: page.kind, idParam: idParam, uidParam: uidParam, entry });
       const seriesList = getSeriesForCurrentPage(pageRefs, seriesIndex);
 
       let canonicalKey = "";
@@ -933,18 +1223,22 @@ function renderVideoBlock({ id, videoUrl }) {
       else canonicalKey = `uid:${String(entry.uid).trim()}`;
 
       parts.push(renderSeriesBlocks(seriesList, list, canonicalKey));
+
       relatedOut.innerHTML = parts.filter(Boolean).join("");
     }
 
-    // Description
+    // =========================
+    // 3) Description (juste après related, avant vidéo)
+    // =========================
     const descAnchor = relatedOut || tagsEl;
     const descBox = document.getElementById("descriptionBox");
     const descTextEl = document.getElementById("descriptionText");
-
+    
     if (descBox && descAnchor && descAnchor.parentNode) {
+      // ✅ force la position: juste après related/tags (donc AVANT les liens)
       descAnchor.parentNode.insertBefore(descBox, descAnchor.nextSibling);
     }
-
+    
     const description = (entry.description || "").trim();
     if (description && descBox && descTextEl) {
       descTextEl.innerHTML = escapeHtml(description).replace(/\n/g, "<br>");
@@ -953,49 +1247,99 @@ function renderVideoBlock({ id, videoUrl }) {
       descBox.style.display = "none";
     }
 
-    // Vidéo
+    // =========================
+    // 4) Vidéo (si présent) sous description
+    // =========================
     const videoAnchor = (descBox && descBox.style.display !== "none") ? descBox : (relatedOut || tagsEl);
-    ensureBlockAfter(videoAnchor, "videoHost");
-    renderVideoBlock({ id: "videoHost", videoUrl: (entry.videoUrl || "").trim() });
+    
+    const videoHost = ensureBlockAfter(videoAnchor, "videoHost");
+    renderVideoBlock({
+      id: "videoHost",
+      videoUrl: (entry.videoUrl || "").trim(),
+    });
 
-    // Boutons
+    // =========================
+    // 5) Boutons Discord + F95 (inchangés)
+    // =========================
     setHref("btnDiscord", (entry.discordlink || "").trim());
-    if ($("btnDiscord")) { $("btnDiscord").textContent = "💬 Discord"; $("btnDiscord").classList.add("btn-discord"); }
-
+    if ($("btnDiscord")) {
+      $("btnDiscord").textContent = "💬 Discord";
+      $("btnDiscord").classList.add("btn-discord");
+    }
+    
     setHref("btnF95", (entry.url || "").trim());
-    if ($("btnF95")) { $("btnF95").innerHTML = '<span class="f95-white"> F95</span><span class="f95-red">Zone</span>'; $("btnF95").classList.add("btn-f95"); }
+    if ($("btnF95")) {
+      $("btnF95").innerHTML = '<span class="f95-white"> F95</span><span class="f95-red">Zone</span>';
+      $("btnF95").classList.add("btn-f95");
+    }
 
-    // MEGA + Archives
+    // =========================
+    // 6) MEGA (bouton existant)
+    // =========================
     const megaHref = (entry.translation || "").trim();
     const archiveHref = (entry.translationsArchive || "").trim();
     setHref("btnMega", megaHref);
     if ($("btnMega")) $("btnMega").textContent = "📥 Télécharger la traduction (MEGA)";
 
+    // =========================
+    // 7) Informations (encadré sous la notation)
+    // =========================
     const notes = (entry.notes || "").trim();
-    if (notes) { setHtml("notesText", escapeHtml(notes).replace(/\n/g, "<br>")); show("notesBox", true); }
-    else show("notesBox", false);
-
+    if (notes) {
+      setHtml("notesText", escapeHtml(notes).replace(/\n/g, "<br>"));
+      show("notesBox", true);
+    } else {
+      show("notesBox", false);
+    }
+    
+    // =========================
+    // 8) Archives (bouton HTML existant sous Notes) — SANS encadré
+    // =========================
     setHref("archiveLink", archiveHref);
     if ($("archiveLink")) $("archiveLink").textContent = "📦 Archives de la traduction";
+    
     const ab = $("archiveBox");
     if (ab) ab.style.display = archiveHref ? "flex" : "none";
 
-    document.getElementById("archiveLink")?.addEventListener("contextmenu", (e) => { e.preventDefault(); return false; });
-    document.getElementById("btnMega")?.addEventListener("contextmenu", (e) => { e.preventDefault(); return false; });
+    // ⛔ Bloquer clic droit sur ARCHIVES
+    const archiveLink = document.getElementById("archiveLink");
+    if (archiveLink) {
+      archiveLink.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        return false;
+      });
+    }
 
-    // Stats
+    // =========================
+    // ✅ Analytics key (unique)
+    // =========================
+    const analyticsKey = counterKey;
+    
     await initCounters(counterKey, megaHref, archiveHref);
+
+    // ⛔ Bloquer clic droit sur MEGA
+    const btnMega = document.getElementById("btnMega");
+    if (btnMega) {
+      btnMega.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        return false;
+      });
+    }
 
     // Rating
     try {
-      const j = await rating4Get(counterKey);
-      if (j?.ok) renderRating4UI(counterKey, j);
+      const j = await rating4Get(analyticsKey);
+      if (j?.ok) renderRating4UI(analyticsKey, j);
     } catch {}
 
-    // Move rating (si présent)
+    // =========================
+    // ⭐ Déplacer la notation en bas de l'encadré principal
+    // =========================
     const cardInner = document.querySelector(".cardInner");
     const ratingBoxEl = document.getElementById("ratingBox");
-    if (cardInner && ratingBoxEl) cardInner.appendChild(ratingBoxEl);
+    if (cardInner && ratingBoxEl) {
+      cardInner.appendChild(ratingBoxEl);
+    }
 
   } catch (e) {
     showError(`Erreur: ${e?.message || e}`);

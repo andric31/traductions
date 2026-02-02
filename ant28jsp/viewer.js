@@ -3,72 +3,53 @@
 // + Tags multi (popover + save)
 // ✅ UID ONLY pour stats (aligné sur game.js)
 (() => {
-  // ✅ Si on est sur une page jeu (?id ou ?uid), on ne lance pas le viewer.
-  try {
-    const _p = new URLSearchParams(location.search);
-    if (_p.has("id") || _p.has("uid")) return;
-  } catch {}
 
-  // ✅ Base LOCALE (dans /ant28jsp/f95list_ant28jsp.json)
-  const DEFAULT_URL = "./f95list_ant28jsp.json";
+  // 🔞 Age gate (intégré ici pour éviter d'avoir un fichier séparé)
+  (function initAgeGate(){
+    const KEY = "ageVerified";
+    const gate = document.getElementById("age-gate");
+    if (!gate) return;
 
-  // ✅ Multi-trad : owner (défini par index.html via window.VIEWER_OWNER)
-  const OWNER = (window.VIEWER_OWNER || "").toString().trim() || "default";
-
-  // ✅ Config par traducteur : ./config.json (listUrl + theme + titre)
-  async function loadOwnerConfig() {
-    try {
-      const r = await fetch("./config.json", { cache: "no-store" });
-      if (!r.ok) return null;
-      return await r.json();
-    } catch {
-      return null;
-    }
-  }
-
-  function applyTheme(theme) {
-    if (!theme) return;
-    const root = document.documentElement;
-    const set = (k, v) => {
-      if (v !== undefined && v !== null && String(v).trim() !== "") {
-        root.style.setProperty(k, String(v));
+    try{
+      if (!localStorage.getItem(KEY)) {
+        gate.style.display = "flex";
+        document.body.classList.add("age-gate-active");
+        document.body.style.overflow = "hidden";
       }
-    };
-    set("--accent", theme.accent);
-    set("--accent2", theme.accent2);
-    set("--bgTop", theme.bgTop);
-    set("--bgBottom", theme.bgBottom);
-    set("--card", theme.card);
-    set("--border", theme.border);
-    set("--fg", theme.fg);
-    set("--muted", theme.muted);
-    set("--radius", theme.radius);
-  }
+    }catch{}
+
+    document.getElementById("age-yes")?.addEventListener("click", () => {
+      try{ localStorage.setItem(KEY, "1"); }catch{}
+      gate.style.display = "none";
+      document.body.classList.remove("age-gate-active");
+      document.body.style.overflow = "";
+    });
+
+    document.getElementById("age-no")?.addEventListener("click", () => {
+      location.href = "https://www.google.com";
+    });
+  })();
+  const DEFAULT_URL = "/f95list_ant28jsp.json";
 
   const $ = (sel) => document.querySelector(sel);
 
-  // ✅ URL page jeu (SANS /game) — reste à la racine
+  // ✅ URL page jeu (id central + support collection child)
   function buildGameUrl(g) {
+    const coll = (g.collection || "").toString().trim();
     const id = (g.id || "").toString().trim();
     const uid = (g.uid ?? "").toString().trim();
 
-    // enfant de collection (l’objet enfant a collection + uid)
-    // mais dans le viewer on clique sur l’entrée telle quelle => on recompose comme ton resolve
-    if (!id && (g.collection || "").toString().trim() && uid) {
-      return `./?id=${encodeURIComponent(g.collection)}&uid=${encodeURIComponent(uid)}`;
-    }
-
-    if (id && uid && (g.collection || "").toString().trim()) {
-      return `./?id=${encodeURIComponent(g.collection)}&uid=${encodeURIComponent(uid)}`;
-    }
-
-    if (id) return `./?id=${encodeURIComponent(id)}`;
-    return `./?uid=${encodeURIComponent(uid)}`;
+    // Sous-jeu de collection : /game/?id=<collection>&uid=<uid>
+    if (coll) return `/ant28jsp/?id=${encodeURIComponent(coll)}&uid=${encodeURIComponent(uid)}`;
+    // Jeu normal / collection parent : /game/?id=<id>
+    if (id) return `/ant28jsp/?id=${encodeURIComponent(id)}`;
+    // Fallback uid seul
+    return `/ant28jsp/?uid=${encodeURIComponent(uid)}`;
   }
 
   // ✅ Titre affiché (gameData prioritaire si présent)
   function getDisplayTitle(g) {
-    return (g?.gameData?.title || g?.cleanTitle || g?.title || "").toString().trim() || "Sans titre";
+    return (g.gameData?.title || g.cleanTitle || g.title || "").toString().trim() || "Sans titre";
   }
 
   const state = {
@@ -79,53 +60,47 @@
     filterCat: "all",
     filterEngine: "all",
     filterStatus: "all",
-    filterTags: [],
+    filterTags: [], // ✅ multi tags
     cols: "auto",
     pageSize: 50,
     visibleCount: 0,
   };
 
   // =========================
-  // ✅ Extract list robuste (array OU object)
-  // =========================
-  function extractGames(raw) {
-    if (Array.isArray(raw)) return raw;
-    if (!raw || typeof raw !== "object") return [];
-    const candidates = ["games", "list", "items", "data", "rows", "results"];
-    for (const k of candidates) {
-      if (Array.isArray(raw[k])) return raw[k];
-    }
-    for (const k of Object.keys(raw)) {
-      if (Array.isArray(raw[k])) return raw[k];
-    }
-    return [];
-  }
-
-  // =========================
   // ✅ Compteur vues page principale (Viewer)
   // =========================
-  const MAIN_PAGE_ID = `${OWNER}|__viewer_main__`;
+
+  const MAIN_PAGE_ID = "__viewer_main__";
   let MAIN_VIEW_HIT_DONE = false;
 
   function formatInt(n) {
     const x = Number(n);
     if (!Number.isFinite(x)) return "0";
-    try { return x.toLocaleString("fr-FR"); } catch { return String(Math.floor(x)); }
+    try {
+      return x.toLocaleString("fr-FR");
+    } catch {
+      return String(Math.floor(x));
+    }
   }
 
   // =========================
-  // ✅ UID ONLY — clés compteurs (séparées par traducteur)
+  // ✅ UID ONLY — clés compteurs
   // =========================
   function counterKeyOfUid(uid) {
     const u = String(uid ?? "").trim();
-    return u ? `${OWNER}|uid:${u}` : "";
+    return u ? `uid:${u}` : "";
+  }
+
+  function counterKeyOfEntry(rawEntry) {
+    return counterKeyOfUid(rawEntry?.uid);
   }
 
   // =========================
   // Stats jeux (vues + likes + téléchargements)
   // =========================
+
   const GAME_STATS = {
-    views: new Map(),
+    views: new Map(), // key(uid:xxx) -> number
     mega: new Map(),
     likes: new Map(),
     loaded: false,
@@ -142,7 +117,7 @@
       if (!r.ok) return {};
       const j = await r.json();
       if (!j?.ok || !j.stats) return {};
-      return j.stats;
+      return j.stats; // { key: {views, mega, likes}, ... }
     } catch {
       return {};
     }
@@ -151,6 +126,7 @@
   async function ensureGameStatsLoaded() {
     if (GAME_STATS.loaded) return;
 
+    // ✅ on envoie uid:<uid> (comme game.js)
     const keys = state.all.map((g) => counterKeyOfUid(g.uid)).filter(Boolean);
     const stats = await fetchGameStatsBulk(keys);
 
@@ -177,6 +153,7 @@
     if (!el) return;
 
     try {
+      // ✅ 1 seul "hit" par chargement de page
       const op = MAIN_VIEW_HIT_DONE ? "get" : "hit";
       const r = await fetch(
         `/api/counter?op=${op}&kind=view&id=${encodeURIComponent(MAIN_PAGE_ID)}`,
@@ -193,9 +170,142 @@
   }
 
   // =========================
-  // TAGS MULTI (identique à ton code)
+  // ☰ MENU (viewer.menu.js gère le contenu / items / modales)
   // =========================
-  const TAGS_STORE_KEY = `viewerSelectedTags:${OWNER}`;
+
+  function positionPopover(pop, anchorBtn) {
+    const r = anchorBtn.getBoundingClientRect();
+    const margin = 8;
+
+    let left = Math.round(r.left);
+    let top = Math.round(r.bottom + margin);
+
+    const widthGuess = pop.getBoundingClientRect().width || 260;
+    const maxLeft = window.innerWidth - widthGuess - 10;
+
+    if (left > maxLeft) left = Math.max(10, maxLeft);
+    if (left < 10) left = 10;
+
+    pop.style.left = left + "px";
+    pop.style.top = top + "px";
+  }
+
+  function initHeaderMenuAndDisplayTools() {
+    const row = document.querySelector(".top-title-row");
+    if (!row) return;
+    if (document.getElementById("hamburgerBtn")) return;
+
+    const h1 = row.querySelector("h1");
+    if (!h1) return;
+
+    row.classList.add("top-title-flex");
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.id = "hamburgerBtn";
+    btn.className = "hamburger-btn";
+    btn.setAttribute("aria-label", "Ouvrir le menu");
+    btn.setAttribute("aria-haspopup", "menu");
+    btn.setAttribute("aria-expanded", "false");
+    btn.innerHTML = `
+      <span class="ham-lines" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </span>
+    `;
+
+    const tools = document.createElement("div");
+    tools.className = "top-title-tools";
+
+    row.insertBefore(btn, h1);
+    row.appendChild(tools);
+
+    const total = document.querySelector("#countTotal")?.closest(".total-inline");
+    const cols = document.getElementById("cols");
+    const pageSize = document.getElementById("pageSize");
+
+    if (total) tools.appendChild(total);
+    if (cols) tools.appendChild(cols);
+    if (pageSize) tools.appendChild(pageSize);
+
+    try {
+      window.ViewerMenu?.init?.();
+    } catch {}
+
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const pop = document.getElementById("topMenuPopover");
+      if (!pop) return;
+
+      const isOpen = !pop.classList.contains("hidden");
+      if (isOpen) {
+        try {
+          window.ViewerMenu?.closeMenu?.();
+        } catch {
+          pop.classList.add("hidden");
+        }
+        return;
+      }
+
+      pop.classList.remove("hidden");
+      btn.setAttribute("aria-expanded", "true");
+      positionPopover(pop, btn);
+    });
+
+    document.addEventListener("click", (e) => {
+      const pop = document.getElementById("topMenuPopover");
+      const hb = document.getElementById("hamburgerBtn");
+      if (pop && hb) {
+        const t = e.target;
+        if (!pop.contains(t) && !hb.contains(t)) {
+          try {
+            window.ViewerMenu?.closeMenu?.();
+          } catch {
+            pop.classList.add("hidden");
+          }
+        }
+      }
+
+      const tagsPop = document.getElementById("tagsPopover");
+      const tagsBtn = document.getElementById("tagsBtn");
+      if (tagsPop && tagsBtn) {
+        const t = e.target;
+        if (!tagsPop.contains(t) && !tagsBtn.contains(t)) closeTagsPopover();
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      const pop = document.getElementById("topMenuPopover");
+      const hb = document.getElementById("hamburgerBtn");
+      if (pop && hb && !pop.classList.contains("hidden")) positionPopover(pop, hb);
+
+      const tp = document.getElementById("tagsPopover");
+      const tb = document.getElementById("tagsBtn");
+      if (tp && tb && !tp.classList.contains("hidden")) positionTagsPopover(tp, tb);
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        try {
+          window.ViewerMenu?.closeMenu?.();
+        } catch {}
+        try {
+          window.ViewerMenuAbout?.close?.();
+        } catch {}
+        try {
+          window.ViewerMenuExtension?.close?.();
+        } catch {}
+        closeTagsPopover();
+      }
+    });
+  }
+
+  // =========================
+  // ✅ TAGS MULTI (popover + save)
+  // =========================
+
+  const TAGS_STORE_KEY = "viewerSelectedTags";
 
   function escapeHtml(s) {
     return String(s || "").replace(/[&<>"']/g, (m) => ({
@@ -212,15 +322,21 @@
       const raw = localStorage.getItem(TAGS_STORE_KEY) || "[]";
       const arr = JSON.parse(raw);
       return Array.isArray(arr) ? arr.filter(Boolean) : [];
-    } catch { return []; }
+    } catch {
+      return [];
+    }
   }
 
   function setSavedTags(tags) {
-    try { localStorage.setItem(TAGS_STORE_KEY, JSON.stringify(tags || [])); } catch {}
+    try {
+      localStorage.setItem(TAGS_STORE_KEY, JSON.stringify(tags || []));
+    } catch {}
   }
 
   function clearSavedTags() {
-    try { localStorage.removeItem(TAGS_STORE_KEY); } catch {}
+    try {
+      localStorage.removeItem(TAGS_STORE_KEY);
+    } catch {}
   }
 
   function ensureTagsDom() {
@@ -339,7 +455,10 @@
         e.stopPropagation();
 
         const isOpen = !pop.classList.contains("hidden");
-        if (isOpen) { closeTagsPopover(); return; }
+        if (isOpen) {
+          closeTagsPopover();
+          return;
+        }
 
         pop.classList.remove("hidden");
         btn.setAttribute("aria-expanded", "true");
@@ -363,45 +482,45 @@
   // =========================
   // Helpers URL / prefs / list
   // =========================
-  async function getListUrl(ownerCfg) {
-    // 1) ?src=... (override)
+
+  async function getListUrl() {
     try {
       const p = new URLSearchParams(location.search);
       const src = (p.get("src") || "").trim();
       if (src) return src;
     } catch {}
-
-    // 2) config.json (recommandé)
-    const cfgUrl = (ownerCfg?.listUrl || "").toString().trim();
-    if (cfgUrl) return cfgUrl;
-
-    // 3) localStorage (séparé par traducteur)
     try {
-      return (localStorage.getItem(`f95listUrl:${OWNER}`) || "").trim() || DEFAULT_URL;
+      return (localStorage.getItem("f95listUrl") || "").trim() || DEFAULT_URL;
     } catch {
       return DEFAULT_URL;
     }
   }
 
   async function getViewerCols() {
-    try { return (localStorage.getItem(`viewerCols:${OWNER}`) || "auto").trim() || "auto"; }
-    catch { return "auto"; }
+    try {
+      return (localStorage.getItem("viewerCols") || "auto").trim() || "auto";
+    } catch {
+      return "auto";
+    }
   }
 
   async function setViewerCols(v) {
-    try { localStorage.setItem(`viewerCols:${OWNER}`, String(v)); } catch {}
+    try {
+      localStorage.setItem("viewerCols", String(v));
+    } catch {}
   }
 
-  async function loadList(ownerCfg) {
-    const url = await getListUrl(ownerCfg);
+  async function loadList() {
+    const url = await getListUrl();
     const r = await fetch(url, { cache: "no-store" });
     if (!r.ok) throw new Error("HTTP " + r.status);
     return r.json();
   }
 
   // =========================
-  // Title parsing / normalize (ton code)
+  // Title parsing / normalize
   // =========================
+
   const CAT_ALLOWED = ["VN", "Collection"];
   const ENGINE_ALLOWED = ["Ren'Py", "RPGM", "Unity", "Others", "Wolf RPG"];
   const STATUS_ALLOWED = ["Completed", "Abandoned", "Onhold"];
@@ -427,24 +546,41 @@
 
   const SEP_RE = /[\u2014\u2013\-:]/;
   const ucFirst = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
-  function slug(s) { return String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, ""); }
+
+  function slug(s) {
+    return String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+  }
 
   function parseFrenchDate(str) {
     if (!str) return null;
     const s = String(str).trim().toLowerCase();
     const months = {
-      janvier: 0, fevrier: 1, février: 1, mars: 2, avril: 3, mai: 4, juin: 5,
-      juillet: 6, aout: 7, août: 7, septembre: 8, octobre: 9, novembre: 10,
-      decembre: 11, décembre: 11,
+      janvier: 0,
+      fevrier: 1,
+      février: 1,
+      mars: 2,
+      avril: 3,
+      mai: 4,
+      juin: 5,
+      juillet: 6,
+      aout: 7,
+      août: 7,
+      septembre: 8,
+      octobre: 9,
+      novembre: 10,
+      decembre: 11,
+      décembre: 11,
     };
     const m = s.match(/^(\d{1,2})\s+([a-zêéèûôîïùç]+)\s+(\d{4})$/i);
     if (!m) return null;
+
     const day = parseInt(m[1], 10);
     let key = m[2].toLowerCase();
     if (!(key in months)) key = key.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     const month = months[key];
     const year = parseInt(m[3], 10);
     if (month === undefined || !year || !day) return null;
+
     const d = new Date(Date.UTC(year, month, day));
     const ts = d.getTime();
     return Number.isNaN(ts) ? null : ts;
@@ -467,45 +603,71 @@
     let cut = 0;
 
     for (let i = 0; i < tokens.length; i++) {
-      const w = tokens[i].toLowerCase();
+      const wRaw = tokens[i];
+      const w = wRaw.toLowerCase();
       const norm = w.replace(/[^\w']/g, "");
 
-      if (norm === "vn") { if (!categories.includes("VN")) categories.push("VN"); cut = i + 1; continue; }
+      if (norm === "vn") {
+        if (!categories.includes("VN")) categories.push("VN");
+        cut = i + 1;
+        continue;
+      }
 
       if (norm === "wolf" && tokens[i + 1] && tokens[i + 1].toLowerCase().replace(/[^\w']/g, "") === "rpg") {
         if (!engines.includes("Wolf RPG")) engines.push("Wolf RPG");
-        cut = i + 2; i++; continue;
+        cut = i + 2;
+        i++;
+        continue;
       }
+
       if (norm === "wolf") break;
+
+      if (norm === "flash") {
+        cut = i + 1;
+        continue;
+      }
 
       if (norm === "others" || norm === "other") {
         if (!engines.includes("Others")) engines.push("Others");
         othersExplicit = true;
-        cut = i + 1; continue;
+        cut = i + 1;
+        continue;
       }
 
       if (ENGINE_RAW[norm] !== undefined) {
         const eng = ENGINE_RAW[norm];
         if (eng && !engines.includes(eng)) engines.push(eng);
-        cut = i + 1; continue;
+        cut = i + 1;
+        continue;
       }
 
       const pretty = ucFirst(norm);
-      if (STATUS_ALLOWED.includes(pretty)) { status = pretty; cut = i + 1; continue; }
+      if (STATUS_ALLOWED.includes(pretty)) {
+        status = pretty;
+        cut = i + 1;
+        continue;
+      }
 
-      if (w === "&" || w === "and" || w === "/") { cut = i + 1; continue; }
+      if (w === "&" || w === "and" || w === "/") {
+        cut = i + 1;
+        continue;
+      }
+
       break;
     }
 
     if (cut > 0) {
       const headSlice = tokens.slice(0, cut).join(" ");
-      t = t.slice(headSlice.length).trim().replace(/^[\u2014\u2013\-:|]+/, "").trim();
+      t = t.slice(headSlice.length).trim();
+      t = t.replace(/^[\u2014\u2013\-:|]+/, "").trim();
     }
 
     if (!status) status = "En cours";
 
-    categories = categories.filter((c) => CAT_ALLOWED.includes(c));
-    engines = engines.filter((e) => ENGINE_ALLOWED.includes(e));
+    const allowedCat = new Set(CAT_ALLOWED);
+    const allowedEng = new Set(ENGINE_ALLOWED);
+    categories = categories.filter((c) => allowedCat.has(c));
+    engines = engines.filter((e) => allowedEng.has(e));
 
     if (!othersExplicit && engines.includes("Others") && engines.some((e) => e !== "Others")) {
       engines = engines.filter((e) => e !== "Others");
@@ -518,8 +680,12 @@
     const coll = String(game.collection || "");
     const uid = game.uid ?? "";
 
-    const displayTitleRaw = String(game.gameData?.title || game.title || "");
-    const displayImageRaw = String(game.gameData?.imageUrl || game.imageUrl || "");
+    const displayTitleRaw = String(
+      game.gameData && game.gameData.title ? game.gameData.title : game.title || ""
+    );
+    const displayImageRaw = String(
+      game.gameData && game.gameData.imageUrl ? game.gameData.imageUrl : game.imageUrl || ""
+    );
 
     const displayTags = Array.isArray(game.gameData?.tags)
       ? game.gameData.tags.slice()
@@ -552,11 +718,12 @@
     const updatedAtLocalTs = !Number.isNaN(updatedAtLocalParsed) ? updatedAtLocalParsed : 0;
     const createdAtLocalTs = !Number.isNaN(createdAtLocalParsed) ? createdAtLocalParsed : 0;
 
+    // ✅ clé compteur UID ONLY
     const ckey = counterKeyOfUid(uid);
 
     return {
       uid,
-      ckey,
+      ckey, // ✅ on garde la clé déjà calculée
       collection: coll,
       id: String(game.id || ""),
       rawTitle: displayTitleRaw,
@@ -583,6 +750,10 @@
       __raw: game,
     };
   }
+
+  // =========================
+  // Render
+  // =========================
 
   function badgesLineHtml(g) {
     const out = [];
@@ -623,14 +794,17 @@
       return;
     }
 
+    // ✅ tri stats = UID key
     if (k === "views") {
       state.filtered.sort((a, b) => {
         const da = GAME_STATS.views.get(a.ckey) || 0;
         const db = GAME_STATS.views.get(b.ckey) || 0;
         if (da !== db) return (da - db) * mul;
+
         const ta = a.updatedAtLocalTs || 0;
         const tb = b.updatedAtLocalTs || 0;
         if (ta !== tb) return (ta - tb) * mul;
+
         return a.title.localeCompare(b.title);
       });
       return;
@@ -641,9 +815,11 @@
         const da = GAME_STATS.mega.get(a.ckey) || 0;
         const db = GAME_STATS.mega.get(b.ckey) || 0;
         if (da !== db) return (da - db) * mul;
+
         const ta = a.updatedAtLocalTs || 0;
         const tb = b.updatedAtLocalTs || 0;
         if (ta !== tb) return (ta - tb) * mul;
+
         return a.title.localeCompare(b.title);
       });
       return;
@@ -654,9 +830,11 @@
         const da = GAME_STATS.likes.get(a.ckey) || 0;
         const db = GAME_STATS.likes.get(b.ckey) || 0;
         if (da !== db) return (da - db) * mul;
+
         const ta = a.updatedAtLocalTs || 0;
         const tb = b.updatedAtLocalTs || 0;
         if (ta !== tb) return (ta - tb) * mul;
+
         return a.title.localeCompare(b.title);
       });
       return;
@@ -671,14 +849,14 @@
     const ft = state.filterTags;
 
     state.filtered = state.all.filter((g) => {
-      const mq =
-        !q ||
-        g.title.toLowerCase().includes(q) ||
-        String(g.id || "").includes(q) ||
-        String(g.uid || "").includes(q);
+      const mq = !q || g.title.toLowerCase().includes(q) || String(g.id || "").includes(q) || String(g.uid || "").includes(q);
 
-      const mc = fc === "all" || (Array.isArray(g.categories) ? g.categories.includes(fc) : g.category === fc);
-      const me = fe === "all" || (Array.isArray(g.engines) ? g.engines.includes(fe) : g.engine === fe);
+      const mc =
+        fc === "all" || (Array.isArray(g.categories) ? g.categories.includes(fc) : g.category === fc);
+
+      const me =
+        fe === "all" || (Array.isArray(g.engines) ? g.engines.includes(fe) : g.engine === fe);
+
       const ms = fs === "all" || g.status === fs;
 
       let mt = true;
@@ -721,23 +899,23 @@
   function renderGrid() {
     const grid = $("#grid");
     const empty = $("#gridEmpty");
-    if (!grid) return;
-
     grid.innerHTML = "";
 
     if (!state.filtered.length) {
-      if (empty) empty.classList.remove("hidden");
+      empty.classList.remove("hidden");
       updateStats();
       return;
     }
-    if (empty) empty.classList.add("hidden");
+    empty.classList.add("hidden");
 
     applyGridCols();
 
     const total = state.filtered.length;
+
     if (!state.visibleCount || state.visibleCount < 0) {
       state.visibleCount = state.pageSize === "all" ? total : Math.min(total, state.pageSize);
     }
+
     const limit = state.pageSize === "all" ? total : Math.min(total, state.visibleCount);
 
     const frag = document.createDocumentFragment();
@@ -747,18 +925,18 @@
       const card = document.createElement("article");
       card.className = "card";
 
-      const imgSrc = (g.image || "").trim() || "./favicon.png";
+      const imgSrc = (g.image || "").trim() || "/favicon.png";
       const pageHref = buildGameUrl(g.__raw || g);
 
       card.innerHTML = `
         <img src="${imgSrc}" class="thumb" alt=""
              referrerpolicy="no-referrer"
-             onerror="this.onerror=null;this.src='./favicon.png';this.classList.add('is-fallback');">
+             onerror="this.onerror=null;this.src='/favicon.png';this.classList.add('is-fallback');">
         <div class="body">
           <h3 class="name clamp-2">${escapeHtml(getDisplayTitle(g.__raw || g))}</h3>
           <div class="badges-line one-line">${badgesLineHtml(g)}</div>
           <div class="actions">
-            <a class="btn btn-page" href="${pageHref}">
+            <a class="btn btn-page" href="${pageHref}" target="_blank" rel="noopener">
               📄 Ouvrir la page
             </a>
           </div>
@@ -794,35 +972,51 @@
   }
 
   // =========================
-  // Events (identique)
+  // Events
   // =========================
-  $("#search")?.addEventListener("input", (e) => { state.q = e.target.value || ""; applyFilters(); });
+
+  $("#search")?.addEventListener("input", (e) => {
+    state.q = e.target.value || "";
+    applyFilters();
+  });
 
   $("#sort")?.addEventListener("change", async (e) => {
     state.sort = e.target.value;
+
     if (state.sort.startsWith("views") || state.sort.startsWith("mega") || state.sort.startsWith("likes")) {
       await forceReloadGameStats();
     }
+
     sortNow();
     state.visibleCount = 0;
     renderGrid();
   });
 
-  $("#filterCat")?.addEventListener("change", (e) => { state.filterCat = e.target.value || "all"; applyFilters(); });
-  $("#filterEngine")?.addEventListener("change", (e) => { state.filterEngine = e.target.value || "all"; applyFilters(); });
-  $("#filterStatus")?.addEventListener("change", (e) => { state.filterStatus = e.target.value || "all"; applyFilters(); });
+  $("#filterCat")?.addEventListener("change", (e) => {
+    state.filterCat = e.target.value || "all";
+    applyFilters();
+  });
+  $("#filterEngine")?.addEventListener("change", (e) => {
+    state.filterEngine = e.target.value || "all";
+    applyFilters();
+  });
+  $("#filterStatus")?.addEventListener("change", (e) => {
+    state.filterStatus = e.target.value || "all";
+    applyFilters();
+  });
 
   const pageSizeSel = $("#pageSize");
-  if (pageSizeSel) pageSizeSel.addEventListener("change", (e) => {
-    const v = e.target.value;
-    if (v === "all") state.pageSize = "all";
-    else {
-      const n = parseInt(v, 10);
-      state.pageSize = !isNaN(n) && n > 0 ? n : 50;
-    }
-    state.visibleCount = 0;
-    renderGrid();
-  });
+  if (pageSizeSel)
+    pageSizeSel.addEventListener("change", (e) => {
+      const v = e.target.value;
+      if (v === "all") state.pageSize = "all";
+      else {
+        const n = parseInt(v, 10);
+        state.pageSize = !isNaN(n) && n > 0 ? n : 50;
+      }
+      state.visibleCount = 0;
+      renderGrid();
+    });
 
   $("#cols")?.addEventListener("change", async (e) => {
     state.cols = e.target.value || "auto";
@@ -839,19 +1033,40 @@
     state.filterTags = [];
     state.visibleCount = 0;
 
-    const search = $("#search"); if (search) search.value = "";
-    const sort = $("#sort"); if (sort) sort.value = state.sort;
-    const cat = $("#filterCat"); if (cat) cat.value = "all";
-    const eng = $("#filterEngine"); if (eng) eng.value = "all";
-    const stat = $("#filterStatus"); if (stat) stat.value = "all";
+    const search = $("#search");
+    if (search) search.value = "";
+
+    const sort = $("#sort");
+    if (sort) sort.value = state.sort;
+
+    const cat = $("#filterCat");
+    if (cat) cat.value = "all";
+
+    const eng = $("#filterEngine");
+    if (eng) eng.value = "all";
+
+    const stat = $("#filterStatus");
+    if (stat) stat.value = "all";
 
     clearSavedTags();
     updateTagsCountBadge();
     closeTagsPopover();
 
-    state.pageSize = 50;
-    const ps = $("#pageSize"); if (ps) ps.value = "50";
+    try {
+      window.ViewerMenu?.closeMenu?.();
+    } catch {}
+    try {
+      window.ViewerMenuAbout?.close?.();
+    } catch {}
+    try {
+      window.ViewerMenuExtension?.close?.();
+    } catch {}
 
+    state.pageSize = 50;
+    const ps = $("#pageSize");
+    if (ps) ps.value = "50";
+
+    // ✅ reset cache stats
     GAME_STATS.loaded = false;
     GAME_STATS.views.clear();
     GAME_STATS.mega.clear();
@@ -861,25 +1076,22 @@
   });
 
   // =========================
-  // Init (✅ correction importante: extractGames(raw))
+  // Init
   // =========================
+
   async function init() {
-    $("#grid") && ($("#grid").innerHTML = "");
+    $("#grid").innerHTML = "";
     $("#gridEmpty")?.classList.add("hidden");
 
     try {
-      const ownerCfg = await loadOwnerConfig();
-      if (ownerCfg?.theme) applyTheme(ownerCfg.theme);
-      const h1 = document.querySelector(".top-title-row h1");
-      if (h1 && ownerCfg?.theme?.title) h1.textContent = ownerCfg.theme.title;
+      initHeaderMenuAndDisplayTools();
 
       state.cols = await getViewerCols();
       const colsSel = $("#cols");
       if (colsSel) colsSel.value = state.cols;
 
-      const raw = await loadList(ownerCfg);
-      const list = extractGames(raw);                // ✅ ICI la correction
-      state.all = (list || []).map(normalizeGame);   // ✅ plus de page vide
+      const raw = await loadList();
+      state.all = Array.isArray(raw) ? raw.map(normalizeGame) : [];
 
       if (!state.filterTags || !state.filterTags.length) {
         state.filterTags = getSavedTags();
@@ -896,7 +1108,12 @@
       initMainPageCounter();
     } catch (e) {
       console.error("[viewer] load error:", e);
-      $("#grid") && ($("#grid").innerHTML = "");
+
+      try {
+        window.viewerAnnonce?.setMaintenance?.("La liste est indisponible pour le moment.");
+      } catch {}
+
+      $("#grid").innerHTML = "";
       const ge = $("#gridEmpty");
       if (ge) {
         ge.textContent = "Erreur de chargement";

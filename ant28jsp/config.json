@@ -1,17 +1,5 @@
 {
-  "name": "ant28jsp",
-  "role": "Traducteur",
-  "listUrl": "./f95list.json",
-  "theme": {
-    "accent": "#22c55e",
-    "accent2": "#16a34a",
-    "bgTop": "#06160f",
-    "bgBottom": "#0b1220",
-    "card": "#0e1d16",
-    "border": "#1b3a2c",
-    "fg": "#e6edf3",
-    "muted": "rgba(230,237,243,.72)",
-    "radius": "16px",
-    "title": "🌿 ant28jsp — Traductions"
-  }
+  "listFile": "/f95list_ant28jsp.json",
+  "siteTitle": "ant28jsp",
+  "theme": "andric31"
 }
