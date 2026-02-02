@@ -1,0 +1,5 @@
+/app/* /app/:splat 200
+/favicon.png /favicon.png 200
+/f95list_* /f95list_:splat 200
+/:slug/ /app/viewer.html 200
+/:slug/* /app/viewer.html 200
