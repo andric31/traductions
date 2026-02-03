@@ -4,15 +4,13 @@
 // ✅ UID ONLY pour stats (aligné sur game.js)
 (() => {
 
-  // ===================== Multi-traducteurs (générique) =====================
+  // ===================== Multi-traducteurs (g�n�rique) =====================
   // URL attendue : https://traductions.pages.dev/<slug>/
   // JSON attendu : /f95list_<slug>.json
   function getSiteSlug(){
     const parts = (location.pathname || "/").split("/").filter(Boolean);
     const first = (parts[0] || "").trim();
-
-    // Si on est sur "/app/..." (preview/assets), on retombe sur un slug par défaut.
-    // (on peut tenter d'améliorer plus tard via referrer, mais ici on suit ton besoin)
+    // Si jamais on est sur "/app/..." (asset/preview), on retombe sur un slug par d�faut.
     if (!first || first.toLowerCase() === "app") return "ant28jsp";
     return first;
   }
@@ -22,14 +20,13 @@
     return `/f95list_${SITE_SLUG}.json`;
   }
 
-  // ===================== Nom affiché : vient de /index.html racine =====================
+  // ===================== Nom affiché = texte du lien dans /index.html (racine) =====================
   function escapeRegex(s){
     return String(s || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
 
   async function resolveSiteDisplayNameFromRootIndex(){
-    // On cherche : <a href="/ant28jsp/">Ant28jsp</a>
-    // -> on récupère "Ant28jsp" (respect maj/min)
+    // Cherche : <a href="/ant28jsp/">Ant28jsp</a>
     try{
       const r = await fetch("/index.html", { cache: "no-store" });
       if (!r.ok) throw new Error("HTTP " + r.status);
@@ -53,17 +50,15 @@
       const viewerName = `f95list_${displayName}_viewer`;
 
       document.title = viewerName;
-
       const h1 = document.querySelector(".topbar h1");
       if (h1) h1.textContent = viewerName;
 
       const back = document.getElementById("backToList");
-      // ✅ retour vers la racine du site (liste des traducteurs)
+      // retour vers la racine (liste des traducteurs)
       if (back) back.href = `/`;
     }catch{}
   }
-
-  // ⚠️ on lance sans bloquer le reste (mais ça va s'appliquer très vite)
+  // ne bloque pas le reste du script
   setViewerTitles();
 
 
@@ -92,7 +87,6 @@
       location.href = "https://www.google.com";
     });
   })();
-
   const DEFAULT_URL = getListUrlGeneric();
 
   const $ = (sel) => document.querySelector(sel);
@@ -1209,17 +1203,12 @@
   init();
 })();
 
-
 // ===== simple menu (hamburger) =====
 (function(){
   const btn = document.getElementById("btnMenu");
   if(!btn) return;
   let panel = document.getElementById("menuPanel");
   if(!panel){
-    // ✅ récupère le slug courant (copie légère)
-    const parts = (location.pathname || "/").split("/").filter(Boolean);
-    const siteSlug = (parts[0] || "").trim() || "ant28jsp";
-
     panel = document.createElement("div");
     panel.id = "menuPanel";
     panel.style.position = "fixed";
@@ -1233,9 +1222,13 @@
     panel.style.background = "rgba(16,18,28,0.98)";
     panel.style.boxShadow = "0 18px 40px rgba(0,0,0,0.45)";
     panel.style.display = "none";
+    // slug courant (si on est servi via /app/viewer.html, on tombe sur le slug par défaut)
+    const parts = (location.pathname || "/").split("/").filter(Boolean);
+    const slug = (!parts[0] || parts[0].toLowerCase() === "app") ? "ant28jsp" : parts[0];
+
     panel.innerHTML = `
       <a class="btn" style="justify-content:flex-start; width:100%; margin-bottom:8px;" href="/">🏠 Accueil</a>
-      <a class="btn" style="justify-content:flex-start; width:100%;" href="/${siteSlug}/">📚 Viewer</a>
+      <a class="btn" style="justify-content:flex-start; width:100%;" href="/${slug}/">📚 Viewer</a>
     `;
     document.body.appendChild(panel);
   }
@@ -1249,4 +1242,3 @@
 
 // init topbar tools + hamburger (ant28jsp)
 try{ initTopTitleToolsAnt28jsp(); initHamburgerMenuAnt28jsp(); }catch(e){}
-
