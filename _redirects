@@ -1,14 +1,5 @@
 /app/* /app/:splat 200
 /favicon.png /favicon.png 200
-
-# JSON f95list_*.json (on conserve le "_" + l'extension)
-/f95list_*.json /f95list_:splat.json 200
-
-# Sécurité : si quelqu'un tombe sur /app/viewer, on renvoie vers le slug
-/app/viewer /ant28jsp/ 301
-/app/viewer.html /ant28jsp/ 301
-
-# Routes slug -> viewer SPA
-/:slug /app/viewer.html 200
+/f95list_* /f95list_:splat 200
 /:slug/ /app/viewer.html 200
 /:slug/* /app/viewer.html 200
