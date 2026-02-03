@@ -62,6 +62,25 @@ body{
   flex-wrap:nowrap;
 }
 
+
+
+/* ✅ bloc à droite (Total + sélecteurs + menu) */
+.top-right-box{
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:nowrap;
+}
+
+/* ✅ tools dans le bloc de droite */
+.top-right-box .top-title-tools{
+  margin-left:0;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:nowrap;
+}
 /* ✅ bouton hamburger */
 .hamburger-btn{
   width:34px;
