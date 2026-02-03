@@ -3,3 +3,4 @@
 
 /:slug /viewer.html 200
 /:slug/ /viewer.html 200
+/:slug/* /viewer.html 200
