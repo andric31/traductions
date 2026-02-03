@@ -1,1 +1,93 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>f95list_Ikaros_viewer</title>
+  <link rel="icon" href="/favicon.png" />
+  <link rel="stylesheet" href="/viewer.css" />
+  <style>
+    /* mini écran de chargement au cas où */
+    #__boot {
+      font-family: system-ui, sans-serif;
+      color: #e6edf3;
+      background: #0e1117;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+    #__boot small { opacity: .75; display:block; margin-top:10px; }
+  </style>
+</head>
+<body>
+  <script>window.__SITE_SLUG__='ikaros';</script>
 
+  <div id="__boot">Chargement du viewer…<small>Base : ikaros</small></div>
+
+  <script>
+  (async () => {
+    try {
+      const r = await fetch("/viewer.html", { cache: "no-store" });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+
+      const html = await r.text();
+      const doc = new DOMParser().parseFromString(html, "text/html");
+
+      // récup scripts du viewer.html (ordre important)
+      const scripts = Array.from(doc.body.querySelectorAll("script"));
+      scripts.forEach(s => s.remove());
+
+      // injecte le body (sans scripts)
+      document.body.innerHTML = doc.body.innerHTML;
+
+      // garde le slug (au cas où)
+      window.__SITE_SLUG__ = window.__SITE_SLUG__ || 'ikaros';
+
+      // exécute les scripts du viewer.html dans l'ordre
+      for (const s of scripts) {
+        const ns = document.createElement("script");
+        if (s.type) ns.type = s.type;
+
+        if (s.src) {
+          ns.src = s.src;
+          // important : on respecte "defer" quand présent, sinon on charge en synchrone (ordre)
+          if (s.defer) ns.defer = true;
+          ns.async = false;
+
+          document.body.appendChild(ns);
+
+          // si pas defer, on attend le chargement avant de continuer (ordre)
+          if (!s.defer) {
+            await new Promise((res, rej) => {
+              ns.onload = res;
+              ns.onerror = rej;
+            });
+          }
+        } else {
+          ns.textContent = s.textContent || "";
+          document.body.appendChild(ns);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      document.body.innerHTML = `
+        <div style="font-family:system-ui,sans-serif;padding:24px;background:#0e1117;color:#e6edf3;min-height:100vh">
+          <h1 style="margin:0 0 10px 0">Erreur de chargement</h1>
+          <div>Impossible de charger <b>/viewer.html</b>.</div>
+          <div style="opacity:.8;margin-top:10px">Détail : ${
+            (e && (e.message || e.toString())) || "inconnu"
+          }</div>
+          <div style="margin-top:14px">
+            <a href="/" style="color:#58a6ff">Retour à l'accueil</a>
+          </div>
+        </div>
+      `;
+    }
+  })();
+  </script>
+</body>
+</html>
