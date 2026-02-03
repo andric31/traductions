@@ -1,93 +1,70 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
   <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>f95list_Ikaros_viewer</title>
+
   <link rel="icon" href="/favicon.png" />
-  <link rel="stylesheet" href="/viewer.css" />
-  <style>
-    /* mini écran de chargement au cas où */
-    #__boot {
-      font-family: system-ui, sans-serif;
-      color: #e6edf3;
-      background: #0e1117;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      text-align: center;
-    }
-    #__boot small { opacity: .75; display:block; margin-top:10px; }
-  </style>
+  <link rel="stylesheet" href="./viewer.css" />
 </head>
 <body>
-  <script>window.__SITE_SLUG__='ikaros';</script>
 
-  <div id="__boot">Chargement du viewer…<small>Base : ikaros</small></div>
+  <script>window.__SITE_SLUG__ = "ikaros";</script>
 
-  <script>
-  (async () => {
-    try {
-      const r = await fetch("/viewer.html", { cache: "no-store" });
-      if (!r.ok) throw new Error("HTTP " + r.status);
+  <!-- PAGE VIEWER -->
+  <div id="page-viewer">
 
-      const html = await r.text();
-      const doc = new DOMParser().parseFromString(html, "text/html");
+    <!-- 🔞 AGE GATE -->
+    <div id="age-gate" style="display:none;">
+      <div class="age-box">
+        <h2>🔞 Contenu réservé aux adultes</h2>
+        <p>
+          Ce site contient des images et contenus destinés à un public majeur.<br>
+          En continuant, vous confirmez avoir <strong>18 ans ou plus</strong>.
+        </p>
 
-      // récup scripts du viewer.html (ordre important)
-      const scripts = Array.from(doc.body.querySelectorAll("script"));
-      scripts.forEach(s => s.remove());
+        <button id="age-yes">J’ai 18 ans</button>
+        <button id="age-no">Quitter</button>
+      </div>
+    </div>
 
-      // injecte le body (sans scripts)
-      document.body.innerHTML = doc.body.innerHTML;
+    <header class="topbar" role="banner">
+      <div class="top-title-row">
+        <h1 id="viewerTitle">f95list_Ikaros_viewer</h1>
+      </div>
 
-      // garde le slug (au cas où)
-      window.__SITE_SLUG__ = window.__SITE_SLUG__ || 'ikaros';
-
-      // exécute les scripts du viewer.html dans l'ordre
-      for (const s of scripts) {
-        const ns = document.createElement("script");
-        if (s.type) ns.type = s.type;
-
-        if (s.src) {
-          ns.src = s.src;
-          // important : on respecte "defer" quand présent, sinon on charge en synchrone (ordre)
-          if (s.defer) ns.defer = true;
-          ns.async = false;
-
-          document.body.appendChild(ns);
-
-          // si pas defer, on attend le chargement avant de continuer (ordre)
-          if (!s.defer) {
-            await new Promise((res, rej) => {
-              ns.onload = res;
-              ns.onerror = rej;
-            });
-          }
-        } else {
-          ns.textContent = s.textContent || "";
-          document.body.appendChild(ns);
-        }
-      }
-    } catch (e) {
-      console.error(e);
-      document.body.innerHTML = `
-        <div style="font-family:system-ui,sans-serif;padding:24px;background:#0e1117;color:#e6edf3;min-height:100vh">
-          <h1 style="margin:0 0 10px 0">Erreur de chargement</h1>
-          <div>Impossible de charger <b>/viewer.html</b>.</div>
-          <div style="opacity:.8;margin-top:10px">Détail : ${
-            (e && (e.message || e.toString())) || "inconnu"
-          }</div>
-          <div style="margin-top:14px">
-            <a href="/" style="color:#58a6ff">Retour à l'accueil</a>
-          </div>
+      <div class="top-actions">
+        <div class="search-wrap">
+          <input id="search" type="search" placeholder="Rechercher un jeu." autocomplete="off" />
+          <span class="stat-in-bar total-inline">Total : <strong id="countTotal">0</strong></span>
         </div>
-      `;
-    }
-  })();
-  </script>
+
+        <select id="sort" title="Trier">
+          <option value="updatedAtLocal-desc">Date de MAJ (desc)</option>
+          <option value="updatedAtLocal-asc">Date de MAJ (asc)</option>
+          <option value="title-asc">Titre (A→Z)</option>
+          <option value="title-desc">Titre (Z→A)</option>
+        </select>
+      </div>
+    </header>
+
+    <main class="main" role="main">
+      <div id="grid" class="grid"></div>
+    </main>
+
+    <footer class="footer">
+      <a href="/" class="home-link">← Retour à l’accueil</a>
+      <span class="sep">•</span>
+      <span id="footerInfo"></span>
+    </footer>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="./viewer.js"></script>
+  <script src="./game.js"></script>
+
 </body>
 </html>
