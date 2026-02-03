@@ -1,16 +1,14 @@
-# ---- assets app
 /app/* /app/:splat 200
 /favicon.png /favicon.png 200
 
-# ---- JSON (garde le "_" + extension .json)
-# ex: /f95list_ant28jsp.json -> /f95list_ant28jsp.json
+# JSON f95list_*.json (on conserve le "_" + l'extension)
 /f95list_*.json /f95list_:splat.json 200
 
-# ---- si quelqu’un tombe sur /app/viewer, on force le bon slug
+# Sécurité : si quelqu'un tombe sur /app/viewer, on renvoie vers le slug
 /app/viewer /ant28jsp/ 301
 /app/viewer.html /ant28jsp/ 301
 
-# ---- routes slug -> viewer SPA
+# Routes slug -> viewer SPA
 /:slug /app/viewer.html 200
 /:slug/ /app/viewer.html 200
 /:slug/* /app/viewer.html 200
