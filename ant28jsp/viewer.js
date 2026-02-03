@@ -1,10 +1,35 @@
-// viewer.js — Vignettes + filtres + tri dates + affichage progressif
-// (menu ☰ délégué à viewer.menu.js + modules viewer.menu.about.js / viewer.menu.extension.js)
-// + Tags multi (popover + save)
-// ✅ UID ONLY pour stats (aligné sur game.js)
-(() => {
+// viewer.js — Vignettes + filtres + tri + affichage progressif + stats
+// Universel multi-traducteurs : détecte automatiquement le dossier (slug) dans l'URL.
+// ✅ UID ONLY pour les stats (aligné sur game.js)
 
-  // 🔞 Age gate (intégré ici pour éviter d'avoir un fichier séparé)
+(() => {
+  "use strict";
+
+  // =========================
+  // ✅ Détection universelle SLUG + chemins
+  // =========================
+  function detectSlug() {
+    // 1) override possible depuis index.html : window.__SITE_SLUG__ = "ikaros";
+    try {
+      const forced = (window.__SITE_SLUG__ || "").toString().trim();
+      if (forced) return forced;
+    } catch {}
+
+    // 2) sinon, 1er segment du pathname
+    // ex: /ikaros/ -> ikaros ; /ikaros/index.html -> ikaros
+    const segs = (location.pathname || "/").split("/").filter(Boolean);
+    return (segs[0] || "").trim();
+  }
+
+  const SLUG = detectSlug();                 // "ikaros" / "ant28jsp" / "..."
+  const APP_PATH = SLUG ? `/${SLUG}/` : `/`; // base pour les liens internes
+  const DEFAULT_URL = SLUG ? `/f95list_${SLUG}.json` : `/f95list.json`;
+
+  const $ = (sel) => document.querySelector(sel);
+
+  // =========================
+  // 🔞 Age gate (intégré ici)
+  // =========================
   (function initAgeGate(){
     const KEY = "ageVerified";
     const gate = document.getElementById("age-gate");
@@ -29,49 +54,30 @@
       location.href = "https://www.google.com";
     });
   })();
-  const DEFAULT_URL = "/f95list_ant28jsp.json";
 
-  const $ = (sel) => document.querySelector(sel);
-
-  // ===================== Header: outils en haut à droite (comme le site principal) =====================
-  function moveHeaderTopRightTools(){
-    const host = document.getElementById("topTitleTools");
-    if (!host) return;
-
-    // Total (déplacé hors de la barre de recherche)
-    const total = document.querySelector(".total-inline");
-    // Vignettes/ligne + Afficher par ...
-    const cols = document.getElementById("cols");
-    const pageSize = document.getElementById("pageSize");
-
-    // Important: on garde l'ordre Total -> cols -> pageSize
-    if (total && total.parentElement !== host) host.appendChild(total);
-    if (cols && cols.parentElement !== host) host.appendChild(cols);
-    if (pageSize && pageSize.parentElement !== host) host.appendChild(pageSize);
-  }
-
-  moveHeaderTopRightTools();
-
-
+  // =========================
   // ✅ URL page jeu (id central + support collection child)
+  // =========================
   function buildGameUrl(g) {
     const coll = (g.collection || "").toString().trim();
     const id = (g.id || "").toString().trim();
     const uid = (g.uid ?? "").toString().trim();
 
-    // Sous-jeu de collection : /game/?id=<collection>&uid=<uid>
-    if (coll) return `/ant28jsp/?id=${encodeURIComponent(coll)}&uid=${encodeURIComponent(uid)}`;
-    // Jeu normal / collection parent : /game/?id=<id>
-    if (id) return `/ant28jsp/?id=${encodeURIComponent(id)}`;
+    // Sous-jeu de collection : /<slug>/?id=<collection>&uid=<uid>
+    if (coll) return `${APP_PATH}?id=${encodeURIComponent(coll)}&uid=${encodeURIComponent(uid)}`;
+    // Jeu normal / collection parent : /<slug>/?id=<id>
+    if (id) return `${APP_PATH}?id=${encodeURIComponent(id)}`;
     // Fallback uid seul
-    return `/ant28jsp/?uid=${encodeURIComponent(uid)}`;
+    return `${APP_PATH}?uid=${encodeURIComponent(uid)}`;
   }
 
-  // ✅ Titre affiché (gameData prioritaire si présent)
   function getDisplayTitle(g) {
     return (g.gameData?.title || g.cleanTitle || g.title || "").toString().trim() || "Sans titre";
   }
 
+  // =========================
+  // ✅ Etat global
+  // =========================
   const state = {
     all: [],
     filtered: [],
@@ -80,7 +86,7 @@
     filterCat: "all",
     filterEngine: "all",
     filterStatus: "all",
-    filterTags: [], // ✅ multi tags
+    filterTags: [],
     cols: "auto",
     pageSize: 50,
     visibleCount: 0,
@@ -89,18 +95,14 @@
   // =========================
   // ✅ Compteur vues page principale (Viewer)
   // =========================
-
-  const MAIN_PAGE_ID = "__viewer_main__";
+  const MAIN_PAGE_ID = `__viewer_main__:${SLUG || "root"}`;
   let MAIN_VIEW_HIT_DONE = false;
 
   function formatInt(n) {
     const x = Number(n);
     if (!Number.isFinite(x)) return "0";
-    try {
-      return x.toLocaleString("fr-FR");
-    } catch {
-      return String(Math.floor(x));
-    }
+    try { return x.toLocaleString("fr-FR"); }
+    catch { return String(Math.floor(x)); }
   }
 
   // =========================
@@ -111,14 +113,9 @@
     return u ? `uid:${u}` : "";
   }
 
-  function counterKeyOfEntry(rawEntry) {
-    return counterKeyOfUid(rawEntry?.uid);
-  }
-
   // =========================
   // Stats jeux (vues + likes + téléchargements)
   // =========================
-
   const GAME_STATS = {
     views: new Map(), // key(uid:xxx) -> number
     mega: new Map(),
@@ -137,7 +134,7 @@
       if (!r.ok) return {};
       const j = await r.json();
       if (!j?.ok || !j.stats) return {};
-      return j.stats; // { key: {views, mega, likes}, ... }
+      return j.stats;
     } catch {
       return {};
     }
@@ -146,8 +143,7 @@
   async function ensureGameStatsLoaded() {
     if (GAME_STATS.loaded) return;
 
-    // ✅ on envoie uid:<uid> (comme game.js)
-    const keys = state.all.map((g) => counterKeyOfUid(g.uid)).filter(Boolean);
+    const keys = state.all.map((g) => g.ckey).filter(Boolean);
     const stats = await fetchGameStatsBulk(keys);
 
     for (const k of keys) {
@@ -173,337 +169,23 @@
     if (!el) return;
 
     try {
-      // ✅ 1 seul "hit" par chargement de page
       const op = MAIN_VIEW_HIT_DONE ? "get" : "hit";
       const r = await fetch(
         `/api/counter?op=${op}&kind=view&id=${encodeURIComponent(MAIN_PAGE_ID)}`,
         { cache: "no-store" }
       );
       if (!r.ok) return;
-
       const j = await r.json();
       if (!j?.ok) return;
-
       MAIN_VIEW_HIT_DONE = true;
       el.textContent = formatInt(j.views);
     } catch {}
   }
 
   // =========================
-  // ☰ MENU (viewer.menu.js gère le contenu / items / modales)
-  // =========================
-
-  function positionPopover(pop, anchorBtn) {
-    const r = anchorBtn.getBoundingClientRect();
-    const margin = 8;
-
-    let left = Math.round(r.left);
-    let top = Math.round(r.bottom + margin);
-
-    const widthGuess = pop.getBoundingClientRect().width || 260;
-    const maxLeft = window.innerWidth - widthGuess - 10;
-
-    if (left > maxLeft) left = Math.max(10, maxLeft);
-    if (left < 10) left = 10;
-
-    pop.style.left = left + "px";
-    pop.style.top = top + "px";
-  }
-
-  function initHeaderMenuAndDisplayTools() {
-    const row = document.querySelector(".top-title-row");
-    if (!row) return;
-    if (document.getElementById("hamburgerBtn")) return;
-
-    const h1 = row.querySelector("h1");
-    if (!h1) return;
-
-    row.classList.add("top-title-flex");
-
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.id = "hamburgerBtn";
-    btn.className = "hamburger-btn";
-    btn.setAttribute("aria-label", "Ouvrir le menu");
-    btn.setAttribute("aria-haspopup", "menu");
-    btn.setAttribute("aria-expanded", "false");
-    btn.innerHTML = `
-      <span class="ham-lines" aria-hidden="true">
-        <span></span><span></span><span></span>
-      </span>
-    `;
-
-    const tools = document.createElement("div");
-    tools.className = "top-title-tools";
-
-    row.insertBefore(btn, h1);
-    row.appendChild(tools);
-
-    const total = document.querySelector("#countTotal")?.closest(".total-inline");
-    const cols = document.getElementById("cols");
-    const pageSize = document.getElementById("pageSize");
-
-    if (total) tools.appendChild(total);
-    if (cols) tools.appendChild(cols);
-    if (pageSize) tools.appendChild(pageSize);
-
-    try {
-      window.ViewerMenu?.init?.();
-    } catch {}
-
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      const pop = document.getElementById("topMenuPopover");
-      if (!pop) return;
-
-      const isOpen = !pop.classList.contains("hidden");
-      if (isOpen) {
-        try {
-          window.ViewerMenu?.closeMenu?.();
-        } catch {
-          pop.classList.add("hidden");
-        }
-        return;
-      }
-
-      pop.classList.remove("hidden");
-      btn.setAttribute("aria-expanded", "true");
-      positionPopover(pop, btn);
-    });
-
-    document.addEventListener("click", (e) => {
-      const pop = document.getElementById("topMenuPopover");
-      const hb = document.getElementById("hamburgerBtn");
-      if (pop && hb) {
-        const t = e.target;
-        if (!pop.contains(t) && !hb.contains(t)) {
-          try {
-            window.ViewerMenu?.closeMenu?.();
-          } catch {
-            pop.classList.add("hidden");
-          }
-        }
-      }
-
-      const tagsPop = document.getElementById("tagsPopover");
-      const tagsBtn = document.getElementById("tagsBtn");
-      if (tagsPop && tagsBtn) {
-        const t = e.target;
-        if (!tagsPop.contains(t) && !tagsBtn.contains(t)) closeTagsPopover();
-      }
-    });
-
-    window.addEventListener("resize", () => {
-      const pop = document.getElementById("topMenuPopover");
-      const hb = document.getElementById("hamburgerBtn");
-      if (pop && hb && !pop.classList.contains("hidden")) positionPopover(pop, hb);
-
-      const tp = document.getElementById("tagsPopover");
-      const tb = document.getElementById("tagsBtn");
-      if (tp && tb && !tp.classList.contains("hidden")) positionTagsPopover(tp, tb);
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        try {
-          window.ViewerMenu?.closeMenu?.();
-        } catch {}
-        try {
-          window.ViewerMenuAbout?.close?.();
-        } catch {}
-        try {
-          window.ViewerMenuExtension?.close?.();
-        } catch {}
-        closeTagsPopover();
-      }
-    });
-  }
-
-  // =========================
-  // ✅ TAGS MULTI (popover + save)
-  // =========================
-
-  const TAGS_STORE_KEY = "viewerSelectedTags";
-
-  function escapeHtml(s) {
-    return String(s || "").replace(/[&<>"']/g, (m) => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;",
-    }[m]));
-  }
-
-  function getSavedTags() {
-    try {
-      const raw = localStorage.getItem(TAGS_STORE_KEY) || "[]";
-      const arr = JSON.parse(raw);
-      return Array.isArray(arr) ? arr.filter(Boolean) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  function setSavedTags(tags) {
-    try {
-      localStorage.setItem(TAGS_STORE_KEY, JSON.stringify(tags || []));
-    } catch {}
-  }
-
-  function clearSavedTags() {
-    try {
-      localStorage.removeItem(TAGS_STORE_KEY);
-    } catch {}
-  }
-
-  function ensureTagsDom() {
-    let btn = document.getElementById("tagsBtn");
-    if (!btn) {
-      btn = document.createElement("button");
-      btn.type = "button";
-      btn.id = "tagsBtn";
-      btn.className = "tags-btn";
-      btn.setAttribute("aria-haspopup", "menu");
-      btn.setAttribute("aria-expanded", "false");
-      btn.innerHTML = `🏷️ Tags <span id="tagsCount" class="tags-count hidden">0</span>`;
-      const anchor = document.getElementById("filterStatus");
-      if (anchor && anchor.parentElement) anchor.parentElement.insertBefore(btn, anchor.nextSibling);
-      else document.querySelector(".top-actions")?.appendChild(btn);
-    }
-
-    let pop = document.getElementById("tagsPopover");
-    if (!pop) {
-      pop = document.createElement("div");
-      pop.id = "tagsPopover";
-      pop.className = "tag-popover hidden";
-      pop.innerHTML = `
-        <div class="tag-head">
-          <div class="tag-title">Tags</div>
-          <button type="button" class="tag-clear" id="tagsClearBtn">Tout enlever</button>
-        </div>
-        <div class="tag-list" id="tagsList"></div>
-      `;
-      document.body.appendChild(pop);
-    }
-
-    return { btn, pop };
-  }
-
-  function positionTagsPopover(pop, anchorBtn) {
-    const r = anchorBtn.getBoundingClientRect();
-    const margin = 8;
-
-    let left = Math.round(r.left);
-    let top = Math.round(r.bottom + margin);
-
-    const w = pop.getBoundingClientRect().width || 320;
-    const SCROLLBAR_GAP = 18;
-    const maxLeft = window.innerWidth - w - SCROLLBAR_GAP;
-
-    if (left > maxLeft) left = Math.max(10, maxLeft);
-    if (left < 10) left = 10;
-
-    const approxH = 380;
-    if (top + approxH > window.innerHeight - 10) {
-      top = Math.max(10, Math.round(r.top - margin - approxH));
-    }
-
-    pop.style.left = left + "px";
-    pop.style.top = top + "px";
-  }
-
-  function closeTagsPopover() {
-    const pop = document.getElementById("tagsPopover");
-    if (pop) pop.classList.add("hidden");
-    const b = document.getElementById("tagsBtn");
-    if (b) b.setAttribute("aria-expanded", "false");
-  }
-
-  function updateTagsCountBadge() {
-    const c = document.getElementById("tagsCount");
-    if (!c) return;
-    const n = (state.filterTags || []).length;
-    c.textContent = String(n);
-    c.classList.toggle("hidden", n <= 0);
-  }
-
-  let TAGS_UI_BOUND = false;
-
-  function initTagsUI(allTags) {
-    const { btn, pop } = ensureTagsDom();
-    const list = document.getElementById("tagsList");
-
-    const renderTagList = () => {
-      if (!list) return;
-      const active = new Set(state.filterTags || []);
-      list.innerHTML = "";
-
-      for (const t of allTags) {
-        const item = document.createElement("button");
-        item.type = "button";
-        item.className = "tag-item" + (active.has(t) ? " active" : "");
-        item.innerHTML = `
-          <span class="tag-left">
-            <span class="tag-check">✓</span>
-            <span class="tag-name">${escapeHtml(t)}</span>
-          </span>
-        `;
-        item.addEventListener("click", () => {
-          const cur = new Set(state.filterTags || []);
-          if (cur.has(t)) cur.delete(t);
-          else cur.add(t);
-
-          state.filterTags = Array.from(cur);
-          setSavedTags(state.filterTags);
-          updateTagsCountBadge();
-          renderTagList();
-          applyFilters();
-        });
-
-        list.appendChild(item);
-      }
-    };
-
-    if (!TAGS_UI_BOUND) {
-      TAGS_UI_BOUND = true;
-
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        const isOpen = !pop.classList.contains("hidden");
-        if (isOpen) {
-          closeTagsPopover();
-          return;
-        }
-
-        pop.classList.remove("hidden");
-        btn.setAttribute("aria-expanded", "true");
-        renderTagList();
-        positionTagsPopover(pop, btn);
-      });
-
-      document.getElementById("tagsClearBtn")?.addEventListener("click", () => {
-        state.filterTags = [];
-        clearSavedTags();
-        updateTagsCountBadge();
-        renderTagList();
-        applyFilters();
-      });
-    }
-
-    updateTagsCountBadge();
-    renderTagList();
-  }
-
-  // =========================
   // Helpers URL / prefs / list
   // =========================
-
-  async function getListUrl() {
+  function getListUrl() {
     try {
       const p = new URLSearchParams(location.search);
       const src = (p.get("src") || "").trim();
@@ -516,22 +198,18 @@
     }
   }
 
-  async function getViewerCols() {
-    try {
-      return (localStorage.getItem("viewerCols") || "auto").trim() || "auto";
-    } catch {
-      return "auto";
-    }
+  function getViewerCols() {
+    try { return (localStorage.getItem("viewerCols") || "auto").trim() || "auto"; }
+    catch { return "auto"; }
   }
 
-  async function setViewerCols(v) {
-    try {
-      localStorage.setItem("viewerCols", String(v));
-    } catch {}
+  function setViewerCols(v) {
+    try { localStorage.setItem("viewerCols", String(v)); }
+    catch {}
   }
 
   async function loadList() {
-    const url = await getListUrl();
+    const url = getListUrl();
     const r = await fetch(url, { cache: "no-store" });
     if (!r.ok) throw new Error("HTTP " + r.status);
     return r.json();
@@ -540,10 +218,10 @@
   // =========================
   // Title parsing / normalize
   // =========================
-
   const CAT_ALLOWED = ["VN", "Collection"];
   const ENGINE_ALLOWED = ["Ren'Py", "RPGM", "Unity", "Others", "Wolf RPG"];
   const STATUS_ALLOWED = ["Completed", "Abandoned", "Onhold"];
+
   const ENGINE_RAW = {
     renpy: "Ren'Py",
     "ren'py": "Ren'Py",
@@ -558,18 +236,13 @@
     others: "Others",
     other: "Others",
     html: "Others",
-    wolf: null,
     wolfrpg: "Wolf RPG",
     "wolf rpg": "Wolf RPG",
-    flash: null,
   };
 
   const SEP_RE = /[\u2014\u2013\-:]/;
   const ucFirst = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
-
-  function slug(s) {
-    return String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
-  }
+  const slugify = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
 
   function parseFrenchDate(str) {
     if (!str) return null;
@@ -640,13 +313,6 @@
         continue;
       }
 
-      if (norm === "wolf") break;
-
-      if (norm === "flash") {
-        cut = i + 1;
-        continue;
-      }
-
       if (norm === "others" || norm === "other") {
         if (!engines.includes("Others")) engines.push("Others");
         othersExplicit = true;
@@ -684,10 +350,8 @@
 
     if (!status) status = "En cours";
 
-    const allowedCat = new Set(CAT_ALLOWED);
-    const allowedEng = new Set(ENGINE_ALLOWED);
-    categories = categories.filter((c) => allowedCat.has(c));
-    engines = engines.filter((e) => allowedEng.has(e));
+    categories = categories.filter((c) => CAT_ALLOWED.includes(c));
+    engines = engines.filter((e) => ENGINE_ALLOWED.includes(e));
 
     if (!othersExplicit && engines.includes("Others") && engines.some((e) => e !== "Others")) {
       engines = engines.filter((e) => e !== "Others");
@@ -714,18 +378,6 @@
       : [];
 
     const c = cleanTitle(displayTitleRaw);
-    const categories = Array.isArray(c.categories) ? c.categories : game.category ? [game.category] : [];
-
-    let engines = Array.isArray(c.engines) ? c.engines : game.engine ? [game.engine] : [];
-    if (game.gameData?.engine) {
-      const engNorm = ENGINE_RAW[slug(game.gameData.engine)] || game.gameData.engine;
-      engines = [engNorm];
-    } else if (!engines || engines.length === 0) {
-      if (!String(game.id || "").trim() && String(game.collection || "").trim()) {
-        const cp = cleanTitle(String(game.title || ""));
-        engines = Array.isArray(cp.engines) ? cp.engines : [];
-      }
-    }
 
     const updatedAtTs = parseFrenchDate(game.updatedAt);
     const releaseDateTs = parseFrenchDate(game.releaseDate);
@@ -738,22 +390,28 @@
     const updatedAtLocalTs = !Number.isNaN(updatedAtLocalParsed) ? updatedAtLocalParsed : 0;
     const createdAtLocalTs = !Number.isNaN(createdAtLocalParsed) ? createdAtLocalParsed : 0;
 
-    // ✅ clé compteur UID ONLY
     const ckey = counterKeyOfUid(uid);
+
+    // moteur : priorité gameData.engine si présent
+    let engines = Array.isArray(c.engines) ? c.engines : [];
+    if (game.gameData?.engine) {
+      const engNorm = ENGINE_RAW[slugify(game.gameData.engine)] || game.gameData.engine;
+      engines = [engNorm];
+    }
 
     return {
       uid,
-      ckey, // ✅ on garde la clé déjà calculée
+      ckey,
       collection: coll,
       id: String(game.id || ""),
       rawTitle: displayTitleRaw,
       title: c.title,
       gameData: game.gameData || null,
-      categories,
-      category: categories[0] || null,
+      categories: c.categories,
+      category: c.categories[0] || null,
       engines,
       engine: engines[0] || null,
-      status: STATUS_ALLOWED.includes(c.status) || c.status === "En cours" ? c.status : "En cours",
+      status: (c.status === "En cours" || STATUS_ALLOWED.includes(c.status)) ? c.status : "En cours",
       discord: String(game.discordlink || ""),
       translation: String(game.translation || ""),
       image: displayImageRaw,
@@ -772,21 +430,198 @@
   }
 
   // =========================
-  // Render
+  // TAGS MULTI (popover + save)
   // =========================
+  const TAGS_STORE_KEY = `viewerSelectedTags:${SLUG || "root"}`;
 
+  function escapeHtml(s) {
+    return String(s || "").replace(/[&<>"']/g, (m) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    }[m]));
+  }
+
+  function getSavedTags() {
+    try {
+      const raw = localStorage.getItem(TAGS_STORE_KEY) || "[]";
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr.filter(Boolean) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function setSavedTags(tags) {
+    try { localStorage.setItem(TAGS_STORE_KEY, JSON.stringify(tags || [])); } catch {}
+  }
+
+  function clearSavedTags() {
+    try { localStorage.removeItem(TAGS_STORE_KEY); } catch {}
+  }
+
+  function ensureTagsDom() {
+    let btn = document.getElementById("tagsBtn");
+    if (!btn) return null;
+
+    let pop = document.getElementById("tagsPopover");
+    if (!pop) {
+      pop = document.createElement("div");
+      pop.id = "tagsPopover";
+      pop.className = "tag-popover hidden";
+      pop.innerHTML = `
+        <div class="tag-head">
+          <div class="tag-title">Tags</div>
+          <button type="button" class="tag-clear" id="tagsClearBtn">Tout enlever</button>
+        </div>
+        <div class="tag-list" id="tagsList"></div>
+      `;
+      document.body.appendChild(pop);
+    }
+
+    return { btn, pop };
+  }
+
+  function positionTagsPopover(pop, anchorBtn) {
+    const r = anchorBtn.getBoundingClientRect();
+    const margin = 8;
+
+    let left = Math.round(r.left);
+    let top = Math.round(r.bottom + margin);
+
+    const w = pop.getBoundingClientRect().width || 320;
+    const SCROLLBAR_GAP = 18;
+    const maxLeft = window.innerWidth - w - SCROLLBAR_GAP;
+
+    if (left > maxLeft) left = Math.max(10, maxLeft);
+    if (left < 10) left = 10;
+
+    const approxH = 380;
+    if (top + approxH > window.innerHeight - 10) {
+      top = Math.max(10, Math.round(r.top - margin - approxH));
+    }
+
+    pop.style.left = left + "px";
+    pop.style.top = top + "px";
+  }
+
+  function closeTagsPopover() {
+    const pop = document.getElementById("tagsPopover");
+    if (pop) pop.classList.add("hidden");
+    const b = document.getElementById("tagsBtn");
+    if (b) b.setAttribute("aria-expanded", "false");
+  }
+
+  function updateTagsCountBadge() {
+    const c = document.getElementById("tagsCount");
+    if (!c) return;
+    const n = (state.filterTags || []).length;
+    c.textContent = String(n);
+    c.classList.toggle("hidden", n <= 0);
+  }
+
+  let TAGS_UI_BOUND = false;
+
+  function initTagsUI(allTags) {
+    const dom = ensureTagsDom();
+    if (!dom) return;
+    const { btn, pop } = dom;
+    const list = document.getElementById("tagsList");
+    if (!list) return;
+
+    const renderTagList = () => {
+      const active = new Set(state.filterTags || []);
+      list.innerHTML = "";
+
+      for (const t of allTags) {
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = "tag-item" + (active.has(t) ? " active" : "");
+        item.innerHTML = `
+          <span class="tag-left">
+            <span class="tag-check">✓</span>
+            <span class="tag-name">${escapeHtml(t)}</span>
+          </span>
+        `;
+        item.addEventListener("click", () => {
+          const cur = new Set(state.filterTags || []);
+          if (cur.has(t)) cur.delete(t);
+          else cur.add(t);
+
+          state.filterTags = Array.from(cur);
+          setSavedTags(state.filterTags);
+          updateTagsCountBadge();
+          renderTagList();
+          applyFilters();
+        });
+
+        list.appendChild(item);
+      }
+    };
+
+    if (!TAGS_UI_BOUND) {
+      TAGS_UI_BOUND = true;
+
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const isOpen = !pop.classList.contains("hidden");
+        if (isOpen) { closeTagsPopover(); return; }
+
+        pop.classList.remove("hidden");
+        btn.setAttribute("aria-expanded", "true");
+        renderTagList();
+        positionTagsPopover(pop, btn);
+      });
+
+      document.getElementById("tagsClearBtn")?.addEventListener("click", () => {
+        state.filterTags = [];
+        clearSavedTags();
+        updateTagsCountBadge();
+        renderTagList();
+        applyFilters();
+      });
+
+      document.addEventListener("click", (e) => {
+        const t = e.target;
+        const tagsBtn = document.getElementById("tagsBtn");
+        const tagsPop = document.getElementById("tagsPopover");
+        if (tagsPop && tagsBtn && !tagsPop.contains(t) && !tagsBtn.contains(t)) closeTagsPopover();
+      });
+
+      window.addEventListener("resize", () => {
+        const tp = document.getElementById("tagsPopover");
+        const tb = document.getElementById("tagsBtn");
+        if (tp && tb && !tp.classList.contains("hidden")) positionTagsPopover(tp, tb);
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeTagsPopover();
+      });
+    }
+
+    updateTagsCountBadge();
+    renderTagList();
+  }
+
+  // =========================
+  // Render / tri / filtres
+  // =========================
   function badgesLineHtml(g) {
     const out = [];
-    const cats = Array.isArray(g.categories) ? g.categories : g.category ? [g.category] : [];
-    const engs = Array.isArray(g.engines) ? g.engines : g.engine ? [g.engine] : [];
+    const cats = Array.isArray(g.categories) ? g.categories : [];
+    const engs = Array.isArray(g.engines) ? g.engines : [];
 
     for (const cat of cats) {
-      if (CAT_ALLOWED.includes(cat)) out.push(`<span class="badge cat cat-${slug(cat)}">${escapeHtml(cat)}</span>`);
+      if (CAT_ALLOWED.includes(cat)) out.push(`<span class="badge cat cat-${slugify(cat)}">${escapeHtml(cat)}</span>`);
     }
     for (const e of engs) {
-      if (ENGINE_ALLOWED.includes(e)) out.push(`<span class="badge eng eng-${slug(e)}">${escapeHtml(e)}</span>`);
+      if (ENGINE_ALLOWED.includes(e)) out.push(`<span class="badge eng eng-${slugify(e)}">${escapeHtml(e)}</span>`);
     }
-    if (g.status) out.push(`<span class="badge status status-${slug(g.status)}">${escapeHtml(g.status)}</span>`);
+    if (g.status) out.push(`<span class="badge status status-${slugify(g.status)}">${escapeHtml(g.status)}</span>`);
     return out.join(" ");
   }
 
@@ -814,49 +649,27 @@
       return;
     }
 
-    // ✅ tri stats = UID key
     if (k === "views") {
-      state.filtered.sort((a, b) => {
-        const da = GAME_STATS.views.get(a.ckey) || 0;
-        const db = GAME_STATS.views.get(b.ckey) || 0;
-        if (da !== db) return (da - db) * mul;
-
-        const ta = a.updatedAtLocalTs || 0;
-        const tb = b.updatedAtLocalTs || 0;
-        if (ta !== tb) return (ta - tb) * mul;
-
-        return a.title.localeCompare(b.title);
-      });
+      state.filtered.sort((a, b) => ( (GAME_STATS.views.get(a.ckey)||0) - (GAME_STATS.views.get(b.ckey)||0) ) * mul
+        || ( (a.updatedAtLocalTs||0) - (b.updatedAtLocalTs||0) ) * mul
+        || a.title.localeCompare(b.title)
+      );
       return;
     }
 
     if (k === "mega") {
-      state.filtered.sort((a, b) => {
-        const da = GAME_STATS.mega.get(a.ckey) || 0;
-        const db = GAME_STATS.mega.get(b.ckey) || 0;
-        if (da !== db) return (da - db) * mul;
-
-        const ta = a.updatedAtLocalTs || 0;
-        const tb = b.updatedAtLocalTs || 0;
-        if (ta !== tb) return (ta - tb) * mul;
-
-        return a.title.localeCompare(b.title);
-      });
+      state.filtered.sort((a, b) => ( (GAME_STATS.mega.get(a.ckey)||0) - (GAME_STATS.mega.get(b.ckey)||0) ) * mul
+        || ( (a.updatedAtLocalTs||0) - (b.updatedAtLocalTs||0) ) * mul
+        || a.title.localeCompare(b.title)
+      );
       return;
     }
 
     if (k === "likes") {
-      state.filtered.sort((a, b) => {
-        const da = GAME_STATS.likes.get(a.ckey) || 0;
-        const db = GAME_STATS.likes.get(b.ckey) || 0;
-        if (da !== db) return (da - db) * mul;
-
-        const ta = a.updatedAtLocalTs || 0;
-        const tb = b.updatedAtLocalTs || 0;
-        if (ta !== tb) return (ta - tb) * mul;
-
-        return a.title.localeCompare(b.title);
-      });
+      state.filtered.sort((a, b) => ( (GAME_STATS.likes.get(a.ckey)||0) - (GAME_STATS.likes.get(b.ckey)||0) ) * mul
+        || ( (a.updatedAtLocalTs||0) - (b.updatedAtLocalTs||0) ) * mul
+        || a.title.localeCompare(b.title)
+      );
       return;
     }
   }
@@ -871,12 +684,8 @@
     state.filtered = state.all.filter((g) => {
       const mq = !q || g.title.toLowerCase().includes(q) || String(g.id || "").includes(q) || String(g.uid || "").includes(q);
 
-      const mc =
-        fc === "all" || (Array.isArray(g.categories) ? g.categories.includes(fc) : g.category === fc);
-
-      const me =
-        fe === "all" || (Array.isArray(g.engines) ? g.engines.includes(fe) : g.engine === fe);
-
+      const mc = fc === "all" || (Array.isArray(g.categories) ? g.categories.includes(fc) : false);
+      const me = fe === "all" || (Array.isArray(g.engines) ? g.engines.includes(fe) : false);
       const ms = fs === "all" || g.status === fs;
 
       let mt = true;
@@ -919,14 +728,16 @@
   function renderGrid() {
     const grid = $("#grid");
     const empty = $("#gridEmpty");
+    if (!grid) return;
+
     grid.innerHTML = "";
 
     if (!state.filtered.length) {
-      empty.classList.remove("hidden");
+      empty?.classList.remove("hidden");
       updateStats();
       return;
     }
-    empty.classList.add("hidden");
+    empty?.classList.add("hidden");
 
     applyGridCols();
 
@@ -937,7 +748,6 @@
     }
 
     const limit = state.pageSize === "all" ? total : Math.min(total, state.visibleCount);
-
     const frag = document.createDocumentFragment();
 
     for (let i = 0; i < limit; i++) {
@@ -994,7 +804,6 @@
   // =========================
   // Events
   // =========================
-
   $("#search")?.addEventListener("input", (e) => {
     state.q = e.target.value || "";
     applyFilters();
@@ -1016,32 +825,32 @@
     state.filterCat = e.target.value || "all";
     applyFilters();
   });
+
   $("#filterEngine")?.addEventListener("change", (e) => {
     state.filterEngine = e.target.value || "all";
     applyFilters();
   });
+
   $("#filterStatus")?.addEventListener("change", (e) => {
     state.filterStatus = e.target.value || "all";
     applyFilters();
   });
 
-  const pageSizeSel = $("#pageSize");
-  if (pageSizeSel)
-    pageSizeSel.addEventListener("change", (e) => {
-      const v = e.target.value;
-      if (v === "all") state.pageSize = "all";
-      else {
-        const n = parseInt(v, 10);
-        state.pageSize = !isNaN(n) && n > 0 ? n : 50;
-      }
-      state.visibleCount = 0;
-      renderGrid();
-    });
+  $("#pageSize")?.addEventListener("change", (e) => {
+    const v = e.target.value;
+    if (v === "all") state.pageSize = "all";
+    else {
+      const n = parseInt(v, 10);
+      state.pageSize = !isNaN(n) && n > 0 ? n : 50;
+    }
+    state.visibleCount = 0;
+    renderGrid();
+  });
 
   $("#cols")?.addEventListener("change", async (e) => {
     state.cols = e.target.value || "auto";
     applyGridCols();
-    await setViewerCols(state.cols);
+    setViewerCols(state.cols);
   });
 
   $("#refresh")?.addEventListener("click", () => {
@@ -1059,34 +868,17 @@
     const sort = $("#sort");
     if (sort) sort.value = state.sort;
 
-    const cat = $("#filterCat");
-    if (cat) cat.value = "all";
-
-    const eng = $("#filterEngine");
-    if (eng) eng.value = "all";
-
-    const stat = $("#filterStatus");
-    if (stat) stat.value = "all";
+    $("#filterCat") && ($("#filterCat").value = "all");
+    $("#filterEngine") && ($("#filterEngine").value = "all");
+    $("#filterStatus") && ($("#filterStatus").value = "all");
 
     clearSavedTags();
     updateTagsCountBadge();
     closeTagsPopover();
 
-    try {
-      window.ViewerMenu?.closeMenu?.();
-    } catch {}
-    try {
-      window.ViewerMenuAbout?.close?.();
-    } catch {}
-    try {
-      window.ViewerMenuExtension?.close?.();
-    } catch {}
-
     state.pageSize = 50;
-    const ps = $("#pageSize");
-    if (ps) ps.value = "50";
+    $("#pageSize") && ($("#pageSize").value = "50");
 
-    // ✅ reset cache stats
     GAME_STATS.loaded = false;
     GAME_STATS.views.clear();
     GAME_STATS.mega.clear();
@@ -1098,15 +890,12 @@
   // =========================
   // Init
   // =========================
-
   async function init() {
-    $("#grid").innerHTML = "";
+    $("#grid") && ($("#grid").innerHTML = "");
     $("#gridEmpty")?.classList.add("hidden");
 
     try {
-      initHeaderMenuAndDisplayTools();
-
-      state.cols = await getViewerCols();
+      state.cols = getViewerCols();
       const colsSel = $("#cols");
       if (colsSel) colsSel.value = state.cols;
 
@@ -1129,11 +918,7 @@
     } catch (e) {
       console.error("[viewer] load error:", e);
 
-      try {
-        window.viewerAnnonce?.setMaintenance?.("La liste est indisponible pour le moment.");
-      } catch {}
-
-      $("#grid").innerHTML = "";
+      $("#grid") && ($("#grid").innerHTML = "");
       const ge = $("#gridEmpty");
       if (ge) {
         ge.textContent = "Erreur de chargement";
@@ -1145,38 +930,3 @@
   init();
 })();
 
-// ===== simple menu (hamburger) =====
-(function(){
-  const btn = document.getElementById("btnMenu");
-  if(!btn) return;
-  let panel = document.getElementById("menuPanel");
-  if(!panel){
-    panel = document.createElement("div");
-    panel.id = "menuPanel";
-    panel.style.position = "fixed";
-    panel.style.top = "64px";
-    panel.style.left = "14px";
-    panel.style.zIndex = "9999";
-    panel.style.minWidth = "220px";
-    panel.style.padding = "10px";
-    panel.style.borderRadius = "14px";
-    panel.style.border = "1px solid rgba(255,255,255,0.12)";
-    panel.style.background = "rgba(16,18,28,0.98)";
-    panel.style.boxShadow = "0 18px 40px rgba(0,0,0,0.45)";
-    panel.style.display = "none";
-    panel.innerHTML = `
-      <a class="btn" style="justify-content:flex-start; width:100%; margin-bottom:8px;" href="/index.html">🏠 Accueil</a>
-      <a class="btn" style="justify-content:flex-start; width:100%;" href="/ant28jsp/index.html">📚 Viewer</a>
-    `;
-    document.body.appendChild(panel);
-  }
-  btn.addEventListener("click", (e)=>{
-    e.stopPropagation();
-    panel.style.display = (panel.style.display === "none") ? "block" : "none";
-  });
-  document.addEventListener("click", ()=>{ panel.style.display = "none"; });
-})();
-
-
-// init topbar tools + hamburger (ant28jsp)
-try{ initTopTitleToolsAnt28jsp(); initHamburgerMenuAnt28jsp(); }catch(e){}
