@@ -1,6 +1,15 @@
 /favicon.png /favicon.png 200
 /f95list_* /f95list_:splat 200
 
+# Empêche /viewer d'être interprété comme un slug
+/viewer / 302
+/viewer/ / 302
+
+# (optionnel mais recommandé) tuer l'ancien /app
+/app / 301
+/app/ / 301
+/app/* / 301
+
 /:slug /viewer.html 200
 /:slug/ /viewer.html 200
 /:slug/* /viewer.html 200
