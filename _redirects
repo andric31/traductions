@@ -1,15 +1,16 @@
 /favicon.png /favicon.png 200
 /f95list_* /f95list_:splat 200
 
-# Empêche /viewer d'être interprété comme un slug
-/viewer / 302
-/viewer/ / 302
+# (optionnel) accès direct au viewer via /viewer
+/viewer /viewer.html 200
+/viewer/ /viewer.html 200
 
-# (optionnel mais recommandé) tuer l'ancien /app
-/app / 301
-/app/ / 301
-/app/* / 301
+# compat ancien chemin /app/* (réécrit vers viewer.html, sans perdre les query)
+/app /viewer.html 200
+/app/ /viewer.html 200
+/app/* /viewer.html 200
 
+# ROUTES "slug" : /ant28jsp , /ikaros , etc.
 /:slug /viewer.html 200
 /:slug/ /viewer.html 200
 /:slug/* /viewer.html 200
