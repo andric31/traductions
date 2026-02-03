@@ -2,17 +2,32 @@
 // (menu ☰ délégué à viewer.menu.js + modules viewer.menu.about.js / viewer.menu.extension.js)
 // + Tags multi (popover + save)
 // ✅ UID ONLY pour stats (aligné sur game.js)
+// ✅ Multi-bases générique par slug : https://traductions.pages.dev/<slug>/  ->  /f95list_<slug>.json
 (() => {
 
-  // ===================== Multi-traducteurs (g�n�rique) =====================
+  // ===================== Multi-traducteurs (générique) =====================
   // URL attendue : https://traductions.pages.dev/<slug>/
   // JSON attendu : /f95list_<slug>.json
+  //
+  // IMPORTANT :
+  // - Si Cloudflare te sert encore via /app/viewer, le slug n'est pas dans l'URL,
+  //   donc on supporte ?site=ikaros (ou ?slug=ikaros) pour forcer.
   function getSiteSlug(){
     const parts = (location.pathname || "/").split("/").filter(Boolean);
     const first = decodeURIComponent((parts[0] || "").trim());
-    // Si on est sur la racine (/) ou sur un chemin d'asset, on retombe sur un slug par défaut.
-    if (!first || first.toLowerCase() === "app") return "ant28jsp";
-    return first;
+
+    // 1) Cas normal : /<slug>/...
+    if (first && first.toLowerCase() !== "app") return first;
+
+    // 2) Cas /app/... : prendre ?site= / ?slug=
+    try{
+      const p = new URLSearchParams(location.search);
+      const s = (p.get("site") || p.get("slug") || "").trim();
+      if (s) return s;
+    }catch{}
+
+    // 3) Fallback
+    return "ant28jsp";
   }
   const SITE_SLUG = getSiteSlug();
 
@@ -26,7 +41,8 @@
     }catch{}
     return `/f95list_${SITE_SLUG}.json`;
   }
-// ===================== Nom affiché = texte du lien dans /index.html (racine) =====================
+
+  // ===================== Nom affiché = texte du lien dans /index.html (racine) =====================
   function escapeRegex(s){
     return String(s || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
@@ -67,7 +83,6 @@
   // ne bloque pas le reste du script
   setViewerTitles();
 
-
   // 🔞 Age gate (intégré ici pour éviter d'avoir un fichier séparé)
   (function initAgeGate(){
     const KEY = "ageVerified";
@@ -93,6 +108,8 @@
       location.href = "https://www.google.com";
     });
   })();
+
+  // ✅ URL de liste (générique)
   const DEFAULT_URL = getListUrlGeneric();
 
   const $ = (sel) => document.querySelector(sel);
@@ -113,9 +130,7 @@
     if (cols && cols.parentElement !== host) host.appendChild(cols);
     if (pageSize && pageSize.parentElement !== host) host.appendChild(pageSize);
   }
-
   moveHeaderTopRightTools();
-
 
   // ✅ URL page jeu (id central + support collection child)
   function buildGameUrl(g) {
@@ -371,15 +386,9 @@
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
-        try {
-          window.ViewerMenu?.closeMenu?.();
-        } catch {}
-        try {
-          window.ViewerMenuAbout?.close?.();
-        } catch {}
-        try {
-          window.ViewerMenuExtension?.close?.();
-        } catch {}
+        try { window.ViewerMenu?.closeMenu?.(); } catch {}
+        try { window.ViewerMenuAbout?.close?.(); } catch {}
+        try { window.ViewerMenuExtension?.close?.(); } catch {}
         closeTagsPopover();
       }
     });
@@ -564,21 +573,8 @@
   }
 
   // =========================
-  // Helpers URL / prefs / list
+  // Helpers prefs / list
   // =========================
-
-  async function getListUrl() {
-    try {
-      const p = new URLSearchParams(location.search);
-      const src = (p.get("src") || "").trim();
-      if (src) return src;
-    } catch {}
-    try {
-      return (localStorage.getItem("f95listUrl") || "").trim() || DEFAULT_URL;
-    } catch {
-      return DEFAULT_URL;
-    }
-  }
 
   async function getViewerCols() {
     try {
@@ -594,8 +590,9 @@
     } catch {}
   }
 
+  // ✅ charge TOUJOURS via le système générique (plus de localStorage f95listUrl ici)
   async function loadList() {
-    const url = await getListUrl();
+    const url = DEFAULT_URL; // déjà calculé via slug / ?src=
     const r = await fetch(url, { cache: "no-store" });
     if (!r.ok) throw new Error("HTTP " + r.status);
     return r.json();
@@ -1136,15 +1133,9 @@
     updateTagsCountBadge();
     closeTagsPopover();
 
-    try {
-      window.ViewerMenu?.closeMenu?.();
-    } catch {}
-    try {
-      window.ViewerMenuAbout?.close?.();
-    } catch {}
-    try {
-      window.ViewerMenuExtension?.close?.();
-    } catch {}
+    try { window.ViewerMenu?.closeMenu?.(); } catch {}
+    try { window.ViewerMenuAbout?.close?.(); } catch {}
+    try { window.ViewerMenuExtension?.close?.(); } catch {}
 
     state.pageSize = 50;
     const ps = $("#pageSize");
@@ -1209,10 +1200,13 @@
   init();
 })();
 
+
 // ===== simple menu (hamburger) =====
+// (générique : suit le slug courant + support ?site= si on est sur /app/...)
 (function(){
   const btn = document.getElementById("btnMenu");
   if(!btn) return;
+
   let panel = document.getElementById("menuPanel");
   if(!panel){
     panel = document.createElement("div");
@@ -1228,9 +1222,18 @@
     panel.style.background = "rgba(16,18,28,0.98)";
     panel.style.boxShadow = "0 18px 40px rgba(0,0,0,0.45)";
     panel.style.display = "none";
-    // slug courant (si on est servi via /app/viewer.html, on tombe sur le slug par défaut)
+
+    // slug courant : /<slug>/..., sinon /app/... -> ?site=, sinon fallback
     const parts = (location.pathname || "/").split("/").filter(Boolean);
-    const slug = (!parts[0] || parts[0].toLowerCase() === "app") ? "ant28jsp" : parts[0];
+    let slug = decodeURIComponent((parts[0] || "").trim());
+    if (!slug || slug.toLowerCase() === "app") {
+      try{
+        const p = new URLSearchParams(location.search);
+        slug = (p.get("site") || p.get("slug") || "").trim() || "ant28jsp";
+      }catch{
+        slug = "ant28jsp";
+      }
+    }
 
     panel.innerHTML = `
       <a class="btn" style="justify-content:flex-start; width:100%; margin-bottom:8px;" href="/">🏠 Accueil</a>
@@ -1238,13 +1241,10 @@
     `;
     document.body.appendChild(panel);
   }
+
   btn.addEventListener("click", (e)=>{
     e.stopPropagation();
     panel.style.display = (panel.style.display === "none") ? "block" : "none";
   });
   document.addEventListener("click", ()=>{ panel.style.display = "none"; });
 })();
-
-
-// init topbar tools + hamburger (ant28jsp)
-try{ initTopTitleToolsAnt28jsp(); initHamburgerMenuAnt28jsp(); }catch(e){}
