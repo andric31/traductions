@@ -14,26 +14,52 @@
   // - /viewer     -> slug via ?site= ou ?slug= (sinon fallback)
   // - /app/*      -> slug via ?site= ou ?slug= (sinon fallback)
   function getSiteSlug(){
-    const parts = (location.pathname || "/").split("/").filter(Boolean);
-    const first = decodeURIComponent((parts[0] || "").trim());
+  // 0) Priorité : slug forcé par un wrapper (ant28jsp/index.html, ikaros/index.html, viewer/index.html)
+  const forced = (window.__SITE_SLUG__ || "").toString().trim();
+  if (forced) return forced;
 
-    const isAsset = first.includes(".");
-    const isReserved = ["app","viewer"].includes(first.toLowerCase());
+  const parts = (location.pathname || "/").split("/").filter(Boolean);
+  const first = decodeURIComponent((parts[0] || "").trim());
 
-    // 1) Cas normal : /<slug>/...
-    if (first && !isAsset && !isReserved) return first;
+  const isAsset = first.includes(".");
+  const isReserved = ["app","viewer"].includes(first.toLowerCase());
 
-    // 2) Cas /viewer ou /app/* : slug dans la query
-    try{
-      const p = new URLSearchParams(location.search);
-      const s = (p.get("site") || p.get("slug") || "").trim();
-      if (s) return s;
-    }catch{}
+  // 1) Cas normal : /<slug>/...
+  if (first && !isAsset && !isReserved) return first;
 
-    // 3) Fallback
-    return "ant28jsp";
+  // 2) Cas /viewer ou /app/* : slug dans la query
+  try{
+    const p = new URLSearchParams(location.search);
+    const qSlug = (p.get("site") || p.get("slug") || "").trim();
+    if (qSlug) return qSlug;
+  }catch{}
+
+  // 3) Cas très fréquent : redirection /<slug>/ -> /viewer
+  // On récupère le slug depuis le referer (URL d'origine avant redirection).
+  try{
+    const ref = (document.referrer || "").trim();
+    if (ref) {
+      const u = new URL(ref, location.origin);
+      const seg = decodeURIComponent(((u.pathname || "/").split("/").filter(Boolean)[0] || "").trim());
+      const segLow = (seg || "").toLowerCase();
+      if (seg && !seg.includes(".") && !["app","viewer"].includes(segLow)) return seg;
+    }
+  }catch{}
+
+  // 4) Fallback
+  return "ant28jsp";
+}
+const SITE_SLUG = getSiteSlug();
+
+// Si on est sur /viewer ou /app/*, on nettoie l'URL (optionnel) pour afficher /<slug>/
+// (sur refresh, Cloudflare peut renvoyer vers /viewer, mais on re-détecte)
+try{
+  const parts = (location.pathname || "/").split("/").filter(Boolean);
+  const first = (parts[0] || "").toLowerCase();
+  if (first === "viewer" || first === "app") {
+    history.replaceState(null, "", `/${encodeURIComponent(SITE_SLUG)}/` + (location.search || ""));
   }
-  const SITE_SLUG = getSiteSlug();
+}catch{}
 
   // ✅ Priorité : ?src=... (si tu veux forcer une autre liste)
   // Sinon : /f95list_<slug>.json basé sur l'URL courte (/ant28jsp, /ikaros, etc.)
