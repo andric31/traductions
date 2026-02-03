@@ -654,43 +654,66 @@ function positionPopover(pop, anchorBtn) {
 }
 
 function initHamburgerMenu() {
-  const btn = $("hamburgerBtn");
-  if (!btn) return;
+  // support: viewer + game buttons (IDs differ) + legacy id
+  const btns = [];
+  const seen = new Set();
+  ["hamburgerBtnGame", "hamburgerBtnViewer", "hamburgerBtn"].forEach((id) => {
+    const b = document.getElementById(id);
+    if (b && !seen.has(b)) { btns.push(b); seen.add(b); }
+  });
+  if (!btns.length) return;
 
   try { window.ViewerMenu?.init?.(); } catch {}
 
-  btn.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const bindOne = (btn) => {
+    if (btn.dataset.boundHamburger === "1") return;
+    btn.dataset.boundHamburger = "1";
 
-    const pop = document.getElementById("topMenuPopover");
-    if (!pop) return;
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-    const isOpen = !pop.classList.contains("hidden");
-    if (isOpen) {
-      try { window.ViewerMenu?.closeMenu?.(); } catch { pop.classList.add("hidden"); }
-      btn.setAttribute("aria-expanded", "false");
-      return;
-    }
+      const pop = document.getElementById("topMenuPopover");
+      if (!pop) return;
 
-    pop.classList.remove("hidden");
-    btn.setAttribute("aria-expanded", "true");
-    positionPopover(pop, btn);
-  });
+      const isOpen = !pop.classList.contains("hidden");
+      if (isOpen) {
+        try { window.ViewerMenu?.closeMenu?.(); } catch { pop.classList.add("hidden"); }
+        btn.setAttribute("aria-expanded", "false");
+        return;
+      }
+
+      pop.classList.remove("hidden");
+      btn.setAttribute("aria-expanded", "true");
+      positionPopover(pop, btn);
+    });
+  };
+
+  btns.forEach(bindOne);
+
+  if (document.body.dataset.boundHamburgerGlobal === "1") return;
+  document.body.dataset.boundHamburgerGlobal = "1";
 
   document.addEventListener("click", (e) => {
     const pop = document.getElementById("topMenuPopover");
     if (!pop) return;
+
     const target = e.target;
-    if (!pop.contains(target) && !btn.contains(target)) {
+    // close if click outside pop AND outside all hamburger buttons
+    const clickedBtn = btns.some((b) => b.contains(target));
+    if (!pop.contains(target) && !clickedBtn) {
       try { window.ViewerMenu?.closeMenu?.(); } catch { pop.classList.add("hidden"); }
-      btn.setAttribute("aria-expanded", "false");
+      btns.forEach((b) => b.setAttribute("aria-expanded", "false"));
     }
   });
 
   window.addEventListener("resize", () => {
     const pop = document.getElementById("topMenuPopover");
-    if (pop && !pop.classList.contains("hidden")) positionPopover(pop, btn);
+    if (pop && !pop.classList.contains("hidden")) {
+      // reposition relative to the first visible/available button
+      const btn = btns.find((b) => b.offsetParent !== null) || btns[0];
+      positionPopover(pop, btn);
+    }
   });
 
   document.addEventListener("keydown", (e) => {
