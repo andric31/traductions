@@ -820,6 +820,13 @@
       const card = document.createElement("article");
       card.className = "card";
 
+      const trKey =
+        (g.__raw && (g.__raw._translatorKey || g.__raw._translator)) ? String(g.__raw._translatorKey || g.__raw._translator) :
+        (g.__raw && g.__raw._translator) ? String(g.__raw._translator) :
+        "";
+      
+      card.dataset.tr = trKey.toLowerCase();
+
       const imgSrc = (g.image || "").trim() || "/favicon.png";
       const pageHref = buildGameUrl(g.__raw || g);
 

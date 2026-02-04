@@ -1,0 +1,46 @@
+/* themes.css — couleurs des vignettes par traducteur */
+
+/* Base (tous) */
+:root{
+  --card-bg: rgba(255,255,255,0.04);
+  --card-border: rgba(255,255,255,0.10);
+  --card-accent: rgba(255,255,255,0.18);
+}
+
+/* Applique aux cards */
+.card{
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.2) inset;
+}
+
+.card:hover{
+  border-color: var(--card-accent);
+  box-shadow: 0 0 0 1px var(--card-accent), 0 10px 30px rgba(0,0,0,0.35);
+}
+
+/* =========================
+   Thèmes par traducteur
+   On cible via data-tr="..."
+   ========================= */
+
+/* andric31 */
+.card[data-tr="andric31"]{
+  --card-bg: rgba(176,105,232,0.10);
+  --card-border: rgba(176,105,232,0.35);
+  --card-accent: rgba(176,105,232,0.75);
+}
+
+/* Ant28jsp */
+.card[data-tr="ant28jsp"]{
+  --card-bg: rgba(33,150,243,0.10);
+  --card-border: rgba(33,150,243,0.35);
+  --card-accent: rgba(33,150,243,0.75);
+}
+
+/* Ikaros */
+.card[data-tr="ikaros"]{
+  --card-bg: rgba(254,89,1,0.10);
+  --card-border: rgba(254,89,1,0.35);
+  --card-accent: rgba(254,89,1,0.80);
+}
