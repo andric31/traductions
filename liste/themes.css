@@ -1,51 +1,79 @@
-/* themes.css — couleurs des vignettes par traducteur */
+/* themes.css — UI moderne + thèmes traducteurs */
 
-/* Base (tous) */
+/* =========================
+   🌌 Fond moderne premium
+   ========================= */
+
+body{
+  min-height:100vh;
+
+  background:
+    radial-gradient(1200px circle at 10% -10%, rgba(88,101,242,0.08), transparent),
+    radial-gradient(900px circle at 110% 10%, rgba(176,105,232,0.06), transparent),
+    radial-gradient(700px circle at 50% 120%, rgba(33,150,243,0.05), transparent),
+    #0b0d12;
+}
+
+/* léger effet profondeur */
+.grid-wrap{
+  backdrop-filter: blur(6px);
+}
+
+
+/* =========================
+   Base cards
+   ========================= */
+
 :root{
   --card-bg: rgba(255,255,255,0.04);
   --card-border: rgba(255,255,255,0.10);
   --card-accent: rgba(255,255,255,0.18);
 }
 
-/* Applique aux cards */
 .card{
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.2) inset;
-  transition: border-color .18s ease, box-shadow .18s ease, transform .12s ease;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset;
+
+  transition:
+    border-color .18s ease,
+    box-shadow .18s ease,
+    transform .12s ease;
 }
 
 .card:hover{
   border-color: var(--card-accent);
+
   box-shadow:
     0 0 0 1px var(--card-accent),
-    0 0 18px -4px var(--card-accent),
-    0 10px 30px rgba(0,0,0,0.35);
-  transform: translateY(-2px);
+    0 0 22px -6px var(--card-accent),
+    0 14px 38px rgba(0,0,0,0.45);
+
+  transform: translateY(-3px);
 }
 
+
 /* =========================
-   Thèmes par traducteur
-   On cible via data-tr="..."
+   🎨 Thèmes par traducteur
    ========================= */
 
-/* andric31 */
+/* andric31 — bleu moderne */
 .card[data-tr="andric31"]{
   --card-bg: rgba(33,150,243,0.10);
   --card-border: rgba(33,150,243,0.35);
-  --card-accent: rgba(33,150,243,0.75);
+  --card-accent: rgba(33,150,243,0.85);
 }
 
-/* Ant28jsp */
+/* Ant28jsp — violet premium */
 .card[data-tr="ant28jsp"]{
   --card-bg: rgba(176,105,232,0.10);
   --card-border: rgba(176,105,232,0.35);
-  --card-accent: rgba(176,105,232,0.75);
+  --card-accent: rgba(176,105,232,0.85);
 }
 
-/* Ikaros */
+/* Ikaros — orange tech */
 .card[data-tr="ikaros"]{
   --card-bg: rgba(254,89,1,0.10);
   --card-border: rgba(254,89,1,0.35);
-  --card-accent: rgba(254,89,1,0.80);
+  --card-accent: rgba(254,89,1,0.90);
 }
