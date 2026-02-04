@@ -59,18 +59,29 @@
   // ✅ URL page jeu (id central + support collection child)
   // =========================
   function buildGameUrl(g) {
+    const base = (g && g._openBase) ? String(g._openBase) : APP_PATH;
     const coll = (g.collection || "").toString().trim();
     const id = (g.id || "").toString().trim();
     const uid = (g.uid ?? "").toString().trim();
 
-    // Sous-jeu de collection : /<slug>/?id=<collection>&uid=<uid>
-    if (coll) return `${APP_PATH}?id=${encodeURIComponent(coll)}&uid=${encodeURIComponent(uid)}`;
-    // Jeu normal / collection parent : /<slug>/?id=<id>
-    if (id) return `${APP_PATH}?id=${encodeURIComponent(id)}`;
-    // Fallback uid seul
-    return `${APP_PATH}?uid=${encodeURIComponent(uid)}`;
-  }
+    const params = new URLSearchParams();
+    if (coll) {
+      // sous-jeu de collection : on ouvre la page du thread parent + uid
+      if (coll) params.set("id", coll);
+      if (uid) params.set("uid", uid);
+    } else if (id) {
+      params.set("id", id);
+      if (uid) params.set("uid", uid);
+    } else if (uid) {
+      params.set("uid", uid);
+    }
 
+    const qs = params.toString();
+    if (!qs) return base;
+
+    // base peut déjà contenir un "?"
+    return base.includes("?") ? (base + "&" + qs) : (base + "?" + qs);
+  }
   function getDisplayTitle(g) {
     return (g.gameData?.title || g.cleanTitle || g.title || "").toString().trim() || "Sans titre";
   }
@@ -238,6 +249,7 @@ async function loadAllLists() {
         if (!g || typeof g !== "object") continue;
         if (!g._translator) g._translator = name;
         if (!g._translatorKey && t && t.key) g._translatorKey = String(t.key);
+        if (!g._openBase && t && t.openBase) g._openBase = String(t.openBase);
         combined.push(g);
       }
     } catch (e) {
