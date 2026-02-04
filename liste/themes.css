@@ -1,57 +1,97 @@
-/* themes.css — UI moderne + thèmes traducteurs */
+/* themes.css — UI moderne (AURORA) + thèmes traducteurs */
 
 /* =========================
-   🌌 Fond moderne premium (PLUS VISIBLE)
+   🌌 Fond AURORA (vraiment différent)
+   - mesh visible
+   - grain léger
+   - profondeur premium
    ========================= */
+
+html, body{
+  min-height:100%;
+  background: #070812;
+}
 
 body{
   min-height:100vh;
+  position: relative;
 
+  /* Mesh/Aurora */
   background:
-    radial-gradient(1400px circle at 15% 20%, rgba(88,101,242,0.18), transparent 60%),
-    radial-gradient(1000px circle at 85% 0%, rgba(176,105,232,0.14), transparent 55%),
-    radial-gradient(900px circle at 50% 120%, rgba(33,150,243,0.12), transparent 60%),
-    linear-gradient(180deg, #07090f 0%, #0b0f1a 40%, #0d1322 100%);
+    radial-gradient(1100px circle at 10% 15%, rgba(88,101,242,0.35), transparent 55%),
+    radial-gradient(900px circle at 90% 10%, rgba(176,105,232,0.30), transparent 52%),
+    radial-gradient(800px circle at 20% 95%, rgba(33,150,243,0.22), transparent 60%),
+    radial-gradient(700px circle at 85% 85%, rgba(254,89,1,0.18), transparent 62%),
+    linear-gradient(180deg, #05060e 0%, #070812 35%, #0a0f1f 100%);
+  background-attachment: fixed;
 }
 
-/* voile lumineux global (rend le fond plus “premium”) */
+/* Glow global (donne l’effet “lumière d’écran”) */
 body::before{
   content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
+  position: fixed;
+  inset: -20%;
+  pointer-events: none;
+  z-index: 0;
 
   background:
-    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.045), transparent 70%);
+    radial-gradient(circle at 50% 40%, rgba(255,255,255,0.08), transparent 55%),
+    radial-gradient(circle at 20% 70%, rgba(255,255,255,0.04), transparent 55%);
 
-  mix-blend-mode: soft-light;
+  filter: blur(18px);
+  opacity: 0.85;
 }
 
-/* léger effet profondeur */
+/* Grain fin (hyper moderne, casse le “flat”) */
+body::after{
+  content:"";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.018), rgba(255,255,255,0.018) 1px, transparent 1px, transparent 2px),
+    repeating-linear-gradient(90deg, rgba(0,0,0,0.014), rgba(0,0,0,0.014) 1px, transparent 1px, transparent 2px);
+  opacity: 0.35;
+  mix-blend-mode: overlay;
+}
+
+/* Assure que le contenu passe au-dessus du fond */
+#page-viewer, #page-game, header, main, footer{
+  position: relative;
+  z-index: 1;
+}
+
+/* “verre” léger sur la zone centrale */
 .grid-wrap{
-  backdrop-filter: blur(6px);
+  background: rgba(255,255,255,0.01);
+  backdrop-filter: blur(10px);
 }
-
 
 /* =========================
    Base cards
    ========================= */
 
 :root{
-  --card-bg: rgba(255,255,255,0.04);
-  --card-border: rgba(255,255,255,0.10);
-  --card-accent: rgba(255,255,255,0.18);
+  --card-bg: rgba(255,255,255,0.05);
+  --card-border: rgba(255,255,255,0.12);
+  --card-accent: rgba(255,255,255,0.20);
 }
 
 .card{
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset;
+
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.25) inset,
+    0 10px 30px rgba(0,0,0,0.25);
 
   transition:
     border-color .18s ease,
     box-shadow .18s ease,
-    transform .12s ease;
+    transform .12s ease,
+    filter .18s ease;
 }
 
 .card:hover{
@@ -59,10 +99,11 @@ body::before{
 
   box-shadow:
     0 0 0 1px var(--card-accent),
-    0 0 22px -6px var(--card-accent),
-    0 14px 38px rgba(0,0,0,0.45);
+    0 0 26px -8px var(--card-accent),
+    0 18px 44px rgba(0,0,0,0.45);
 
   transform: translateY(-3px);
+  filter: brightness(1.02);
 }
 
 
@@ -72,21 +113,21 @@ body::before{
 
 /* andric31 — bleu moderne */
 .card[data-tr="andric31"]{
-  --card-bg: rgba(33,150,243,0.10);
-  --card-border: rgba(33,150,243,0.35);
-  --card-accent: rgba(33,150,243,0.85);
+  --card-bg: rgba(33,150,243,0.12);
+  --card-border: rgba(33,150,243,0.36);
+  --card-accent: rgba(33,150,243,0.95);
 }
 
 /* Ant28jsp — violet premium */
 .card[data-tr="ant28jsp"]{
-  --card-bg: rgba(176,105,232,0.10);
-  --card-border: rgba(176,105,232,0.35);
-  --card-accent: rgba(176,105,232,0.85);
+  --card-bg: rgba(176,105,232,0.12);
+  --card-border: rgba(176,105,232,0.36);
+  --card-accent: rgba(176,105,232,0.95);
 }
 
 /* Ikaros — orange tech */
 .card[data-tr="ikaros"]{
-  --card-bg: rgba(254,89,1,0.10);
-  --card-border: rgba(254,89,1,0.35);
-  --card-accent: rgba(254,89,1,0.90);
+  --card-bg: rgba(254,89,1,0.12);
+  --card-border: rgba(254,89,1,0.36);
+  --card-accent: rgba(254,89,1,0.98);
 }
