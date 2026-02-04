@@ -1,27 +1,20 @@
 [
   {
     "key": "andric31",
-    "name": "andric31",
-    "type": "external",
-    "description": "Traducteur · Traductions automatiques (multi-moteurs)",
+    "name": "Andric31",
     "listUrl": "https://raw.githubusercontent.com/andric31/f95list/main/f95list.json",
-    "viewerUrl": "/template/",
-    "originalViewerUrl": "https://andric31-traductions.pages.dev/"
+    "openBase": "https://andric31-traductions.pages.dev/game/"
   },
   {
     "key": "ant28jsp",
     "name": "Ant28jsp",
-    "type": "local",
-    "description": "Traducteur · Traductions automatiques de jeux Ren’Py",
     "listUrl": "/f95list_ant28jsp.json",
-    "viewerUrl": "/ant28jsp/"
+    "openBase": "https://traductions.pages.dev/ant28jsp/"
   },
   {
     "key": "ikaros",
     "name": "Ikaros",
-    "type": "local",
-    "description": "Traducteur · Traductions automatiques de jeux Unity, Ren’Py",
     "listUrl": "/f95list_ikaros.json",
-    "viewerUrl": "/ikaros/"
+    "openBase": "https://traductions.pages.dev/ikaros/"
   }
 ]
