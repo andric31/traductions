@@ -59,17 +59,20 @@
   // ✅ URL page jeu (id central + support collection child)
   // =========================
   function buildGameUrl(g) {
-    const base = (g && g._openBase) ? String(g._openBase) : APP_PATH;
-    const coll = (g.collection || "").toString().trim();
-    const id = (g.id || "").toString().trim();
-    const uid = (g.uid ?? "").toString().trim();
+    const base = (g && g._openBase) ? String(g._openBase).trim() : APP_PATH;
+    const coll = (g && g.collection != null) ? String(g.collection).trim() : "";
+    const id = (g && g.id != null) ? String(g.id).trim() : "";
+    const uid = (g && g.uid != null) ? String(g.uid).trim() : "";
 
-    const params = new URLSearchParams();
-    if (coll) {
-      // sous-jeu de collection : on ouvre la page du thread parent + uid
-      if (coll) params.set("id", coll);
-      if (uid) params.set("uid", uid);
-    } else if (id) {
+    // ✅ mêmes règles que les viewers traducteurs (ant28jsp/ikaros/template)
+    // - Sous-jeu de collection : ?id=<collection>&uid=<uid>
+    // - Jeu normal (ou parent) : ?id=<id>
+    // - Fallback : ?uid=<uid>
+    if (coll && uid) return `${base}?id=${encodeURIComponent(coll)}&uid=${encodeURIComponent(uid)}`;
+    if (id) return `${base}?id=${encodeURIComponent(id)}`;
+    if (uid) return `${base}?uid=${encodeURIComponent(uid)}`;
+    return base;
+  } else if (id) {
       params.set("id", id);
       if (uid) params.set("uid", uid);
     } else if (uid) {
