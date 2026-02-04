@@ -12,6 +12,7 @@
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   box-shadow: 0 0 0 1px rgba(0,0,0,0.2) inset;
+  transition: border-color .18s ease, box-shadow .18s ease, transform .12s ease;
 }
 
 .card:hover{
@@ -20,6 +21,7 @@
     0 0 0 1px var(--card-accent),
     0 0 18px -4px var(--card-accent),
     0 10px 30px rgba(0,0,0,0.35);
+  transform: translateY(-2px);
 }
 
 /* =========================
