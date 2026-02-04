@@ -1,32 +1,32 @@
-/* themes.css — UI moderne (AURORA) + thèmes traducteurs */
+/* themes.css — UI moderne (NEUTRE) + thèmes traducteurs
+   Objectif : fond premium visible MAIS neutre (ne gêne pas les vignettes)
+*/
 
 /* =========================
-   🌌 Fond AURORA (vraiment différent)
-   - mesh visible
-   - grain léger
-   - profondeur premium
+   🌌 Fond premium neutre
+   - pas de couleurs fortes (évite conflit avec cards)
+   - profondeur + grain léger
    ========================= */
 
 html, body{
   min-height:100%;
-  background: #070812;
+  background: #07090f;
 }
 
 body{
   min-height:100vh;
   position: relative;
 
-  /* Mesh/Aurora */
+  /* Mesh NEUTRE (presque monochrome) */
   background:
-    radial-gradient(1100px circle at 10% 15%, rgba(88,101,242,0.35), transparent 55%),
-    radial-gradient(900px circle at 90% 10%, rgba(176,105,232,0.30), transparent 52%),
-    radial-gradient(800px circle at 20% 95%, rgba(33,150,243,0.22), transparent 60%),
-    radial-gradient(700px circle at 85% 85%, rgba(254,89,1,0.18), transparent 62%),
-    linear-gradient(180deg, #05060e 0%, #070812 35%, #0a0f1f 100%);
+    radial-gradient(1200px circle at 15% 10%, rgba(255,255,255,0.06), transparent 58%),
+    radial-gradient(900px circle at 85% 0%, rgba(255,255,255,0.04), transparent 55%),
+    radial-gradient(800px circle at 50% 120%, rgba(255,255,255,0.035), transparent 60%),
+    linear-gradient(180deg, #06070c 0%, #07090f 45%, #0a0c12 100%);
   background-attachment: fixed;
 }
 
-/* Glow global (donne l’effet “lumière d’écran”) */
+/* Glow global neutre (effet “lumière d’écran” mais sans teinte) */
 body::before{
   content:"";
   position: fixed;
@@ -35,14 +35,14 @@ body::before{
   z-index: 0;
 
   background:
-    radial-gradient(circle at 50% 40%, rgba(255,255,255,0.08), transparent 55%),
-    radial-gradient(circle at 20% 70%, rgba(255,255,255,0.04), transparent 55%);
+    radial-gradient(circle at 50% 40%, rgba(255,255,255,0.05), transparent 58%),
+    radial-gradient(circle at 20% 70%, rgba(255,255,255,0.03), transparent 60%);
 
-  filter: blur(18px);
-  opacity: 0.85;
+  filter: blur(22px);
+  opacity: 0.9;
 }
 
-/* Grain fin (hyper moderne, casse le “flat”) */
+/* Grain fin (casse le flat, reste neutre) */
 body::after{
   content:"";
   position: fixed;
@@ -51,9 +51,9 @@ body::after{
   z-index: 0;
 
   background-image:
-    repeating-linear-gradient(0deg, rgba(255,255,255,0.018), rgba(255,255,255,0.018) 1px, transparent 1px, transparent 2px),
-    repeating-linear-gradient(90deg, rgba(0,0,0,0.014), rgba(0,0,0,0.014) 1px, transparent 1px, transparent 2px);
-  opacity: 0.35;
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.014), rgba(255,255,255,0.014) 1px, transparent 1px, transparent 2px),
+    repeating-linear-gradient(90deg, rgba(0,0,0,0.012), rgba(0,0,0,0.012) 1px, transparent 1px, transparent 2px);
+  opacity: 0.28;
   mix-blend-mode: overlay;
 }
 
@@ -63,7 +63,7 @@ body::after{
   z-index: 1;
 }
 
-/* “verre” léger sur la zone centrale */
+/* “verre” léger sur la zone centrale (mais NEUTRE) */
 .grid-wrap{
   background: rgba(255,255,255,0.01);
   backdrop-filter: blur(10px);
@@ -111,7 +111,6 @@ body::after{
    (override sans modifier viewer.css)
    ========================= */
 
-/* cible large : si ton header a class="topbar" (comme dans ton HTML) */
 header.topbar{
   background: rgba(10, 12, 22, 0.55) !important;
   backdrop-filter: blur(14px) saturate(140%);
@@ -120,18 +119,15 @@ header.topbar{
   box-shadow: 0 10px 30px rgba(0,0,0,0.25);
 }
 
-/* si ton viewer.css met un fond sur .topbar directement */
 .topbar{
   background: rgba(10, 12, 22, 0.55) !important;
 }
 
-/* Titres un poil plus "net" */
 .topbar h1,
 #viewerTitle{
   text-shadow: 0 1px 0 rgba(0,0,0,0.35);
 }
 
-/* Inputs / selects : glass léger (si tu veux) */
 .topbar input,
 .topbar select,
 .topbar button{
@@ -140,35 +136,33 @@ header.topbar{
   box-shadow: none !important;
 }
 
-/* hover un peu plus premium */
 .topbar input:focus,
 .topbar select:focus{
   outline: none;
   border-color: rgba(255,255,255,0.18) !important;
-  box-shadow: 0 0 0 3px rgba(88,101,242,0.12) !important;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.10) !important;
 }
 
 /* =========================
    🎨 Thèmes par traducteur
+   (tes couleurs restent uniquement sur les cards)
    ========================= */
 
-/* andric31 — bleu moderne */
 .card[data-tr="andric31"]{
   --card-bg: rgba(33,150,243,0.12);
   --card-border: rgba(33,150,243,0.36);
   --card-accent: rgba(33,150,243,0.95);
 }
 
-/* Ant28jsp — violet premium */
 .card[data-tr="ant28jsp"]{
   --card-bg: rgba(176,105,232,0.12);
   --card-border: rgba(176,105,232,0.36);
   --card-accent: rgba(176,105,232,0.95);
 }
 
-/* Ikaros — orange tech */
 .card[data-tr="ikaros"]{
   --card-bg: rgba(254,89,1,0.12);
   --card-border: rgba(254,89,1,0.36);
   --card-accent: rgba(254,89,1,0.98);
 }
+
