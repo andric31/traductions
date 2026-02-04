@@ -21,6 +21,26 @@ function normalize(s) {
     .trim();
 }
 
+
+function isExternalUrl(u){
+  return /^https?:\/\//i.test(String(u||""));
+}
+
+function buildViewerHref(viewerUrl, listUrl, params){
+  const base = String(viewerUrl || "").trim() || "#";
+  const p = new URLSearchParams();
+  if (listUrl) p.set("src", listUrl);
+  if (params){
+    for (const [k,v] of Object.entries(params)){
+      if (v !== undefined && v !== null && String(v).trim() !== "") p.set(k, String(v).trim());
+    }
+  }
+  // viewerUrl peut déjà contenir un "?"
+  const sep = base.includes("?") ? "&" : "?";
+  const qs = p.toString();
+  return qs ? (base + sep + qs) : base;
+}
+
 async function fetchJson(url) {
   const r = await fetch(url, { cache: "no-store" });
   if (!r.ok) throw new Error(`HTTP ${r.status} sur ${url}`);
@@ -56,8 +76,8 @@ function renderTranslatorCard(t, stats) {
 
   const h2 = document.createElement("h2");
   const a = document.createElement("a");
-  a.href = t.viewerUrl || "#";
-  a.target = t.type === "external" ? "_blank" : "_self";
+  a.href = buildViewerHref(t.viewerUrl, t.listUrl, null);
+  a.target = isExternalUrl(t.viewerUrl) ? "_blank" : "_self";
   a.rel = "noopener noreferrer";
   a.textContent = t.name || t.key || "(sans nom)";
   h2.appendChild(a);
@@ -65,6 +85,19 @@ function renderTranslatorCard(t, stats) {
   const meta = document.createElement("div");
   meta.className = "meta";
   meta.textContent = t.description || "";
+meta.textContent = t.description || "";
+
+  if (t.originalViewerUrl) {
+    const extra = document.createElement("div");
+    extra.className = "meta";
+    const a2 = document.createElement("a");
+    a2.href = t.originalViewerUrl;
+    a2.target = "_blank";
+    a2.rel = "noopener noreferrer";
+    a2.textContent = "Ouvrir le site original";
+    extra.appendChild(a2);
+    card.appendChild(extra);
+  }
 
   const row = document.createElement("div");
   row.className = "row";
@@ -99,8 +132,8 @@ function renderGameCard(g) {
   const title = document.createElement("div");
   title.className = "title";
   const a = document.createElement("a");
-  a.href = g.url || "#";
-  a.target = "_blank";
+  a.href = buildViewerHref(g._viewerUrl, g._listUrl, { uid: g.uid || "", id: g.id || "" });
+  a.target = isExternalUrl(g._viewerUrl) ? "_blank" : "_self";
   a.rel = "noopener noreferrer";
   a.textContent = safeText(g.cleanTitle || g.title || "(sans titre)", 180);
   title.appendChild(a);
@@ -238,6 +271,9 @@ async function loadAll() {
       gg.status = status;
       gg.tags = tags;
       gg._translatorKey = r.t.key;
+      gg._viewerUrl = r.t.viewerUrl;
+      gg._listUrl = r.t.listUrl;
+      gg._translatorType = r.t.type;
       gg._translatorName = r.t.name || r.t.key;
       gg._metaLine = metaLine;
       gg._search = normalize([

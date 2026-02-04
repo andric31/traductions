@@ -5,7 +5,8 @@
     "type": "external",
     "description": "Traducteur · Traductions automatiques (multi-moteurs)",
     "listUrl": "https://raw.githubusercontent.com/andric31/f95list/main/f95list.json",
-    "viewerUrl": "https://andric31-traductions.pages.dev/"
+    "viewerUrl": "/template/",
+    "originalViewerUrl": "https://andric31-traductions.pages.dev/"
   },
   {
     "key": "ant28jsp",
