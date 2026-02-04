@@ -1,29 +1,32 @@
-/* themes.css — UI moderne + thèmes traducteurs */
+/* themes.css — UI moderne + thèmes traducteurs (fond plus visible) */
 
 /* =========================
-   🌌 Fond moderne premium
+   🌌 Fond moderne premium (forcé)
    ========================= */
-
-body{
-  min-height:100vh;
-
+html, body{
+  min-height:100%;
   background:
-    radial-gradient(1200px circle at 10% -10%, rgba(88,101,242,0.08), transparent),
-    radial-gradient(900px circle at 110% 10%, rgba(176,105,232,0.06), transparent),
-    radial-gradient(700px circle at 50% 120%, rgba(33,150,243,0.05), transparent),
-    #0b0d12;
+    radial-gradient(1200px circle at 10% -10%, rgba(88,101,242,0.16), transparent 55%),
+    radial-gradient(900px circle at 110% 10%, rgba(176,105,232,0.14), transparent 50%),
+    radial-gradient(700px circle at 50% 120%, rgba(33,150,243,0.10), transparent 55%),
+    linear-gradient(180deg, #0b0d12 0%, #0f1320 100%) !important;
+  background-attachment: fixed;
 }
 
-/* léger effet profondeur */
+/* Important : laisse le fond se voir */
+#page-viewer{
+  background: transparent !important;
+}
+
+/* léger “verre” uniquement si ton viewer n’a pas déjà un fond opaque */
 .grid-wrap{
-  backdrop-filter: blur(6px);
+  background: transparent !important;
+  backdrop-filter: blur(10px);
 }
-
 
 /* =========================
    Base cards
    ========================= */
-
 :root{
   --card-bg: rgba(255,255,255,0.04);
   --card-border: rgba(255,255,255,0.10);
@@ -34,46 +37,35 @@ body{
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset;
-
-  transition:
-    border-color .18s ease,
-    box-shadow .18s ease,
-    transform .12s ease;
+  transition: border-color .18s ease, box-shadow .18s ease, transform .12s ease;
 }
 
 .card:hover{
   border-color: var(--card-accent);
-
   box-shadow:
     0 0 0 1px var(--card-accent),
     0 0 22px -6px var(--card-accent),
     0 14px 38px rgba(0,0,0,0.45);
-
   transform: translateY(-3px);
 }
-
 
 /* =========================
    🎨 Thèmes par traducteur
    ========================= */
-
-/* andric31 — bleu moderne */
 .card[data-tr="andric31"]{
   --card-bg: rgba(33,150,243,0.10);
   --card-border: rgba(33,150,243,0.35);
-  --card-accent: rgba(33,150,243,0.85);
+  --card-accent: rgba(33,150,243,0.90);
 }
 
-/* Ant28jsp — violet premium */
 .card[data-tr="ant28jsp"]{
   --card-bg: rgba(176,105,232,0.10);
   --card-border: rgba(176,105,232,0.35);
-  --card-accent: rgba(176,105,232,0.85);
+  --card-accent: rgba(176,105,232,0.90);
 }
 
-/* Ikaros — orange tech */
 .card[data-tr="ikaros"]{
   --card-bg: rgba(254,89,1,0.10);
   --card-border: rgba(254,89,1,0.35);
-  --card-accent: rgba(254,89,1,0.90);
+  --card-accent: rgba(254,89,1,0.92);
 }
