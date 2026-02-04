@@ -1,17 +1,30 @@
 /* themes.css — UI moderne + thèmes traducteurs */
 
 /* =========================
-   🌌 Fond moderne premium
+   🌌 Fond moderne premium (PLUS VISIBLE)
    ========================= */
 
 body{
   min-height:100vh;
 
   background:
-    radial-gradient(1200px circle at 10% -10%, rgba(88,101,242,0.08), transparent),
-    radial-gradient(900px circle at 110% 10%, rgba(176,105,232,0.06), transparent),
-    radial-gradient(700px circle at 50% 120%, rgba(33,150,243,0.05), transparent),
-    #0b0d12;
+    radial-gradient(1400px circle at 15% 20%, rgba(88,101,242,0.18), transparent 60%),
+    radial-gradient(1000px circle at 85% 0%, rgba(176,105,232,0.14), transparent 55%),
+    radial-gradient(900px circle at 50% 120%, rgba(33,150,243,0.12), transparent 60%),
+    linear-gradient(180deg, #07090f 0%, #0b0f1a 40%, #0d1322 100%);
+}
+
+/* voile lumineux global (rend le fond plus “premium”) */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.045), transparent 70%);
+
+  mix-blend-mode: soft-light;
 }
 
 /* léger effet profondeur */
