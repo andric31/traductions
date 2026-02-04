@@ -21,7 +21,7 @@
     return (segs[0] || "").trim();
   }
 
-  const SLUG = detectSlug();                 // "ikaros" / "ant28jsp" / "..."
+  const SLUG = detectSlug();                 // "liste" / "ikaros" / "ant28jsp" / ...
   const APP_PATH = SLUG ? `/${SLUG}/` : `/`; // base pour les liens internes
   const DEFAULT_URL = SLUG ? `/f95list_${SLUG}.json` : `/f95list.json`;
 
@@ -30,21 +30,21 @@
   // =========================
   // 🔞 Age gate (intégré ici)
   // =========================
-  (function initAgeGate(){
+  (function initAgeGate() {
     const KEY = "ageVerified";
     const gate = document.getElementById("age-gate");
     if (!gate) return;
 
-    try{
+    try {
       if (!localStorage.getItem(KEY)) {
         gate.style.display = "flex";
         document.body.classList.add("age-gate-active");
         document.body.style.overflow = "hidden";
       }
-    }catch{}
+    } catch {}
 
     document.getElementById("age-yes")?.addEventListener("click", () => {
-      try{ localStorage.setItem(KEY, "1"); }catch{}
+      try { localStorage.setItem(KEY, "1"); } catch {}
       gate.style.display = "none";
       document.body.classList.remove("age-gate-active");
       document.body.style.overflow = "";
@@ -56,32 +56,38 @@
   })();
 
   // =========================
-  // ✅ URL page jeu (id central + support collection child)
+  // ✅ URL page jeu (règle EXACTE de tes viewers)
   // =========================
+  // - Sous-jeu de collection : ?id=<collection>&uid=<uid>
+  // - Jeu normal / parent      : ?id=<id>   (⚠️ PAS de uid)
+  // - Fallback                 : ?uid=<uid>
   function buildGameUrl(g) {
-    const base = (g && g._openBase) ? String(g._openBase) : APP_PATH;
-    const coll = (g.collection || "").toString().trim();
-    const id = (g.id || "").toString().trim();
-    const uid = (g.uid ?? "").toString().trim();
+    const base = (g && g._openBase) ? String(g._openBase).trim() : APP_PATH;
+
+    const coll = (g && g.collection != null) ? String(g.collection).trim() : "";
+    const id   = (g && g.id != null)         ? String(g.id).trim() : "";
+    const uid  = (g && g.uid != null)        ? String(g.uid).trim() : "";
 
     const params = new URLSearchParams();
-    if (coll) {
-      // sous-jeu de collection : on ouvre la page du thread parent + uid
-      if (coll) params.set("id", coll);
-      if (uid) params.set("uid", uid);
+
+    if (coll && uid) {
+      // ✅ sous-jeu de collection : thread parent + uid
+      params.set("id", coll);
+      params.set("uid", uid);
     } else if (id) {
+      // ✅ jeu normal : id seulement (comme tes viewers)
       params.set("id", id);
-      if (uid) params.set("uid", uid);
     } else if (uid) {
+      // fallback uid only
       params.set("uid", uid);
     }
 
     const qs = params.toString();
     if (!qs) return base;
 
-    // base peut déjà contenir un "?"
     return base.includes("?") ? (base + "&" + qs) : (base + "?" + qs);
   }
+
   function getDisplayTitle(g) {
     return (g.gameData?.title || g.cleanTitle || g.title || "").toString().trim() || "Sans titre";
   }
@@ -220,52 +226,56 @@
   }
 
   // =========================
-// ✅ Mode "ALL" : fusion de toutes les listes via traducteurs_manifest.json
-// =========================
-async function loadAllLists() {
-  const manifestUrl = "/traducteurs_manifest.json";
-  const mr = await fetch(manifestUrl, { cache: "no-store" });
-  if (!mr.ok) throw new Error("HTTP " + mr.status + " sur " + manifestUrl);
-  const manifest = await mr.json();
-  const list = Array.isArray(manifest) ? manifest : (manifest && Array.isArray(manifest.traducteurs)) ? manifest.traducteurs : [];
+  // ✅ Mode "ALL" : fusion de toutes les listes via traducteurs_manifest.json
+  // =========================
+  async function loadAllLists() {
+    const manifestUrl = "/traducteurs_manifest.json";
+    const mr = await fetch(manifestUrl, { cache: "no-store" });
+    if (!mr.ok) throw new Error("HTTP " + mr.status + " sur " + manifestUrl);
+    const manifest = await mr.json();
+    const list = Array.isArray(manifest)
+      ? manifest
+      : (manifest && Array.isArray(manifest.traducteurs))
+      ? manifest.traducteurs
+      : [];
 
-  const combined = [];
-  for (const t of list) {
-    const name = (t && (t.name || t.key || t.slug) || "").toString().trim() || "Traducteur";
-    const listUrl = (t && t.listUrl ? String(t.listUrl) : "").trim();
-    if (!listUrl) continue;
+    const combined = [];
+    for (const t of list) {
+      const name = (t && (t.name || t.key || t.slug) || "").toString().trim() || "Traducteur";
+      const listUrl = (t && t.listUrl ? String(t.listUrl) : "").trim();
+      if (!listUrl) continue;
 
-    try {
-      const r = await fetch(listUrl, { cache: "no-store" });
-      if (!r.ok) throw new Error("HTTP " + r.status);
-      const raw = await r.json();
+      try {
+        const r = await fetch(listUrl, { cache: "no-store" });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        const raw = await r.json();
 
-      const games = Array.isArray(raw) ? raw
-                 : (raw && Array.isArray(raw.games)) ? raw.games
-                 : (raw && Array.isArray(raw.items)) ? raw.items
-                 : [];
+        const games = Array.isArray(raw) ? raw
+          : (raw && Array.isArray(raw.games)) ? raw.games
+          : (raw && Array.isArray(raw.items)) ? raw.items
+          : [];
 
-      for (const g of games) {
-        if (!g || typeof g !== "object") continue;
-        if (!g._translator) g._translator = name;
-        if (!g._translatorKey && t && t.key) g._translatorKey = String(t.key);
-        if (!g._openBase && t && t.openBase) g._openBase = String(t.openBase);
-        combined.push(g);
+        for (const g of games) {
+          if (!g || typeof g !== "object") continue;
+          if (!g._translator) g._translator = name;
+          if (!g._translatorKey && t && t.key) g._translatorKey = String(t.key);
+          if (!g._openBase && t && t.openBase) g._openBase = String(t.openBase);
+          combined.push(g);
+        }
+      } catch (e) {
+        console.warn("[ALL] échec chargement", name, listUrl, e);
       }
-    } catch (e) {
-      console.warn("[ALL] échec chargement", name, listUrl, e);
     }
+    return combined;
   }
-  return combined;
-}
 
-// Promesse globale partagée avec game.js (chargée après viewer.js)
-if (!window.__ALL_DATA_PROMISE__) {
-  window.__ALL_DATA_PROMISE__ = loadAllLists().then(arr => {
-    window.__ALL_GAMES__ = arr;
-    return arr;
-  });
-}
+  // Promesse globale partagée avec game.js (chargée après viewer.js)
+  if (!window.__ALL_DATA_PROMISE__) {
+    window.__ALL_DATA_PROMISE__ = loadAllLists().then(arr => {
+      window.__ALL_GAMES__ = arr;
+      return arr;
+    });
+  }
 
   // =========================
   // Title parsing / normalize
@@ -702,24 +712,24 @@ if (!window.__ALL_DATA_PROMISE__) {
     }
 
     if (k === "views") {
-      state.filtered.sort((a, b) => ( (GAME_STATS.views.get(a.ckey)||0) - (GAME_STATS.views.get(b.ckey)||0) ) * mul
-        || ( (a.updatedAtLocalTs||0) - (b.updatedAtLocalTs||0) ) * mul
+      state.filtered.sort((a, b) => ((GAME_STATS.views.get(a.ckey) || 0) - (GAME_STATS.views.get(b.ckey) || 0)) * mul
+        || ((a.updatedAtLocalTs || 0) - (b.updatedAtLocalTs || 0)) * mul
         || a.title.localeCompare(b.title)
       );
       return;
     }
 
     if (k === "mega") {
-      state.filtered.sort((a, b) => ( (GAME_STATS.mega.get(a.ckey)||0) - (GAME_STATS.mega.get(b.ckey)||0) ) * mul
-        || ( (a.updatedAtLocalTs||0) - (b.updatedAtLocalTs||0) ) * mul
+      state.filtered.sort((a, b) => ((GAME_STATS.mega.get(a.ckey) || 0) - (GAME_STATS.mega.get(b.ckey) || 0)) * mul
+        || ((a.updatedAtLocalTs || 0) - (b.updatedAtLocalTs || 0)) * mul
         || a.title.localeCompare(b.title)
       );
       return;
     }
 
     if (k === "likes") {
-      state.filtered.sort((a, b) => ( (GAME_STATS.likes.get(a.ckey)||0) - (GAME_STATS.likes.get(b.ckey)||0) ) * mul
-        || ( (a.updatedAtLocalTs||0) - (b.updatedAtLocalTs||0) ) * mul
+      state.filtered.sort((a, b) => ((GAME_STATS.likes.get(a.ckey) || 0) - (GAME_STATS.likes.get(b.ckey) || 0)) * mul
+        || ((a.updatedAtLocalTs || 0) - (b.updatedAtLocalTs || 0)) * mul
         || a.title.localeCompare(b.title)
       );
       return;
@@ -734,7 +744,10 @@ if (!window.__ALL_DATA_PROMISE__) {
     const ft = state.filterTags;
 
     state.filtered = state.all.filter((g) => {
-      const mq = !q || g.title.toLowerCase().includes(q) || String(g.id || "").includes(q) || String(g.uid || "").includes(q);
+      const mq = !q
+        || g.title.toLowerCase().includes(q)
+        || String(g.id || "").includes(q)
+        || String(g.uid || "").includes(q);
 
       const mc = fc === "all" || (Array.isArray(g.categories) ? g.categories.includes(fc) : false);
       const me = fe === "all" || (Array.isArray(g.engines) ? g.engines.includes(fe) : false);
@@ -981,4 +994,5 @@ if (!window.__ALL_DATA_PROMISE__) {
 
   init();
 })();
+
 
