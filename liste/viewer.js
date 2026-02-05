@@ -47,7 +47,7 @@
       const home = document.createElement("button");
       home.type = "button";
       home.className = "menu-item";
-      home.textContent = "🏠 Accueil";
+      home.textContent = "🌍 Accueil";
       home.addEventListener("click", () => {
         // navigation simple (même onglet)
         location.href = "https://traductions.pages.dev/";
