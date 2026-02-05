@@ -54,7 +54,7 @@
         aBack.rel = "noopener";
   
         aBack.textContent = niceName
-          ? `📚 Retour à la liste (${niceName})`
+          ? `📚 Retour à la liste · ${niceName}`
           : "📚 Retour à la liste";
   
         aBack.style.display = "block";
