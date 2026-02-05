@@ -28,6 +28,21 @@
       pop.dataset.built = "1";
 
       // Item : Accueil général
+      // ✅ calcule le chemin du traducteur (retour liste)
+      const slug = String(window.__SITE_SLUG__ || "").trim().toLowerCase();
+      const appPath = slug ? `/${slug}/` : `/`;
+
+      // Item : Retour liste (du traducteur)
+      const aBack = document.createElement("a");
+      aBack.className = "menu-item";
+      aBack.href = appPath;               // ✅ enlève ?id= / ?uid=
+      aBack.target = "_self";
+      aBack.rel = "noopener";
+      aBack.textContent = "📚 Retour à la liste";
+      aBack.style.display = "block";
+      aBack.style.textDecoration = "none";
+
+      // Item : Accueil général
       const aHome = document.createElement("a");
       aHome.className = "menu-item";
       aHome.href = "https://traductions.pages.dev/";
@@ -37,24 +52,17 @@
       aHome.style.display = "block";
       aHome.style.textDecoration = "none";
 
-      // Séparation
+      // (plus de bouton "Fermer")
+      pop.appendChild(aBack);
+
+      // petit séparateur (optionnel)
       const sep = document.createElement("div");
       sep.style.height = "1px";
       sep.style.margin = "6px 8px";
       sep.style.background = "rgba(255,255,255,0.08)";
-
-      // Item : Fermer
-      const bClose = document.createElement("button");
-      bClose.type = "button";
-      bClose.className = "menu-item";
-      bClose.textContent = "✖️ Fermer";
-      bClose.addEventListener("click", () => {
-        try { window.ViewerMenu.closeMenu(); } catch {}
-      });
+      pop.appendChild(sep);
 
       pop.appendChild(aHome);
-      pop.appendChild(sep);
-      pop.appendChild(bClose);
 
       return pop;
     }
