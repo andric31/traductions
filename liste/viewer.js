@@ -28,6 +28,86 @@
   const $ = (sel) => document.querySelector(sel);
 
   // =========================
+  // ☰ Hamburger menu (Viewer)
+  // - Ajoute un bouton "Accueil" -> https://traductions.pages.dev/
+  // - Ne touche pas au chargement des listes / bases
+  // =========================
+  function initHamburgerMenu() {
+    const btn = document.getElementById("hamburgerBtnViewer") || document.getElementById("hamburgerBtn");
+    if (!btn) return;
+
+    // crée le popover une seule fois
+    let pop = document.getElementById("viewerMenuPopover");
+    if (!pop) {
+      pop = document.createElement("div");
+      pop.id = "viewerMenuPopover";
+      pop.className = "menu-popover hidden";
+      pop.setAttribute("role", "menu");
+
+      const home = document.createElement("button");
+      home.type = "button";
+      home.className = "menu-item";
+      home.textContent = "🏠 Accueil";
+      home.addEventListener("click", () => {
+        // navigation simple (même onglet)
+        location.href = "https://traductions.pages.dev/";
+      });
+
+      pop.appendChild(home);
+      document.body.appendChild(pop);
+    }
+
+    const close = () => {
+      pop.classList.add("hidden");
+      btn.setAttribute("aria-expanded", "false");
+    };
+
+    const open = () => {
+      const r = btn.getBoundingClientRect();
+      const pad = 8;
+      const w = pop.offsetWidth || 220;
+      const h = pop.offsetHeight || 80;
+      const maxL = Math.max(pad, window.innerWidth - w - pad);
+      const maxT = Math.max(pad, window.innerHeight - h - pad);
+
+      const left = Math.min(maxL, Math.max(pad, r.left));
+      const top = Math.min(maxT, Math.max(pad, r.bottom + 8));
+
+      pop.style.left = left + "px";
+      pop.style.top = top + "px";
+
+      pop.classList.remove("hidden");
+      btn.setAttribute("aria-expanded", "true");
+    };
+
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const isOpen = !pop.classList.contains("hidden");
+      if (isOpen) close();
+      else open();
+    });
+
+    // click dehors => ferme
+    document.addEventListener("click", (e) => {
+      const t = e.target;
+      if (!t) return;
+      if (t === btn || btn.contains(t)) return;
+      if (t === pop || pop.contains(t)) return;
+      close();
+    });
+
+    // resize/scroll => reposition ou ferme
+    window.addEventListener("resize", () => {
+      if (!pop.classList.contains("hidden")) close();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") close();
+    });
+  }
+
+  // =========================
   // 🔞 Age gate (intégré ici)
   // =========================
   (function initAgeGate() {
@@ -817,8 +897,11 @@
 
     for (let i = 0; i < limit; i++) {
       const g = state.filtered[i];
-      const card = document.createElement("article");
-      card.className = "card";
+      // ✅ Toute la tuile est cliquable (plus de bouton "Ouvrir la page")
+      const pageHref = buildGameUrl(g.__raw || g);
+      const card = document.createElement("a");
+      card.className = "card card-link";
+      card.href = pageHref;
 
       const trKey =
         (g.__raw && (g.__raw._translatorKey || g.__raw._translator)) ? String(g.__raw._translatorKey || g.__raw._translator) :
@@ -828,7 +911,6 @@
       card.dataset.tr = trKey.toLowerCase();
 
       const imgSrc = (g.image || "").trim() || "/favicon.png";
-      const pageHref = buildGameUrl(g.__raw || g);
 
       card.innerHTML = `
         <img src="${imgSrc}" class="thumb" alt=""
@@ -837,11 +919,6 @@
         <div class="body">
           <h3 class="name clamp-2">${escapeHtml(getDisplayTitle(g.__raw || g))}</h3>
           <div class="badges-line one-line">${badgesLineHtml(g)}</div>
-          <div class="actions">
-            <a class="btn btn-page" href="${pageHref}" target="_blank" rel="noopener">
-              📄 Ouvrir la page
-            </a>
-          </div>
         </div>
       `;
 
@@ -998,6 +1075,9 @@
       }
     }
   }
+
+  // ✅ Menu hamburger (viewer)
+  initHamburgerMenu();
 
   init();
 })();

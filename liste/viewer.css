@@ -298,6 +298,17 @@ main{
   min-height: calc(var(--thumb-h) + 160px);
 }
 
+/* ✅ cartes cliquables (la tuile entière) */
+a.card.card-link{
+  text-decoration:none;
+  color:inherit;
+  cursor:pointer;
+}
+a.card.card-link:focus-visible{
+  outline: 2px solid rgba(255,255,255,0.35);
+  outline-offset: 3px;
+}
+
 .thumb{
   width:100%;
   height:var(--thumb-h);
