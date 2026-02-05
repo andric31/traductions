@@ -1001,10 +1001,11 @@
 
   // =========================
   // ☰ Menu hamburger : bouton Accueil UNIQUEMENT (SAFE / ne casse rien)
+  // ✅ Fix: bind immédiat si DOM déjà prêt (sinon DOMContentLoaded)
   // =========================
   (function initHamburgerHomeOnly() {
     const HOME_URL = "https://traductions.pages.dev/";
-
+  
     function ensurePopover() {
       let pop = document.getElementById("topMenuPopover");
       if (!pop) {
@@ -1014,12 +1015,12 @@
         pop.setAttribute("role", "menu");
         document.body.appendChild(pop);
       }
-
+  
       // Remplit une seule fois
       if (pop.dataset.built !== "1") {
         pop.dataset.built = "1";
         pop.innerHTML = ""; // sécurité
-
+  
         const a = document.createElement("a");
         a.className = "menu-item";
         a.href = HOME_URL;
@@ -1032,38 +1033,39 @@
       }
       return pop;
     }
-
+  
     function getBtns() {
+      // ✅ IDs réels dans ton HTML + alias éventuel
       return [
         document.getElementById("hamburgerBtnViewer"),
         document.getElementById("hamburgerBtnGame"),
         document.getElementById("hamburgerBtn"),
       ].filter(Boolean);
     }
-
+  
     function close(pop) {
       pop.classList.add("hidden");
       for (const b of getBtns()) b.setAttribute("aria-expanded", "false");
     }
-
+  
     function position(pop, btn) {
       const r = btn.getBoundingClientRect();
       const margin = 8;
-
+  
       let left = Math.round(r.left);
       let top = Math.round(r.bottom + margin);
-
+  
       const w = pop.getBoundingClientRect().width || 220;
       const SCROLLBAR_GAP = 18;
       const maxLeft = window.innerWidth - w - SCROLLBAR_GAP;
-
+  
       if (left > maxLeft) left = Math.max(10, maxLeft);
       if (left < 10) left = 10;
-
+  
       pop.style.left = left + "px";
       pop.style.top = top + "px";
     }
-
+  
     function toggleFrom(btn) {
       const pop = ensurePopover();
       const open = !pop.classList.contains("hidden");
@@ -1075,36 +1077,51 @@
       btn.setAttribute("aria-expanded", "true");
       position(pop, btn);
     }
-
+  
     // Bind une seule fois (pas de double init)
     if (window.__HAMBURGER_HOME_ONLY_BOUND__) return;
     window.__HAMBURGER_HOME_ONLY_BOUND__ = true;
-
-    // Attendre que le DOM soit prêt (SAFE)
-    window.addEventListener("DOMContentLoaded", () => {
+  
+    function bindNow() {
       const pop = ensurePopover();
-
-      for (const btn of getBtns()) {
+      const btns = getBtns();
+  
+      // Si aucun bouton trouvé au moment du bind (mode/DOM), on réessaie au prochain tick
+      if (!btns.length) {
+        setTimeout(bindNow, 0);
+        return;
+      }
+  
+      for (const btn of btns) {
         btn.addEventListener("click", () => toggleFrom(btn));
       }
-
+  
       document.addEventListener("click", (e) => {
         if (pop.classList.contains("hidden")) return;
         const t = e.target;
-        const clickedBtn = getBtns().some(b => b.contains(t));
+        const clickedBtn = getBtns().some((b) => b.contains(t));
         if (!pop.contains(t) && !clickedBtn) close(pop);
       });
-
+  
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") close(pop);
       });
-
+  
       window.addEventListener("resize", () => {
         if (pop.classList.contains("hidden")) return;
-        const active = getBtns().find(b => b.getAttribute("aria-expanded") === "true") || getBtns()[0];
+        const active =
+          getBtns().find((b) => b.getAttribute("aria-expanded") === "true") ||
+          getBtns()[0];
         if (active) position(pop, active);
       });
-    });
+    }
+  
+    // ✅ si DOM déjà prêt : bind tout de suite, sinon attendre
+    if (document.readyState === "loading") {
+      window.addEventListener("DOMContentLoaded", bindNow, { once: true });
+    } else {
+      bindNow();
+    }
   })();
 
   init();
