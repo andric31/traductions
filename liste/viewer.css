@@ -294,8 +294,7 @@ main{
   overflow:hidden;
 
   display:grid;
-  grid-template-rows: var(--thumb-h) 1fr;
-  min-height: calc(var(--thumb-h) + 160px);
+  grid-template-rows: var(--thumb-h) auto; /* au lieu de 1fr */
 }
 
 /* ✅ cartes cliquables (la tuile entière) */
