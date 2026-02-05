@@ -902,6 +902,8 @@
       const card = document.createElement("a");
       card.className = "card card-link";
       card.href = pageHref;
+      card.target = "_blank";
+      card.rel = "noopener";
 
       const trKey =
         (g.__raw && (g.__raw._translatorKey || g.__raw._translator)) ? String(g.__raw._translatorKey || g.__raw._translator) :
