@@ -5,15 +5,31 @@
 (() => {
   "use strict";
 
-  
+  const $ = (sel) => document.querySelector(sel);
+
+  // =========================
+  // ✅ Détection universelle SLUG + chemins
+  // =========================
+  function detectSlug() {
+    try {
+      const forced = (window.__SITE_SLUG__ || "").toString().trim();
+      if (forced) return forced;
+    } catch {}
+    const segs = (location.pathname || "/").split("/").filter(Boolean);
+    return (segs[0] || "").trim();
+  }
+
+  const SLUG = detectSlug();                 // "liste" / "ikaros" / "ant28jsp" / ...
+  const APP_PATH = SLUG ? `/${SLUG}/` : `/`; // base pour les liens internes
+  const DEFAULT_URL = SLUG ? `/f95list_${SLUG}.json` : `/f95list.json`;
 
   // =========================
   // ☰ Menu (popover) — Accueil général
   // =========================
-  (function ensureTopMenu(){
+  (function ensureTopMenu() {
     if (window.ViewerMenu && typeof window.ViewerMenu.init === "function") return;
 
-    function buildPopover(){
+    function buildPopover() {
       let pop = document.getElementById("topMenuPopover");
       if (!pop) {
         pop = document.createElement("div");
@@ -31,7 +47,7 @@
       aHome.href = "https://traductions.pages.dev/";
       aHome.target = "_self";
       aHome.rel = "noopener";
-      aHome.textContent = "🏠 Accueil";
+      aHome.textContent = "🌍 Accueil";
       aHome.style.display = "block";
       aHome.style.textDecoration = "none";
       pop.appendChild(aHome);
@@ -39,10 +55,11 @@
       return pop;
     }
 
-    function positionPopover(pop, anchorBtn){
+    function positionPopover(pop, anchorBtn) {
       const r = anchorBtn.getBoundingClientRect();
       const margin = 8;
 
+      // ⚠️ si pop est hidden, getBoundingClientRect() peut être 0 → fallback
       const w = pop.getBoundingClientRect().width || 220;
       const SCROLLBAR_GAP = 18;
 
@@ -62,18 +79,23 @@
       pop.style.top = top + "px";
     }
 
-    function closeMenu(){
+    function closeMenu() {
       const pop = document.getElementById("topMenuPopover");
       if (pop) pop.classList.add("hidden");
+
       const btn = document.getElementById("hamburgerBtnViewer") || document.getElementById("hamburgerBtn");
       if (btn) btn.setAttribute("aria-expanded", "false");
     }
 
-    function bindHamburger(){
+    function bindHamburger() {
       const btn = document.getElementById("hamburgerBtnViewer") || document.getElementById("hamburgerBtn");
       if (!btn) return;
 
-      btn.addEventListener("click", (e)=>{
+      // évite double-bind si init() appelée 2 fois
+      if (btn.dataset.boundMenu === "1") return;
+      btn.dataset.boundMenu = "1";
+
+      btn.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
 
@@ -87,7 +109,7 @@
         positionPopover(pop, btn);
       });
 
-      document.addEventListener("click", (e)=>{
+      document.addEventListener("click", (e) => {
         const pop = document.getElementById("topMenuPopover");
         if (!pop) return;
         if (pop.classList.contains("hidden")) return;
@@ -96,18 +118,18 @@
         if (!pop.contains(t) && !btn.contains(t)) closeMenu();
       });
 
-      window.addEventListener("resize", ()=>{
+      window.addEventListener("resize", () => {
         const pop = document.getElementById("topMenuPopover");
         if (pop && !pop.classList.contains("hidden")) positionPopover(pop, btn);
       });
 
-      document.addEventListener("keydown", (e)=>{
+      document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") closeMenu();
       });
     }
 
     window.ViewerMenu = {
-      init(){
+      init() {
         buildPopover();
         bindHamburger();
       },
@@ -115,35 +137,10 @@
     };
   })();
 
-// =========================
-  // ✅ Détection universelle SLUG + chemins
   // =========================
-  function detectSlug() {
-    // 1) override possible depuis index.html : window.__SITE_SLUG__ = "ikaros";
-    try {
-      const forced = (window.__SITE_SLUG__ || "").toString().trim();
-      if (forced) return forced;
-    } catch {}
-
-    // 2) sinon, 1er segment du pathname
-    // ex: /ikaros/ -> ikaros ; /ikaros/index.html -> ikaros
-    const segs = (location.pathname || "/").split("/").filter(Boolean);
-    return (segs[0] || "").trim();
-  }
-
-  const SLUG = detectSlug();                 // "liste" / "ikaros" / "ant28jsp" / ...
-  const APP_PATH = SLUG ? `/${SLUG}/` : `/`; // base pour les liens internes
-  const DEFAULT_URL = SLUG ? `/f95list_${SLUG}.json` : `/f95list.json`;
-
-  const $ = (sel) => document.querySelector(sel);
-
-  
-  // ✅ Menu hamburger
-  try { window.ViewerMenu && window.ViewerMenu.init && window.ViewerMenu.init(); } catch {}
-// =========================
-  // 🔞 Age gate (intégré ici)
+  // 🔞 Age gate
   // =========================
-  (function initAgeGate() {
+  function initAgeGate() {
     const KEY = "ageVerified";
     const gate = document.getElementById("age-gate");
     if (!gate) return;
@@ -166,14 +163,11 @@
     document.getElementById("age-no")?.addEventListener("click", () => {
       location.href = "https://www.google.com";
     });
-  })();
+  }
 
   // =========================
   // ✅ URL page jeu (règle EXACTE de tes viewers)
   // =========================
-  // - Sous-jeu de collection : ?id=<collection>&uid=<uid>
-  // - Jeu normal / parent      : ?id=<id>   (⚠️ PAS de uid)
-  // - Fallback                 : ?uid=<uid>
   function buildGameUrl(g) {
     const base = (g && g._openBase) ? String(g._openBase).trim() : APP_PATH;
 
@@ -184,14 +178,11 @@
     const params = new URLSearchParams();
 
     if (coll && uid) {
-      // ✅ sous-jeu de collection : thread parent + uid
       params.set("id", coll);
       params.set("uid", uid);
     } else if (id) {
-      // ✅ jeu normal : id seulement (comme tes viewers)
       params.set("id", id);
     } else if (uid) {
-      // fallback uid only
       params.set("uid", uid);
     }
 
@@ -202,7 +193,7 @@
   }
 
   function getDisplayTitle(g) {
-    return (g.gameData?.title || g.cleanTitle || g.title || "").toString().trim() || "Sans titre";
+    return (g?.gameData?.title || g?.cleanTitle || g?.title || "").toString().trim() || "Sans titre";
   }
 
   // =========================
@@ -247,7 +238,7 @@
   // Stats jeux (vues + likes + téléchargements)
   // =========================
   const GAME_STATS = {
-    views: new Map(), // key(uid:xxx) -> number
+    views: new Map(),
     mega: new Map(),
     likes: new Map(),
     loaded: false,
@@ -334,8 +325,7 @@
   }
 
   function setViewerCols(v) {
-    try { localStorage.setItem("viewerCols", String(v)); }
-    catch {}
+    try { localStorage.setItem("viewerCols", String(v)); } catch {}
   }
 
   // =========================
@@ -346,6 +336,7 @@
     const mr = await fetch(manifestUrl, { cache: "no-store" });
     if (!mr.ok) throw new Error("HTTP " + mr.status + " sur " + manifestUrl);
     const manifest = await mr.json();
+
     const list = Array.isArray(manifest)
       ? manifest
       : (manifest && Array.isArray(manifest.traducteurs))
@@ -353,6 +344,7 @@
       : [];
 
     const combined = [];
+
     for (const t of list) {
       const name = (t && (t.name || t.key || t.slug) || "").toString().trim() || "Traducteur";
       const listUrl = (t && t.listUrl ? String(t.listUrl) : "").trim();
@@ -379,10 +371,10 @@
         console.warn("[ALL] échec chargement", name, listUrl, e);
       }
     }
+
     return combined;
   }
 
-  // Promesse globale partagée avec game.js (chargée après viewer.js)
   if (!window.__ALL_DATA_PROMISE__) {
     window.__ALL_DATA_PROMISE__ = loadAllLists().then(arr => {
       window.__ALL_GAMES__ = arr;
@@ -567,7 +559,6 @@
 
     const ckey = counterKeyOfUid(uid);
 
-    // moteur : priorité gameData.engine si présent
     let engines = Array.isArray(c.engines) ? c.engines : [];
     if (game.gameData?.engine) {
       const engNorm = ENGINE_RAW[slugify(game.gameData.engine)] || game.gameData.engine;
@@ -601,6 +592,8 @@
       createdAtLocal: createdAtLocalRaw,
       createdAtLocalTs,
       __raw: game,
+      _translatorKey: game._translatorKey || "",
+      _openBase: game._openBase || "",
     };
   }
 
@@ -638,7 +631,7 @@
   }
 
   function ensureTagsDom() {
-    let btn = document.getElementById("tagsBtn");
+    const btn = document.getElementById("tagsBtn");
     if (!btn) return null;
 
     let pop = document.getElementById("tagsPopover");
@@ -930,6 +923,8 @@
 
     for (let i = 0; i < limit; i++) {
       const g = state.filtered[i];
+
+      // ✅ tuile cliquable : plus de bloc actions => plus d'espace vide
       const card = document.createElement("a");
       card.className = "card card-link";
 
@@ -972,7 +967,9 @@
       const btn = document.createElement("button");
       btn.className = "load-more-btn";
       btn.textContent = `Afficher +${more} (${rest} restants)`;
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         state.visibleCount = Math.min(total, limit + step);
         renderGrid();
       });
@@ -985,90 +982,93 @@
   }
 
   // =========================
-  // Events
+  // UI bindings (après DOM)
   // =========================
-  $("#search")?.addEventListener("input", (e) => {
-    state.q = e.target.value || "";
-    applyFilters();
-  });
+  function bindUi() {
+    try { window.ViewerMenu && window.ViewerMenu.init && window.ViewerMenu.init(); } catch {}
+    initAgeGate();
 
-  $("#sort")?.addEventListener("change", async (e) => {
-    state.sort = e.target.value;
+    $("#search")?.addEventListener("input", (e) => {
+      state.q = e.target.value || "";
+      applyFilters();
+    });
 
-    if (state.sort.startsWith("views") || state.sort.startsWith("mega") || state.sort.startsWith("likes")) {
-      await forceReloadGameStats();
-    }
+    $("#sort")?.addEventListener("change", async (e) => {
+      state.sort = e.target.value;
+      if (state.sort.startsWith("views") || state.sort.startsWith("mega") || state.sort.startsWith("likes")) {
+        await forceReloadGameStats();
+      }
+      sortNow();
+      state.visibleCount = 0;
+      renderGrid();
+    });
 
-    sortNow();
-    state.visibleCount = 0;
-    renderGrid();
-  });
+    $("#filterCat")?.addEventListener("change", (e) => {
+      state.filterCat = e.target.value || "all";
+      applyFilters();
+    });
 
-  $("#filterCat")?.addEventListener("change", (e) => {
-    state.filterCat = e.target.value || "all";
-    applyFilters();
-  });
+    $("#filterEngine")?.addEventListener("change", (e) => {
+      state.filterEngine = e.target.value || "all";
+      applyFilters();
+    });
 
-  $("#filterEngine")?.addEventListener("change", (e) => {
-    state.filterEngine = e.target.value || "all";
-    applyFilters();
-  });
+    $("#filterStatus")?.addEventListener("change", (e) => {
+      state.filterStatus = e.target.value || "all";
+      applyFilters();
+    });
 
-  $("#filterStatus")?.addEventListener("change", (e) => {
-    state.filterStatus = e.target.value || "all";
-    applyFilters();
-  });
+    $("#pageSize")?.addEventListener("change", (e) => {
+      const v = e.target.value;
+      if (v === "all") state.pageSize = "all";
+      else {
+        const n = parseInt(v, 10);
+        state.pageSize = !isNaN(n) && n > 0 ? n : 50;
+      }
+      state.visibleCount = 0;
+      renderGrid();
+    });
 
-  $("#pageSize")?.addEventListener("change", (e) => {
-    const v = e.target.value;
-    if (v === "all") state.pageSize = "all";
-    else {
-      const n = parseInt(v, 10);
-      state.pageSize = !isNaN(n) && n > 0 ? n : 50;
-    }
-    state.visibleCount = 0;
-    renderGrid();
-  });
+    $("#cols")?.addEventListener("change", (e) => {
+      state.cols = e.target.value || "auto";
+      applyGridCols();
+      setViewerCols(state.cols);
+    });
 
-  $("#cols")?.addEventListener("change", async (e) => {
-    state.cols = e.target.value || "auto";
-    applyGridCols();
-    setViewerCols(state.cols);
-  });
+    $("#refresh")?.addEventListener("click", () => {
+      state.q = "";
+      state.sort = "updatedAtLocal-desc";
+      state.filterCat = "all";
+      state.filterEngine = "all";
+      state.filterStatus = "all";
+      state.filterTags = [];
+      state.visibleCount = 0;
 
-  $("#refresh")?.addEventListener("click", () => {
-    state.q = "";
-    state.sort = "updatedAtLocal-desc";
-    state.filterCat = "all";
-    state.filterEngine = "all";
-    state.filterStatus = "all";
-    state.filterTags = [];
-    state.visibleCount = 0;
+      const search = $("#search");
+      if (search) search.value = "";
 
-    const search = $("#search");
-    if (search) search.value = "";
+      const sort = $("#sort");
+      if (sort) sort.value = state.sort;
 
-    const sort = $("#sort");
-    if (sort) sort.value = state.sort;
+      $("#filterCat") && ($("#filterCat").value = "all");
+      $("#filterEngine") && ($("#filterEngine").value = "all");
+      $("#filterStatus") && ($("#filterStatus").value = "all");
 
-    $("#filterCat") && ($("#filterCat").value = "all");
-    $("#filterEngine") && ($("#filterEngine").value = "all");
-    $("#filterStatus") && ($("#filterStatus").value = "all");
+      clearSavedTags();
+      updateTagsCountBadge();
+      closeTagsPopover();
 
-    clearSavedTags();
-    updateTagsCountBadge();
-    closeTagsPopover();
+      state.pageSize = 50;
+      $("#pageSize") && ($("#pageSize").value = "50");
 
-    state.pageSize = 50;
-    $("#pageSize") && ($("#pageSize").value = "50");
+      GAME_STATS.loaded = false;
+      GAME_STATS.views.clear();
+      GAME_STATS.mega.clear();
+      GAME_STATS.likes.clear();
 
-    GAME_STATS.loaded = false;
-    GAME_STATS.views.clear();
-    GAME_STATS.mega.clear();
-    GAME_STATS.likes.clear();
-
-    init();
-  });
+      init();
+    });
+  }
 
   // =========================
   // Init
@@ -1110,5 +1110,14 @@
     }
   }
 
-  init();
+  // ✅ démarre proprement quand le DOM est prêt
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+      bindUi();
+      init();
+    });
+  } else {
+    bindUi();
+    init();
+  }
 })();
