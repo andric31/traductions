@@ -124,10 +124,6 @@
         if(h1){
           h1.textContent = slug ? `f95list_${nice}_viewer` : `f95list_viewer`;
         }
-        const back = document.getElementById("backToList");
-        if(back){
-          back.href = slug ? `/${slug}/` : `/`;
-        }
       });
     })();
   </script>
@@ -337,13 +333,11 @@
       })();
     </script>
 
-    <div style="text-align:center; margin: 14px 0;">
-      <a id="backToList" class="btn" href="./" style="display:inline-block; text-decoration:none;">← Retour à la liste</a>
-    </div>
-  </div>
+  </div> <!-- ✅ FIN #page-game -->
 
-  <script src="./viewer.js"></script>
-  <script src="./game.js"></script>
+  <!-- ✅ JS externes en defer (plus stable en accès direct ?id= / ?uid=) -->
+  <script src="./viewer.js" defer></script>
+  <script src="./game.js" defer></script>
 
   <!-- ✅ switch viewer/game -->
   <script>
@@ -367,8 +361,6 @@
   <!-- ✅ pont hamburger : si tes JS attendent #hamburgerBtn -->
   <script>
     (function(){
-      // Certains scripts (viewer.js / game.js) utilisent encore getElementById("hamburgerBtn")
-      // On crée un alias sûr vers le bon bouton selon le mode.
       function ensureAlias(){
         const hasAlias = document.getElementById("hamburgerBtn");
         if (hasAlias) return;
@@ -379,7 +371,6 @@
         const src = document.getElementById(hasGame ? "hamburgerBtnGame" : "hamburgerBtnViewer");
         if (!src) return;
 
-        // clone invisible avec id attendu, qui forward le click vers le vrai bouton
         const alias = src.cloneNode(true);
         alias.id = "hamburgerBtn";
         alias.style.display = "none";
