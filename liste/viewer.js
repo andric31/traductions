@@ -5,71 +5,7 @@
 (() => {
   "use strict";
 
-  
   // =========================
-  // ☰ Menu (popover) — lien vers l’accueil général
-  // (utilisé par game.js via window.ViewerMenu.init())
-  // =========================
-  (function ensureTopMenu(){
-    if (window.ViewerMenu && typeof window.ViewerMenu.init === "function") return;
-
-    function buildPopover(){
-      let pop = document.getElementById("topMenuPopover");
-      if (!pop) {
-        pop = document.createElement("div");
-        pop.id = "topMenuPopover";
-        pop.className = "menu-popover hidden";
-        pop.setAttribute("role", "menu");
-        document.body.appendChild(pop);
-      }
-
-      // Si déjà rempli, ne pas dupliquer
-      if (pop.dataset.built === "1") return pop;
-      pop.dataset.built = "1";
-
-      // Item : Accueil général
-      const aHome = document.createElement("a");
-      aHome.className = "menu-item";
-      aHome.href = "https://traductions.pages.dev/";
-      aHome.target = "_self";
-      aHome.rel = "noopener";
-      aHome.textContent = "🏠 Accueil général";
-      aHome.style.display = "block";
-      aHome.style.textDecoration = "none";
-
-      // Séparation
-      const sep = document.createElement("div");
-      sep.style.height = "1px";
-      sep.style.margin = "6px 8px";
-      sep.style.background = "rgba(255,255,255,0.08)";
-
-      // Item : Fermer
-      const bClose = document.createElement("button");
-      bClose.type = "button";
-      bClose.className = "menu-item";
-      bClose.textContent = "✖️ Fermer";
-      bClose.addEventListener("click", () => {
-        try { window.ViewerMenu.closeMenu(); } catch {}
-      });
-
-      pop.appendChild(aHome);
-      pop.appendChild(sep);
-      pop.appendChild(bClose);
-
-      return pop;
-    }
-
-    window.ViewerMenu = {
-      init(){
-        buildPopover();
-      },
-      closeMenu(){
-        const pop = document.getElementById("topMenuPopover");
-        if (pop) pop.classList.add("hidden");
-      }
-    };
-  })();
-// =========================
   // ✅ Détection universelle SLUG + chemins
   // =========================
   function detectSlug() {
@@ -85,7 +21,7 @@
     return (segs[0] || "").trim();
   }
 
-  const SLUG = detectSlug();                 // "ikaros" / "ant28jsp" / "..."
+  const SLUG = detectSlug();                 // "liste" / "ikaros" / "ant28jsp" / ...
   const APP_PATH = SLUG ? `/${SLUG}/` : `/`; // base pour les liens internes
   const DEFAULT_URL = SLUG ? `/f95list_${SLUG}.json` : `/f95list.json`;
 
@@ -94,21 +30,21 @@
   // =========================
   // 🔞 Age gate (intégré ici)
   // =========================
-  (function initAgeGate(){
+  (function initAgeGate() {
     const KEY = "ageVerified";
     const gate = document.getElementById("age-gate");
     if (!gate) return;
 
-    try{
+    try {
       if (!localStorage.getItem(KEY)) {
         gate.style.display = "flex";
         document.body.classList.add("age-gate-active");
         document.body.style.overflow = "hidden";
       }
-    }catch{}
+    } catch {}
 
     document.getElementById("age-yes")?.addEventListener("click", () => {
-      try{ localStorage.setItem(KEY, "1"); }catch{}
+      try { localStorage.setItem(KEY, "1"); } catch {}
       gate.style.display = "none";
       document.body.classList.remove("age-gate-active");
       document.body.style.overflow = "";
@@ -120,19 +56,36 @@
   })();
 
   // =========================
-  // ✅ URL page jeu (id central + support collection child)
+  // ✅ URL page jeu (règle EXACTE de tes viewers)
   // =========================
+  // - Sous-jeu de collection : ?id=<collection>&uid=<uid>
+  // - Jeu normal / parent      : ?id=<id>   (⚠️ PAS de uid)
+  // - Fallback                 : ?uid=<uid>
   function buildGameUrl(g) {
-    const coll = (g.collection || "").toString().trim();
-    const id = (g.id || "").toString().trim();
-    const uid = (g.uid ?? "").toString().trim();
+    const base = (g && g._openBase) ? String(g._openBase).trim() : APP_PATH;
 
-    // Sous-jeu de collection : /<slug>/?id=<collection>&uid=<uid>
-    if (coll) return `${APP_PATH}?id=${encodeURIComponent(coll)}&uid=${encodeURIComponent(uid)}`;
-    // Jeu normal / collection parent : /<slug>/?id=<id>
-    if (id) return `${APP_PATH}?id=${encodeURIComponent(id)}`;
-    // Fallback uid seul
-    return `${APP_PATH}?uid=${encodeURIComponent(uid)}`;
+    const coll = (g && g.collection != null) ? String(g.collection).trim() : "";
+    const id   = (g && g.id != null)         ? String(g.id).trim() : "";
+    const uid  = (g && g.uid != null)        ? String(g.uid).trim() : "";
+
+    const params = new URLSearchParams();
+
+    if (coll && uid) {
+      // ✅ sous-jeu de collection : thread parent + uid
+      params.set("id", coll);
+      params.set("uid", uid);
+    } else if (id) {
+      // ✅ jeu normal : id seulement (comme tes viewers)
+      params.set("id", id);
+    } else if (uid) {
+      // fallback uid only
+      params.set("uid", uid);
+    }
+
+    const qs = params.toString();
+    if (!qs) return base;
+
+    return base.includes("?") ? (base + "&" + qs) : (base + "?" + qs);
   }
 
   function getDisplayTitle(g) {
@@ -272,11 +225,56 @@
     catch {}
   }
 
-  async function loadList() {
-    const url = getListUrl();
-    const r = await fetch(url, { cache: "no-store" });
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    return r.json();
+  // =========================
+  // ✅ Mode "ALL" : fusion de toutes les listes via traducteurs_manifest.json
+  // =========================
+  async function loadAllLists() {
+    const manifestUrl = "/traducteurs_manifest.json";
+    const mr = await fetch(manifestUrl, { cache: "no-store" });
+    if (!mr.ok) throw new Error("HTTP " + mr.status + " sur " + manifestUrl);
+    const manifest = await mr.json();
+    const list = Array.isArray(manifest)
+      ? manifest
+      : (manifest && Array.isArray(manifest.traducteurs))
+      ? manifest.traducteurs
+      : [];
+
+    const combined = [];
+    for (const t of list) {
+      const name = (t && (t.name || t.key || t.slug) || "").toString().trim() || "Traducteur";
+      const listUrl = (t && t.listUrl ? String(t.listUrl) : "").trim();
+      if (!listUrl) continue;
+
+      try {
+        const r = await fetch(listUrl, { cache: "no-store" });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        const raw = await r.json();
+
+        const games = Array.isArray(raw) ? raw
+          : (raw && Array.isArray(raw.games)) ? raw.games
+          : (raw && Array.isArray(raw.items)) ? raw.items
+          : [];
+
+        for (const g of games) {
+          if (!g || typeof g !== "object") continue;
+          if (!g._translator) g._translator = name;
+          if (!g._translatorKey && t && t.key) g._translatorKey = String(t.key);
+          if (!g._openBase && t && t.openBase) g._openBase = String(t.openBase);
+          combined.push(g);
+        }
+      } catch (e) {
+        console.warn("[ALL] échec chargement", name, listUrl, e);
+      }
+    }
+    return combined;
+  }
+
+  // Promesse globale partagée avec game.js (chargée après viewer.js)
+  if (!window.__ALL_DATA_PROMISE__) {
+    window.__ALL_DATA_PROMISE__ = loadAllLists().then(arr => {
+      window.__ALL_GAMES__ = arr;
+      return arr;
+    });
   }
 
   // =========================
@@ -714,24 +712,24 @@
     }
 
     if (k === "views") {
-      state.filtered.sort((a, b) => ( (GAME_STATS.views.get(a.ckey)||0) - (GAME_STATS.views.get(b.ckey)||0) ) * mul
-        || ( (a.updatedAtLocalTs||0) - (b.updatedAtLocalTs||0) ) * mul
+      state.filtered.sort((a, b) => ((GAME_STATS.views.get(a.ckey) || 0) - (GAME_STATS.views.get(b.ckey) || 0)) * mul
+        || ((a.updatedAtLocalTs || 0) - (b.updatedAtLocalTs || 0)) * mul
         || a.title.localeCompare(b.title)
       );
       return;
     }
 
     if (k === "mega") {
-      state.filtered.sort((a, b) => ( (GAME_STATS.mega.get(a.ckey)||0) - (GAME_STATS.mega.get(b.ckey)||0) ) * mul
-        || ( (a.updatedAtLocalTs||0) - (b.updatedAtLocalTs||0) ) * mul
+      state.filtered.sort((a, b) => ((GAME_STATS.mega.get(a.ckey) || 0) - (GAME_STATS.mega.get(b.ckey) || 0)) * mul
+        || ((a.updatedAtLocalTs || 0) - (b.updatedAtLocalTs || 0)) * mul
         || a.title.localeCompare(b.title)
       );
       return;
     }
 
     if (k === "likes") {
-      state.filtered.sort((a, b) => ( (GAME_STATS.likes.get(a.ckey)||0) - (GAME_STATS.likes.get(b.ckey)||0) ) * mul
-        || ( (a.updatedAtLocalTs||0) - (b.updatedAtLocalTs||0) ) * mul
+      state.filtered.sort((a, b) => ((GAME_STATS.likes.get(a.ckey) || 0) - (GAME_STATS.likes.get(b.ckey) || 0)) * mul
+        || ((a.updatedAtLocalTs || 0) - (b.updatedAtLocalTs || 0)) * mul
         || a.title.localeCompare(b.title)
       );
       return;
@@ -746,7 +744,10 @@
     const ft = state.filterTags;
 
     state.filtered = state.all.filter((g) => {
-      const mq = !q || g.title.toLowerCase().includes(q) || String(g.id || "").includes(q) || String(g.uid || "").includes(q);
+      const mq = !q
+        || g.title.toLowerCase().includes(q)
+        || String(g.id || "").includes(q)
+        || String(g.uid || "").includes(q);
 
       const mc = fc === "all" || (Array.isArray(g.categories) ? g.categories.includes(fc) : false);
       const me = fe === "all" || (Array.isArray(g.engines) ? g.engines.includes(fe) : false);
@@ -819,44 +820,15 @@
       const card = document.createElement("article");
       card.className = "card";
 
-      // 🎨 thème couleur par traducteur (si présent)
-      const trKey = String(g._translatorKey || (g.__raw && g.__raw._translatorKey) || "").toLowerCase();
-      if (trKey) card.dataset.tr = trKey;
+      const trKey =
+        (g.__raw && (g.__raw._translatorKey || g.__raw._translator)) ? String(g.__raw._translatorKey || g.__raw._translator) :
+        (g.__raw && g.__raw._translator) ? String(g.__raw._translator) :
+        "";
+      
+      card.dataset.tr = trKey.toLowerCase();
 
       const imgSrc = (g.image || "").trim() || "/favicon.png";
       const pageHref = buildGameUrl(g.__raw || g);
-
-      // ✅ tuile entièrement cliquable (remplace le bouton "Ouvrir la page")
-      const titleText = getDisplayTitle(g.__raw || g);
-      card.style.cursor = "pointer";
-      card.tabIndex = 0;
-      card.setAttribute("role", "link");
-      card.setAttribute("aria-label", `Ouvrir : ${titleText}`);
-      card.addEventListener("click", ()=>{ location.href = pageHref; });
-      card.addEventListener("keydown", (e)=>{
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          location.href = pageHref;
-        }
-      });
-
-      // ✅ tuile entièrement cliquable (remplace le bouton)
-      const titleText = getDisplayTitle(g.__raw || g);
-      try {
-        const trKey = String(g._translatorKey || g.__raw?._translatorKey || "").toLowerCase();
-        if (trKey) card.dataset.tr = trKey;
-      } catch {}
-      card.style.cursor = "pointer";
-      card.tabIndex = 0;
-      card.setAttribute("role", "link");
-      card.setAttribute("aria-label", `Ouvrir : ${titleText}`);
-      card.addEventListener("click", () => { location.href = pageHref; });
-      card.addEventListener("keydown", (ev) => {
-        if (ev.key === "Enter" || ev.key === " ") {
-          ev.preventDefault();
-          location.href = pageHref;
-        }
-      });
 
       card.innerHTML = `
         <img src="${imgSrc}" class="thumb" alt=""
@@ -865,7 +837,11 @@
         <div class="body">
           <h3 class="name clamp-2">${escapeHtml(getDisplayTitle(g.__raw || g))}</h3>
           <div class="badges-line one-line">${badgesLineHtml(g)}</div>
-          <!-- (bouton supprimé : la tuile entière est cliquable) -->
+          <div class="actions">
+            <a class="btn btn-page" href="${pageHref}" target="_blank" rel="noopener">
+              📄 Ouvrir la page
+            </a>
+          </div>
         </div>
       `;
 
@@ -995,7 +971,7 @@
       const colsSel = $("#cols");
       if (colsSel) colsSel.value = state.cols;
 
-      const raw = await loadList();
+      const raw = await (window.__ALL_DATA_PROMISE__ || loadAllLists());
       state.all = Array.isArray(raw) ? raw.map(normalizeGame) : [];
 
       if (!state.filterTags || !state.filterTags.length) {
@@ -1025,4 +1001,3 @@
 
   init();
 })();
-
