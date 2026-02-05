@@ -5,49 +5,117 @@
 (() => {
   "use strict";
 
-  // =========================
-  // ☰ Menu simple (page liste)
-  // =========================
-  (function initTopMenu(){
   
-    const btn = document.getElementById("hamburgerBtnViewer");
-    if (!btn) return;
-  
-    let pop = document.getElementById("topMenuPopover");
-    if (!pop) {
-      pop = document.createElement("div");
-      pop.id = "topMenuPopover";
-      pop.className = "menu-popover hidden";
-      document.body.appendChild(pop);
-    }
-  
-    if (!pop.dataset.built) {
-      pop.dataset.built = "1";
-  
-      const home = document.createElement("a");
-      home.className = "menu-item";
-      home.href = "https://traductions.pages.dev/";
-      home.textContent = "🌍 Accueil";
-      home.style.display = "block";
-      home.style.textDecoration = "none";
-  
-      pop.appendChild(home);
-    }
-  
-    btn.addEventListener("click", (e)=>{
-      e.stopPropagation();
-      pop.classList.toggle("hidden");
-  
-      const r = btn.getBoundingClientRect();
-      pop.style.left = r.left + "px";
-      pop.style.top = (r.bottom + 6) + "px";
-    });
-  
-    document.addEventListener("click", ()=> pop.classList.add("hidden"));
-  
-  })();
 
   // =========================
+  // ☰ Menu (popover) — Accueil général
+  // =========================
+  (function ensureTopMenu(){
+    if (window.ViewerMenu && typeof window.ViewerMenu.init === "function") return;
+
+    function buildPopover(){
+      let pop = document.getElementById("topMenuPopover");
+      if (!pop) {
+        pop = document.createElement("div");
+        pop.id = "topMenuPopover";
+        pop.className = "menu-popover hidden";
+        pop.setAttribute("role", "menu");
+        document.body.appendChild(pop);
+      }
+
+      if (pop.dataset.built === "1") return pop;
+      pop.dataset.built = "1";
+
+      const aHome = document.createElement("a");
+      aHome.className = "menu-item";
+      aHome.href = "https://traductions.pages.dev/";
+      aHome.target = "_self";
+      aHome.rel = "noopener";
+      aHome.textContent = "🏠 Accueil";
+      aHome.style.display = "block";
+      aHome.style.textDecoration = "none";
+      pop.appendChild(aHome);
+
+      return pop;
+    }
+
+    function positionPopover(pop, anchorBtn){
+      const r = anchorBtn.getBoundingClientRect();
+      const margin = 8;
+
+      const w = pop.getBoundingClientRect().width || 220;
+      const SCROLLBAR_GAP = 18;
+
+      let left = Math.round(r.left);
+      let top = Math.round(r.bottom + margin);
+
+      const maxLeft = window.innerWidth - w - SCROLLBAR_GAP;
+      if (left > maxLeft) left = Math.max(10, maxLeft);
+      if (left < 10) left = 10;
+
+      const approxH = 140;
+      if (top + approxH > window.innerHeight - 10) {
+        top = Math.max(10, Math.round(r.top - margin - approxH));
+      }
+
+      pop.style.left = left + "px";
+      pop.style.top = top + "px";
+    }
+
+    function closeMenu(){
+      const pop = document.getElementById("topMenuPopover");
+      if (pop) pop.classList.add("hidden");
+      const btn = document.getElementById("hamburgerBtnViewer") || document.getElementById("hamburgerBtn");
+      if (btn) btn.setAttribute("aria-expanded", "false");
+    }
+
+    function bindHamburger(){
+      const btn = document.getElementById("hamburgerBtnViewer") || document.getElementById("hamburgerBtn");
+      if (!btn) return;
+
+      btn.addEventListener("click", (e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+
+        const pop = buildPopover();
+        const isOpen = !pop.classList.contains("hidden");
+
+        if (isOpen) { closeMenu(); return; }
+
+        pop.classList.remove("hidden");
+        btn.setAttribute("aria-expanded", "true");
+        positionPopover(pop, btn);
+      });
+
+      document.addEventListener("click", (e)=>{
+        const pop = document.getElementById("topMenuPopover");
+        if (!pop) return;
+        if (pop.classList.contains("hidden")) return;
+
+        const t = e.target;
+        if (!pop.contains(t) && !btn.contains(t)) closeMenu();
+      });
+
+      window.addEventListener("resize", ()=>{
+        const pop = document.getElementById("topMenuPopover");
+        if (pop && !pop.classList.contains("hidden")) positionPopover(pop, btn);
+      });
+
+      document.addEventListener("keydown", (e)=>{
+        if (e.key === "Escape") closeMenu();
+      });
+    }
+
+    window.ViewerMenu = {
+      init(){
+        buildPopover();
+        bindHamburger();
+      },
+      closeMenu,
+    };
+  })();
+
+// =========================
   // ✅ Détection universelle SLUG + chemins
   // =========================
   function detectSlug() {
@@ -69,7 +137,10 @@
 
   const $ = (sel) => document.querySelector(sel);
 
-  // =========================
+  
+  // ✅ Menu hamburger
+  try { window.ViewerMenu && window.ViewerMenu.init && window.ViewerMenu.init(); } catch {}
+// =========================
   // 🔞 Age gate (intégré ici)
   // =========================
   (function initAgeGate() {
@@ -860,27 +931,27 @@
     for (let i = 0; i < limit; i++) {
       const g = state.filtered[i];
       const card = document.createElement("a");
-      card.className = "card";
-      card.href = pageHref;
-      card.target = "_self"; // navigation normale
-      card.rel = "noopener";
+      card.className = "card card-link";
 
-      const trKey =
-        (g.__raw && (g.__raw._translatorKey || g.__raw._translator)) ? String(g.__raw._translatorKey || g.__raw._translator) :
-        (g.__raw && g.__raw._translator) ? String(g.__raw._translator) :
-        "";
-      
+      const trKey = String(g._translatorKey || "");
       card.dataset.tr = trKey.toLowerCase();
 
       const imgSrc = (g.image || "").trim() || "/favicon.png";
       const pageHref = buildGameUrl(g.__raw || g);
+
+      card.href = pageHref;
+      card.target = "_self";
+      card.rel = "noopener";
+
+      const titleText = getDisplayTitle(g.__raw || g);
+      card.setAttribute("aria-label", `Ouvrir : ${titleText}`);
 
       card.innerHTML = `
         <img src="${imgSrc}" class="thumb" alt=""
              referrerpolicy="no-referrer"
              onerror="this.onerror=null;this.src='/favicon.png';this.classList.add('is-fallback');">
         <div class="body">
-          <h3 class="name clamp-2">${escapeHtml(getDisplayTitle(g.__raw || g))}</h3>
+          <h3 class="name clamp-2">${escapeHtml(titleText)}</h3>
           <div class="badges-line one-line">${badgesLineHtml(g)}</div>
         </div>
       `;

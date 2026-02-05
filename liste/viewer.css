@@ -1192,3 +1192,14 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
   align-items:center;
   gap:10px;
 }
+
+
+
+/* ✅ Cartes cliquables (tuile entière) */
+a.card-link{
+  display:block;
+  color: inherit;
+  text-decoration: none;
+}
+a.card-link:visited{ color: inherit; }
+a.card-link:hover{ text-decoration: none; }
