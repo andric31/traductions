@@ -11,7 +11,14 @@
   // =========================
   (function ensureTopMenu(){
     if (window.ViewerMenu && typeof window.ViewerMenu.init === "function") return;
-
+  
+    function prettyNameFromSlug(slug){
+      const s = String(slug || "").trim().toLowerCase();
+      if (!s) return "";
+      // "ant28jsp" => "Ant28jsp", "andric31" => "Andric31"
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+  
     function buildPopover(){
       let pop = document.getElementById("topMenuPopover");
       if (!pop) {
@@ -21,22 +28,23 @@
         pop.setAttribute("role", "menu");
         document.body.appendChild(pop);
       }
-
+  
       // Si déjà rempli, ne pas dupliquer
       if (pop.dataset.built === "1") return pop;
       pop.dataset.built = "1";
-
+  
       // ✅ détecte si on est sur "page jeu" (index.html?id=... ou ?uid=...)
       let isGame = false;
       try {
         const p = new URLSearchParams(location.search);
         isGame = !!(p.get("id") || p.get("uid"));
       } catch {}
-
+  
       // ✅ calcule le chemin du traducteur (retour liste)
       const slug = String(window.__SITE_SLUG__ || "").trim().toLowerCase();
       const appPath = slug ? `/${slug}/` : `/`;
-
+      const niceName = prettyNameFromSlug(slug);
+  
       // ✅ Afficher "Retour à la liste" seulement si on est sur une page jeu
       if (isGame) {
         const aBack = document.createElement("a");
@@ -44,11 +52,15 @@
         aBack.href = appPath;               // ✅ enlève ?id= / ?uid=
         aBack.target = "_self";
         aBack.rel = "noopener";
-        aBack.textContent = "📚 Retour à la liste";
+  
+        aBack.textContent = niceName
+          ? `📚 Retour à la liste · ${niceName}`
+          : "📚 Retour à la liste";
+  
         aBack.style.display = "block";
         aBack.style.textDecoration = "none";
         pop.appendChild(aBack);
-
+  
         // séparateur léger
         const sep = document.createElement("div");
         sep.style.height = "1px";
@@ -56,7 +68,7 @@
         sep.style.background = "rgba(255,255,255,0.08)";
         pop.appendChild(sep);
       }
-
+  
       // Item : Accueil général (toujours)
       const aHome = document.createElement("a");
       aHome.className = "menu-item";
@@ -67,11 +79,11 @@
       aHome.style.display = "block";
       aHome.style.textDecoration = "none";
       pop.appendChild(aHome);
-
+  
       // (plus de bouton "Fermer")
       return pop;
     }
-
+  
     window.ViewerMenu = {
       init(){
         buildPopover();
@@ -82,6 +94,7 @@
       }
     };
   })();
+
 
   // =========================
   // ✅ Détection universelle SLUG + chemins
