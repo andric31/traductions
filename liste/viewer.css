@@ -1192,15 +1192,3 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
   align-items:center;
   gap:10px;
 }
-
-.card{
-  text-decoration: none;
-  color: inherit;
-  cursor: pointer;
-  transition: transform .12s ease, box-shadow .12s ease;
-}
-
-.card:hover{
-  transform: translateY(-4px);
-  box-shadow: 0 12px 28px rgba(0,0,0,.45);
-}
