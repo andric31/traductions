@@ -5,7 +5,6 @@
 (() => {
   "use strict";
 
-  
   // =========================
   // ☰ Menu (popover) — lien vers l’accueil général
   // (utilisé par game.js via window.ViewerMenu.init())
@@ -27,22 +26,38 @@
       if (pop.dataset.built === "1") return pop;
       pop.dataset.built = "1";
 
-      // Item : Accueil général
+      // ✅ détecte si on est sur "page jeu" (index.html?id=... ou ?uid=...)
+      let isGame = false;
+      try {
+        const p = new URLSearchParams(location.search);
+        isGame = !!(p.get("id") || p.get("uid"));
+      } catch {}
+
       // ✅ calcule le chemin du traducteur (retour liste)
       const slug = String(window.__SITE_SLUG__ || "").trim().toLowerCase();
       const appPath = slug ? `/${slug}/` : `/`;
 
-      // Item : Retour liste (du traducteur)
-      const aBack = document.createElement("a");
-      aBack.className = "menu-item";
-      aBack.href = appPath;               // ✅ enlève ?id= / ?uid=
-      aBack.target = "_self";
-      aBack.rel = "noopener";
-      aBack.textContent = "📚 Retour à la liste";
-      aBack.style.display = "block";
-      aBack.style.textDecoration = "none";
+      // ✅ Afficher "Retour à la liste" seulement si on est sur une page jeu
+      if (isGame) {
+        const aBack = document.createElement("a");
+        aBack.className = "menu-item";
+        aBack.href = appPath;               // ✅ enlève ?id= / ?uid=
+        aBack.target = "_self";
+        aBack.rel = "noopener";
+        aBack.textContent = "📚 Retour à la liste";
+        aBack.style.display = "block";
+        aBack.style.textDecoration = "none";
+        pop.appendChild(aBack);
 
-      // Item : Accueil général
+        // séparateur léger
+        const sep = document.createElement("div");
+        sep.style.height = "1px";
+        sep.style.margin = "6px 8px";
+        sep.style.background = "rgba(255,255,255,0.08)";
+        pop.appendChild(sep);
+      }
+
+      // Item : Accueil général (toujours)
       const aHome = document.createElement("a");
       aHome.className = "menu-item";
       aHome.href = "https://traductions.pages.dev/";
@@ -51,19 +66,9 @@
       aHome.textContent = "🏠 Accueil général";
       aHome.style.display = "block";
       aHome.style.textDecoration = "none";
-
-      // (plus de bouton "Fermer")
-      pop.appendChild(aBack);
-
-      // petit séparateur (optionnel)
-      const sep = document.createElement("div");
-      sep.style.height = "1px";
-      sep.style.margin = "6px 8px";
-      sep.style.background = "rgba(255,255,255,0.08)";
-      pop.appendChild(sep);
-
       pop.appendChild(aHome);
 
+      // (plus de bouton "Fermer")
       return pop;
     }
 
@@ -77,7 +82,8 @@
       }
     };
   })();
-// =========================
+
+  // =========================
   // ✅ Détection universelle SLUG + chemins
   // =========================
   function detectSlug() {
@@ -1001,4 +1007,3 @@
 
   init();
 })();
-
