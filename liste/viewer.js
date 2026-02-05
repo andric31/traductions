@@ -6,6 +6,48 @@
   "use strict";
 
   // =========================
+  // ☰ Menu simple (page liste)
+  // =========================
+  (function initTopMenu(){
+  
+    const btn = document.getElementById("hamburgerBtnViewer");
+    if (!btn) return;
+  
+    let pop = document.getElementById("topMenuPopover");
+    if (!pop) {
+      pop = document.createElement("div");
+      pop.id = "topMenuPopover";
+      pop.className = "menu-popover hidden";
+      document.body.appendChild(pop);
+    }
+  
+    if (!pop.dataset.built) {
+      pop.dataset.built = "1";
+  
+      const home = document.createElement("a");
+      home.className = "menu-item";
+      home.href = "https://traductions.pages.dev/";
+      home.textContent = "🌍 Accueil";
+      home.style.display = "block";
+      home.style.textDecoration = "none";
+  
+      pop.appendChild(home);
+    }
+  
+    btn.addEventListener("click", (e)=>{
+      e.stopPropagation();
+      pop.classList.toggle("hidden");
+  
+      const r = btn.getBoundingClientRect();
+      pop.style.left = r.left + "px";
+      pop.style.top = (r.bottom + 6) + "px";
+    });
+  
+    document.addEventListener("click", ()=> pop.classList.add("hidden"));
+  
+  })();
+
+  // =========================
   // ✅ Détection universelle SLUG + chemins
   // =========================
   function detectSlug() {
@@ -817,8 +859,11 @@
 
     for (let i = 0; i < limit; i++) {
       const g = state.filtered[i];
-      const card = document.createElement("article");
+      const card = document.createElement("a");
       card.className = "card";
+      card.href = pageHref;
+      card.target = "_self"; // navigation normale
+      card.rel = "noopener";
 
       const trKey =
         (g.__raw && (g.__raw._translatorKey || g.__raw._translator)) ? String(g.__raw._translatorKey || g.__raw._translator) :
@@ -837,11 +882,6 @@
         <div class="body">
           <h3 class="name clamp-2">${escapeHtml(getDisplayTitle(g.__raw || g))}</h3>
           <div class="badges-line one-line">${badgesLineHtml(g)}</div>
-          <div class="actions">
-            <a class="btn btn-page" href="${pageHref}" target="_blank" rel="noopener">
-              📄 Ouvrir la page
-            </a>
-          </div>
         </div>
       `;
 
