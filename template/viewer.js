@@ -63,7 +63,7 @@
       aHome.href = "https://traductions.pages.dev/";
       aHome.target = "_self";
       aHome.rel = "noopener";
-      aHome.textContent = "🏠 Accueil général";
+      aHome.textContent = "🌍 Projet Traductions FR";
       aHome.style.display = "block";
       aHome.style.textDecoration = "none";
       pop.appendChild(aHome);
