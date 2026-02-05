@@ -6,6 +6,84 @@
   "use strict";
 
   // =========================
+  // ☰ Menu (popover) — lien vers l’accueil général
+  // (utilisé par game.js via window.ViewerMenu.init())
+  // =========================
+  (function ensureTopMenu(){
+    if (window.ViewerMenu && typeof window.ViewerMenu.init === "function") return;
+
+    function buildPopover(){
+      let pop = document.getElementById("topMenuPopover");
+      if (!pop) {
+        pop = document.createElement("div");
+        pop.id = "topMenuPopover";
+        pop.className = "menu-popover hidden";
+        pop.setAttribute("role", "menu");
+        document.body.appendChild(pop);
+      }
+
+      // Si déjà rempli, ne pas dupliquer
+      if (pop.dataset.built === "1") return pop;
+      pop.dataset.built = "1";
+
+      // ✅ détecte si on est sur "page jeu" (index.html?id=... ou ?uid=...)
+      let isGame = false;
+      try {
+        const p = new URLSearchParams(location.search);
+        isGame = !!(p.get("id") || p.get("uid"));
+      } catch {}
+
+      // ✅ calcule le chemin du traducteur (retour liste)
+      const slug = String(window.__SITE_SLUG__ || "").trim().toLowerCase();
+      const appPath = slug ? `/${slug}/` : `/`;
+
+      // ✅ Afficher "Retour à la liste" seulement si on est sur une page jeu
+      if (isGame) {
+        const aBack = document.createElement("a");
+        aBack.className = "menu-item";
+        aBack.href = appPath;               // ✅ enlève ?id= / ?uid=
+        aBack.target = "_self";
+        aBack.rel = "noopener";
+        aBack.textContent = "📚 Retour à la liste";
+        aBack.style.display = "block";
+        aBack.style.textDecoration = "none";
+        pop.appendChild(aBack);
+
+        // séparateur léger
+        const sep = document.createElement("div");
+        sep.style.height = "1px";
+        sep.style.margin = "6px 8px";
+        sep.style.background = "rgba(255,255,255,0.08)";
+        pop.appendChild(sep);
+      }
+
+      // Item : Accueil général (toujours)
+      const aHome = document.createElement("a");
+      aHome.className = "menu-item";
+      aHome.href = "https://traductions.pages.dev/";
+      aHome.target = "_self";
+      aHome.rel = "noopener";
+      aHome.textContent = "🌍 Accueil";
+      aHome.style.display = "block";
+      aHome.style.textDecoration = "none";
+      pop.appendChild(aHome);
+
+      // (plus de bouton "Fermer")
+      return pop;
+    }
+
+    window.ViewerMenu = {
+      init(){
+        buildPopover();
+      },
+      closeMenu(){
+        const pop = document.getElementById("topMenuPopover");
+        if (pop) pop.classList.add("hidden");
+      }
+    };
+  })();
+
+  // =========================
   // ✅ Détection universelle SLUG + chemins
   // =========================
   function detectSlug() {
@@ -929,4 +1007,3 @@
 
   init();
 })();
-
