@@ -28,6 +28,118 @@
   const $ = (sel) => document.querySelector(sel);
 
   // =========================
+  // ☰ Menu hamburger (popover)
+  // ✅ UNIQUEMENT : 🌍 Accueil
+  // =========================
+  (function initHamburgerMenu(){
+    function getBtn(){
+      return document.getElementById("hamburgerBtnViewer")
+          || document.getElementById("hamburgerBtnGame")
+          || document.getElementById("hamburgerBtn");
+    }
+
+    function ensurePopover(){
+      let pop = document.getElementById("topMenuPopover");
+      if (!pop) {
+        pop = document.createElement("div");
+        pop.id = "topMenuPopover";
+        pop.className = "menu-popover hidden";
+        pop.setAttribute("role", "menu");
+        document.body.appendChild(pop);
+      }
+
+      if (pop.dataset.built === "1") return pop;
+      pop.dataset.built = "1";
+
+      const aHome = document.createElement("a");
+      aHome.className = "menu-item";
+      aHome.href = "https://traductions.pages.dev/";
+      aHome.target = "_self";
+      aHome.rel = "noopener";
+      aHome.textContent = "🌍 Accueil";
+      aHome.style.display = "block";
+      aHome.style.textDecoration = "none";
+      pop.appendChild(aHome);
+
+      return pop;
+    }
+
+    function positionPopover(pop, btn){
+      const r = btn.getBoundingClientRect();
+      const margin = 8;
+
+      // force une largeur mesurable
+      pop.classList.remove("hidden");
+      const w = pop.getBoundingClientRect().width || 220;
+
+      const SCROLLBAR_GAP = 18;
+      let left = Math.round(r.left);
+      let top  = Math.round(r.bottom + margin);
+
+      const maxLeft = window.innerWidth - w - SCROLLBAR_GAP;
+      if (left > maxLeft) left = Math.max(10, maxLeft);
+      if (left < 10) left = 10;
+
+      const approxH = 120;
+      if (top + approxH > window.innerHeight - 10) {
+        top = Math.max(10, Math.round(r.top - margin - approxH));
+      }
+
+      pop.style.left = left + "px";
+      pop.style.top  = top + "px";
+    }
+
+    function closeMenu(){
+      const pop = document.getElementById("topMenuPopover");
+      if (pop) pop.classList.add("hidden");
+      const btn = getBtn();
+      if (btn) btn.setAttribute("aria-expanded", "false");
+    }
+
+    function bind(){
+      const btn = getBtn();
+      if (!btn) return;
+
+      const pop = ensurePopover();
+      pop.classList.add("hidden");
+
+      btn.addEventListener("click", (e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+
+        const isOpen = !pop.classList.contains("hidden");
+        if (isOpen) { closeMenu(); return; }
+
+        pop.classList.remove("hidden");
+        btn.setAttribute("aria-expanded", "true");
+        positionPopover(pop, btn);
+      });
+
+      document.addEventListener("click", (e)=>{
+        if (pop.classList.contains("hidden")) return;
+        const t = e.target;
+        if (!pop.contains(t) && !btn.contains(t)) closeMenu();
+      });
+
+      window.addEventListener("resize", ()=>{
+        if (pop.classList.contains("hidden")) return;
+        const b = getBtn();
+        if (b) positionPopover(pop, b);
+      });
+
+      document.addEventListener("keydown", (e)=>{
+        if (e.key === "Escape") closeMenu();
+      });
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", bind);
+    } else {
+      bind();
+    }
+  })();
+
+  // =========================
   // 🔞 Age gate (intégré ici)
   // =========================
   (function initAgeGate() {
@@ -817,18 +929,23 @@
 
     for (let i = 0; i < limit; i++) {
       const g = state.filtered[i];
-      const card = document.createElement("article");
-      card.className = "card";
+
+      // ✅ tuile cliquable (plus de bouton "Ouvrir la page")
+      const pageHref = buildGameUrl(g.__raw || g);
+      const card = document.createElement("a");
+      card.className = "card card-link";
+      card.href = pageHref;
+      card.target = "_self";
+      card.rel = "noopener";
 
       const trKey =
         (g.__raw && (g.__raw._translatorKey || g.__raw._translator)) ? String(g.__raw._translatorKey || g.__raw._translator) :
         (g.__raw && g.__raw._translator) ? String(g.__raw._translator) :
         "";
-      
+
       card.dataset.tr = trKey.toLowerCase();
 
       const imgSrc = (g.image || "").trim() || "/favicon.png";
-      const pageHref = buildGameUrl(g.__raw || g);
 
       card.innerHTML = `
         <img src="${imgSrc}" class="thumb" alt=""
@@ -837,11 +954,6 @@
         <div class="body">
           <h3 class="name clamp-2">${escapeHtml(getDisplayTitle(g.__raw || g))}</h3>
           <div class="badges-line one-line">${badgesLineHtml(g)}</div>
-          <div class="actions">
-            <a class="btn btn-page" href="${pageHref}" target="_blank" rel="noopener">
-              📄 Ouvrir la page
-            </a>
-          </div>
         </div>
       `;
 
