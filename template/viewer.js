@@ -5,7 +5,71 @@
 (() => {
   "use strict";
 
+  
   // =========================
+  // ☰ Menu (popover) — lien vers l’accueil général
+  // (utilisé par game.js via window.ViewerMenu.init())
+  // =========================
+  (function ensureTopMenu(){
+    if (window.ViewerMenu && typeof window.ViewerMenu.init === "function") return;
+
+    function buildPopover(){
+      let pop = document.getElementById("topMenuPopover");
+      if (!pop) {
+        pop = document.createElement("div");
+        pop.id = "topMenuPopover";
+        pop.className = "menu-popover hidden";
+        pop.setAttribute("role", "menu");
+        document.body.appendChild(pop);
+      }
+
+      // Si déjà rempli, ne pas dupliquer
+      if (pop.dataset.built === "1") return pop;
+      pop.dataset.built = "1";
+
+      // Item : Accueil général
+      const aHome = document.createElement("a");
+      aHome.className = "menu-item";
+      aHome.href = "https://traductions.pages.dev/";
+      aHome.target = "_self";
+      aHome.rel = "noopener";
+      aHome.textContent = "🏠 Accueil général";
+      aHome.style.display = "block";
+      aHome.style.textDecoration = "none";
+
+      // Séparation
+      const sep = document.createElement("div");
+      sep.style.height = "1px";
+      sep.style.margin = "6px 8px";
+      sep.style.background = "rgba(255,255,255,0.08)";
+
+      // Item : Fermer
+      const bClose = document.createElement("button");
+      bClose.type = "button";
+      bClose.className = "menu-item";
+      bClose.textContent = "✖️ Fermer";
+      bClose.addEventListener("click", () => {
+        try { window.ViewerMenu.closeMenu(); } catch {}
+      });
+
+      pop.appendChild(aHome);
+      pop.appendChild(sep);
+      pop.appendChild(bClose);
+
+      return pop;
+    }
+
+    window.ViewerMenu = {
+      init(){
+        buildPopover();
+      },
+      closeMenu(){
+        const pop = document.getElementById("topMenuPopover");
+        if (pop) pop.classList.add("hidden");
+      }
+    };
+  })();
+// =========================
   // ✅ Détection universelle SLUG + chemins
   // =========================
   function detectSlug() {
