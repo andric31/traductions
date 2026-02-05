@@ -5,135 +5,6 @@
 (() => {
   "use strict";
 
-  // =========================
-  // ☰ Menu (popover) — ajoute toujours "🌍 Accueil" (même si un autre script définit déjà ViewerMenu)
-  // =========================
-  (function ensureHomeInMenu(){
-    const HOME_URL = "https://traductions.pages.dev/";
-
-    function ensureHomeItem(){
-      let pop = document.getElementById("topMenuPopover");
-      if (!pop) {
-        pop = document.createElement("div");
-        pop.id = "topMenuPopover";
-        pop.className = "menu-popover hidden";
-        pop.setAttribute("role", "menu");
-        document.body.appendChild(pop);
-      }
-
-      if (pop.querySelector('a[data-menu="home"]')) return;
-
-      const aHome = document.createElement("a");
-      aHome.className = "menu-item";
-      aHome.href = HOME_URL;
-      aHome.target = "_self";
-      aHome.rel = "noopener";
-      aHome.textContent = "🌍 Accueil";
-      aHome.style.display = "block";
-      aHome.style.textDecoration = "none";
-      aHome.dataset.menu = "home";
-
-      pop.appendChild(aHome);
-    }
-
-    function patchExistingViewerMenu(){
-      if (!window.ViewerMenu || typeof window.ViewerMenu.init !== "function") return false;
-      if (window.ViewerMenu.__homePatched === true) return true;
-
-      window.ViewerMenu.__homePatched = true;
-
-      const oldInit = window.ViewerMenu.init.bind(window.ViewerMenu);
-      window.ViewerMenu.init = function(){
-        try { oldInit(); } catch {}
-        try { ensureHomeItem(); } catch {}
-      };
-
-      return true;
-    }
-
-    if (patchExistingViewerMenu()) {
-      try { window.ViewerMenu.init(); } catch {}
-      return;
-    }
-
-    function positionPopover(pop, anchorBtn){
-      const r = anchorBtn.getBoundingClientRect();
-      const margin = 8;
-      const w = pop.getBoundingClientRect().width || 220;
-      const SCROLLBAR_GAP = 18;
-
-      let left = Math.round(r.left);
-      let top = Math.round(r.bottom + margin);
-
-      const maxLeft = window.innerWidth - w - SCROLLBAR_GAP;
-      if (left > maxLeft) left = Math.max(10, maxLeft);
-      if (left < 10) left = 10;
-
-      const approxH = 140;
-      if (top + approxH > window.innerHeight - 10) {
-        top = Math.max(10, Math.round(r.top - margin - approxH));
-      }
-
-      pop.style.left = left + "px";
-      pop.style.top = top + "px";
-    }
-
-    function closeMenu(){
-      const pop = document.getElementById("topMenuPopover");
-      if (pop) pop.classList.add("hidden");
-      const btn = document.getElementById("hamburgerBtnViewer") || document.getElementById("hamburgerBtn");
-      if (btn) btn.setAttribute("aria-expanded", "false");
-    }
-
-    function bindHamburger(){
-      const btn = document.getElementById("hamburgerBtnViewer") || document.getElementById("hamburgerBtn");
-      if (!btn) return;
-
-      btn.addEventListener("click", (e)=>{
-        e.preventDefault();
-        e.stopPropagation();
-
-        ensureHomeItem();
-        const pop = document.getElementById("topMenuPopover");
-        const isOpen = pop && !pop.classList.contains("hidden");
-
-        if (isOpen) { closeMenu(); return; }
-
-        pop.classList.remove("hidden");
-        btn.setAttribute("aria-expanded", "true");
-        positionPopover(pop, btn);
-      });
-
-      document.addEventListener("click", (e)=>{
-        const pop = document.getElementById("topMenuPopover");
-        if (!pop || pop.classList.contains("hidden")) return;
-        const t = e.target;
-        if (!pop.contains(t) && !btn.contains(t)) closeMenu();
-      });
-
-      window.addEventListener("resize", ()=>{
-        const pop = document.getElementById("topMenuPopover");
-        if (pop && !pop.classList.contains("hidden")) positionPopover(pop, btn);
-      });
-
-      document.addEventListener("keydown", (e)=>{
-        if (e.key === "Escape") closeMenu();
-      });
-    }
-
-    window.ViewerMenu = {
-      __homePatched: true,
-      init(){
-        ensureHomeItem();
-        bindHamburger();
-      },
-      closeMenu,
-    };
-
-    try { window.ViewerMenu.init(); } catch {}
-  })();
-
-
   
   // =========================
   // ☰ Menu (popover) — lien vers l’accueil général
@@ -190,14 +61,88 @@
 
     window.ViewerMenu = {
       init(){
-        buildPopover();
+        // construit le popover (une seule fois)
+        const pop = buildPopover();
+
+        // bind hamburger (viewer + alias éventuel)
+        const btn = document.getElementById("hamburgerBtnViewer")
+               || document.getElementById("hamburgerBtn")
+               || document.getElementById("hamburgerBtnGame");
+        if (btn && btn.dataset.menuBound !== "1") {
+          btn.dataset.menuBound = "1";
+
+          btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const p = buildPopover();
+            const isOpen = !p.classList.contains("hidden");
+            if (isOpen) this.closeMenu();
+            else {
+              p.classList.remove("hidden");
+              try { btn.setAttribute("aria-expanded", "true"); } catch {}
+              // position simple sous le bouton
+              const r = btn.getBoundingClientRect();
+              const margin = 8;
+              const w = p.getBoundingClientRect().width || 220;
+              const SCROLLBAR_GAP = 18;
+              let left = Math.round(r.left);
+              let top = Math.round(r.bottom + margin);
+              const maxLeft = window.innerWidth - w - SCROLLBAR_GAP;
+              if (left > maxLeft) left = Math.max(10, maxLeft);
+              if (left < 10) left = 10;
+              p.style.left = left + "px";
+              p.style.top = top + "px";
+            }
+          });
+
+          document.addEventListener("click", (e) => {
+            const p = document.getElementById("topMenuPopover");
+            if (!p || p.classList.contains("hidden")) return;
+            const t = e.target;
+            if (!p.contains(t) && !btn.contains(t)) this.closeMenu();
+          });
+
+          window.addEventListener("resize", () => {
+            const p = document.getElementById("topMenuPopover");
+            if (!p || p.classList.contains("hidden")) return;
+            try {
+              const r = btn.getBoundingClientRect();
+              const margin = 8;
+              const w = p.getBoundingClientRect().width || 220;
+              const SCROLLBAR_GAP = 18;
+              let left = Math.round(r.left);
+              let top = Math.round(r.bottom + margin);
+              const maxLeft = window.innerWidth - w - SCROLLBAR_GAP;
+              if (left > maxLeft) left = Math.max(10, maxLeft);
+              if (left < 10) left = 10;
+              p.style.left = left + "px";
+              p.style.top = top + "px";
+            } catch {}
+          });
+
+          document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") this.closeMenu();
+          });
+        }
+
+        return pop;
       },
       closeMenu(){
         const pop = document.getElementById("topMenuPopover");
         if (pop) pop.classList.add("hidden");
+        const btn = document.getElementById("hamburgerBtnViewer")
+               || document.getElementById("hamburgerBtn")
+               || document.getElementById("hamburgerBtnGame");
+        if (btn) {
+          try { btn.setAttribute("aria-expanded", "false"); } catch {}
+        }
       }
     };
   })();
+
+  // ✅ init menu hamburger (liste globale)
+  try { window.ViewerMenu && window.ViewerMenu.init && window.ViewerMenu.init(); } catch {}
+
 // =========================
   // ✅ Détection universelle SLUG + chemins
   // =========================
@@ -252,16 +197,19 @@
   // ✅ URL page jeu (id central + support collection child)
   // =========================
   function buildGameUrl(g) {
+    // ✅ liste globale : si le jeu vient d’un traducteur, on ouvre chez elle
+    const base = (g && g._openBase ? String(g._openBase).trim() : "") || APP_PATH;
+
     const coll = (g.collection || "").toString().trim();
     const id = (g.id || "").toString().trim();
     const uid = (g.uid ?? "").toString().trim();
 
-    // Sous-jeu de collection : /<slug>/?id=<collection>&uid=<uid>
-    if (coll) return `${APP_PATH}?id=${encodeURIComponent(coll)}&uid=${encodeURIComponent(uid)}`;
-    // Jeu normal / collection parent : /<slug>/?id=<id>
-    if (id) return `${APP_PATH}?id=${encodeURIComponent(id)}`;
+    // Sous-jeu de collection : <base>?id=<collection>&uid=<uid>
+    if (coll && uid) return `${base}?id=${encodeURIComponent(coll)}&uid=${encodeURIComponent(uid)}`;
+    // Jeu normal / collection parent : <base>?id=<id>
+    if (id) return `${base}?id=${encodeURIComponent(id)}`;
     // Fallback uid seul
-    return `${APP_PATH}?uid=${encodeURIComponent(uid)}`;
+    return `${base}?uid=${encodeURIComponent(uid)}`;
   }
 
   function getDisplayTitle(g) {
@@ -945,24 +893,30 @@
 
     for (let i = 0; i < limit; i++) {
       const g = state.filtered[i];
-      const card = document.createElement("article");
-      card.className = "card";
+      const card = document.createElement("a");
+      card.className = "card card-link";
+
+      // ✅ thème couleur par traducteur (themes.css)
+      const raw = g.__raw || g;
+      const trKey = String(raw._translatorKey || raw._translator || "").trim().toLowerCase();
+      if (trKey) card.dataset.tr = trKey;
 
       const imgSrc = (g.image || "").trim() || "/favicon.png";
-      const pageHref = buildGameUrl(g.__raw || g);
+      const pageHref = buildGameUrl(raw);
+
+      card.href = pageHref;
+      card.target = "_self";
+      card.rel = "noopener";
+
+      const titleText = getDisplayTitle(raw);
 
       card.innerHTML = `
         <img src="${imgSrc}" class="thumb" alt=""
              referrerpolicy="no-referrer"
              onerror="this.onerror=null;this.src='/favicon.png';this.classList.add('is-fallback');">
         <div class="body">
-          <h3 class="name clamp-2">${escapeHtml(getDisplayTitle(g.__raw || g))}</h3>
+          <h3 class="name clamp-2">${escapeHtml(titleText)}</h3>
           <div class="badges-line one-line">${badgesLineHtml(g)}</div>
-          <div class="actions">
-            <a class="btn btn-page" href="${pageHref}" target="_blank" rel="noopener">
-              📄 Ouvrir la page
-            </a>
-          </div>
         </div>
       `;
 
