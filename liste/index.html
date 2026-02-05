@@ -4,10 +4,12 @@
   <meta charset="utf-8" />
   <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>f95list_viewer</title>
+  <title>Liste globale des traductions</title>
 
   <link rel="icon" href="/favicon.png" />
   <link rel="stylesheet" href="./viewer.css" />
+  <!-- ✅ Thèmes traducteurs (couleurs vignettes) -->
+  <link rel="stylesheet" href="./themes.css" />
 
   <!-- ✅ Styles page jeu (rendu comme sur andric31-traductions, sans dossier /game) -->
   <style>
@@ -96,6 +98,25 @@
       margin-top: 12px;
     }
     body.mode-game #page-game .infoBlock h3{ margin:0 0 8px 0; font-size:14px; }
+
+    /* ✅ bouton Accueil dans la topbar (safe) */
+    .top-home-link{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      height:34px;
+      padding:0 10px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      color: var(--fg);
+      text-decoration:none;
+      font-weight:800;
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .top-home-link:hover{ filter: brightness(1.10); }
   </style>
 </head>
 <body>
@@ -124,10 +145,7 @@
         if(h1){
           h1.textContent = slug ? `f95list_${nice}_viewer` : `f95list_viewer`;
         }
-        const back = document.getElementById("backToList");
-        if(back){
-          back.href = slug ? `/${slug}/` : `/`;
-        }
+        // ✅ backToList supprimé => plus rien ici
       });
     })();
   </script>
@@ -158,7 +176,13 @@
         </button>
 
         <h1 id="viewerTitle">f95list_viewer</h1>
-        <div id="topTitleTools" class="top-title-tools"></div>
+
+        <div id="topTitleTools" class="top-title-tools">
+          <!-- ✅ Accueil général (safe, pas dans le popover) -->
+          <a class="top-home-link" href="https://traductions.pages.dev/" target="_self" rel="noopener">
+            🌍 Accueil
+          </a>
+        </div>
       </div>
 
       <div class="top-actions">
@@ -336,10 +360,11 @@
         if ((msg.textContent || "").trim()) flash();
       })();
     </script>
+
+    <!-- ✅ Retour à la liste supprimé -->
   </div>
 
   <script src="./viewer.js"></script>
-  <script src="./game.js"></script>
 
   <!-- ✅ switch viewer/game -->
   <script>
@@ -363,8 +388,6 @@
   <!-- ✅ pont hamburger : si tes JS attendent #hamburgerBtn -->
   <script>
     (function(){
-      // Certains scripts (viewer.js / game.js) utilisent encore getElementById("hamburgerBtn")
-      // On crée un alias sûr vers le bon bouton selon le mode.
       function ensureAlias(){
         const hasAlias = document.getElementById("hamburgerBtn");
         if (hasAlias) return;
@@ -375,7 +398,6 @@
         const src = document.getElementById(hasGame ? "hamburgerBtnGame" : "hamburgerBtnViewer");
         if (!src) return;
 
-        // clone invisible avec id attendu, qui forward le click vers le vrai bouton
         const alias = src.cloneNode(true);
         alias.id = "hamburgerBtn";
         alias.style.display = "none";
@@ -388,3 +410,4 @@
 
 </body>
 </html>
+
