@@ -98,25 +98,6 @@
       margin-top: 12px;
     }
     body.mode-game #page-game .infoBlock h3{ margin:0 0 8px 0; font-size:14px; }
-
-    /* ✅ bouton Accueil dans la topbar (safe) */
-    .top-home-link{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      height:34px;
-      padding:0 10px;
-      border-radius:10px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,0.06);
-      color: var(--fg);
-      text-decoration:none;
-      font-weight:800;
-      cursor:pointer;
-      user-select:none;
-      white-space:nowrap;
-    }
-    .top-home-link:hover{ filter: brightness(1.10); }
   </style>
 </head>
 <body>
@@ -145,7 +126,10 @@
         if(h1){
           h1.textContent = slug ? `f95list_${nice}_viewer` : `f95list_viewer`;
         }
-        // ✅ backToList supprimé => plus rien ici
+        const back = document.getElementById("backToList");
+        if(back){
+          back.href = slug ? `/${slug}/` : `/`;
+        }
       });
     })();
   </script>
@@ -176,13 +160,7 @@
         </button>
 
         <h1 id="viewerTitle">f95list_viewer</h1>
-
-        <div id="topTitleTools" class="top-title-tools">
-          <!-- ✅ Accueil général (safe, pas dans le popover) -->
-          <a class="top-home-link" href="https://traductions.pages.dev/" target="_self" rel="noopener">
-            🌍 Accueil
-          </a>
-        </div>
+        <div id="topTitleTools" class="top-title-tools"></div>
       </div>
 
       <div class="top-actions">
@@ -361,11 +339,12 @@
       })();
     </script>
 
-    <!-- ✅ Retour à la liste supprimé -->
+    <div style="text-align:center; margin: 14px 0;">
+      <a id="backToList" class="btn" href="./" style="display:inline-block; text-decoration:none;">← Retour à la liste</a>
+    </div>
   </div>
 
   <script src="./viewer.js"></script>
-
   <!-- ✅ switch viewer/game -->
   <script>
     (function(){
@@ -388,6 +367,8 @@
   <!-- ✅ pont hamburger : si tes JS attendent #hamburgerBtn -->
   <script>
     (function(){
+      // Certains scripts (viewer.js / game.js) utilisent encore getElementById("hamburgerBtn")
+      // On crée un alias sûr vers le bon bouton selon le mode.
       function ensureAlias(){
         const hasAlias = document.getElementById("hamburgerBtn");
         if (hasAlias) return;
@@ -398,6 +379,7 @@
         const src = document.getElementById(hasGame ? "hamburgerBtnGame" : "hamburgerBtnViewer");
         if (!src) return;
 
+        // clone invisible avec id attendu, qui forward le click vers le vrai bouton
         const alias = src.cloneNode(true);
         alias.id = "hamburgerBtn";
         alias.style.display = "none";
