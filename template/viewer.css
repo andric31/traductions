@@ -1208,7 +1208,7 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
 .title{
   font-size: 22px;
   line-height: 1.25;
-  margin: 10px 0 10px;
+  margin: 12px 0 10px;
 }
 
 .infoText{
