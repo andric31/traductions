@@ -1309,7 +1309,7 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
   position: relative;
   overflow: hidden;
 
-  background: rgba(0,0,0,.15) !important;
+  background: rgba(0,0,0,.35) !important;
   border: 1px solid rgba(255,255,255,.18) !important;
   border-radius: 12px;
 
@@ -1456,82 +1456,4 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
 #notesBox:hover{
   transform: translateY(-3px);
   box-shadow: 0 18px 46px rgba(0,0,0,0.65);
-}
-
-/* =========================================================
-   ✅ PATCH FINAL — NOTATION plus noire + AUCUN effet interne
-   + SUPPRIME surélévation (Notes / Tags / Blocs)
-   (à coller tout en bas du CSS)
-   ========================================================= */
-
-/* ===== NOTATION : fond plus noir, propre, zéro reflet, zéro lift ===== */
-#ratingBox,
-body.mode-game #ratingBox,
-#page-game #ratingBox{
-  background: #0b0d12 !important;              /* 🔥 plus noir */
-  border: 1px solid rgba(255,255,255,.14) !important;
-  border-radius: 12px !important;
-
-  box-shadow: none !important;
-  transform: none !important;
-  transition: none !important;
-
-  overflow: visible !important;               /* pas besoin de hidden */
-}
-
-#ratingBox::before,
-body.mode-game #ratingBox::before,
-#page-game #ratingBox::before{
-  content: none !important;                   /* ❌ supprime reflet */
-}
-
-#ratingBox:hover,
-body.mode-game #ratingBox:hover,
-#page-game #ratingBox:hover{
-  border-color: rgba(255,255,255,.14) !important; /* hover = identique */
-  box-shadow: none !important;
-  transform: none !important;
-}
-
-/* ===== ÉTOILES : garde le style, mais pas d'animation "gadget" ===== */
-.ratingStar,
-.ratingCancel{
-  opacity: 0.75 !important;
-  transition: opacity .12s ease, filter .12s ease !important;
-  transform: none !important;
-}
-
-.ratingStar:hover,
-.ratingCancel:hover,
-.ratingStar:focus-visible,
-.ratingCancel:focus-visible{
-  opacity: 0.95 !important;
-  filter: brightness(1.08) !important;
-  transform: none !important;
-}
-
-.ratingStar:active,
-.ratingCancel:active{
-  transform: none !important;
-}
-
-/* ===== SUPPRIME la surélévation partout où tu ne la veux pas ===== */
-#notesBox,
-.tagsBox,
-.game-block{
-  box-shadow: none !important;
-  transform: none !important;
-  transition: none !important;
-}
-
-#notesBox::before{
-  content: none !important; /* ❌ enlève reflet si tu l'avais */
-}
-
-#notesBox:hover,
-.tagsBox:hover,
-.game-block:hover{
-  box-shadow: none !important;
-  transform: none !important;
-  border-color: inherit !important;
 }
