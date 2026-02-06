@@ -1,7 +1,7 @@
 [
   {
     "key": "andric31",
-    "name": "Andric31",
+    "name": "andric31",
     "listUrl": "https://raw.githubusercontent.com/andric31/f95list/main/f95list.json",
     "openBase": "https://andric31-traductions.pages.dev/game/"
   },
@@ -10,6 +10,12 @@
     "name": "Ant28jsp",
     "listUrl": "/f95list_ant28jsp.json",
     "openBase": "https://traductions.pages.dev/ant28jsp/"
+  },
+  {
+    "key": "lechauve",
+    "name": "Le Chauve",
+    "listUrl": "/f95list_lechauve.json",
+    "openBase": "https://traductions.pages.dev/lechauve/"
   },
   {
     "key": "ikaros",
