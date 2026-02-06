@@ -1126,11 +1126,10 @@ body.mode-game .btnRow{
     }
 
 body.mode-game .btnMainRow{
-  display:flex;
-  gap:10px;
-  width:fit-content;
-  margin:12px auto 0;
-}
+      display:flex;
+      justify-content:center;
+      margin-top: 12px;
+    }
 
 body.mode-game .btnLike{
       display:inline-flex;
@@ -1224,6 +1223,10 @@ body.mode-game /* Hover : léger éclaircissement, body.mode-game sans mouvement
       border-color: rgba(255,255,255,.04);
       transform: none;
     }
+
+body.mode-game .btnRow:has(+ .btnMainRow:only-child){
+  margin-top:6px;
+}
 
 /* ===== Viewer buttons (restore) ===== */
 .actions{
