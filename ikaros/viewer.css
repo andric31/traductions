@@ -1304,42 +1304,25 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
   opacity: 0.70;
 }
 
-/* ✅ Notation : même fond sombre partout (multi-traducteurs inclus) */
-#ratingBox{
-  background: rgba(0,0,0,.15);
-  border: 1px solid rgba(255,255,255,.18);
-}
-
-/* ✅ Optionnel : un poil plus “panneau” (comme tes blocs premium) */
-#ratingBox{
-  box-shadow:
-    0 8px 22px rgba(0,0,0,0.45),
-    inset 0 1px 0 rgba(255,255,255,0.05);
-}
-
-/* ✅ FORCE : fond sombre pour la notation (multi-traducteurs aussi) */
-#ratingBox,
-#page-game #ratingBox{
-  background: rgba(0,0,0,.15) !important;
-  border: 1px solid rgba(255,255,255,.18) !important;
-  box-shadow: 0 8px 22px rgba(0,0,0,0.45) !important;
-}
-
-/* ✅ Notation (étoiles) — même fond que #notesBox */
+/* ✅ NOTATION — fond sombre FIXE (comme stats / téléchargements) + reflet (sans surélévation) */
 #ratingBox{
   position: relative;
   overflow: hidden;
 
-  border-color: rgba(255,255,255,0.18);
-  background: rgba(0,0,0,.15);
+  background: rgba(0,0,0,.15) !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  border-radius: 12px;
 
+  /* relief fixe */
   box-shadow:
-    0 10px 28px rgba(0,0,0,0.45),
-    inset 0 1px 0 rgba(255,255,255,0.06);
+    0 8px 22px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.06) !important;
 
-  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+  /* ✅ pas de translate / surélévation */
+  transform: none !important;
 }
 
+/* ✅ reflet interne */
 #ratingBox::before{
   content:"";
   position:absolute;
@@ -1360,18 +1343,16 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
     );
 }
 
+/* ✅ contenu au-dessus du reflet */
 #ratingBox > *{
   position: relative;
   z-index: 1;
 }
 
+/* ✅ hover léger MAIS fixe (pas de surélévation) */
 #ratingBox:hover{
-  border-color: rgba(90,162,255,0.32);
-  box-shadow:
-    0 16px 44px rgba(0,0,0,0.60),
-    0 0 0 1px rgba(90,162,255,0.10),
-    inset 0 1px 0 rgba(255,255,255,0.07);
-  transform: translateY(-3px);
+  border-color: rgba(255,255,255,.28) !important;
+  transform: none !important;
 }
 
 /* Doré seulement sur les étoiles */
