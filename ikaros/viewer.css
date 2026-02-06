@@ -1323,61 +1323,71 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
   transform: scale(0.96);
 }
 
-/* ✅ PATCH VISIBLE — dégradé interne + relief pour ℹ️ Informations */
+/* ✅ Dégradé interne + vrai relief pour ℹ️ Informations */
 #notesBox{
-  position: relative; /* nécessaire pour le pseudo-élément */
-  overflow: hidden;   /* pour que le dégradé reste dans les coins */
+  position: relative;
+  overflow: hidden;
+
+  border-color: rgba(255,255,255,0.18);
+
+  /* relief externe + micro lumière interne */
+  box-shadow:
+    0 10px 28px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.06);
 }
 
-/* couche “dégradé/relief” interne */
+/* couche visuelle interne (plus premium) */
 #notesBox::before{
   content:"";
   position:absolute;
   inset:0;
   pointer-events:none;
 
-  /* effet panneau : haut un peu plus clair, bas plus sombre */
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.07) 0%,
-    rgba(0,0,0,0.22) 100%
-  );
-
-  opacity: 1; /* visible */
+  background:
+    radial-gradient(
+      120% 90% at 50% -20%,
+      rgba(255,255,255,0.10) 0%,
+      rgba(255,255,255,0.03) 40%,
+      rgba(0,0,0,0.00) 65%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,0.06) 0%,
+      rgba(0,0,0,0.28) 100%
+    );
 }
 
-/* petit “highlight” en haut (liseré lumière) */
-#notesBox::after{
-  content:"";
-  position:absolute;
-  left:10px;
-  right:10px;
-  top:8px;
-  height:1px;
-  pointer-events:none;
-  background: rgba(255,255,255,0.10);
-  opacity: 1;
-}
-
-/* pour que le texte reste AU-DESSUS des couches */
+/* texte au-dessus */
 #notesBox > *{
   position: relative;
   z-index: 1;
 }
 
-/* (optionnel) hover léger mais visible */
-#notesBox:hover{
-  border-color: rgba(255,255,255,0.22);
-  filter: brightness(1.06);
-}
-
-/* ✅ FIX: enlève la ligne (highlight) au-dessus du texte */
-#notesBox::after{
-  content: none !important;
-  display: none !important;
-}
-
-/* ✅ FIX: évite aussi un espace “bizarre” au-dessus du titre */
+/* spacing propre */
 #notesBox h3{
   margin: 0 0 6px 0;
 }
+
+/* hover doux et moderne */
+#notesBox:hover{
+  border-color: rgba(90,162,255,0.32);
+
+  box-shadow:
+    0 16px 44px rgba(0,0,0,0.60),
+    0 0 0 1px rgba(90,162,255,0.10),
+    inset 0 1px 0 rgba(255,255,255,0.07);
+
+  transform: translateY(-2px);
+  transition: all .18s ease;
+}
+
+#notesBox{
+  box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+  transition: transform .16s ease, box-shadow .16s ease;
+}
+
+#notesBox:hover{
+  transform: translateY(-3px);
+  box-shadow: 0 18px 46px rgba(0,0,0,0.65);
+}
+
