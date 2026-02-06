@@ -1208,7 +1208,7 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
 .title{
   font-size: 22px;
   line-height: 1.25;
-  margin: 16px 0 10px;
+  margin: 10px 0 10px;
 }
 
 .infoText{
@@ -1292,4 +1292,47 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
 .ratingStar:hover{
   filter: brightness(1.2);
   transform: scale(1.08);
+}
+
+/* ✅ PATCH MINIMUM — étoiles premium (sans casser le reste) */
+.ratingStar,
+.ratingCancel{
+  transition:
+    opacity 220ms cubic-bezier(.4,0,.2,1),
+    transform 180ms cubic-bezier(.4,0,.2,1),
+    filter 220ms cubic-bezier(.4,0,.2,1);
+  opacity: 0.70;
+}
+
+/* Doré seulement sur les étoiles */
+.ratingStar{ color:#ffd36b; }
+
+/* Hover léger */
+.ratingStar:hover,
+.ratingCancel:hover,
+.ratingStar:focus-visible,
+.ratingCancel:focus-visible{
+  opacity: 0.92;
+  filter: brightness(1.10);
+  transform: scale(1.06);
+}
+
+/* Clic = petit “press” */
+.ratingStar:active,
+.ratingCancel:active{
+  transform: scale(0.96);
+}
+
+/* ✅ PATCH MINIMUM — effet visuel sur Informations */
+#notesBox{
+  transition:
+    transform 180ms cubic-bezier(.4,0,.2,1),
+    filter 220ms cubic-bezier(.4,0,.2,1),
+    border-color 220ms cubic-bezier(.4,0,.2,1);
+}
+
+#notesBox:hover{
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,0.22);
 }
