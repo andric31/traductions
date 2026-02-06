@@ -1451,7 +1451,6 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
 #statsOut,
 .statsOut{
   position: relative;
-  overflow: hidden;
 
   /* ✅ même fond */
   background: rgba(0,0,0,.15) !important;
@@ -1462,16 +1461,13 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
 
   /* ✅ même relief */
   box-shadow:
-    0 8px 22px rgba(0,0,0,0.45),
-    inset 0 1px 0 rgba(255,255,255,0.06) !important;
+    0 8px 22px rgba(0,0,0,0.45) !important;
 
   transform: none !important;
 }
 
 /* même reflet interne */
-#ratingBox::before,
-#statsOut::before,
-.statsOut::before{
+#ratingBox::before{
   content:"";
   position:absolute;
   inset:0;
