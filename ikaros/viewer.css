@@ -932,6 +932,19 @@ main{
 /* ✅ Encadré stats sous la carte */
 .statsOut{ margin-top: 14px; }
 
+#statsOut{
+  position: relative;
+  overflow: hidden;
+
+  background: rgba(0,0,0,.18) !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  border-radius: 12px;
+
+  box-shadow:
+    0 8px 22px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.06);
+}
+
 /* ===== AGE GATE ===== */
 #age-gate {
   position: fixed;
@@ -1158,7 +1171,6 @@ body.mode-game /* Hover : léger éclaircissement, body.mode-game sans mouvement
   background: #1a1a1a;
   border-color: #d32f2f;
 }
-
 
 /* ===== Rating spacing ===== */
 body.mode-game #ratingBox{ padding-top:14px; }
