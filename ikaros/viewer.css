@@ -1193,13 +1193,13 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
   gap:10px;
 }
 
-.statsOut{
-  margin-top:14px;
-
+.game-block.statsOut{
   background: rgba(0,0,0,.35);
   border: 1px solid rgba(255,255,255,.18);
   border-radius: 12px;
-  padding: 10px 12px;
+
+  padding: 8px 12px;
+  font-size: 12px;
 }
 
 .statsOut strong{
