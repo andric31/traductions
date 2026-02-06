@@ -1371,3 +1371,13 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
   filter: brightness(1.06);
 }
 
+/* ✅ FIX: enlève la ligne (highlight) au-dessus du texte */
+#notesBox::after{
+  content: none !important;
+  display: none !important;
+}
+
+/* ✅ FIX: évite aussi un espace “bizarre” au-dessus du titre */
+#notesBox h3{
+  margin: 0 0 6px 0;
+}
