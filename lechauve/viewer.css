@@ -940,7 +940,7 @@ body.mode-game .btnLike .f95-word{
 }
 
 body.mode-game .btnLike .f95-word .f95-red{
-  margin-left: 1px;    /* ✅ micro espace (mets 0 si tu veux collé) */
+  margin-left: 2px;    /* ✅ micro espace (mets 0 si tu veux collé) */
 }
 
 /* ===== EXTRA LINKS : F95 EXACT même couleur/effet que le bouton principal ===== */
