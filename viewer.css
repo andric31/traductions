@@ -378,9 +378,27 @@ main{
 .badge.status-onhold{ background:#03A9F4; color:#000; }
 .badge.status-encours{ background:#607D8B; }
 
+.actions{
+  margin-top:auto;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+}
 
-
-
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:6px 8px;              /* ⬅ moins haut */
+  border-radius:8px;            /* ⬅ un peu plus fin */
+  background:#2e3652;
+  color:#ffffff;
+  border:1px solid #3c466a;
+  text-decoration:none;
+  font-size:13px;               /* ⬅ texte plus petit */
+  font-weight:600;              /* ⬅ moins “bold” */
+  transition:0.15s ease;
+}
 
 .btn:hover{
   background:#3b4568;
@@ -836,102 +854,6 @@ main{
   margin-left: 2px;   /* 🔥 parfait */
 }
 
-/* =========================
-   Page jeu : boutons (MEGA / Archives)
-   ========================= */
-
-.btn-mega{
-  background: #00c853;
-  border-color: #00c853;
-  color: #000;
-  font-weight: 900;
-}
-.btn-mega:hover{ filter: brightness(1.06); }
-
-.btn-archive{
-  background: rgba(255,255,255,0.06);
-  border-color: rgba(255,255,255,0.18);
-  color: rgba(255,255,255,0.90);
-}
-.btn-archive:hover{ filter: brightness(1.08); }
-
-/* =========================
-   Page jeu : état de mise à jour
-   ========================= */
-
-.majState{
-  margin: 2px 0 10px;
-  padding: 8px 10px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.14);
-  background: rgba(255,255,255,0.04);
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: .1px;
-}
-.majState.maj-ok{
-  border-color: rgba(0,200,83,0.55);
-  background: rgba(0,200,83,0.10);
-}
-.majState.maj-ko{
-  border-color: rgba(255,152,0,0.55);
-  background: rgba(255,152,0,0.10);
-}
-
-/* Badge texte (dans la ligne de badges) */
-.badge.status-updated{
-  background: rgba(0,200,83,0.22);
-  border: 1px solid rgba(0,200,83,0.42);
-}
-.badge.status-outdated{
-  background: rgba(255,152,0,0.22);
-  border: 1px solid rgba(255,152,0,0.42);
-}
-
-
-/* =========================
-   Page jeu : tags (encadrés)
-   ========================= */
-.tagsBox{ margin-top: 12px; padding: 12px; }
-.tagsRow{ display:flex; flex-wrap:wrap; gap:8px; }
-.tagPill{
-  border: 1px solid var(--border);
-  background: rgba(255,255,255,0.04);
-  color:#fff;
-  border-radius: 999px;
-  font-size: 12px;
-  padding: 6px 10px;
-  user-select:none;
-}
-
-/* =========================
-   Page jeu : notation (étoiles)
-   ========================= */
-
-.ratingStar,
-.ratingCancel{
-  width: 42px;
-  height: 36px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.16);
-  background: rgba(255,255,255,0.05);
-  color: #fff;
-  cursor: pointer;
-  font-size: 20px;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  user-select: none;
-}
-.ratingStar:hover,
-.ratingCancel:hover{ filter: brightness(1.12); }
-.ratingStar:active,
-.ratingCancel:active{ transform: translateY(1px); }
-
-/* ✅ Encadré stats sous la carte */
-.statsOut{ margin-top: 14px; }
-
 /* ===== AGE GATE ===== */
 #age-gate {
   position: fixed;
@@ -985,311 +907,18 @@ body.age-gate-active footer {
   user-select: none;
 }
 
-/* ===== Boutons page jeu (EXACT main CSS) ===== */
-body.mode-game .btnRow{
-      display:flex;
-      gap:10px;
-      justify-content:center;
-      flex-wrap:wrap;
-      margin-top: 16px;
-    }
-
-body.mode-game .btnMainRow{
-      display:flex;
-      justify-content:center;
-      margin-top: 12px;
-    }
-
-body.mode-game .btnLike{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      padding: 10px 14px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.05);
-      color:#fff;
-      text-decoration:none;
-      font-weight: 700;
-      cursor:pointer;
-      user-select:none;
-    }
-
-body.mode-game .btnLike:hover{ filter: brightness(1.08); }
-
-body.mode-game #btnDiscord.btn-discord{
-      background:#5865F2;
-      border-color:#5865F2;
-      color:#fff;
-    }
-
-body.mode-game #btnDiscord.btn-discord:hover{
-      background:#4752C4;
-      border-color:#4752C4;
-    }
-
-body.mode-game /* Texte F95Zone bicolore (logo-like) */
-    #btnF95 .f95-white{
-      color:#ffffff;
-      font-weight:800;
-    }
-
-body.mode-game #btnF95 .f95-red{
-      color:#8b2d2d;
-      font-weight:800;
-    }
-
-body.mode-game /* Style bouton (comme avant) */
-    #btnF95.btn-f95{
-      position: relative;
-      background: linear-gradient(180deg, #222222 0%, #161616 100%);
-      border-color: rgba(255,255,255,.04);
-      color:#ffffff;
-      box-shadow: 0 8px 18px rgba(0,0,0,.35);
-      overflow: hidden;
-      transform: none;
-    }
-
-body.mode-game /* Assure que le texte reste au-dessus */
-    #btnF95.btn-f95 span{
-      position: relative;
-      z-index: 1;
-    }
-
-body.mode-game /* ✅ SUPPRIME la languette rouge */
-    #btnF95.btn-f95::before{
-      content: none !important;
-      display: none !important;
-    }
-
-body.mode-game /* Hover (comme avant) */
-    #btnF95.btn-f95:hover{
-      background: linear-gradient(180deg, #1a1a1a 0%, #111111 100%);
-      border-color: rgba(255,255,255,.04);
-      transform: none;
-    }
-
-body.mode-game #btnMega{
-      background: linear-gradient(
-        180deg,
-        #b71c1c 0%,
-        #8e0e0e 100%
-      );
-      border: 1px solid rgba(255,255,255,.04);
-      color:#ffffff;
-      box-shadow: 0 8px 18px rgba(0,0,0,.40);
-      transform: none;
-    }
-
-body.mode-game /* Hover : léger éclaircissement, body.mode-game sans mouvement */
-    #btnMega:hover{
-      background: linear-gradient(
-        180deg,
-        #c62828 0%,
-        #9f1b1b 100%
-      );
-      border-color: rgba(255,255,255,.04);
-      transform: none;
-    }
-
-/* ===== Viewer buttons (restore) ===== */
-.actions{
-  margin-top:auto;
-  display:flex;
-  flex-direction:column;
-  align-items:stretch;
+.descInnerBox{
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.05) 0%,
+    rgba(0,0,0,0.16) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    0 8px 18px rgba(0,0,0,0.22);
 }
 
-.btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:6px 8px;              /* ⬅ moins haut */
-  border-radius:8px;            /* ⬅ un peu plus fin */
-  background:#2e3652;
-  color:#ffffff;
-  border:1px solid #3c466a;
-  text-decoration:none;
-  font-size:13px;               /* ⬅ texte plus petit */
-  font-weight:600;              /* ⬅ moins “bold” */
-  transition:0.15s ease;
-}
-
-.btn:hover{
-  background:#3b4568;
-  border-color:#4d5a84;
-  filter:brightness(1.05);      /* ⬅ hover plus doux */
-}
-
-.btn.btn-page{
-  width:100%;
-  padding:6px 8px;              /* cohérent */
-}
-
-.btn[aria-disabled="true"]{ opacity:.6; pointer-events:none }
-
-.btn:hover{ filter:brightness(1.07) }
-
-/* =========================
-   Boutons liens externes
-   ========================= */
-
-/* 💬 Discord — bleu Discord */
-.btn-discord{
-  background: #5865F2;
-  border-color: #5865F2;
-  color: #fff;
-}
-
-.btn-discord:hover{
-  background: #4752C4;
-  border-color: #4752C4;
-}
-
-/* 🌐 F95Zone — noir / rouge */
-.btn-f95{
-  background: #0b0b0b;
-  border-color: #b71c1c;
-  color: #ffffff;
-}
-
-.btn-f95:hover{
-  background: #1a1a1a;
-  border-color: #d32f2f;
-}
-
-
-/* ===== Rating spacing ===== */
-body.mode-game #ratingBox{ padding-top:14px; }
-body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12px; }
-
-/* ===== Topbar hamburger ===== */
-.menuBtn{
-  width:34px;
-  height:34px;
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,0.12);
-  background:rgba(255,255,255,0.06);
-  display:inline-flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  gap:4px;
-  margin-right:10px;
-  cursor:pointer;
-}
-.menuBtn:hover{ background:rgba(255,255,255,0.10); }
-.menuBtn .line{
-  width:16px;
-  height:2px;
-  background:rgba(255,255,255,0.85);
-  border-radius:2px;
-  display:block;
-}
-.top-title-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.statsOut{
-  margin-top:14px;
-  font-size:12px;
-  color: var(--muted);
-}
-
-.statsOut strong{
-  font-size:13px;
-  color: var(--fg);
-  font-weight:700;
-}
-
-.title{
-  font-size: 22px;
-  line-height: 1.25;
-  margin: 16px 0 10px;
-}
-
-.infoText{
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--muted);   /* effet texte secondaire */
-}
-
-/* ⭐ Notation (même thème que andric31-traductions.pages.dev) */
-.ratingStar,
-.ratingCancel{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-
-  width: 40px;
-  height: 34px;
-
-  background: rgba(255,255,255,0.035);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-
-  cursor: pointer;
-  user-select: none;
-
-  font-size: 26px;
-  line-height: 1;
-  color: #ffd36b;
-
-  opacity: 0.7;
-
-  transition:
-    opacity 220ms cubic-bezier(.4,0,.2,1),
-    transform 220ms cubic-bezier(.4,0,.2,1),
-    filter 220ms cubic-bezier(.4,0,.2,1);
-}
-
-.ratingStar:hover,
-.ratingCancel:hover,
-.ratingStar:focus-visible,
-.ratingCancel:focus-visible{
-  opacity: 0.92;
-  filter: brightness(1.04);
-  transform: scale(1.02);
-}
-
-.ratingCancel{
-  font-size: 16px;
-  color: #fff;
-  opacity: 0.75;
-}
-
-.ratingCancel:hover{
-  color: #ff9a9a;
-  opacity: 0.95;
-}
-
-/* (optionnel) évite que ça passe à la ligne */
-#ratingChoices{ flex-wrap: nowrap; }
-
-/* ✨ Fade doux du texte de feedback */
-#ratingMsg{
-  opacity: 0.82;
-  transition: opacity 220ms cubic-bezier(.4,0,.2,1);
-  will-change: opacity;
-}
-@keyframes ratingMsgFade {
-  from { opacity: 0.35; }
-  to   { opacity: 0.82; }
-}
-#ratingMsg.msgFade{
-  animation: ratingMsgFade 520ms cubic-bezier(.4,0,.2,1);
-}
-
-.ratingStar{
-  transition: 
-    transform .15s ease,
-    filter .15s ease;
-}
-
-.ratingStar:hover{
-  filter: brightness(1.2);
-  transform: scale(1.08);
-}
