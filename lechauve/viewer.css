@@ -1090,16 +1090,31 @@ body.mode-game /* Hover : léger éclaircissement, body.mode-game sans mouvement
       transform: none;
     }
 
-#extraTranslationsHost a{
-  justify-content:center;
-}
+/* =========================
+   Extra links (entre MEGA et Archives) — surbrillance
+   ========================= */
 
 #extraLinksRow .btnLike{
+  /* même base que les autres boutons (tu as déjà .btnLike dans body.mode-game) */
   background: rgba(255,255,255,0.04);
   border-color: rgba(255,255,255,0.12);
+  box-shadow: 0 8px 18px rgba(0,0,0,.40);
+  border: 1px solid rgba(255,255,255,.04);
+  transform: none;
 }
+
 #extraLinksRow .btnLike:hover{
-  filter: brightness(1.10);
+  /* surbrillance douce comme MEGA */
+  filter: brightness(1.08);
+}
+
+#extraLinksRow .btnLike:active{
+  /* petit press */
+  transform: translateY(1px);
+}
+
+#extraTranslationsHost a{
+  justify-content:center;
 }
 
 /* ===== Viewer buttons (restore) ===== */
