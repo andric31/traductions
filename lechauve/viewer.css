@@ -932,6 +932,34 @@ main{
     0 0 14px rgba(90,162,255,0.35);
 }
 
+/* ===== F95Zone bicolore : corrige l'espace (flex gap) ===== */
+body.mode-game .btnLike .f95-word{
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0;              /* ✅ pas de gap entre F95 et Zone */
+}
+
+body.mode-game .btnLike .f95-word .f95-red{
+  margin-left: 1px;    /* ✅ micro espace (mets 0 si tu veux collé) */
+}
+
+/* ===== EXTRA LINKS : F95 EXACT même couleur/effet que le bouton principal ===== */
+#extraLinksRow .btnLike.btn-f95{
+  position: relative;
+  background: linear-gradient(180deg, #222222 0%, #161616 100%);
+  border-color: rgba(255,255,255,.04);
+  color:#ffffff;
+  box-shadow: 0 8px 18px rgba(0,0,0,.35);
+  overflow: hidden;
+  transform: none;
+}
+
+#extraLinksRow .btnLike.btn-f95:hover{
+  background: linear-gradient(180deg, #1a1a1a 0%, #111111 100%);
+  border-color: rgba(255,255,255,.04);
+  transform: none;
+}
+
 /* 🔵 Google Drive */
 #extraLinksRow .btnLike.btn-host-drive{
   background: linear-gradient(180deg, #4285F4 0%, #2a6adf 100%);

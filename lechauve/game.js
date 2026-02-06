@@ -1203,7 +1203,7 @@ function renderVideoBlock({ id, videoUrl }) {
     const archiveHref = (entry.translationsArchive || "").trim();
 
     setHref("btnMega", megaHref);
-    if ($("btnMega")) $("btnMega").textContent = "📥 Télécharger la traduction (MEGA)";
+    if ($("btnMega")) $("btnMega").textContent = "📥 Télécharger la traduction · MEGA";
 
     setHref("archiveLink", archiveHref);
     if ($("archiveLink")) $("archiveLink").textContent = "📦 Archives de la traduction";
@@ -1238,11 +1238,11 @@ function renderVideoBlock({ id, videoUrl }) {
           const hostCls = getHostClass(link);
 
           // ✅ libellé : "📥 Télécharger" + nom
-          let labelHtml = `📥 Télécharger · ${escapeHtml(name)}`;
+          let labelHtml = `📥 Télécharger la traduction · ${escapeHtml(name)}`;
 
           // ✅ F95Zone : bicolore (même rendu que le bouton principal)
           if (hostCls === "btn-f95" && /f95\s*zone/i.test(name)) {
-            labelHtml = `📥 Télécharger · <span class="f95-white">F95</span><span class="f95-red">Zone</span>`;
+            labelHtml = `📥 Télécharger la traduction · <span class="f95-word"><span class="f95-white">F95</span><span class="f95-red">Zone</span></span>`;
           }
 
           return `
