@@ -1323,40 +1323,31 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
   transform: scale(0.96);
 }
 
-/* ✅ PATCH MINIMUM — effet visuel sur Informations */
-#notesBox{
+/* ✅ STYLE GLOBAL des encadrés (solution propre) */
+.infoBlock{
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 12px;
+  padding: 12px;
+  margin: 12px 0;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.05),
+    rgba(0,0,0,0.20)
+  );
+
+  box-shadow: 0 8px 24px rgba(0,0,0,.35);
+
   transition:
-    transform 180ms cubic-bezier(.4,0,.2,1),
-    filter 220ms cubic-bezier(.4,0,.2,1),
-    border-color 220ms cubic-bezier(.4,0,.2,1);
+    transform .18s ease,
+    box-shadow .25s ease,
+    border-color .25s ease;
 }
 
-#notesBox:hover{
-  filter: brightness(1.06);
-  transform: translateY(-1px);
-  border-color: rgba(255,255,255,0.22);
-}
-
-/* ✅ PATCH MINIMUM — effet VISIBLE sur l'encadré ℹ️ Informations */
-body.mode-game #notesBox{
-  transition:
-    transform 180ms cubic-bezier(.4,0,.2,1),
-    box-shadow 220ms cubic-bezier(.4,0,.2,1),
-    border-color 220ms cubic-bezier(.4,0,.2,1),
-    background 220ms cubic-bezier(.4,0,.2,1);
-}
-
-body.mode-game #notesBox:hover{
-  transform: translateY(-1px);
-  border-color: rgba(90,162,255,0.35);
-  box-shadow: 0 14px 32px rgba(0,0,0,0.45);
-
-  /* petit boost visuel (sans changer ton thème) */
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,0.07) 0%,
-      rgba(0,0,0,0.22) 100%
-    );
+/* effet visible */
+.infoBlock:hover{
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,.28);
+  box-shadow: 0 18px 44px rgba(0,0,0,.55);
 }
 
