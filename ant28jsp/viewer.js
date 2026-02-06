@@ -1,100 +1,10 @@
 // viewer.js — Vignettes + filtres + tri + affichage progressif + stats
 // Universel multi-traducteurs : détecte automatiquement le dossier (slug) dans l'URL.
 // ✅ UID ONLY pour les stats (aligné sur game.js)
+// ✅ NEW: clic sur la tuile => ouvre la page en NOUVEL ONGLET (sans dépendre du bouton)
 
 (() => {
   "use strict";
-
-  // =========================
-  // ☰ Menu (popover) — lien vers l’accueil général
-  // (utilisé par game.js via window.ViewerMenu.init())
-  // =========================
-  (function ensureTopMenu(){
-    if (window.ViewerMenu && typeof window.ViewerMenu.init === "function") return;
-  
-    function prettyNameFromSlug(slug){
-      const s = String(slug || "").trim().toLowerCase();
-      if (!s) return "";
-      // "ant28jsp" => "Ant28jsp", "andric31" => "Andric31"
-      return s.charAt(0).toUpperCase() + s.slice(1);
-    }
-  
-    function buildPopover(){
-      let pop = document.getElementById("topMenuPopover");
-      if (!pop) {
-        pop = document.createElement("div");
-        pop.id = "topMenuPopover";
-        pop.className = "menu-popover hidden";
-        pop.setAttribute("role", "menu");
-        document.body.appendChild(pop);
-      }
-  
-      // Si déjà rempli, ne pas dupliquer
-      if (pop.dataset.built === "1") return pop;
-      pop.dataset.built = "1";
-  
-      // ✅ détecte si on est sur "page jeu" (index.html?id=... ou ?uid=...)
-      let isGame = false;
-      try {
-        const p = new URLSearchParams(location.search);
-        isGame = !!(p.get("id") || p.get("uid"));
-      } catch {}
-  
-      // ✅ calcule le chemin du traducteur (retour liste)
-      const slug = String(window.__SITE_SLUG__ || "").trim().toLowerCase();
-      const appPath = slug ? `/${slug}/` : `/`;
-      const niceName = prettyNameFromSlug(slug);
-  
-      // ✅ Afficher "Retour à la liste" seulement si on est sur une page jeu
-      if (isGame) {
-        const aBack = document.createElement("a");
-        aBack.className = "menu-item";
-        aBack.href = appPath;               // ✅ enlève ?id= / ?uid=
-        aBack.target = "_self";
-        aBack.rel = "noopener";
-  
-        aBack.textContent = niceName
-          ? `📚 Retour à la liste · ${niceName}`
-          : "📚 Retour à la liste";
-  
-        aBack.style.display = "block";
-        aBack.style.textDecoration = "none";
-        pop.appendChild(aBack);
-  
-        // séparateur léger
-        const sep = document.createElement("div");
-        sep.style.height = "1px";
-        sep.style.margin = "6px 8px";
-        sep.style.background = "rgba(255,255,255,0.08)";
-        pop.appendChild(sep);
-      }
-  
-      // Item : Accueil général (toujours)
-      const aHome = document.createElement("a");
-      aHome.className = "menu-item";
-      aHome.href = "https://traductions.pages.dev/";
-      aHome.target = "_self";
-      aHome.rel = "noopener";
-      aHome.textContent = "🌍 Accueil";
-      aHome.style.display = "block";
-      aHome.style.textDecoration = "none";
-      pop.appendChild(aHome);
-  
-      // (plus de bouton "Fermer")
-      return pop;
-    }
-  
-    window.ViewerMenu = {
-      init(){
-        buildPopover();
-      },
-      closeMenu(){
-        const pop = document.getElementById("topMenuPopover");
-        if (pop) pop.classList.add("hidden");
-      }
-    };
-  })();
-
 
   // =========================
   // ✅ Détection universelle SLUG + chemins
@@ -116,26 +26,116 @@
   const APP_PATH = SLUG ? `/${SLUG}/` : `/`; // base pour les liens internes
   const DEFAULT_URL = SLUG ? `/f95list_${SLUG}.json` : `/f95list.json`;
 
+  // ✅ expose le slug pour game.js / menu / autres scripts
+  try { window.__SITE_SLUG__ = SLUG; } catch {}
+
   const $ = (sel) => document.querySelector(sel);
+
+  // =========================
+  // ☰ Menu (popover) — lien vers l’accueil général
+  // (utilisé par game.js via window.ViewerMenu.init())
+  // =========================
+  (function ensureTopMenu() {
+    if (window.ViewerMenu && typeof window.ViewerMenu.init === "function") return;
+
+    function prettyNameFromSlug(slug) {
+      const s = String(slug || "").trim().toLowerCase();
+      if (!s) return "";
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+
+    function buildPopover() {
+      let pop = document.getElementById("topMenuPopover");
+      if (!pop) {
+        pop = document.createElement("div");
+        pop.id = "topMenuPopover";
+        pop.className = "menu-popover hidden";
+        pop.setAttribute("role", "menu");
+        document.body.appendChild(pop);
+      }
+
+      // Si déjà rempli, ne pas dupliquer
+      if (pop.dataset.built === "1") return pop;
+      pop.dataset.built = "1";
+
+      // ✅ détecte si on est sur "page jeu" (index.html?id=... ou ?uid=...)
+      let isGame = false;
+      try {
+        const p = new URLSearchParams(location.search);
+        isGame = !!(p.get("id") || p.get("uid"));
+      } catch {}
+
+      // ✅ calcule le chemin du traducteur (retour liste)
+      const slug = String(window.__SITE_SLUG__ || SLUG || "").trim().toLowerCase();
+      const appPath = slug ? `/${slug}/` : `/`;
+      const niceName = prettyNameFromSlug(slug);
+
+      // ✅ Afficher "Retour à la liste" seulement si on est sur une page jeu
+      if (isGame) {
+        const aBack = document.createElement("a");
+        aBack.className = "menu-item";
+        aBack.href = appPath; // ✅ enlève ?id= / ?uid=
+        aBack.target = "_self";
+        aBack.rel = "noopener";
+
+        aBack.textContent = niceName ? `📚 Retour à la liste · ${niceName}` : "📚 Retour à la liste";
+        aBack.style.display = "block";
+        aBack.style.textDecoration = "none";
+        pop.appendChild(aBack);
+
+        // séparateur léger
+        const sep = document.createElement("div");
+        sep.style.height = "1px";
+        sep.style.margin = "6px 8px";
+        sep.style.background = "rgba(255,255,255,0.08)";
+        pop.appendChild(sep);
+      }
+
+      // Item : Accueil général (toujours)
+      const aHome = document.createElement("a");
+      aHome.className = "menu-item";
+      aHome.href = "https://traductions.pages.dev/";
+      aHome.target = "_self";
+      aHome.rel = "noopener";
+      aHome.textContent = "🌍 Accueil";
+      aHome.style.display = "block";
+      aHome.style.textDecoration = "none";
+      pop.appendChild(aHome);
+
+      return pop;
+    }
+
+    window.ViewerMenu = {
+      init() {
+        buildPopover();
+      },
+      closeMenu() {
+        const pop = document.getElementById("topMenuPopover");
+        if (pop) pop.classList.add("hidden");
+      },
+    };
+  })();
 
   // =========================
   // 🔞 Age gate (intégré ici)
   // =========================
-  (function initAgeGate(){
+  (function initAgeGate() {
     const KEY = "ageVerified";
     const gate = document.getElementById("age-gate");
     if (!gate) return;
 
-    try{
+    try {
       if (!localStorage.getItem(KEY)) {
         gate.style.display = "flex";
         document.body.classList.add("age-gate-active");
         document.body.style.overflow = "hidden";
       }
-    }catch{}
+    } catch {}
 
     document.getElementById("age-yes")?.addEventListener("click", () => {
-      try{ localStorage.setItem(KEY, "1"); }catch{}
+      try {
+        localStorage.setItem(KEY, "1");
+      } catch {}
       gate.style.display = "none";
       document.body.classList.remove("age-gate-active");
       document.body.style.overflow = "";
@@ -192,8 +192,11 @@
   function formatInt(n) {
     const x = Number(n);
     if (!Number.isFinite(x)) return "0";
-    try { return x.toLocaleString("fr-FR"); }
-    catch { return String(Math.floor(x)); }
+    try {
+      return x.toLocaleString("fr-FR");
+    } catch {
+      return String(Math.floor(x));
+    }
   }
 
   // =========================
@@ -261,10 +264,9 @@
 
     try {
       const op = MAIN_VIEW_HIT_DONE ? "get" : "hit";
-      const r = await fetch(
-        `/api/counter?op=${op}&kind=view&id=${encodeURIComponent(MAIN_PAGE_ID)}`,
-        { cache: "no-store" }
-      );
+      const r = await fetch(`/api/counter?op=${op}&kind=view&id=${encodeURIComponent(MAIN_PAGE_ID)}`, {
+        cache: "no-store",
+      });
       if (!r.ok) return;
       const j = await r.json();
       if (!j?.ok) return;
@@ -290,13 +292,17 @@
   }
 
   function getViewerCols() {
-    try { return (localStorage.getItem("viewerCols") || "auto").trim() || "auto"; }
-    catch { return "auto"; }
+    try {
+      return (localStorage.getItem("viewerCols") || "auto").trim() || "auto";
+    } catch {
+      return "auto";
+    }
   }
 
   function setViewerCols(v) {
-    try { localStorage.setItem("viewerCols", String(v)); }
-    catch {}
+    try {
+      localStorage.setItem("viewerCols", String(v));
+    } catch {}
   }
 
   async function loadList() {
@@ -397,7 +403,11 @@
         continue;
       }
 
-      if (norm === "wolf" && tokens[i + 1] && tokens[i + 1].toLowerCase().replace(/[^\w']/g, "") === "rpg") {
+      if (
+        norm === "wolf" &&
+        tokens[i + 1] &&
+        tokens[i + 1].toLowerCase().replace(/[^\w']/g, "") === "rpg"
+      ) {
         if (!engines.includes("Wolf RPG")) engines.push("Wolf RPG");
         cut = i + 2;
         i++;
@@ -455,9 +465,7 @@
     const coll = String(game.collection || "");
     const uid = game.uid ?? "";
 
-    const displayTitleRaw = String(
-      game.gameData && game.gameData.title ? game.gameData.title : game.title || ""
-    );
+    const displayTitleRaw = String(game.gameData && game.gameData.title ? game.gameData.title : game.title || "");
     const displayImageRaw = String(
       game.gameData && game.gameData.imageUrl ? game.gameData.imageUrl : game.imageUrl || ""
     );
@@ -502,7 +510,7 @@
       category: c.categories[0] || null,
       engines,
       engine: engines[0] || null,
-      status: (c.status === "En cours" || STATUS_ALLOWED.includes(c.status)) ? c.status : "En cours",
+      status: c.status === "En cours" || STATUS_ALLOWED.includes(c.status) ? c.status : "En cours",
       discord: String(game.discordlink || ""),
       translation: String(game.translation || ""),
       image: displayImageRaw,
@@ -526,13 +534,15 @@
   const TAGS_STORE_KEY = `viewerSelectedTags:${SLUG || "root"}`;
 
   function escapeHtml(s) {
-    return String(s || "").replace(/[&<>"']/g, (m) => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;",
-    }[m]));
+    return String(s || "").replace(/[&<>"']/g, (m) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[m]
+    );
   }
 
   function getSavedTags() {
@@ -546,11 +556,15 @@
   }
 
   function setSavedTags(tags) {
-    try { localStorage.setItem(TAGS_STORE_KEY, JSON.stringify(tags || [])); } catch {}
+    try {
+      localStorage.setItem(TAGS_STORE_KEY, JSON.stringify(tags || []));
+    } catch {}
   }
 
   function clearSavedTags() {
-    try { localStorage.removeItem(TAGS_STORE_KEY); } catch {}
+    try {
+      localStorage.removeItem(TAGS_STORE_KEY);
+    } catch {}
   }
 
   function ensureTagsDom() {
@@ -660,7 +674,10 @@
         e.stopPropagation();
 
         const isOpen = !pop.classList.contains("hidden");
-        if (isOpen) { closeTagsPopover(); return; }
+        if (isOpen) {
+          closeTagsPopover();
+          return;
+        }
 
         pop.classList.remove("hidden");
         btn.setAttribute("aria-expanded", "true");
@@ -741,25 +758,31 @@
     }
 
     if (k === "views") {
-      state.filtered.sort((a, b) => ( (GAME_STATS.views.get(a.ckey)||0) - (GAME_STATS.views.get(b.ckey)||0) ) * mul
-        || ( (a.updatedAtLocalTs||0) - (b.updatedAtLocalTs||0) ) * mul
-        || a.title.localeCompare(b.title)
+      state.filtered.sort(
+        (a, b) =>
+          ((GAME_STATS.views.get(a.ckey) || 0) - (GAME_STATS.views.get(b.ckey) || 0)) * mul ||
+          ((a.updatedAtLocalTs || 0) - (b.updatedAtLocalTs || 0)) * mul ||
+          a.title.localeCompare(b.title)
       );
       return;
     }
 
     if (k === "mega") {
-      state.filtered.sort((a, b) => ( (GAME_STATS.mega.get(a.ckey)||0) - (GAME_STATS.mega.get(b.ckey)||0) ) * mul
-        || ( (a.updatedAtLocalTs||0) - (b.updatedAtLocalTs||0) ) * mul
-        || a.title.localeCompare(b.title)
+      state.filtered.sort(
+        (a, b) =>
+          ((GAME_STATS.mega.get(a.ckey) || 0) - (GAME_STATS.mega.get(b.ckey) || 0)) * mul ||
+          ((a.updatedAtLocalTs || 0) - (b.updatedAtLocalTs || 0)) * mul ||
+          a.title.localeCompare(b.title)
       );
       return;
     }
 
     if (k === "likes") {
-      state.filtered.sort((a, b) => ( (GAME_STATS.likes.get(a.ckey)||0) - (GAME_STATS.likes.get(b.ckey)||0) ) * mul
-        || ( (a.updatedAtLocalTs||0) - (b.updatedAtLocalTs||0) ) * mul
-        || a.title.localeCompare(b.title)
+      state.filtered.sort(
+        (a, b) =>
+          ((GAME_STATS.likes.get(a.ckey) || 0) - (GAME_STATS.likes.get(b.ckey) || 0)) * mul ||
+          ((a.updatedAtLocalTs || 0) - (b.updatedAtLocalTs || 0)) * mul ||
+          a.title.localeCompare(b.title)
       );
       return;
     }
@@ -773,7 +796,11 @@
     const ft = state.filterTags;
 
     state.filtered = state.all.filter((g) => {
-      const mq = !q || g.title.toLowerCase().includes(q) || String(g.id || "").includes(q) || String(g.uid || "").includes(q);
+      const mq =
+        !q ||
+        g.title.toLowerCase().includes(q) ||
+        String(g.id || "").includes(q) ||
+        String(g.uid || "").includes(q);
 
       const mc = fc === "all" || (Array.isArray(g.categories) ? g.categories.includes(fc) : false);
       const me = fe === "all" || (Array.isArray(g.engines) ? g.engines.includes(fe) : false);
@@ -816,6 +843,28 @@
     if (n >= 7) gridEl.dataset.density = "compact";
   }
 
+  // ✅ NEW: ouverture nouvelle fenêtre/onglet sécurisée
+  function openNewTab(url) {
+    try {
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch {
+      // fallback
+      const a = document.createElement("a");
+      a.href = url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+  }
+
+  function shouldIgnoreTileClick(target) {
+    if (!target) return false;
+    // si clic sur un lien/bouton ou dans un élément interactif => on ne force pas l’ouverture
+    return !!target.closest("a, button, input, select, textarea, label");
+  }
+
   function renderGrid() {
     const grid = $("#grid");
     const empty = $("#gridEmpty");
@@ -843,21 +892,40 @@
 
     for (let i = 0; i < limit; i++) {
       const g = state.filtered[i];
+      const raw = g.__raw || g;
+
       const card = document.createElement("article");
       card.className = "card";
+      card.tabIndex = 0; // ✅ focus clavier
+      card.style.cursor = "pointer";
 
       const imgSrc = (g.image || "").trim() || "/favicon.png";
-      const pageHref = buildGameUrl(g.__raw || g);
+      const pageHref = buildGameUrl(raw);
+
+      // ✅ NEW: clic sur tuile => nouvel onglet
+      card.addEventListener("click", (e) => {
+        if (shouldIgnoreTileClick(e.target)) return;
+        openNewTab(pageHref);
+      });
+
+      // ✅ NEW: Enter / Space => nouvel onglet
+      card.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          if (shouldIgnoreTileClick(e.target)) return;
+          e.preventDefault();
+          openNewTab(pageHref);
+        }
+      });
 
       card.innerHTML = `
         <img src="${imgSrc}" class="thumb" alt=""
              referrerpolicy="no-referrer"
              onerror="this.onerror=null;this.src='/favicon.png';this.classList.add('is-fallback');">
         <div class="body">
-          <h3 class="name clamp-2">${escapeHtml(getDisplayTitle(g.__raw || g))}</h3>
+          <h3 class="name clamp-2">${escapeHtml(getDisplayTitle(raw))}</h3>
           <div class="badges-line one-line">${badgesLineHtml(g)}</div>
           <div class="actions">
-            <a class="btn btn-page" href="${pageHref}" target="_blank" rel="noopener">
+            <a class="btn btn-page" href="${pageHref}" target="_blank" rel="noopener noreferrer">
               📄 Ouvrir la page
             </a>
           </div>

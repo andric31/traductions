@@ -1092,6 +1092,8 @@ function renderVideoBlock({ id, videoUrl }) {
 (async function main() {
   try {
     initHamburgerMenu();
+    // ✅ CSS scope (page jeu)
+    try { document.body.classList.add("mode-game"); } catch {}
 
     const { id: idParam, uid: uidParam } = getParamsFromUrl();
     if (!idParam && !uidParam) {
