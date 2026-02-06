@@ -1291,7 +1291,6 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
 /* ✅ NOTATION — fond sombre FIXE (comme stats / téléchargements) + reflet (sans surélévation) */
 #ratingBox{
   position: relative;
-  overflow: hidden;
 
   background: rgba(0,0,0,.15) !important;
   border: 1px solid rgba(255,255,255,.18) !important;
@@ -1300,31 +1299,10 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
   /* relief fixe */
   box-shadow:
     0 8px 22px rgba(0,0,0,0.45),
-    inset 0 1px 0 rgba(255,255,255,0.06) !important;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.45) !important;
 
   /* ✅ pas de translate / surélévation */
   transform: none !important;
-}
-
-/* ✅ reflet interne */
-#ratingBox::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-
-  background:
-    radial-gradient(
-      120% 90% at 50% -20%,
-      rgba(255,255,255,0.10) 0%,
-      rgba(255,255,255,0.03) 40%,
-      rgba(0,0,0,0.00) 65%
-    ),
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,0.06) 0%,
-      rgba(0,0,0,0.28) 100%
-    );
 }
 
 /* ✅ contenu au-dessus du reflet */
@@ -1464,35 +1442,6 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
     0 8px 22px rgba(0,0,0,0.45) !important;
 
   transform: none !important;
-}
-
-/* même reflet interne */
-#ratingBox::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-
-  background:
-    radial-gradient(
-      120% 90% at 50% -20%,
-      rgba(255,255,255,0.10) 0%,
-      rgba(255,255,255,0.03) 40%,
-      rgba(0,0,0,0.00) 65%
-    ),
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,0.06) 0%,
-      rgba(0,0,0,0.28) 100%
-    );
-}
-
-/* contenu au-dessus du reflet */
-#ratingBox > *,
-#statsOut > *,
-.statsOut > *{
-  position: relative;
-  z-index: 1;
 }
 
 /* Base un poil plus compact (optionnel) */
