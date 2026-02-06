@@ -1192,3 +1192,15 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
   align-items:center;
   gap:10px;
 }
+
+.statsOut{
+  margin-top:14px;
+  font-size:12px;
+  color: var(--muted);
+}
+
+.statsOut strong{
+  font-size:13px;
+  color: var(--fg);
+  font-weight:700;
+}
