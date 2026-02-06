@@ -1304,6 +1304,19 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
   opacity: 0.70;
 }
 
+/* ✅ Notation : même fond sombre partout (multi-traducteurs inclus) */
+#ratingBox{
+  background: rgba(0,0,0,.15);
+  border: 1px solid rgba(255,255,255,.18);
+}
+
+/* ✅ Optionnel : un poil plus “panneau” (comme tes blocs premium) */
+#ratingBox{
+  box-shadow:
+    0 8px 22px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
 /* Doré seulement sur les étoiles */
 .ratingStar{ color:#ffd36b; }
 
