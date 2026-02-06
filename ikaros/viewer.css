@@ -1336,3 +1336,27 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
   transform: translateY(-1px);
   border-color: rgba(255,255,255,0.22);
 }
+
+/* ✅ PATCH MINIMUM — effet VISIBLE sur l'encadré ℹ️ Informations */
+body.mode-game #notesBox{
+  transition:
+    transform 180ms cubic-bezier(.4,0,.2,1),
+    box-shadow 220ms cubic-bezier(.4,0,.2,1),
+    border-color 220ms cubic-bezier(.4,0,.2,1),
+    background 220ms cubic-bezier(.4,0,.2,1);
+}
+
+body.mode-game #notesBox:hover{
+  transform: translateY(-1px);
+  border-color: rgba(90,162,255,0.35);
+  box-shadow: 0 14px 32px rgba(0,0,0,0.45);
+
+  /* petit boost visuel (sans changer ton thème) */
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,0.07) 0%,
+      rgba(0,0,0,0.22) 100%
+    );
+}
+
