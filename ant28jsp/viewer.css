@@ -931,6 +931,10 @@ main{
 
 /* ✅ Encadré stats sous la carte */
 .statsOut{ margin-top: 14px; }
+body.mode-game .statsOut{
+  font-size: 13px;
+  line-height: 1.2;
+}
 
 /* ===== AGE GATE ===== */
 #age-gate {
@@ -1191,4 +1195,26 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
   display:flex;
   align-items:center;
   gap:10px;
+}
+
+/* =========================
+   Page jeu : Titre + Synopsis (exact IDs game.js)
+   ========================= */
+
+body.mode-game #title{
+  font-size: 24px;   /* teste 22px si tu veux encore plus compact */
+  line-height: 1.2;
+  margin: 6px 0 10px;
+}
+
+/* Synopsis */
+body.mode-game #descriptionText{
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* (optionnel) titre du bloc "📜 Description" si tu en as un dans descriptionBox */
+body.mode-game #descriptionBox h3{
+  font-size: 13px;
+  line-height: 1.2;
 }
