@@ -1229,7 +1229,7 @@ function renderVideoBlock({ id, videoUrl }) {
               <a class="btnLike"
                  target="_blank" rel="noopener"
                  href="${escapeHtml(link)}">
-                🔗 ${escapeHtml(name)}
+                📥 Télécharger la trdauction · ${escapeHtml(name)}
               </a>
             `;
           })
