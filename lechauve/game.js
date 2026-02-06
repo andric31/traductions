@@ -1188,6 +1188,17 @@ function renderVideoBlock({ id, videoUrl }) {
     }
 
     // 6) MEGA + Archives
+    function getHostClass(url){
+      const u = (url || "").toLowerCase();
+    
+      if (u.includes("mega.nz")) return "btn-host-mega";
+      if (u.includes("f95zone")) return "btn-host-f95";
+      if (u.includes("drive.google")) return "btn-host-drive";
+      if (u.includes("gofile")) return "btn-host-gofile";
+    
+      return "btn-host-default";
+    }
+
     const megaHref = (entry.translation || "").trim();
     const archiveHref = (entry.translationsArchive || "").trim();
 
@@ -1226,10 +1237,10 @@ function renderVideoBlock({ id, videoUrl }) {
             const name = (x.name || "Lien").trim();
             const link = (x.link || "").trim();
             return `
-              <a class="btnLike"
+              <a class="btnLike ${getHostClass(link)}"
                  target="_blank" rel="noopener"
                  href="${escapeHtml(link)}">
-                📥 Télécharger la trdauction · ${escapeHtml(name)}
+                📥 Télécharger la traduction · ${escapeHtml(name)}
               </a>
             `;
           })

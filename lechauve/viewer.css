@@ -1156,6 +1156,57 @@ body.mode-game /* Hover : léger éclaircissement, body.mode-game sans mouvement
     0 0 14px rgba(90,162,255,0.35);
 }
 
+/* 🔵 Google Drive */
+.btn-host-drive{
+  background: linear-gradient(
+    180deg,
+    #4285F4 0%,
+    #2a6adf 100%
+  );
+  border: 1px solid rgba(255,255,255,.06);
+  color:#fff;
+  box-shadow: 0 8px 18px rgba(0,0,0,.45);
+}
+
+.btn-host-drive:hover{
+  background: linear-gradient(
+    180deg,
+    #4c8df6 0%,
+    #2f73ea 100%
+  );
+}
+
+/* 🔵 GOFILE */
+.btn-host-gofile{
+  background: linear-gradient(
+    180deg,
+    #ff9800 0%,
+    #e68900 100%
+  );
+  border: 1px solid rgba(255,255,255,.06);
+  color:#000;
+  font-weight:800;
+}
+
+.btn-host-gofile:hover{
+  background: linear-gradient(
+    180deg,
+    #ffa726 0%,
+    #fb8c00 100%
+  );
+}
+
+/* ⚪ automatique hebergeurs */
+.btn-host-default{
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.14);
+}
+
+.btn-host-default:hover{
+  border-color: rgba(90,162,255,0.45);
+  box-shadow: 0 0 18px rgba(90,162,255,0.35);
+}
+
 /* ===== Viewer buttons (restore) ===== */
 .actions{
   margin-top:auto;
