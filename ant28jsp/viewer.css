@@ -133,7 +133,8 @@ body{
   align-items:center;
   justify-content:center;
   padding: 18px;
-  overflow:auto;
+
+  overflow:auto; /* ✅ FIX: scroll si écran petit */
 }
 .modal-overlay.hidden{ display:none !important; }
 
@@ -146,9 +147,9 @@ body{
   box-shadow: 0 18px 55px rgba(0,0,0,.55);
   overflow:hidden;
 
-  display:flex;
-  flex-direction:column;
-  max-height: calc(100vh - 36px);
+  display:flex; /* ✅ FIX: header/body/footer */
+  flex-direction:column; /* ✅ FIX */
+  max-height: calc(100vh - 36px); /* ✅ FIX: tient dans l'écran */
 }
 .modal-head{
   display:flex;
@@ -179,9 +180,9 @@ body{
   font-size: 14px;
   line-height: 1.45;
 
-  overflow:auto;
-  flex: 1 1 auto;
-  min-height: 0;
+  overflow:auto;  /* ✅ FIX: ascenseur interne */
+  flex: 1 1 auto; /* ✅ FIX: prend l'espace restant */
+  min-height: 0;  /* ✅ FIX: nécessaire pour overflow en flex */
 }
 .aboutText a{
   color: var(--primary);
@@ -280,6 +281,7 @@ main{
   gap:12px;
   grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
 }
+
 .grid[data-cols="1"]{
   grid-template-columns:repeat(1,minmax(0,1fr)) !important;
 }
@@ -302,6 +304,7 @@ main{
   object-fit:cover;
   background:#1c1f2e;
 }
+
 .thumb.is-fallback{
   object-fit:contain;
   background:#0f0f10;
@@ -348,6 +351,7 @@ main{
   white-space:nowrap;
   color:#fff;
 }
+
 .badges-line .badge{ line-height: 1; }
 
 .badge.cat-vn{ background:#D32F2F; }
@@ -372,37 +376,25 @@ main{
 .badge.status-completed{ background:#2196F3; color:#000; }
 .badge.status-abandoned{ background:#FF9800; color:#000; }
 .badge.status-onhold{ background:#03A9F4; color:#000; }
-.badge.status-encours{ background:#607D8B; color:#000; }
+.badge.status-encours{ background:#607D8B; }
 
-/* ===== Viewer buttons ===== */
-.actions{
-  margin-top:auto;
-  display:flex;
-  flex-direction:column;
-  align-items:stretch;
-}
 
-.btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:6px 8px;
-  border-radius:8px;
-  background:#2e3652;
-  color:#ffffff;
-  border:1px solid #3c466a;
-  text-decoration:none;
-  font-size:13px;
-  font-weight:600;
-  transition:0.15s ease;
-}
+
+
+
 .btn:hover{
   background:#3b4568;
   border-color:#4d5a84;
-  filter:brightness(1.05);
+  filter:brightness(1.05);      /* ⬅ hover plus doux */
 }
-.btn.btn-page{ width:100%; }
+
+.btn.btn-page{
+  width:100%;
+  padding:6px 8px;              /* cohérent */
+}
+
 .btn[aria-disabled="true"]{ opacity:.6; pointer-events:none }
+.btn:hover{ filter:brightness(1.07) }
 
 .empty{
   margin:16px 0;
@@ -549,7 +541,7 @@ main{
   align-items:center;
   justify-content:center;
   font-size:12px;
-  color: transparent;
+  color: transparent; /* invisible quand inactif */
 }
 
 .tag-item.active{
@@ -578,6 +570,7 @@ main{
 /* =========================
    ❤️ Bouton Like (icône seule)
    ========================= */
+
 .like-btn{
   padding: 0;
   width: 34px;
@@ -594,36 +587,90 @@ main{
   align-items: center;
   justify-content: center;
 
-  color: #9aa0b4;
+  color: #9aa0b4; /* gris */
   cursor: pointer;
 
   transition: transform .1s ease, filter .15s ease;
 }
-.like-btn:hover{ filter: brightness(1.15); }
-.like-btn:active{ transform: scale(0.95); }
+
+.like-btn:hover{
+  filter: brightness(1.15);
+}
+
+.like-btn:active{
+  transform: scale(0.95);
+}
 
 /* =========================
    Scrollbar sombre (modales & page)
    ========================= */
-::-webkit-scrollbar{ width: 16px; height: 16px; }
-::-webkit-scrollbar-track{ background: #0f1117; }
+
+/* Chrome / Edge / Brave */
+::-webkit-scrollbar{
+  width: 16px;   /* ⬅ rail légèrement plus large */
+  height: 16px;
+}
+
+::-webkit-scrollbar-track{
+  background: #0f1117;
+}
+
 ::-webkit-scrollbar-thumb{
   background: #2a314b;
   border-radius: 999px;
+
+  /* ⬅ crée l’effet “thumb plus petit que le rail” */
   border: 4px solid #0f1117;
 }
-::-webkit-scrollbar-thumb:hover{ background: #3b4568; }
+
+::-webkit-scrollbar-thumb:hover{
+  background: #3b4568;
+}
+
+/* Scrollbar spécifique aux modales */
+.modal-body{
+  scrollbar-width: thin;                 /* Firefox */
+  scrollbar-color: #2a314b #0f1117;       /* Firefox */
+}
+
+/* =========================
+   Scrollbar LARGE pour la modale Extension
+   ========================= */
+
+/* Chrome / Edge / Brave */
+.modal-body::-webkit-scrollbar{
+  width: 16px;
+}
+
+.modal-body::-webkit-scrollbar-track{
+  background: #0f1117;
+}
+
+.modal-body::-webkit-scrollbar-thumb{
+  background: #2a314b;
+  border-radius: 999px;
+
+  /* thumb plus fin que le rail */
+  border: 4px solid #0f1117;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover{
+  background: #3b4568;
+}
 
 /* Firefox */
 .modal-body{
-  scrollbar-width: auto;
+  scrollbar-width: auto;               /* ⬅ plus large que thin */
   scrollbar-color: #2a314b #0f1117;
 }
 
 /* =========================
    📢 Viewer Annonce (bandeau)
    ========================= */
-#viewerAnnonceHost { margin: 12px 0; }
+
+#viewerAnnonceHost {
+  margin: 12px 0;
+}
 
 .viewer-annonce{
   border: 1px solid rgba(255,255,255,.15);
@@ -631,62 +678,133 @@ main{
   overflow: hidden;
   background: rgba(255,255,255,.04);
 }
+
 .viewer-annonce__bar{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:4px 8px;
+  padding:4px 8px; /* ⬅️ hauteur de la barre */
   background: rgba(255,255,255,.06);
 }
-.viewer-annonce__title{ font-weight: 800; }
+
+.viewer-annonce__title{
+  font-weight: 800;
+}
+
 .viewer-annonce__btn{
   cursor:pointer;
-  padding:6px 10px;
+  padding:6px 10px; /* bouton */
   border-radius:10px;
   border: 1px solid rgba(255,255,255,.18);
   background: rgba(255,255,255,.06);
   color: inherit;
 }
-.viewer-annonce__btn:hover{ background: rgba(255,255,255,.10); }
+
+.viewer-annonce__btn:hover{
+  background: rgba(255,255,255,.10);
+}
+
 .viewer-annonce__body{
-  padding: 12px;
+  padding: 12px; /* ⬅️ hauteur du contenu */
   line-height: 1.35;
 }
-.viewer-annonce.is-min .viewer-annonce__body{ display:none; }
+
+.viewer-annonce.is-min .viewer-annonce__body{
+  display:none;
+}
+
+/* Centrage du texte */
 .viewer-annonce__title,
-.viewer-annonce__body { text-align: center; }
-.viewer-annonce.is-locked .viewer-annonce__body { text-align: center; }
+.viewer-annonce__body {
+  text-align: center;
+}
+
+/* Centrage en maintenance */
+.viewer-annonce.is-locked .viewer-annonce__body {
+  text-align: center;
+}
+
+
+/* Collection parent (page /game/?id=...) */
+.collection-block {
+  border: 1px solid rgba(255,255,255,.25);
+  padding: 12px;
+  border-radius: 8px;
+  margin: 16px 0;
+  background: rgba(0,0,0,.15);
+}
+.collection-block h3 {
+  margin-top: 0;
+}
+
+/* Collection child (page /game/?id=...&uid=...) */
+.collection-child-block {
+  border: 1px solid rgba(255,255,255,.25);
+  padding: 12px;
+  border-radius: 8px;
+  margin: 16px 0;
+  background: rgba(0,0,0,.15);
+}
+.collection-child-block h3 {
+  margin-top: 0;
+}
+
+
+/* Serie block */
+.serie-block {
+  border: 1px solid rgba(255,255,255,.25);
+  padding: 12px;
+  border-radius: 8px;
+  margin: 16px 0;
+  background: rgba(0,0,0,.15);
+}
+.serie-block h3 {
+  margin-top: 0;
+}
+
+/* ✅ Bloc générique (page game + autres) */
+.game-block{
+  border: 1px solid rgba(255,255,255,.25);
+  padding: 12px;
+  border-radius: 8px;
+  margin: 12px 0;
+  background: rgba(0,0,0,.15);
+}
+.game-block h3{
+  margin: 0 0 8px 0;
+}
+
+/* ✅ "Informations" plus petit + encadré bi-ton (haut/bas) */
+#notesBox{
+  /* bi-ton : haut légèrement plus clair, bas légèrement plus sombre */
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,0.05) 0%,
+      rgba(0,0,0,0.18) 100%
+    );
+  border-color: rgba(255,255,255,0.14);
+}
+
+/* ✅ Titre "ℹ️ Informations" plus petit + couleur un peu différente */
+#notesBox h3{
+  font-size: 13px;              /* plus petit */
+  font-weight: 800;
+  letter-spacing: .2px;
+  color: rgba(255,255,255,0.78); /* légèrement différent */
+  margin-bottom: 6px;
+}
+
+/* (optionnel) texte un peu plus doux */
+#notesBox #notesText{
+  color: rgba(255,255,255,0.72);
+}
 
 /* =========================
-   Page jeu : texte (titre / résumé)
+   Boutons liens externes
    ========================= */
-.title{
-  font-size: 22px;
-  line-height: 1.25;
-  margin: 16px 0 10px;
-}
 
-.infoText{
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--muted);
-}
-
-/* ✅ Encadré stats sous la carte (page jeu) */
-.statsOut{
-  margin-top:14px;
-  font-size:12px;
-  color: var(--muted);
-}
-.statsOut strong{
-  font-size:13px;
-  color: var(--fg);
-  font-weight:700;
-}
-
-/* =========================
-   Page jeu : boutons externes
-   ========================= */
+/* 💬 Discord — bleu Discord */
 .btn-discord{
   background: #5865F2;
   border-color: #5865F2;
@@ -697,6 +815,7 @@ main{
   border-color: #4752C4;
 }
 
+/* 🌐 F95Zone — noir / rouge */
 .btn-f95{
   background: #0b0b0b;
   border-color: #b71c1c;
@@ -707,9 +826,68 @@ main{
   border-color: #d32f2f;
 }
 
-/* 🔒 micro espace F95Zone */
-#btnF95{ gap: 0 !important; }
-#btnF95 .f95-red{ margin-left: 2px; }
+/* 🔒 Supprimer l’espace interne UNIQUEMENT pour F95 */
+/* Micro espace contrôlé entre F95 et Zone */
+#btnF95{
+  gap: 0 !important;
+}
+
+#btnF95 .f95-red{
+  margin-left: 2px;   /* 🔥 parfait */
+}
+
+/* =========================
+   Page jeu : boutons (MEGA / Archives)
+   ========================= */
+
+.btn-mega{
+  background: #00c853;
+  border-color: #00c853;
+  color: #000;
+  font-weight: 900;
+}
+.btn-mega:hover{ filter: brightness(1.06); }
+
+.btn-archive{
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.90);
+}
+.btn-archive:hover{ filter: brightness(1.08); }
+
+/* =========================
+   Page jeu : état de mise à jour
+   ========================= */
+
+.majState{
+  margin: 2px 0 10px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.04);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .1px;
+}
+.majState.maj-ok{
+  border-color: rgba(0,200,83,0.55);
+  background: rgba(0,200,83,0.10);
+}
+.majState.maj-ko{
+  border-color: rgba(255,152,0,0.55);
+  background: rgba(255,152,0,0.10);
+}
+
+/* Badge texte (dans la ligne de badges) */
+.badge.status-updated{
+  background: rgba(0,200,83,0.22);
+  border: 1px solid rgba(0,200,83,0.42);
+}
+.badge.status-outdated{
+  background: rgba(255,152,0,0.22);
+  border: 1px solid rgba(255,152,0,0.42);
+}
+
 
 /* =========================
    Page jeu : tags (encadrés)
@@ -727,8 +905,319 @@ main{
 }
 
 /* =========================
-   ⭐ Notation (étoiles) — style premium
+   Page jeu : notation (étoiles)
    ========================= */
+
+.ratingStar,
+.ratingCancel{
+  width: 42px;
+  height: 36px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+.ratingStar:hover,
+.ratingCancel:hover{ filter: brightness(1.12); }
+.ratingStar:active,
+.ratingCancel:active{ transform: translateY(1px); }
+
+/* ✅ Encadré stats sous la carte */
+.statsOut{ margin-top: 14px; }
+
+/* ===== AGE GATE ===== */
+#age-gate {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.88);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.age-box {
+  background: #111;
+  color: #fff;
+  padding: 28px;
+  max-width: 440px;
+  text-align: center;
+  border-radius: 12px;
+  box-shadow: 0 0 30px rgba(0,0,0,0.7);
+}
+
+.age-box h2 {
+  margin-top: 0;
+}
+
+.age-box button {
+  margin: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#age-yes {
+  background: #4CAF50;
+  color: #000;
+}
+
+#age-no {
+  background: #f44336;
+  color: #fff;
+}
+
+/* ===== Flou contenu tant que age-gate actif ===== */
+body.age-gate-active main,
+body.age-gate-active header,
+body.age-gate-active footer {
+  filter: blur(8px);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ===== Boutons page jeu (EXACT main CSS) ===== */
+body.mode-game .btnRow{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top: 16px;
+    }
+
+body.mode-game .btnMainRow{
+      display:flex;
+      justify-content:center;
+      margin-top: 12px;
+    }
+
+body.mode-game .btnLike{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      color:#fff;
+      text-decoration:none;
+      font-weight: 700;
+      cursor:pointer;
+      user-select:none;
+    }
+
+body.mode-game .btnLike:hover{ filter: brightness(1.08); }
+
+body.mode-game #btnDiscord.btn-discord{
+      background:#5865F2;
+      border-color:#5865F2;
+      color:#fff;
+    }
+
+body.mode-game #btnDiscord.btn-discord:hover{
+      background:#4752C4;
+      border-color:#4752C4;
+    }
+
+body.mode-game /* Texte F95Zone bicolore (logo-like) */
+    #btnF95 .f95-white{
+      color:#ffffff;
+      font-weight:800;
+    }
+
+body.mode-game #btnF95 .f95-red{
+      color:#8b2d2d;
+      font-weight:800;
+    }
+
+body.mode-game /* Style bouton (comme avant) */
+    #btnF95.btn-f95{
+      position: relative;
+      background: linear-gradient(180deg, #222222 0%, #161616 100%);
+      border-color: rgba(255,255,255,.04);
+      color:#ffffff;
+      box-shadow: 0 8px 18px rgba(0,0,0,.35);
+      overflow: hidden;
+      transform: none;
+    }
+
+body.mode-game /* Assure que le texte reste au-dessus */
+    #btnF95.btn-f95 span{
+      position: relative;
+      z-index: 1;
+    }
+
+body.mode-game /* ✅ SUPPRIME la languette rouge */
+    #btnF95.btn-f95::before{
+      content: none !important;
+      display: none !important;
+    }
+
+body.mode-game /* Hover (comme avant) */
+    #btnF95.btn-f95:hover{
+      background: linear-gradient(180deg, #1a1a1a 0%, #111111 100%);
+      border-color: rgba(255,255,255,.04);
+      transform: none;
+    }
+
+body.mode-game #btnMega{
+      background: linear-gradient(
+        180deg,
+        #b71c1c 0%,
+        #8e0e0e 100%
+      );
+      border: 1px solid rgba(255,255,255,.04);
+      color:#ffffff;
+      box-shadow: 0 8px 18px rgba(0,0,0,.40);
+      transform: none;
+    }
+
+body.mode-game /* Hover : léger éclaircissement, body.mode-game sans mouvement */
+    #btnMega:hover{
+      background: linear-gradient(
+        180deg,
+        #c62828 0%,
+        #9f1b1b 100%
+      );
+      border-color: rgba(255,255,255,.04);
+      transform: none;
+    }
+
+/* ===== Viewer buttons (restore) ===== */
+.actions{
+  margin-top:auto;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+}
+
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:6px 8px;              /* ⬅ moins haut */
+  border-radius:8px;            /* ⬅ un peu plus fin */
+  background:#2e3652;
+  color:#ffffff;
+  border:1px solid #3c466a;
+  text-decoration:none;
+  font-size:13px;               /* ⬅ texte plus petit */
+  font-weight:600;              /* ⬅ moins “bold” */
+  transition:0.15s ease;
+}
+
+.btn:hover{
+  background:#3b4568;
+  border-color:#4d5a84;
+  filter:brightness(1.05);      /* ⬅ hover plus doux */
+}
+
+.btn.btn-page{
+  width:100%;
+  padding:6px 8px;              /* cohérent */
+}
+
+.btn[aria-disabled="true"]{ opacity:.6; pointer-events:none }
+
+.btn:hover{ filter:brightness(1.07) }
+
+/* =========================
+   Boutons liens externes
+   ========================= */
+
+/* 💬 Discord — bleu Discord */
+.btn-discord{
+  background: #5865F2;
+  border-color: #5865F2;
+  color: #fff;
+}
+
+.btn-discord:hover{
+  background: #4752C4;
+  border-color: #4752C4;
+}
+
+/* 🌐 F95Zone — noir / rouge */
+.btn-f95{
+  background: #0b0b0b;
+  border-color: #b71c1c;
+  color: #ffffff;
+}
+
+.btn-f95:hover{
+  background: #1a1a1a;
+  border-color: #d32f2f;
+}
+
+
+/* ===== Rating spacing ===== */
+body.mode-game #ratingBox{ padding-top:14px; }
+body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12px; }
+
+/* ===== Topbar hamburger ===== */
+.menuBtn{
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.12);
+  background:rgba(255,255,255,0.06);
+  display:inline-flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:4px;
+  margin-right:10px;
+  cursor:pointer;
+}
+.menuBtn:hover{ background:rgba(255,255,255,0.10); }
+.menuBtn .line{
+  width:16px;
+  height:2px;
+  background:rgba(255,255,255,0.85);
+  border-radius:2px;
+  display:block;
+}
+.top-title-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.statsOut{
+  margin-top:14px;
+  font-size:12px;
+  color: var(--muted);
+}
+
+.statsOut strong{
+  font-size:13px;
+  color: var(--fg);
+  font-weight:700;
+}
+
+.title{
+  font-size: 22px;
+  line-height: 1.25;
+  margin: 16px 0 10px;
+}
+
+.infoText{
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);   /* effet texte secondaire */
+}
+
+/* ⭐ Notation (même thème que andric31-traductions.pages.dev) */
 .ratingStar,
 .ratingCancel{
   display:inline-flex;
@@ -747,47 +1236,37 @@ main{
 
   font-size: 26px;
   line-height: 1;
+  color: #ffd36b;
 
-  opacity: 0.70;
+  opacity: 0.7;
 
   transition:
     opacity 220ms cubic-bezier(.4,0,.2,1),
-    transform 180ms cubic-bezier(.4,0,.2,1),
-    filter 220ms cubic-bezier(.4,0,.2,1),
-    background 220ms cubic-bezier(.4,0,.2,1);
+    transform 220ms cubic-bezier(.4,0,.2,1),
+    filter 220ms cubic-bezier(.4,0,.2,1);
 }
 
-/* ⭐ étoiles = doré */
-.ratingStar{ color: #ffd36b; }
-
-/* hover premium */
 .ratingStar:hover,
 .ratingCancel:hover,
 .ratingStar:focus-visible,
 .ratingCancel:focus-visible{
   opacity: 0.92;
-  filter: brightness(1.10);
-  transform: scale(1.08);
+  filter: brightness(1.04);
+  transform: scale(1.02);
 }
 
-/* clic */
-.ratingStar:active,
-.ratingCancel:active{
-  transform: scale(0.96);
-}
-
-/* 🗑️ annuler */
 .ratingCancel{
   font-size: 16px;
   color: #fff;
   opacity: 0.75;
 }
+
 .ratingCancel:hover{
   color: #ff9a9a;
   opacity: 0.95;
 }
 
-/* (optionnel) évite retours ligne */
+/* (optionnel) évite que ça passe à la ligne */
 #ratingChoices{ flex-wrap: nowrap; }
 
 /* ✨ Fade doux du texte de feedback */
@@ -800,89 +1279,60 @@ main{
   from { opacity: 0.35; }
   to   { opacity: 0.82; }
 }
-#ratingMsg.msgFade{ animation: ratingMsgFade 520ms cubic-bezier(.4,0,.2,1); }
+#ratingMsg.msgFade{
+  animation: ratingMsgFade 520ms cubic-bezier(.4,0,.2,1);
+}
 
-/* =========================
-   ℹ️ Informations (NOTES) — ajout effet visuel
-   ========================= */
+.ratingStar{
+  transition: 
+    transform .15s ease,
+    filter .15s ease;
+}
+
+.ratingStar:hover{
+  filter: brightness(1.2);
+  transform: scale(1.08);
+}
+
+/* ✅ PATCH MINIMUM — étoiles premium (sans casser le reste) */
+.ratingStar,
+.ratingCancel{
+  transition:
+    opacity 220ms cubic-bezier(.4,0,.2,1),
+    transform 180ms cubic-bezier(.4,0,.2,1),
+    filter 220ms cubic-bezier(.4,0,.2,1);
+  opacity: 0.70;
+}
+
+/* Doré seulement sur les étoiles */
+.ratingStar{ color:#ffd36b; }
+
+/* Hover léger */
+.ratingStar:hover,
+.ratingCancel:hover,
+.ratingStar:focus-visible,
+.ratingCancel:focus-visible{
+  opacity: 0.92;
+  filter: brightness(1.10);
+  transform: scale(1.06);
+}
+
+/* Clic = petit “press” */
+.ratingStar:active,
+.ratingCancel:active{
+  transform: scale(0.96);
+}
+
+/* ✅ PATCH MINIMUM — effet visuel sur Informations */
 #notesBox{
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.05) 0%,
-    rgba(0,0,0,0.18) 100%
-  );
-  border: 1px solid rgba(255,255,255,0.14);
-  border-radius: 12px;
-
   transition:
     transform 180ms cubic-bezier(.4,0,.2,1),
     filter 220ms cubic-bezier(.4,0,.2,1),
-    border-color 220ms cubic-bezier(.4,0,.2,1),
-    background 220ms cubic-bezier(.4,0,.2,1);
+    border-color 220ms cubic-bezier(.4,0,.2,1);
 }
 
-/* ✅ même feeling que les étoiles : léger “lift” */
 #notesBox:hover{
-  filter: brightness(1.08);
+  filter: brightness(1.06);
   transform: translateY(-1px);
   border-color: rgba(255,255,255,0.22);
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.06) 0%,
-    rgba(0,0,0,0.16) 100%
-  );
-}
-
-#notesBox h3{
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: .2px;
-  color: rgba(255,255,255,0.78);
-  margin: 0 0 6px 0;
-}
-
-#notesBox #notesText{
-  color: rgba(255,255,255,0.72);
-}
-
-/* =========================
-   ===== AGE GATE =====
-   ========================= */
-#age-gate {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.88);
-  z-index: 99999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.age-box {
-  background: #111;
-  color: #fff;
-  padding: 28px;
-  max-width: 440px;
-  text-align: center;
-  border-radius: 12px;
-  box-shadow: 0 0 30px rgba(0,0,0,0.7);
-}
-.age-box h2 { margin-top: 0; }
-.age-box button {
-  margin: 10px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-}
-#age-yes { background: #4CAF50; color: #000; }
-#age-no { background: #f44336; color: #fff; }
-
-/* ===== Flou contenu tant que age-gate actif ===== */
-body.age-gate-active main,
-body.age-gate-active header,
-body.age-gate-active footer {
-  filter: blur(8px);
-  pointer-events: none;
-  user-select: none;
 }
