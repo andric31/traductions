@@ -1200,6 +1200,47 @@ function renderVideoBlock({ id, videoUrl }) {
     const ab = $("archiveBox");
     if (ab) ab.style.display = archiveHref ? "flex" : "none";
 
+    // 6b) Extra translations — entre MEGA et Archives
+    const extra = Array.isArray(entry.translationsExtra)
+      ? entry.translationsExtra
+      : [];
+    
+    let extraHost = document.getElementById("extraTranslationsHost");
+    
+    if (!extraHost) {
+      const archive = document.getElementById("archiveBox");
+    
+      if (archive && archive.parentNode) {
+        extraHost = document.createElement("div");
+        extraHost.id = "extraTranslationsHost";
+        extraHost.className = "game-block";
+    
+        // ⭐ INSERT AVANT ARCHIVES
+        archive.parentNode.insertBefore(extraHost, archive);
+      }
+    }
+    
+    if (extraHost) {
+      if (extra.length) {
+        extraHost.innerHTML = `
+          <h3>🌐 Autres liens</h3>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            ${extra.map(e => `
+              <a class="btnLike"
+                 href="${escapeHtml(e.link || "")}"
+                 target="_blank"
+                 rel="noopener">
+                 🔗 ${escapeHtml(e.name || "Lien")}
+              </a>
+            `).join("")}
+          </div>
+        `;
+        extraHost.style.display = "";
+      } else {
+        extraHost.style.display = "none";
+      }
+    }
+
     // 7) Notes
     const notes = (entry.notes || "").trim();
     if (notes) {

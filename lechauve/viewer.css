@@ -1090,6 +1090,10 @@ body.mode-game /* Hover : léger éclaircissement, body.mode-game sans mouvement
       transform: none;
     }
 
+#extraTranslationsHost a{
+  justify-content:center;
+}
+
 /* ===== Viewer buttons (restore) ===== */
 .actions{
   margin-top:auto;
