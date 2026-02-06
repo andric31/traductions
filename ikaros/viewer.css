@@ -932,19 +932,6 @@ main{
 /* ✅ Encadré stats sous la carte */
 .statsOut{ margin-top: 14px; }
 
-#statsOut{
-  position: relative;
-  overflow: hidden;
-
-  background: rgba(0,0,0,.18) !important;
-  border: 1px solid rgba(255,255,255,.18) !important;
-  border-radius: 12px;
-
-  box-shadow:
-    0 8px 22px rgba(0,0,0,.45),
-    inset 0 1px 0 rgba(255,255,255,.06);
-}
-
 /* ===== AGE GATE ===== */
 #age-gate {
   position: fixed;
@@ -1476,7 +1463,7 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
   overflow: hidden;
 
   background: rgba(0,0,0,.18) !important;
-  border: 1px solid rgba(255,255,255,.18) !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
   border-radius: 12px;
 
   box-shadow:
