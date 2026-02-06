@@ -1495,14 +1495,6 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
   z-index: 1;
 }
 
-/* hover léger identique (sans surélévation si tu veux) */
-#ratingBox:hover,
-#statsOut:hover,
-.statsOut:hover{
-  border-color: rgba(255,255,255,.28) !important;
-  transform: none !important;
-}
-
 /* Base un poil plus compact (optionnel) */
 body{ font-size: 14px; }
 
