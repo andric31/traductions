@@ -294,8 +294,18 @@ main{
   overflow:hidden;
 
   display:grid;
-  grid-template-rows: var(--thumb-h) 1fr;
-  min-height: calc(var(--thumb-h) + 160px);
+  grid-template-rows: var(--thumb-h) auto; /* au lieu de 1fr */
+}
+
+/* ✅ cartes cliquables (la tuile entière) */
+a.card.card-link{
+  text-decoration:none;
+  color:inherit;
+  cursor:pointer;
+}
+a.card.card-link:focus-visible{
+  outline: 2px solid rgba(255,255,255,0.35);
+  outline-offset: 3px;
 }
 
 .thumb{
@@ -1191,16 +1201,4 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
   display:flex;
   align-items:center;
   gap:10px;
-}
-
-.statsOut{
-  margin-top:14px;
-  font-size:12px;
-  color: var(--muted);
-}
-
-.statsOut strong{
-  font-size:13px;
-  color: var(--fg);
-  font-weight:700;
 }
