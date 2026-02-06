@@ -1317,6 +1317,14 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
     inset 0 1px 0 rgba(255,255,255,0.05);
 }
 
+/* ✅ FORCE : fond sombre pour la notation (multi-traducteurs aussi) */
+#ratingBox,
+#page-game #ratingBox{
+  background: rgba(0,0,0,.15) !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.45) !important;
+}
+
 /* Doré seulement sur les étoiles */
 .ratingStar{ color:#ffd36b; }
 
