@@ -609,11 +609,11 @@ async function renderTranslationStatus(game) {
     if (j.isUpToDate) {
       badge.textContent = "✅ Traduction à jour";
       badge.classList.add("status-updated");
-      if (maj) { maj.textContent = "✅ À jour"; maj.classList.add("maj-ok"); }
+      if (maj) { maj.textContent = "✅ Traduction à jour"; maj.classList.add("maj-ok"); }
     } else {
       badge.textContent = "🔄 Traduction non à jour";
       badge.classList.add("status-outdated");
-      if (maj) { maj.textContent = "🔄 Pas à jour"; maj.classList.add("maj-ko"); }
+      if (maj) { maj.textContent = "🔄 Traduction non à jour"; maj.classList.add("maj-ko"); }
     }
 
     const wrap = $("badges");
@@ -627,8 +627,8 @@ async function renderTranslationStatus(game) {
       if (!f95Ts || !Number.isFinite(trdTs)) return;
       maj.style.display = "";
       maj.classList.remove("maj-ok", "maj-ko");
-      if (trdTs >= f95Ts) { maj.textContent = "✅ À jour"; maj.classList.add("maj-ok"); }
-      else { maj.textContent = "🔄 Pas à jour"; maj.classList.add("maj-ko"); }
+      if (trdTs >= f95Ts) { maj.textContent = "✅ Traduction à jour"; maj.classList.add("maj-ok"); }
+      else { maj.textContent = "🔄 Traduction non à jour"; maj.classList.add("maj-ko"); }
     } catch {}
   }
 }
