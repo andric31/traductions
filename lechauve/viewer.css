@@ -1160,28 +1160,6 @@ body.mode-game /* Hover : léger éclaircissement, body.mode-game sans mouvement
    ✅ EXTRA LINKS — Couleur par host (spécificité OK)
    ========================= */
 
-/* 🔴 MEGA (même style que ton bouton MEGA) */
-#extraLinksRow .btnLike.btn-host-mega{
-  background: linear-gradient(180deg, #b71c1c 0%, #8e0e0e 100%);
-  border: 1px solid rgba(255,255,255,.04);
-  color:#ffffff;
-  box-shadow: 0 8px 18px rgba(0,0,0,.40);
-}
-#extraLinksRow .btnLike.btn-host-mega:hover{
-  background: linear-gradient(180deg, #c62828 0%, #9f1b1b 100%);
-}
-
-/* ⚫🔴 F95 (proche du bouton F95) */
-#extraLinksRow .btnLike.btn-host-f95{
-  background: linear-gradient(180deg, #222222 0%, #161616 100%);
-  border: 1px solid rgba(255,255,255,.04);
-  color:#ffffff;
-  box-shadow: 0 8px 18px rgba(0,0,0,.35);
-}
-#extraLinksRow .btnLike.btn-host-f95:hover{
-  background: linear-gradient(180deg, #1a1a1a 0%, #111111 100%);
-}
-
 /* 🔵 Google Drive */
 #extraLinksRow .btnLike.btn-host-drive{
   background: linear-gradient(180deg, #4285F4 0%, #2a6adf 100%);
