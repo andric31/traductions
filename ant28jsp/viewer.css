@@ -1216,3 +1216,80 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
   line-height: 1.5;
   color: var(--muted);   /* effet texte secondaire */
 }
+
+/* ⭐ Notation (même thème que andric31-traductions.pages.dev) */
+.ratingStar,
+.ratingCancel{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  width: 40px;
+  height: 34px;
+
+  background: rgba(255,255,255,0.035);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+
+  cursor: pointer;
+  user-select: none;
+
+  font-size: 26px;
+  line-height: 1;
+  color: #ffd36b;
+
+  opacity: 0.7;
+
+  transition:
+    opacity 220ms cubic-bezier(.4,0,.2,1),
+    transform 220ms cubic-bezier(.4,0,.2,1),
+    filter 220ms cubic-bezier(.4,0,.2,1);
+}
+
+.ratingStar:hover,
+.ratingCancel:hover,
+.ratingStar:focus-visible,
+.ratingCancel:focus-visible{
+  opacity: 0.92;
+  filter: brightness(1.04);
+  transform: scale(1.02);
+}
+
+.ratingCancel{
+  font-size: 16px;
+  color: #fff;
+  opacity: 0.75;
+}
+
+.ratingCancel:hover{
+  color: #ff9a9a;
+  opacity: 0.95;
+}
+
+/* (optionnel) évite que ça passe à la ligne */
+#ratingChoices{ flex-wrap: nowrap; }
+
+/* ✨ Fade doux du texte de feedback */
+#ratingMsg{
+  opacity: 0.82;
+  transition: opacity 220ms cubic-bezier(.4,0,.2,1);
+  will-change: opacity;
+}
+@keyframes ratingMsgFade {
+  from { opacity: 0.35; }
+  to   { opacity: 0.82; }
+}
+#ratingMsg.msgFade{
+  animation: ratingMsgFade 520ms cubic-bezier(.4,0,.2,1);
+}
+
+.ratingStar{
+  transition: 
+    transform .15s ease,
+    filter .15s ease;
+}
+
+.ratingStar:hover{
+  filter: brightness(1.2);
+  transform: scale(1.08);
+}
