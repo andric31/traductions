@@ -1126,10 +1126,11 @@ body.mode-game .btnRow{
     }
 
 body.mode-game .btnMainRow{
-      display:flex;
-      justify-content:center;
-      margin-top: 12px;
-    }
+  display:flex;
+  gap:10px;
+  width:fit-content;
+  margin:12px auto 0;
+}
 
 body.mode-game .btnLike{
       display:inline-flex;
