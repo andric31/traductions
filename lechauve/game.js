@@ -1191,8 +1191,8 @@ function renderVideoBlock({ id, videoUrl }) {
     function getHostClass(url){
       const u = (url || "").toLowerCase();
     
-      if (u.includes("mega.nz")) return "btn-host-mega";
-      if (u.includes("f95zone")) return "btn-host-f95";
+      if (u.includes("mega.nz")) return "btn-mega";
+      if (u.includes("f95zone")) return "btn-f95";
       if (u.includes("drive.google")) return "btn-host-drive";
       if (u.includes("gofile")) return "btn-host-gofile";
     
@@ -1213,39 +1213,47 @@ function renderVideoBlock({ id, videoUrl }) {
 
     // 6b) Extra links — entre MEGA et Archives (format BOUTONS, pas encadré)
     const extra = Array.isArray(entry.translationsExtra) ? entry.translationsExtra : [];
-    
-    // host (ligne de boutons)
+
+    // ligne de boutons (même placement que MEGA)
     let extraRow = document.getElementById("extraLinksRow");
     if (!extraRow) {
       extraRow = document.createElement("div");
       extraRow.id = "extraLinksRow";
-      extraRow.className = "btnMainRow"; // ✅ même look/placement que MEGA
-    
+      extraRow.className = "btnMainRow";
+
       // ✅ insérer JUSTE AVANT archiveBox (donc après MEGA)
       const archiveBox = document.getElementById("archiveBox");
       if (archiveBox && archiveBox.parentNode) {
         archiveBox.parentNode.insertBefore(extraRow, archiveBox);
       }
     }
-    
-    // rendu
+
+    // rendu (boutons)
     if (extraRow) {
-      if (extra.length) {
-        extraRow.innerHTML = extra
-          .filter(x => (x && (x.link || "").trim()))
-          .map((x) => {
-            const name = (x.name || "Lien").trim();
-            const link = (x.link || "").trim();
-            return `
-              <a class="btnLike ${getHostClass(link)}"
-                 target="_blank" rel="noopener"
-                 href="${escapeHtml(link)}">
-                📥 Télécharger la traduction · ${escapeHtml(name)}
-              </a>
-            `;
-          })
-          .join("");
-    
+      const valid = extra.filter(x => x && (x.link || "").trim());
+      if (valid.length) {
+        extraRow.innerHTML = valid.map((x) => {
+          const name = (x.name || "Lien").trim();
+          const link = (x.link || "").trim();
+          const hostCls = getHostClass(link);
+
+          // ✅ libellé : "📥 Télécharger" + nom
+          let labelHtml = `📥 Télécharger · ${escapeHtml(name)}`;
+
+          // ✅ F95Zone : bicolore (même rendu que le bouton principal)
+          if (hostCls === "btn-f95" && /f95\s*zone/i.test(name)) {
+            labelHtml = `📥 Télécharger · <span class="f95-white">F95</span><span class="f95-red">Zone</span>`;
+          }
+
+          return `
+            <a class="btnLike ${hostCls}"
+               target="_blank" rel="noopener"
+               href="${escapeHtml(link)}">
+              ${labelHtml}
+            </a>
+          `;
+        }).join("");
+
         extraRow.style.display = "flex";
         extraRow.style.flexWrap = "wrap";
         extraRow.style.gap = "10px";
