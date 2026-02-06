@@ -1091,30 +1091,69 @@ body.mode-game /* Hover : léger éclaircissement, body.mode-game sans mouvement
     }
 
 /* =========================
-   Extra links (entre MEGA et Archives) — surbrillance
+   ✅ EXTRA LINKS — VRAI GLOW (surbrillance visible)
    ========================= */
 
 #extraLinksRow .btnLike{
-  /* même base que les autres boutons (tu as déjà .btnLike dans body.mode-game) */
-  background: rgba(255,255,255,0.04);
-  border-color: rgba(255,255,255,0.12);
-  box-shadow: 0 8px 18px rgba(0,0,0,.40);
-  border: 1px solid rgba(255,255,255,.04);
-  transform: none;
+  position: relative;
+  overflow: hidden;
+
+  /* base */
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(90,162,255,0.28);   /* bleu léger */
+  box-shadow:
+    0 10px 26px rgba(0,0,0,.55),
+    0 0 0 1px rgba(90,162,255,0.10);
+
+  transition:
+    transform .14s ease,
+    filter .14s ease,
+    box-shadow .18s ease,
+    border-color .18s ease;
 }
 
+/* reflet interne (comme tes cartes premium) */
+#extraLinksRow .btnLike::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  pointer-events:none;
+  opacity: 0.0;
+  transition: opacity .18s ease;
+
+  background:
+    radial-gradient(120% 80% at 50% -20%,
+      rgba(255,255,255,0.18) 0%,
+      rgba(255,255,255,0.06) 35%,
+      rgba(0,0,0,0.00) 70%
+    );
+}
+
+/* ✅ GLOW AU SURVOL */
 #extraLinksRow .btnLike:hover{
-  /* surbrillance douce comme MEGA */
-  filter: brightness(1.08);
+  border-color: rgba(90,162,255,0.65);
+
+  /* halo bleu + relief */
+  box-shadow:
+    0 16px 44px rgba(0,0,0,.70),
+    0 0 0 1px rgba(90,162,255,0.18),
+    0 0 22px rgba(90,162,255,0.45); /* ✅ glow visible */
+
+  transform: translateY(-2px);
+  filter: none;
 }
 
+#extraLinksRow .btnLike:hover::before{
+  opacity: 1;
+}
+
+/* petit press */
 #extraLinksRow .btnLike:active{
-  /* petit press */
-  transform: translateY(1px);
-}
-
-#extraTranslationsHost a{
-  justify-content:center;
+  transform: translateY(0px) scale(0.98);
+  box-shadow:
+    0 10px 26px rgba(0,0,0,.60),
+    0 0 0 1px rgba(90,162,255,0.14),
+    0 0 14px rgba(90,162,255,0.35);
 }
 
 /* ===== Viewer buttons (restore) ===== */
