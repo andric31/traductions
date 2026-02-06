@@ -1156,50 +1156,63 @@ body.mode-game /* Hover : léger éclaircissement, body.mode-game sans mouvement
     0 0 14px rgba(90,162,255,0.35);
 }
 
+/* =========================
+   ✅ EXTRA LINKS — Couleur par host (spécificité OK)
+   ========================= */
+
+/* 🔴 MEGA (même style que ton bouton MEGA) */
+#extraLinksRow .btnLike.btn-host-mega{
+  background: linear-gradient(180deg, #b71c1c 0%, #8e0e0e 100%);
+  border: 1px solid rgba(255,255,255,.04);
+  color:#ffffff;
+  box-shadow: 0 8px 18px rgba(0,0,0,.40);
+}
+#extraLinksRow .btnLike.btn-host-mega:hover{
+  background: linear-gradient(180deg, #c62828 0%, #9f1b1b 100%);
+}
+
+/* ⚫🔴 F95 (proche du bouton F95) */
+#extraLinksRow .btnLike.btn-host-f95{
+  background: linear-gradient(180deg, #222222 0%, #161616 100%);
+  border: 1px solid rgba(255,255,255,.04);
+  color:#ffffff;
+  box-shadow: 0 8px 18px rgba(0,0,0,.35);
+}
+#extraLinksRow .btnLike.btn-host-f95:hover{
+  background: linear-gradient(180deg, #1a1a1a 0%, #111111 100%);
+}
+
 /* 🔵 Google Drive */
-.btn-host-drive{
-  background: linear-gradient(
-    180deg,
-    #4285F4 0%,
-    #2a6adf 100%
-  );
+#extraLinksRow .btnLike.btn-host-drive{
+  background: linear-gradient(180deg, #4285F4 0%, #2a6adf 100%);
   border: 1px solid rgba(255,255,255,.06);
   color:#fff;
   box-shadow: 0 8px 18px rgba(0,0,0,.45);
 }
-
-.btn-host-drive:hover{
-  background: linear-gradient(
-    180deg,
-    #4c8df6 0%,
-    #2f73ea 100%
-  );
+#extraLinksRow .btnLike.btn-host-drive:hover{
+  background: linear-gradient(180deg, #4c8df6 0%, #2f73ea 100%);
 }
 
-/* 🔵 GOFILE */
-.btn-host-gofile{
-  background: linear-gradient(
-    180deg,
-    #ff9800 0%,
-    #e68900 100%
-  );
+/* 🟠 GOFILE */
+#extraLinksRow .btnLike.btn-host-gofile{
+  background: linear-gradient(180deg, #ff9800 0%, #e68900 100%);
   border: 1px solid rgba(255,255,255,.06);
   color:#000;
   font-weight:800;
 }
-
-.btn-host-gofile:hover{
-  background: linear-gradient(
-    180deg,
-    #ffa726 0%,
-    #fb8c00 100%
-  );
+#extraLinksRow .btnLike.btn-host-gofile:hover{
+  background: linear-gradient(180deg, #ffa726 0%, #fb8c00 100%);
 }
 
-/* ⚪ automatique hebergeurs */
-.btn-host-default{
+/* ⚪ Par défaut */
+#extraLinksRow .btnLike.btn-host-default{
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.14);
+  color:#fff;
+}
+#extraLinksRow .btnLike.btn-host-default:hover{
+  border-color: rgba(90,162,255,0.45);
+  box-shadow: 0 0 18px rgba(90,162,255,0.35);
 }
 
 .btn-host-default:hover{
