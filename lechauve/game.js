@@ -1200,44 +1200,49 @@ function renderVideoBlock({ id, videoUrl }) {
     const ab = $("archiveBox");
     if (ab) ab.style.display = archiveHref ? "flex" : "none";
 
-    // 6b) Extra translations — entre MEGA et Archives
-    const extra = Array.isArray(entry.translationsExtra)
-      ? entry.translationsExtra
-      : [];
+    // 6b) Extra links — entre MEGA et Archives (format BOUTONS, pas encadré)
+    const extra = Array.isArray(entry.translationsExtra) ? entry.translationsExtra : [];
     
-    let extraHost = document.getElementById("extraTranslationsHost");
+    // host (ligne de boutons)
+    let extraRow = document.getElementById("extraLinksRow");
+    if (!extraRow) {
+      extraRow = document.createElement("div");
+      extraRow.id = "extraLinksRow";
+      extraRow.className = "btnMainRow"; // ✅ même look/placement que MEGA
     
-    if (!extraHost) {
-      const archive = document.getElementById("archiveBox");
-    
-      if (archive && archive.parentNode) {
-        extraHost = document.createElement("div");
-        extraHost.id = "extraTranslationsHost";
-        extraHost.className = "game-block";
-    
-        // ⭐ INSERT AVANT ARCHIVES
-        archive.parentNode.insertBefore(extraHost, archive);
+      // ✅ insérer JUSTE AVANT archiveBox (donc après MEGA)
+      const archiveBox = document.getElementById("archiveBox");
+      if (archiveBox && archiveBox.parentNode) {
+        archiveBox.parentNode.insertBefore(extraRow, archiveBox);
       }
     }
     
-    if (extraHost) {
+    // rendu
+    if (extraRow) {
       if (extra.length) {
-        extraHost.innerHTML = `
-          <h3>🌐 Autres liens</h3>
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            ${extra.map(e => `
+        extraRow.innerHTML = extra
+          .filter(x => (x && (x.link || "").trim()))
+          .map((x) => {
+            const name = (x.name || "Lien").trim();
+            const link = (x.link || "").trim();
+            return `
               <a class="btnLike"
-                 href="${escapeHtml(e.link || "")}"
-                 target="_blank"
-                 rel="noopener">
-                 🔗 ${escapeHtml(e.name || "Lien")}
+                 target="_blank" rel="noopener"
+                 href="${escapeHtml(link)}">
+                🔗 ${escapeHtml(name)}
               </a>
-            `).join("")}
-          </div>
-        `;
-        extraHost.style.display = "";
+            `;
+          })
+          .join("");
+    
+        extraRow.style.display = "flex";
+        extraRow.style.flexWrap = "wrap";
+        extraRow.style.gap = "10px";
+        extraRow.style.justifyContent = "center";
+        extraRow.style.marginTop = "12px";
       } else {
-        extraHost.style.display = "none";
+        extraRow.style.display = "none";
+        extraRow.innerHTML = "";
       }
     }
 

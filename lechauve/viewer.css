@@ -1094,6 +1094,14 @@ body.mode-game /* Hover : léger éclaircissement, body.mode-game sans mouvement
   justify-content:center;
 }
 
+#extraLinksRow .btnLike{
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.12);
+}
+#extraLinksRow .btnLike:hover{
+  filter: brightness(1.10);
+}
+
 /* ===== Viewer buttons (restore) ===== */
 .actions{
   margin-top:auto;
