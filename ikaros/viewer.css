@@ -1463,7 +1463,7 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
   overflow: hidden;
 
   background: rgba(0,0,0,.18) !important;
-  border: 1px solid rgba(255,255,255,.10) !important;
+  border: 1px solid rgba(255,255,255,.05) !important;
   border-radius: 12px;
 
   box-shadow:
