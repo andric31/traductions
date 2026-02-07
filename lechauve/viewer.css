@@ -883,25 +883,19 @@ body.mode-game .btnLike{
   display:inline-flex;
   align-items:center;
   justify-content:center;
-
   gap:8px;
   padding:10px 14px;
   border-radius:12px;
-
   border:1px solid var(--border);
   background:rgba(255,255,255,0.05);
-
   color:#fff;
   text-decoration:none;
   font-weight:700;
-  font-size:14px;
-
   cursor:pointer;
   user-select:none;
-
-  transition: transform .12s ease, filter .14s ease, background .14s ease, border-color .14s ease;
 }
 
+/* zip = juste un hover brightness */
 body.mode-game .btnLike:hover{ filter: brightness(1.08); }
 body.mode-game .btnLike:active{ transform: translateY(1px); }
 
@@ -1087,3 +1081,45 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
    Option : taille texte global
    ========================= */
 body{ font-size: 14px; }
+
+/* =========================================================
+   ✅ LAYOUT PAGE GAME (pour retrouver l'effet du zip)
+   ========================================================= */
+
+/* page centrée + respiration */
+body.mode-game{
+  min-height: 100vh;
+  margin: 0;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  overflow-y:auto;
+  padding: 18px 0; /* l'air autour = gros "effet" */
+}
+
+/* sur la page game, le main du viewer ne doit pas rajouter son padding */
+body.mode-game main{
+  padding: 0 !important;
+}
+
+/* conteneur principal (comme le zip) */
+body.mode-game .wrap{
+  width: 820px;
+  max-width: 92vw;
+  padding: 18px;
+}
+
+/* grosse carte premium */
+body.mode-game .cardPreview{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow:hidden;
+  box-shadow: 0 10px 40px rgba(0,0,0,.35);
+}
+
+/* padding interne */
+body.mode-game .cardInner{
+  padding: 16px 16px 18px 16px;
+}
+
