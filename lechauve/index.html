@@ -112,7 +112,7 @@
 </head>
 <body>
 
-  <!-- ✅ Nom affiché via manifest (casse exacte), fallback slug — ROBUSTE (H1 auto-fix) -->
+  <!-- ✅ Nom affiché via manifest (casse exacte), fallback slug — SANS BOUCLE -->
   <script>
   (async function(){
   
@@ -128,10 +128,8 @@
     const slug = detectSlug();
     window.__SITE_SLUG__ = slug;
   
-    // fallback = slug "joli" (1ère lettre en maj)
     let nice = slug ? (slug[0].toUpperCase() + slug.slice(1)) : "";
   
-    // ✅ Essaye de récupérer le vrai nom (casse / espaces) depuis le manifest
     try{
       const r = await fetch("/traducteurs_manifest.json", { cache:"no-store" });
       if (r.ok){
@@ -141,30 +139,33 @@
           : null;
         if (found && found.name) nice = String(found.name);
       }
-    }catch(e){
-      // silence : on garde le fallback
-    }
+    }catch(e){}
   
-    // ✅ on expose le nom “joli” pour les autres scripts (menu, etc.)
     window.__SITE_NAME__ = nice;
   
-    function applyTitleEverywhere(){
-      const txt = slug ? `f95list_${nice}_viewer` : `f95list_viewer`;
-      document.title = txt;
+    const txt = slug ? `f95list_${nice}_viewer` : `f95list_viewer`;
+    document.title = txt;
   
+    function applyH1(){
       const h1 = document.getElementById("viewerTitle");
-      if (h1 && h1.textContent !== txt) h1.textContent = txt;
+      if (h1) h1.textContent = txt;
+      return !!h1;
     }
   
-    // 1) tout de suite
-    applyTitleEverywhere();
+    // ✅ 1) si déjà là
+    if (applyH1()) return;
   
-    // 2) au DOM ready
-    window.addEventListener("DOMContentLoaded", applyTitleEverywhere);
+    // ✅ 2) au DOM ready
+    window.addEventListener("DOMContentLoaded", () => {
+      if (applyH1()) return;
   
-    // 3) si jamais #viewerTitle est recréé/écrasé après
-    const mo = new MutationObserver(() => applyTitleEverywhere());
-    mo.observe(document.documentElement, { childList:true, subtree:true });
+      // ✅ 3) retry léger (max ~2s), au cas où un script recrée le header après
+      let tries = 0;
+      const timer = setInterval(() => {
+        tries++;
+        if (applyH1() || tries >= 20) clearInterval(timer); // 20 * 100ms = 2s
+      }, 100);
+    });
   
   })();
   </script>
