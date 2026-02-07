@@ -855,6 +855,140 @@ main{
 }
 .btn-archive:hover{ filter: brightness(1.08); }
 
+/* ✅ F95 bicolore — utilisable aussi sur les boutons "extra" */
+.btn-f95{ gap: 0; }
+.btn-f95 .f95-white{
+  color:#ffffff;
+  font-weight:800;
+}
+.btn-f95 .f95-red{
+  color:#8b2d2d;
+  font-weight:800;
+  margin-left: 2px;
+}
+
+/* =========================
+   Extra links (entre MEGA et Archives)
+   - Couleur auto selon host (facile à étendre)
+   - MEGA + F95 gardent EXACTEMENT leurs styles
+   ========================= */
+
+/* base (sans écraser MEGA/F95) */
+#extraLinksRow .btnLike{
+  position: relative;
+  overflow: hidden;
+}
+
+/* style "premium" + glow UNIQUEMENT pour les autres hosts */
+#extraLinksRow .btnLike:not(.btn-mega):not(.btn-f95){
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(90,162,255,0.28);
+
+  box-shadow:
+    0 10px 26px rgba(0,0,0,.55),
+    0 0 0 1px rgba(90,162,255,0.10);
+
+  transition:
+    transform .14s ease,
+    box-shadow .18s ease,
+    border-color .18s ease,
+    filter .14s ease;
+}
+
+/* reflet interne */
+#extraLinksRow .btnLike:not(.btn-mega):not(.btn-f95)::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  pointer-events:none;
+  opacity: 0;
+  transition: opacity .18s ease;
+  background:
+    radial-gradient(120% 80% at 50% -20%,
+      rgba(255,255,255,0.18) 0%,
+      rgba(255,255,255,0.06) 35%,
+      rgba(0,0,0,0.00) 70%
+    );
+}
+
+#extraLinksRow .btnLike:not(.btn-mega):not(.btn-f95):hover{
+  border-color: rgba(90,162,255,0.65);
+  box-shadow:
+    0 16px 44px rgba(0,0,0,.70),
+    0 0 0 1px rgba(90,162,255,0.18),
+    0 0 22px rgba(90,162,255,0.45);
+  transform: translateY(-2px);
+}
+
+#extraLinksRow .btnLike:not(.btn-mega):not(.btn-f95):hover::before{
+  opacity: 1;
+}
+
+#extraLinksRow .btnLike:not(.btn-mega):not(.btn-f95):active{
+  transform: translateY(0px) scale(0.98);
+  box-shadow:
+    0 10px 26px rgba(0,0,0,.60),
+    0 0 0 1px rgba(90,162,255,0.14),
+    0 0 14px rgba(90,162,255,0.35);
+}
+
+/* ===== F95Zone bicolore : corrige l'espace (flex gap) ===== */
+body.mode-game .btnLike .f95-word{
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0;              /* ✅ pas de gap entre F95 et Zone */
+}
+
+body.mode-game .btnLike .f95-word .f95-red{
+  margin-left: 2px;    /* ✅ micro espace (mets 0 si tu veux collé) */
+}
+
+/* ===== EXTRA LINKS : F95 EXACT même couleur/effet que le bouton principal ===== */
+#extraLinksRow .btnLike.btn-f95{
+  position: relative;
+  background: linear-gradient(180deg, #222222 0%, #161616 100%);
+  border-color: rgba(255,255,255,.04);
+  color:#ffffff;
+  box-shadow: 0 8px 18px rgba(0,0,0,.35);
+  overflow: hidden;
+  transform: none;
+}
+
+#extraLinksRow .btnLike.btn-f95:hover{
+  background: linear-gradient(180deg, #1a1a1a 0%, #111111 100%);
+  border-color: rgba(255,255,255,.04);
+  transform: none;
+}
+
+/* 🔵 Google Drive */
+#extraLinksRow .btnLike.btn-host-drive{
+  background: linear-gradient(180deg, #4285F4 0%, #2a6adf 100%);
+  border: 1px solid rgba(255,255,255,.06);
+  color:#fff;
+}
+#extraLinksRow .btnLike.btn-host-drive:hover{
+  background: linear-gradient(180deg, #4c8df6 0%, #2f73ea 100%);
+}
+
+/* 🟠 GOFILE */
+#extraLinksRow .btnLike.btn-host-gofile{
+  background: linear-gradient(180deg, #ff9800 0%, #e68900 100%);
+  border: 1px solid rgba(255,255,255,.06);
+  color:#000;
+  font-weight:800;
+}
+#extraLinksRow .btnLike.btn-host-gofile:hover{
+  background: linear-gradient(180deg, #ffa726 0%, #fb8c00 100%);
+}
+
+/* ⚪ default (si tu ajoutes d'autres hosts) */
+#extraLinksRow .btnLike.btn-host-default{
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.14);
+  color:#fff;
+}
+
+
 /* =========================
    Page jeu : état de mise à jour
    ========================= */
@@ -997,11 +1131,6 @@ body.mode-game .btnMainRow{
       margin-top: 12px;
     }
 
-
-/* ✅ Réduit l'écart quand il n'y a PAS de MEGA principal (download via F95, etc.) */
-body.mode-game.no-mega-main .btnMainRow{
-  margin-top: 6px !important; /* au lieu de 12px */
-}
 body.mode-game .btnLike{
       display:inline-flex;
       align-items:center;
@@ -1489,15 +1618,3 @@ body{ font-size: 14px; }
   line-height: 1.25;
 }
 
-
-
-/* =========================
-   ✅ Cas spécial : pas de bouton MEGA principal
-   -> réduit l'espace entre la ligne Discord/F95 et la ligne de téléchargement (F95/extra)
-   ========================= */
-body.mode-game.no-main-mega .btnRow{
-  margin-bottom: 6px;   /* au lieu de l'écart visuel trop grand */
-}
-body.mode-game.no-main-mega #extraLinksRow{
-  margin-top: 6px;      /* au lieu de 12px */
-}
