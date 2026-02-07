@@ -864,8 +864,9 @@ main{
 .btn-f95 .f95-red{
   color:#8b2d2d;
   font-weight:800;
-  margin-left: 2px;
+  margin-left: 0;
 }
+
 
 /* =========================
    Extra links (entre MEGA et Archives)
@@ -932,15 +933,22 @@ main{
     0 0 14px rgba(90,162,255,0.35);
 }
 
-/* ===== F95Zone bicolore : corrige l'espace (flex gap) ===== */
+/* ===== F95Zone bicolore : espace contrôlé (principal + extra) ===== */
+body.mode-game .btnLike .f95-logo,
 body.mode-game .btnLike .f95-word{
   display: inline-flex;
   align-items: baseline;
-  gap: 0;              /* ✅ pas de gap entre F95 et Zone */
+  gap: 2px;              /* ✅ espace entre F95 et Zone (mets 1px si tu veux plus serré) */
+  white-space: nowrap;
 }
 
+/* ✅ pas de marge parasite (on utilise uniquement gap) */
+body.mode-game .btnLike .f95-logo .f95-white,
+body.mode-game .btnLike .f95-logo .f95-red,
+body.mode-game .btnLike .f95-word .f95-white,
 body.mode-game .btnLike .f95-word .f95-red{
-  margin-left: 2px;    /* ✅ micro espace (mets 0 si tu veux collé) */
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* ===== EXTRA LINKS : F95 EXACT même couleur/effet que le bouton principal ===== */
@@ -1062,33 +1070,6 @@ body.mode-game .btnLike .f95-word .f95-red{
 .ratingCancel:hover{ filter: brightness(1.12); }
 .ratingStar:active,
 .ratingCancel:active{ transform: translateY(1px); }
-
-
-/* =========================
-   ✅ FIX espace F95 / Zone (page game)
-   - les boutons "btnLike" ont gap:8px pour l'icône + texte
-   - mais pour F95Zone (2 spans), ça crée un GROS espace
-   ========================= */
-body.mode-game #btnF95.btn-f95{
-  gap: 0 !important;
-}
-body.mode-game #extraLinksRow .btnLike.btn-f95{
-  gap: 0 !important;
-}
-
-/* ✅ Logo F95Zone compact (utilisable partout : .f95-logo et .f95-word) */
-.f95-logo,
-.f95-word{
-  display:inline-flex;
-  align-items:baseline;
-  gap: 1px;               /* mets 0/1/2 selon ton goût */
-  white-space:nowrap;
-}
-.f95-logo .f95-white, .f95-logo .f95-red,
-.f95-word .f95-white, .f95-word .f95-red{
-  margin:0 !important;
-  padding:0 !important;
-}
 
 /* ===== AGE GATE ===== */
 #age-gate {
@@ -1263,14 +1244,14 @@ body.mode-game /* Hover : léger éclaircissement, body.mode-game sans mouvement
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  padding:9px 12px;             /* ⬅ un peu plus grand (comme le site principal) */
-  border-radius:10px;
+  padding:6px 8px;              /* ⬅ moins haut */
+  border-radius:8px;            /* ⬅ un peu plus fin */
   background:#2e3652;
   color:#ffffff;
   border:1px solid #3c466a;
   text-decoration:none;
-  font-size:14px;
-  font-weight:700;
+  font-size:13px;               /* ⬅ texte plus petit */
+  font-weight:600;              /* ⬅ moins “bold” */
   transition:0.15s ease;
 }
 

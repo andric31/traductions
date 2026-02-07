@@ -1183,7 +1183,7 @@ function renderVideoBlock({ id, videoUrl }) {
 
     setHref("btnF95", (entry.url || "").trim());
     if ($("btnF95")) {
-      $("btnF95").innerHTML = '<span class="f95-logo"><span class="f95-white">F95</span><span class="f95-red">Zone</span></span>';
+      $("btnF95").innerHTML = \'<span class="f95-logo"><span class="f95-white">F95</span><span class="f95-red">Zone</span></span>\';
       $("btnF95").classList.add("btn-f95");
     }
 
@@ -1251,7 +1251,7 @@ function renderVideoBlock({ id, videoUrl }) {
 
           // ✅ F95Zone : bicolore (même rendu que le bouton principal)
           if (hostCls === "btn-f95" && /f95\s*zone/i.test(name)) {
-            labelHtml = `📥 Télécharger la traduction · <span class="f95-word"><span class="f95-white">F95</span><span class="f95-red">Zone</span></span>`;
+            labelHtml = `📥 Télécharger la traduction · <span class="f95-logo"><span class="f95-white">F95</span><span class="f95-red">Zone</span></span>`;
           }
 
           return `
