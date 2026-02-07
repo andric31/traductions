@@ -112,32 +112,48 @@
 </head>
 <body>
 
-  <!-- ✅ SLUG universel (détecté via /<slug>/) -->
+  <!-- ✅ Nom affiché via manifest (casse exacte), fallback slug -->
   <script>
-    (function(){
-      function detectSlug(){
-        try{
-          const forced = (window.__SITE_SLUG__ || "").toString().trim();
-          if(forced) return forced.toLowerCase();
-        }catch{}
-        const segs = (location.pathname || "/").split("/").filter(Boolean);
-        return String(segs[0] || "").trim().toLowerCase();
+  (async function(){
+  
+    function detectSlug(){
+      try{
+        const forced = (window.__SITE_SLUG__ || "").toString().trim();
+        if(forced) return forced.toLowerCase();
+      }catch{}
+      const segs = (location.pathname || "/").split("/").filter(Boolean);
+      return String(segs[0] || "").trim().toLowerCase();
+    }
+  
+    const slug = detectSlug();
+    window.__SITE_SLUG__ = slug;
+  
+    // fallback = slug "joli" (1ère lettre en maj)
+    let nice = slug ? (slug[0].toUpperCase() + slug.slice(1)) : "";
+  
+    // ✅ Essaye de récupérer le vrai nom (casse / espaces) depuis le manifest
+    try{
+      const r = await fetch("/traducteurs_manifest.json", { cache:"no-store" });
+      if (r.ok){
+        const list = await r.json();
+        const found = Array.isArray(list) ? list.find(x => String(x?.key||"").toLowerCase() === slug) : null;
+        if (found && found.name) nice = String(found.name);
       }
-      const slug = detectSlug();
-      window.__SITE_SLUG__ = slug;
-
-      // Titre + H1 universels (si on est sur viewer)
-      const nice = slug ? (slug[0].toUpperCase() + slug.slice(1)) : "";
-      document.title = slug ? `f95list_${nice}_viewer` : `f95list_viewer`;
-
-      // Met à jour le H1 plus tard (quand le DOM existe)
-      window.addEventListener("DOMContentLoaded", () => {
-        const h1 = document.getElementById("viewerTitle");
-        if(h1){
-          h1.textContent = slug ? `f95list_${nice}_viewer` : `f95list_viewer`;
-        }
-      });
-    })();
+    }catch(e){
+      // silence : on garde le fallback "nice"
+    }
+  
+    // Titre + H1 universels
+    document.title = slug ? `f95list_${nice}_viewer` : `f95list_viewer`;
+  
+    window.addEventListener("DOMContentLoaded", () => {
+      const h1 = document.getElementById("viewerTitle");
+      if(h1){
+        h1.textContent = slug ? `f95list_${nice}_viewer` : `f95list_viewer`;
+      }
+    });
+  
+  })();
   </script>
 
   <!-- PAGE VIEWER -->
