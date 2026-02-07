@@ -112,32 +112,62 @@
 </head>
 <body>
 
-  <!-- ✅ SLUG universel (détecté via /<slug>/) -->
+  <!-- ✅ Nom affiché via manifest (casse exacte), fallback slug — SANS BOUCLE -->
   <script>
-    (function(){
-      function detectSlug(){
-        try{
-          const forced = (window.__SITE_SLUG__ || "").toString().trim();
-          if(forced) return forced.toLowerCase();
-        }catch{}
-        const segs = (location.pathname || "/").split("/").filter(Boolean);
-        return String(segs[0] || "").trim().toLowerCase();
+  (async function(){
+  
+    function detectSlug(){
+      try{
+        const forced = (window.__SITE_SLUG__ || "").toString().trim();
+        if(forced) return forced.toLowerCase();
+      }catch{}
+      const segs = (location.pathname || "/").split("/").filter(Boolean);
+      return String(segs[0] || "").trim().toLowerCase();
+    }
+  
+    const slug = detectSlug();
+    window.__SITE_SLUG__ = slug;
+  
+    let nice = slug ? (slug[0].toUpperCase() + slug.slice(1)) : "";
+  
+    try{
+      const r = await fetch("/traducteurs_manifest.json", { cache:"no-store" });
+      if (r.ok){
+        const list = await r.json();
+        const found = Array.isArray(list)
+          ? list.find(x => String(x?.key||"").toLowerCase() === slug)
+          : null;
+        if (found && found.name) nice = String(found.name);
       }
-      const slug = detectSlug();
-      window.__SITE_SLUG__ = slug;
-
-      // Titre + H1 universels (si on est sur viewer)
-      const nice = slug ? (slug[0].toUpperCase() + slug.slice(1)) : "";
-      document.title = slug ? `f95list_${nice}_viewer` : `f95list_viewer`;
-
-      // Met à jour le H1 plus tard (quand le DOM existe)
-      window.addEventListener("DOMContentLoaded", () => {
-        const h1 = document.getElementById("viewerTitle");
-        if(h1){
-          h1.textContent = slug ? `f95list_${nice}_viewer` : `f95list_viewer`;
-        }
-      });
-    })();
+    }catch(e){}
+  
+    window.__SITE_NAME__ = nice;
+  
+    const txt = nice || slug || "";
+    document.title = txt;
+  
+    function applyH1(){
+      const h1 = document.getElementById("viewerTitle");
+      if (h1) h1.textContent = txt;
+      return !!h1;
+    }
+  
+    // ✅ 1) si déjà là
+    if (applyH1()) return;
+  
+    // ✅ 2) au DOM ready
+    window.addEventListener("DOMContentLoaded", () => {
+      if (applyH1()) return;
+  
+      // ✅ 3) retry léger (max ~2s), au cas où un script recrée le header après
+      let tries = 0;
+      const timer = setInterval(() => {
+        tries++;
+        if (applyH1() || tries >= 20) clearInterval(timer); // 20 * 100ms = 2s
+      }, 100);
+    });
+  
+  })();
   </script>
 
   <!-- PAGE VIEWER -->

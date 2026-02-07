@@ -672,17 +672,20 @@ function initHamburgerMenu() {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-
+    
+      // ✅ reconstruit le menu à chaque ouverture (prend le nom à jour)
+      try { window.ViewerMenu?.init?.(); } catch {}
+    
       const pop = document.getElementById("topMenuPopover");
       if (!pop) return;
-
+    
       const isOpen = !pop.classList.contains("hidden");
       if (isOpen) {
         try { window.ViewerMenu?.closeMenu?.(); } catch { pop.classList.add("hidden"); }
         btn.setAttribute("aria-expanded", "false");
         return;
       }
-
+    
       pop.classList.remove("hidden");
       btn.setAttribute("aria-expanded", "true");
       positionPopover(pop, btn);
@@ -1183,7 +1186,7 @@ function renderVideoBlock({ id, videoUrl }) {
 
     setHref("btnF95", (entry.url || "").trim());
     if ($("btnF95")) {
-      $("btnF95").innerHTML = '<span class="f95-white"> F95</span><span class="f95-red">Zone</span>';
+      $("btnF95").innerHTML = '<span class="f95-logo"><span class="f95-white">F95</span><span class="f95-red">Zone</span></span>';
       $("btnF95").classList.add("btn-f95");
     }
 
@@ -1246,12 +1249,12 @@ function renderVideoBlock({ id, videoUrl }) {
           const link = (x.link || "").trim();
           const hostCls = getHostClass(link);
 
-          // ✅ libellé : "📥 Télécharger" + nom
-          let labelHtml = `📥 Télécharger la traduction · ${escapeHtml(name)}`;
-
+          // ✅ libellé : 1 seul enfant dans le <a> (évite le gap flex entre texte et logo)
+          let labelHtml = `<span class="btnLabel">📥 Télécharger la traduction · ${escapeHtml(name)}</span>`;
+          
           // ✅ F95Zone : bicolore (même rendu que le bouton principal)
           if (hostCls === "btn-f95" && /f95\s*zone/i.test(name)) {
-            labelHtml = `📥 Télécharger la traduction · <span class="f95-word"><span class="f95-white">F95</span><span class="f95-red">Zone</span></span>`;
+            labelHtml = `<span class="btnLabel">📥 Télécharger la traduction · <span class="f95-logo"><span class="f95-white">F95</span><span class="f95-red">Zone</span></span></span>`;
           }
 
           return `
