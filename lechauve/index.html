@@ -6,7 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>f95list_viewer</title>
 
-  <link rel="icon" href="/favicon.png" />
+  <link id="dynamic-favicon" rel="icon" type="image/png" href="./avatar.png">
+  <script>
+  (function(){
+    const fav = document.getElementById("dynamic-favicon");
+    const testUrl = "./avatar.png?v=" + Date.now(); // anti-cache
+  
+    const img = new Image();
+    img.onload  = () => fav.href = testUrl;
+    img.onerror = () => fav.href = "/favicon.png?v=" + Date.now(); // fallback
+    img.src = testUrl;
+  })();
+  </script>
+
   <link rel="stylesheet" href="./viewer.css" />
 
   <!-- ✅ Styles page jeu (rendu comme sur andric31-traductions, sans dossier /game) -->
