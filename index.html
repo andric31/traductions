@@ -12,26 +12,22 @@
 
     const favicon = document.getElementById("dynamic-favicon");
 
-    // dossier courant
     let path = window.location.pathname;
 
-    // si on est à la racine → garde favicon
-    if(path === "/" || path === "/index.html"){
-      return;
+    // racine → favicon normal
+    if (path === "/" || path === "/index.html") return;
+
+    // garantit le slash final
+    if (!path.endsWith("/")) {
+      path = path.substring(0, path.lastIndexOf("/") + 1);
     }
 
-    // construit /dossier/avatar.png
-    const avatarUrl = path.replace(/\/[^\/]*$/, "/avatar.png");
+    const avatarUrl = path + "avatar.png";
 
     const img = new Image();
 
-    img.onload = function () {
-      favicon.href = avatarUrl;
-    };
-
-    img.onerror = function () {
-      favicon.href = "/favicon.png"; // fallback
-    };
+    img.onload = () => favicon.href = avatarUrl;
+    img.onerror = () => favicon.href = "/favicon.png";
 
     img.src = avatarUrl;
 
