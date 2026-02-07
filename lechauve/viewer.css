@@ -25,10 +25,10 @@
 
   /* Boutons page jeu */
   --btn-game-radius: 12px;
-  --btn-game-pad-y: 14px;
-  --btn-game-pad-x: 22px;
-  --btn-game-fs: 16px;
-  --btn-game-minh: 48px;
+  --btn-game-pad-y: 10px;
+  --btn-game-pad-x: 14px;
+  --btn-game-fs: 14px;
+  --btn-game-minh: 34px;
 }
 
 /* =========================
@@ -883,25 +883,25 @@ body.mode-game .btnLike{
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  gap:10px;
 
-  padding: var(--btn-game-pad-y) var(--btn-game-pad-x);
-  border-radius: var(--btn-game-radius);
-  min-height: var(--btn-game-minh);
+  gap:8px;
+  padding:10px 14px;
+  border-radius:12px;
 
-  border: 1px solid var(--border);
-  background: rgba(255,255,255,0.05);
+  border:1px solid var(--border);
+  background:rgba(255,255,255,0.05);
 
   color:#fff;
   text-decoration:none;
-  font-weight: 900;
-  font-size: var(--btn-game-fs);
+  font-weight:700;
+  font-size:14px;
 
   cursor:pointer;
   user-select:none;
 
   transition: transform .12s ease, filter .14s ease, background .14s ease, border-color .14s ease;
 }
+
 body.mode-game .btnLike:hover{ filter: brightness(1.08); }
 body.mode-game .btnLike:active{ transform: translateY(1px); }
 
