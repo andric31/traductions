@@ -951,6 +951,23 @@ body.mode-game .btnLike .f95-word .f95-red{
   padding: 0 !important;
 }
 
+/* ✅ même rendu si le body n'a pas .mode-game (site secondaire) */
+.btnLike .f95-logo,
+.btnLike .f95-word{
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;              /* ✅ espace entre F95 et Zone */
+  white-space: nowrap;
+}
+
+.btnLike .f95-logo .f95-white,
+.btnLike .f95-logo .f95-red,
+.btnLike .f95-word .f95-white,
+.btnLike .f95-word .f95-red{
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 /* ===== EXTRA LINKS : F95 EXACT même couleur/effet que le bouton principal ===== */
 #extraLinksRow .btnLike.btn-f95{
   position: relative;

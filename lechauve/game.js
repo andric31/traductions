@@ -1183,7 +1183,7 @@ function renderVideoBlock({ id, videoUrl }) {
 
     setHref("btnF95", (entry.url || "").trim());
     if ($("btnF95")) {
-      $("btnF95").innerHTML = \'<span class="f95-logo"><span class="f95-white">F95</span><span class="f95-red">Zone</span></span>\';
+      $("btnF95").innerHTML = '<span class="f95-logo"><span class="f95-white">F95</span><span class="f95-red">Zone</span></span>';
       $("btnF95").classList.add("btn-f95");
     }
 
