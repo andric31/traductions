@@ -672,17 +672,20 @@ function initHamburgerMenu() {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-
+    
+      // ✅ reconstruit le menu à chaque ouverture (prend le nom à jour)
+      try { window.ViewerMenu?.init?.(); } catch {}
+    
       const pop = document.getElementById("topMenuPopover");
       if (!pop) return;
-
+    
       const isOpen = !pop.classList.contains("hidden");
       if (isOpen) {
         try { window.ViewerMenu?.closeMenu?.(); } catch { pop.classList.add("hidden"); }
         btn.setAttribute("aria-expanded", "false");
         return;
       }
-
+    
       pop.classList.remove("hidden");
       btn.setAttribute("aria-expanded", "true");
       positionPopover(pop, btn);
