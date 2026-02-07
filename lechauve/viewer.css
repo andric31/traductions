@@ -1063,6 +1063,33 @@ body.mode-game .btnLike .f95-word .f95-red{
 .ratingStar:active,
 .ratingCancel:active{ transform: translateY(1px); }
 
+
+/* =========================
+   ✅ FIX espace F95 / Zone (page game)
+   - les boutons "btnLike" ont gap:8px pour l'icône + texte
+   - mais pour F95Zone (2 spans), ça crée un GROS espace
+   ========================= */
+body.mode-game #btnF95.btn-f95{
+  gap: 0 !important;
+}
+body.mode-game #extraLinksRow .btnLike.btn-f95{
+  gap: 0 !important;
+}
+
+/* ✅ Logo F95Zone compact (utilisable partout : .f95-logo et .f95-word) */
+.f95-logo,
+.f95-word{
+  display:inline-flex;
+  align-items:baseline;
+  gap: 1px;               /* mets 0/1/2 selon ton goût */
+  white-space:nowrap;
+}
+.f95-logo .f95-white, .f95-logo .f95-red,
+.f95-word .f95-white, .f95-word .f95-red{
+  margin:0 !important;
+  padding:0 !important;
+}
+
 /* ===== AGE GATE ===== */
 #age-gate {
   position: fixed;
@@ -1236,14 +1263,14 @@ body.mode-game /* Hover : léger éclaircissement, body.mode-game sans mouvement
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  padding:6px 8px;              /* ⬅ moins haut */
-  border-radius:8px;            /* ⬅ un peu plus fin */
+  padding:9px 12px;             /* ⬅ un peu plus grand (comme le site principal) */
+  border-radius:10px;
   background:#2e3652;
   color:#ffffff;
   border:1px solid #3c466a;
   text-decoration:none;
-  font-size:13px;               /* ⬅ texte plus petit */
-  font-weight:600;              /* ⬅ moins “bold” */
+  font-size:14px;
+  font-weight:700;
   transition:0.15s ease;
 }
 
