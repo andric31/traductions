@@ -43,7 +43,7 @@
       // ✅ calcule le chemin du traducteur (retour liste)
       const slug = String(window.__SITE_SLUG__ || "").trim().toLowerCase();
       const appPath = slug ? `/${slug}/` : `/`;
-      const niceName = prettyNameFromSlug(slug);
+      const niceName = String(window.__SITE_NAME__ || prettyNameFromSlug(slug) || "");
   
       // ✅ Afficher "Retour à la liste" seulement si on est sur une page jeu
       if (isGame) {
