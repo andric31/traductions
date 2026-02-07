@@ -37,6 +37,12 @@
    🎨 Thèmes par traducteur
    ========================= */
 
+/* andric31 — défaut premium (bordure plus brillante) */
+.card[data-tr="andric31"]{
+  --card-border: rgba(255,255,255,0.22);
+  --card-accent: rgba(255,255,255,0.45);
+}
+
 /* Ant28jsp — violet premium */
 .card[data-tr="ant28jsp"]{
   --card-bg: rgba(16,185,129,0.10);
