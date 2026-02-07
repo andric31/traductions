@@ -1246,12 +1246,12 @@ function renderVideoBlock({ id, videoUrl }) {
           const link = (x.link || "").trim();
           const hostCls = getHostClass(link);
 
-          // ✅ libellé : "📥 Télécharger" + nom
-          let labelHtml = `📥 Télécharger la traduction · ${escapeHtml(name)}`;
-
+          // ✅ libellé : 1 seul enfant dans le <a> (évite le gap flex entre texte et logo)
+          let labelHtml = `<span class="btnLabel">📥 Télécharger la traduction · ${escapeHtml(name)}</span>`;
+          
           // ✅ F95Zone : bicolore (même rendu que le bouton principal)
           if (hostCls === "btn-f95" && /f95\s*zone/i.test(name)) {
-            labelHtml = `📥 Télécharger la traduction · <span class="f95-logo"><span class="f95-white">F95</span><span class="f95-red">Zone</span></span>`;
+            labelHtml = `<span class="btnLabel">📥 Télécharger la traduction · <span class="f95-logo"><span class="f95-white">F95</span><span class="f95-red">Zone</span></span></span>`;
           }
 
           return `
