@@ -1188,17 +1188,91 @@ function renderVideoBlock({ id, videoUrl }) {
     }
 
     // 6) MEGA + Archives
+    function getHostClass(url){
+      const u = (url || "").toLowerCase();
+    
+      if (u.includes("mega.nz")) return "btn-mega";
+      if (u.includes("f95zone")) return "btn-f95";
+      if (u.includes("drive.google")) return "btn-host-drive";
+      if (u.includes("gofile")) return "btn-host-gofile";
+    
+      return "btn-host-default";
+    }
+    
     const megaHref = (entry.translation || "").trim();
     const archiveHref = (entry.translationsArchive || "").trim();
-
+    
     setHref("btnMega", megaHref);
-    if ($("btnMega")) $("btnMega").textContent = "📥 Télécharger la traduction (MEGA)";
-
+    if ($("btnMega")) $("btnMega").textContent = "📥 Télécharger la traduction · MEGA";
+    
+    
+    // ⭐⭐⭐⭐⭐ FIX IMPORTANT ⭐⭐⭐⭐⭐
+    // on cache aussi la ligne entière sinon le margin crée un trou
+    const megaRow = document.getElementById("btnMega")?.closest(".btnMainRow");
+    if (megaRow){
+      megaRow.style.display = megaHref ? "flex" : "none";
+    }
+    
+    
     setHref("archiveLink", archiveHref);
     if ($("archiveLink")) $("archiveLink").textContent = "📦 Archives de la traduction";
-
+    
     const ab = $("archiveBox");
     if (ab) ab.style.display = archiveHref ? "flex" : "none";
+
+    // 6b) Extra links — entre MEGA et Archives (format BOUTONS, pas encadré)
+    const extra = Array.isArray(entry.translationsExtra) ? entry.translationsExtra : [];
+
+    // ligne de boutons (même placement que MEGA)
+    let extraRow = document.getElementById("extraLinksRow");
+    if (!extraRow) {
+      extraRow = document.createElement("div");
+      extraRow.id = "extraLinksRow";
+      extraRow.className = "btnMainRow";
+
+      // ✅ insérer JUSTE AVANT archiveBox (donc après MEGA)
+      const archiveBox = document.getElementById("archiveBox");
+      if (archiveBox && archiveBox.parentNode) {
+        archiveBox.parentNode.insertBefore(extraRow, archiveBox);
+      }
+    }
+
+    // rendu (boutons)
+    if (extraRow) {
+      const valid = extra.filter(x => x && (x.link || "").trim());
+      if (valid.length) {
+        extraRow.innerHTML = valid.map((x) => {
+          const name = (x.name || "Lien").trim();
+          const link = (x.link || "").trim();
+          const hostCls = getHostClass(link);
+
+          // ✅ libellé : "📥 Télécharger" + nom
+          let labelHtml = `📥 Télécharger la traduction · ${escapeHtml(name)}`;
+
+          // ✅ F95Zone : bicolore (même rendu que le bouton principal)
+          if (hostCls === "btn-f95" && /f95\s*zone/i.test(name)) {
+            labelHtml = `📥 Télécharger la traduction · <span class="f95-word"><span class="f95-white">F95</span><span class="f95-red">Zone</span></span>`;
+          }
+
+          return `
+            <a class="btnLike ${hostCls}"
+               target="_blank" rel="noopener"
+               href="${escapeHtml(link)}">
+              ${labelHtml}
+            </a>
+          `;
+        }).join("");
+
+        extraRow.style.display = "flex";
+        extraRow.style.flexWrap = "wrap";
+        extraRow.style.gap = "10px";
+        extraRow.style.justifyContent = "center";
+        extraRow.style.marginTop = "12px";
+      } else {
+        extraRow.style.display = "none";
+        extraRow.innerHTML = "";
+      }
+    }
 
     // 7) Notes
     const notes = (entry.notes || "").trim();
