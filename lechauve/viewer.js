@@ -29,9 +29,9 @@
         document.body.appendChild(pop);
       }
   
-      // Si déjà rempli, ne pas dupliquer
-      if (pop.dataset.built === "1") return pop;
+      // ✅ Toujours reconstruire (pour prendre en compte window.__SITE_NAME__)
       pop.dataset.built = "1";
+      pop.innerHTML = ""; // <-- purge et reconstruit
   
       // ✅ détecte si on est sur "page jeu" (index.html?id=... ou ?uid=...)
       let isGame = false;
