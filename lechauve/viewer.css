@@ -18,17 +18,17 @@
   --topbar-h: 78px;
 
   /* Boutons (base) */
-  --btn-radius: 10px;
-  --btn-pad-y: 8px;
-  --btn-pad-x: 10px;
-  --btn-fs: 14px;
+  --btn-radius: 8px;
+  --btn-pad-y: 6px;
+  --btn-pad-x: 8px;
+  --btn-fs: 13px;
 
   /* Boutons page jeu */
-  --btn-game-radius: 14px;
-  --btn-game-pad-y: 12px;
-  --btn-game-pad-x: 18px;
-  --btn-game-fs: 15px;
-  --btn-game-minh: 44px;
+  --btn-game-radius: 12px;
+  --btn-game-pad-y: 10px;
+  --btn-game-pad-x: 14px;
+  --btn-game-fs: 14px;
+  --btn-game-minh: 34px;
 }
 
 /* =========================
@@ -341,7 +341,7 @@ main{
 
   text-decoration:none;
   font-size: var(--btn-fs);
-  font-weight:700;
+  font-weight:600;
 
   transition: transform .12s ease, filter .14s ease, border-color .14s ease, background .14s ease;
 }
