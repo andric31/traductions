@@ -864,8 +864,9 @@ main{
 .btn-f95 .f95-red{
   color:#8b2d2d;
   font-weight:800;
-  margin-left: 2px;
+  margin-left: 0;
 }
+
 
 /* =========================
    Extra links (entre MEGA et Archives)
@@ -932,15 +933,39 @@ main{
     0 0 14px rgba(90,162,255,0.35);
 }
 
-/* ===== F95Zone bicolore : corrige l'espace (flex gap) ===== */
+/* ===== F95Zone bicolore : espace contrôlé (principal + extra) ===== */
+body.mode-game .btnLike .f95-logo,
 body.mode-game .btnLike .f95-word{
   display: inline-flex;
   align-items: baseline;
-  gap: 0;              /* ✅ pas de gap entre F95 et Zone */
+  gap: 2px;              /* ✅ espace entre F95 et Zone (mets 1px si tu veux plus serré) */
+  white-space: nowrap;
 }
 
+/* ✅ pas de marge parasite (on utilise uniquement gap) */
+body.mode-game .btnLike .f95-logo .f95-white,
+body.mode-game .btnLike .f95-logo .f95-red,
+body.mode-game .btnLike .f95-word .f95-white,
 body.mode-game .btnLike .f95-word .f95-red{
-  margin-left: 2px;    /* ✅ micro espace (mets 0 si tu veux collé) */
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* ✅ même rendu si le body n'a pas .mode-game (site secondaire) */
+.btnLike .f95-logo,
+.btnLike .f95-word{
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;              /* ✅ espace entre F95 et Zone */
+  white-space: nowrap;
+}
+
+.btnLike .f95-logo .f95-white,
+.btnLike .f95-logo .f95-red,
+.btnLike .f95-word .f95-white,
+.btnLike .f95-word .f95-red{
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* ===== EXTRA LINKS : F95 EXACT même couleur/effet que le bouton principal ===== */
@@ -1616,5 +1641,29 @@ body{ font-size: 14px; }
 .title{
   font-size: 20px;
   line-height: 1.25;
+}
+
+/* =========================================================
+   ✅ PATCH : agrandir UNIQUEMENT les boutons page jeu
+   (Discord / F95 / MEGA / Archives / Extra)
+   ========================================================= */
+
+/* IMPORTANT: on exclut .like-btn (le coeur) si jamais il partage des classes */
+body.mode-game .btnLike:not(.like-btn){
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  padding: 11px 16px !important;
+  min-height: 40px !important;
+  border-radius: 12px !important;
+  gap: 8px !important;
+}
+
+/* Optionnel: si tu veux que les boutons extra prennent exactement la même taille aussi */
+body.mode-game #extraLinksRow .btnLike:not(.like-btn){
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  padding: 11px 16px !important;
+  min-height: 40px !important;
+  border-radius: 12px !important;
 }
 

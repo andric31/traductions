@@ -29,9 +29,9 @@
         document.body.appendChild(pop);
       }
   
-      // Si déjà rempli, ne pas dupliquer
-      if (pop.dataset.built === "1") return pop;
+      // ✅ Toujours reconstruire (pour prendre en compte window.__SITE_NAME__)
       pop.dataset.built = "1";
+      pop.innerHTML = ""; // <-- purge et reconstruit
   
       // ✅ détecte si on est sur "page jeu" (index.html?id=... ou ?uid=...)
       let isGame = false;
@@ -43,7 +43,7 @@
       // ✅ calcule le chemin du traducteur (retour liste)
       const slug = String(window.__SITE_SLUG__ || "").trim().toLowerCase();
       const appPath = slug ? `/${slug}/` : `/`;
-      const niceName = prettyNameFromSlug(slug);
+      const niceName = String(window.__SITE_NAME__ || prettyNameFromSlug(slug) || "");
   
       // ✅ Afficher "Retour à la liste" seulement si on est sur une page jeu
       if (isGame) {
