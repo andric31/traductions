@@ -1189,6 +1189,10 @@ function renderVideoBlock({ id, videoUrl }) {
 
     // 6) MEGA + Archives
     const megaHref = (entry.translation || "").trim();
+  // ✅ réduit l'écart quand il n'y a PAS de lien MEGA principal (download via F95, etc.)
+  const _isF95Dl = /f95zone\.to/i.test(String(megaHref || \"\"));
+  document.body.classList.toggle(\"no-mega-main\", !megaHref || _isF95Dl);
+
     const archiveHref = (entry.translationsArchive || "").trim();
 
     setHref("btnMega", megaHref);

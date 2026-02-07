@@ -997,6 +997,11 @@ body.mode-game .btnMainRow{
       margin-top: 12px;
     }
 
+
+/* ✅ Réduit l'écart quand il n'y a PAS de MEGA principal (download via F95, etc.) */
+body.mode-game.no-mega-main .btnMainRow{
+  margin-top: 6px !important; /* au lieu de 12px */
+}
 body.mode-game .btnLike{
       display:inline-flex;
       align-items:center;
