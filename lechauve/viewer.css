@@ -1131,6 +1131,19 @@ body.mode-game .btnMainRow{
       margin-top: 12px;
     }
 
+
+/* ✅ Si le bouton principal de téléchargement est désactivé (pas de lien),
+      on masque sa ligne pour éviter l'espace vide. */
+body.mode-game .btnMainRow:has(> #btnMega[aria-disabled="true"]) {
+  display: none !important;
+  margin-top: 0 !important;
+}
+
+/* ✅ Dans ce cas, on rapproche la ligne des liens alternatifs (F95/Drive/GoFile/...) */
+body.mode-game:has(#btnMega[aria-disabled="true"]) #extraLinksRow{
+  margin-top: 6px !important;
+}
+
 body.mode-game .btnLike{
       display:inline-flex;
       align-items:center;
