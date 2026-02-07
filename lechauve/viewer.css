@@ -1650,13 +1650,12 @@ body{ font-size: 14px; }
 
 /* IMPORTANT: on exclut .like-btn (le coeur) si jamais il partage des classes */
 body.mode-game .btnLike:not(.like-btn){
-  font-size: 16px !important;     /* + gros */
-  font-weight: 900 !important;    /* + punch */
-  padding: 14px 20px !important;  /* + grand */
-  min-height: 46px !important;    /* + haut */
-  border-radius: 14px !important; /* + rond */
-  gap: 10px !important;           /* + aéré entre icône/texte */
-  line-height: 1 !important;      /* évite que ça "gonfle" verticalement */
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  padding: 11px 16px !important;
+  min-height: 40px !important;
+  border-radius: 12px !important;
+  gap: 8px !important;
 }
 
 /* Optionnel: si tu veux que les boutons extra prennent exactement la même taille aussi */
