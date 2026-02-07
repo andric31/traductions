@@ -1131,19 +1131,6 @@ body.mode-game .btnMainRow{
       margin-top: 12px;
     }
 
-
-/* ✅ Si le bouton principal de téléchargement est désactivé (pas de lien),
-      on masque sa ligne pour éviter l'espace vide. */
-body.mode-game .btnMainRow:has(> #btnMega[aria-disabled="true"]) {
-  display: none !important;
-  margin-top: 0 !important;
-}
-
-/* ✅ Dans ce cas, on rapproche la ligne des liens alternatifs (F95/Drive/GoFile/...) */
-body.mode-game:has(#btnMega[aria-disabled="true"]) #extraLinksRow{
-  margin-top: 6px !important;
-}
-
 body.mode-game .btnLike{
       display:inline-flex;
       align-items:center;
@@ -1635,3 +1622,21 @@ body{ font-size: 14px; }
   line-height: 1.25;
 }
 
+
+
+/* =========================
+   ✅ F95 word wrapper (évite espace entre F95 et Zone)
+   ========================= */
+.f95-word{
+  display:inline-flex;
+  align-items: baseline;
+  gap: 0;
+}
+.f95-word .f95-red{ margin-left: 2px; }
+
+/* =========================
+   ✅ Cas spécial : download principal = F95 (pas de MEGA)
+   -> réduit l'espace entre la ligne Discord/F95 et le bouton Télécharger
+   ========================= */
+body.mode-game.dl-is-f95 .btnRow{ margin-top: 10px; }
+body.mode-game.dl-is-f95 .btnMainRow{ margin-top: 6px; }

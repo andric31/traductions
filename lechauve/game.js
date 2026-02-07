@@ -1183,7 +1183,7 @@ function renderVideoBlock({ id, videoUrl }) {
 
     setHref("btnF95", (entry.url || "").trim());
     if ($("btnF95")) {
-      $("btnF95").innerHTML = '<span class="f95-white"> F95</span><span class="f95-red">Zone</span>';
+      $("btnF95").innerHTML = '<span class="f95-word"><span class="f95-white">F95</span><span class="f95-red">Zone</span></span>';
       $("btnF95").classList.add("btn-f95");
     }
 
@@ -1200,10 +1200,41 @@ function renderVideoBlock({ id, videoUrl }) {
     }
 
     const megaHref = (entry.translation || "").trim();
+  const mainName = (entry.name || entry.translationName || "").trim();
+
+  // libellé : "📥 Télécharger" + nom si dispo
+  // (on garde la mention du host via le style/couleur, et pour F95 on ajoute le mot "F95Zone" bicolore)
+
     const archiveHref = (entry.translationsArchive || "").trim();
 
     setHref("btnMega", megaHref);
-    if ($("btnMega")) $("btnMega").textContent = "📥 Télécharger la traduction · MEGA";
+    const btnMega = $("btnMega");
+    if (btnMega) {
+      const hostClass = getHostClass(megaHref);
+      btnMega.className = `btnLike ${hostClass}`;
+      document.body.classList.toggle("dl-is-f95", hostClass === "btn-f95");
+
+      const baseLabel = "📥 Télécharger" + (mainName ? " " + mainName : " la traduction");
+
+      if (hostClass === "btn-f95") {
+        btnMega.textContent = baseLabel + " - ";
+        const w = document.createElement("span");
+        w.className = "f95-word";
+        const a = document.createElement("span");
+        a.className = "f95-white";
+        a.textContent = "F95";
+        const b = document.createElement("span");
+        b.className = "f95-red";
+        b.textContent = "Zone";
+        w.append(a, b);
+        btnMega.appendChild(w);
+      } else if (hostClass === "btn-mega") {
+        // MEGA : on garde ton style rouge (CSS), juste le label
+        btnMega.textContent = baseLabel;
+      } else {
+        btnMega.textContent = baseLabel;
+      }
+    }
 
     setHref("archiveLink", archiveHref);
     if ($("archiveLink")) $("archiveLink").textContent = "📦 Archives de la traduction";
