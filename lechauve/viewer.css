@@ -25,10 +25,10 @@
 
   /* Boutons page jeu */
   --btn-game-radius: 12px;
-  --btn-game-pad-y: 10px;
-  --btn-game-pad-x: 14px;
-  --btn-game-fs: 14px;
-  --btn-game-minh: 34px;
+  --btn-game-pad-y: 14px;
+  --btn-game-pad-x: 22px;
+  --btn-game-fs: 16px;
+  --btn-game-minh: 48px;
 }
 
 /* =========================
