@@ -1,75 +1,221 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Traductions FR</title>
+<meta charset="UTF-8">
+<title>Traductions FR</title>
 
-  <!-- Favicon (icône de l’onglet) -->
-  <link rel="icon" type="image/png" href="/favicon.png">
+<link rel="icon" type="image/png" href="/favicon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      background: #0e1117;
-      color: #e6edf3;
-      margin: 0;
-      padding: 40px;
-    }
-    h1 {
-      margin-bottom: 10px;
-    }
-    .subtitle {
-      opacity: 0.8;
-      margin-bottom: 30px;
-    }
-    .card {
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 10px;
-      padding: 20px;
-      margin-bottom: 15px;
-    }
-    .card a {
-      color: #58a6ff;
-      font-size: 18px;
-      text-decoration: none;
-    }
-    .card a:hover {
-      text-decoration: underline;
-    }
-  </style>
+<style>
+
+body{
+  font-family: system-ui, sans-serif;
+  background:#0e1117;
+  color:#e6edf3;
+  margin:0;
+  padding:40px;
+}
+
+/* HEADER */
+
+h1{
+  margin-bottom:5px;
+  font-size:32px;
+}
+
+.subtitle{
+  opacity:.75;
+  margin-bottom:35px;
+}
+
+/* CARD BASE */
+
+.card{
+  background:#161b22;
+  border:1px solid #30363d;
+  border-radius:14px;
+  padding:20px;
+  margin-bottom:18px;
+  transition:.18s ease;
+}
+
+.card:hover{
+  transform:translateY(-4px);
+  border-color:#58a6ff;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+}
+
+/* TRAD CARD */
+
+.trad-card{
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+
+/* AVATAR */
+
+.avatar{
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid #30363d;
+  background:#0e1117;
+  flex-shrink:0;
+}
+
+/* INFO */
+
+.trad-info a{
+  color:#58a6ff;
+  font-size:20px;
+  font-weight:600;
+  text-decoration:none;
+}
+
+.trad-info a:hover{
+  text-decoration:underline;
+}
+
+small{
+  opacity:.8;
+}
+
+/* LISTE GLOBALE */
+
+.big-link{
+  font-size:20px;
+  font-weight:600;
+  color:#58a6ff;
+  text-decoration:none;
+}
+
+.big-link:hover{
+  text-decoration:underline;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:700px){
+
+  body{
+    padding:25px;
+  }
+
+  .trad-card{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .avatar{
+    width:64px;
+    height:64px;
+  }
+}
+
+</style>
 </head>
+
+
 <body>
 
 <h1>🌍 Projet Traductions FR</h1>
 <div class="subtitle">
-  Traductions de jeux VN
+Traductions de jeux Visual Novel
 </div>
 
-<div class="card">
-  <a href="/liste/" target="_blank" rel="noopener noreferrer">🌐 Liste globale des traductions</a><br>
-</div>
+<!-- LISTE -->
 
 <div class="card">
-  <a href="https://andric31-traductions.pages.dev/" target="_blank" rel="noopener noreferrer">andric31</a><br>
-  <small>Traducteur · Traductions automatiques de jeux Ren’Py, RPG Maker MV (RPGM), 𝖴nity .json .xml .csv .txt, Godot, TyranoBuilder (TyranoScript), KiriKiri / KAG (KiriKiri Adventure Game), Visual Novel Maker (VNM), Electron, NW.js (Node-Webkit) ... Développeur ...</small>
+<a class="big-link" href="/liste/" target="_blank">
+🌐 Liste globale des traductions
+</a>
 </div>
 
-<div class="card">
-  <a href="/ant28jsp/" target="_blank" rel="noopener noreferrer">Ant28jsp</a><br>
-  <small>Traducteur · Traductions automatiques de jeux Ren’Py, RPG Maker MV (RPGM)</small>
+
+<!-- TRADUCTEURS -->
+
+<div class="card trad-card">
+
+<img class="avatar"
+     src="/andric31/avatar.png"
+     onerror="this.src='/default-avatar.png'">
+
+<div class="trad-info">
+<a href="https://andric31-traductions.pages.dev/" target="_blank">
+andric31
+</a>
+<br>
+<small>
+Traducteur · Traductions automatiques de jeux Ren’Py, RPG Maker MV (RPGM), Unity (.json .xml .csv .txt), Godot, TyranoBuilder, KiriKiri / KAG, Visual Novel Maker, Electron, NW.js… Développeur.
+</small>
 </div>
 
-<div class="card">
-  <a href="/lechauve/" target="_blank" rel="noopener noreferrer">Le Chauve</a><br>
-  <small>Traducteur · Traductions manuelles de jeux GMS (GameMaker Studio), RPGM-V, RPGM-Z et Ren'py ... Développeur ...</small>
 </div>
 
-<div class="card">
-  <a href="/ikaros/" target="_blank" rel="noopener noreferrer">Ikaros</a><br>
-  <small>Traducteur · Traductions manuelles et automatiques de jeux Unity, Ren’Py</small>
+
+
+<div class="card trad-card">
+
+<img class="avatar"
+     src="/ant28jsp/avatar.png"
+     onerror="this.src='/default-avatar.png'">
+
+<div class="trad-info">
+<a href="/ant28jsp/" target="_blank">
+Ant28jsp
+</a>
+<br>
+<small>
+Traducteur · Traductions automatiques de jeux Ren’Py, RPG Maker MV (RPGM)
+</small>
 </div>
+
+</div>
+
+
+
+<div class="card trad-card">
+
+<img class="avatar"
+     src="/lechauve/avatar.png"
+     onerror="this.src='/default-avatar.png'">
+
+<div class="trad-info">
+<a href="/lechauve/" target="_blank">
+Le Chauve
+</a>
+<br>
+<small>
+Traducteur · Traductions manuelles de jeux GMS (GameMaker Studio), RPGM-V, RPGM-Z et Ren'Py… Développeur.
+</small>
+</div>
+
+</div>
+
+
+
+<div class="card trad-card">
+
+<img class="avatar"
+     src="/ikaros/avatar.png"
+     onerror="this.src='/default-avatar.png'">
+
+<div class="trad-info">
+<a href="/ikaros/" target="_blank">
+Ikaros
+</a>
+<br>
+<small>
+Traducteur · Traductions manuelles et automatiques de jeux Unity, Ren’Py
+</small>
+</div>
+
+</div>
+
+
 
 </body>
 </html>
