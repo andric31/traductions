@@ -582,72 +582,30 @@ function renderBadgesFromGame(display, entry, isCollectionChild) {
 }
 
 // ============================================================================
-// ✅ Traduction status (F95) + fallback local (SAFE)
+// ✅ Traduction status (F95) + fallback local
 // ============================================================================
 async function renderTranslationStatus(game) {
-  if (!game?.url) return;
-
+  // OPTION 2 : pas d’API / pas de vérif F95 (plus stable)
+  // On affiche uniquement un statut *local* basé sur les infos du JSON.
   const maj = document.getElementById("majState");
-  if (maj) {
-    maj.style.display = "";
-    maj.classList.remove("maj-ok", "maj-ko");
-    maj.textContent = "⏳ Vérification…";
-  }
+  if (!maj) return;
 
-  const cleanCmp = (s) => String(s || "").replace(/\s+/g, " ").trim();
+  const ver = String(game?.version || game?.gameData?.version || "").trim();
+  const updatedAt = String(game?.updatedAt || "").trim();           // date F95 stockée dans ton JSON (peut être ancienne)
+  const updatedAtLocal = String(game?.updatedAtLocal || "").trim(); // date de ton update local (traduction)
 
-  // candidats côté JSON (comme threads)
-  const candidates = [
-    game.rawTitle,
-    game.title,
-    game.cleanTitle,
-    (game.gameData && game.gameData.title) ? game.gameData.title : "",
-  ].map(cleanCmp).filter(Boolean);
+  maj.style.display = "";
+  maj.classList.remove("maj-ok", "maj-ko");
+  maj.classList.add("maj-ko"); // style "avertissement" pour éviter un faux ✅
 
-  try {
-    const r = await fetch(
-      `/api/f95status?url=${encodeURIComponent(game.url)}&storedTitle=${encodeURIComponent(game.rawTitle || game.title || "")}`,
-      { cache: "no-store" }
-    );
-
-    if (!r.ok) throw new Error("HTTP " + r.status);
-
-    const j = await r.json();
-    if (!j?.ok || !j?.currentTitle) throw new Error("bad json");
-
-    const currentTitle = cleanCmp(j.currentTitle);
-    const upToDate = !!currentTitle && candidates.some(t => t === currentTitle);
-
-    // Badge visuel (optionnel)
-    const badge = document.createElement("span");
-    badge.classList.add("badge");
-    badge.textContent = upToDate ? "✅ Traduction à jour" : "🔄 Traduction non à jour";
-    badge.classList.add(upToDate ? "status-updated" : "status-outdated");
-    const wrap = $("badges");
-    if (wrap) wrap.appendChild(badge);
-
-    if (maj) {
-      maj.classList.remove("maj-ok", "maj-ko");
-      maj.textContent = upToDate ? "✅ Traduction à jour" : "🔄 Traduction non à jour";
-      maj.classList.add(upToDate ? "maj-ok" : "maj-ko");
-    }
-
-    return;
-
-  } catch (e) {
-    // ✅ IMPORTANT : on ne conclut JAMAIS "à jour" si l'API échoue
-    if (maj) {
-      maj.classList.remove("maj-ok", "maj-ko");
-      maj.textContent = "⚠️ Statut inconnu (vérif F95 impossible)";
-      maj.classList.add("maj-ko");
-    }
-
-    // (Optionnel) hint date MAIS sans dire "à jour"
-    // const f95Ts = parseFrenchDateFR(game.updatedAt || "");
-    // const trdTs = Date.parse(game.updatedAtLocal || "");
-    // si tu veux afficher un petit "(d'après dates…)" je te le fais, mais pas de ✅.
-  }
+  const parts = [];
+  parts.push("ℹ️ Vérification F95 désactivée");
+  if (ver) parts.push(`Version listée : v${ver}`);
+  if (updatedAt) parts.push(`F95 (stocké) : ${updatedAt}`);
+  if (updatedAtLocal) parts.push(`Local : ${updatedAtLocal}`);
+  maj.textContent = parts.join(" — ");
 }
+
 
 // ============================================================================
 // ✅ MENU ☰ (page game) — réutilise menu racine
@@ -1146,7 +1104,7 @@ function renderVideoBlock({ id, videoUrl }) {
 
     // Badges + status
     renderBadgesFromGame(display, entry, isCollectionChild);
-    renderTranslationStatus(isCollectionChild ? (page.parent || entry) : entry);
+    renderTranslationStatus(entry);
 
     // 2) Related (après tags)
     const relatedOut = ensureRelatedContainer();
