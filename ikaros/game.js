@@ -588,15 +588,15 @@ async function renderTranslationStatus(game) {
   if (!game?.url) return;
 
   const maj = document.getElementById("majState");
+  const clean = (s) => String(s || "").replace(/\s+/g, " ").trim();
+  const storedTitle = clean(game.rawTitle || game.title || "");
+  const storedVersion = clean(game.version || "");
+
   if (maj) {
     maj.style.display = "";
     maj.classList.remove("maj-ok", "maj-ko");
     maj.textContent = "⏳ Vérification F95…";
   }
-
-  const clean = (s) => String(s || "").replace(/\s+/g, " ").trim();
-  const storedTitle = clean(game.rawTitle || game.title || "");
-  const storedVersion = clean(game.version || "");
 
   try {
     const qs =
@@ -610,6 +610,7 @@ async function renderTranslationStatus(game) {
     if (!j?.ok) {
       if (maj) {
         maj.textContent = "⚠️ Vérif F95 impossible";
+        maj.classList.remove("maj-ok", "maj-ko");
         maj.classList.add("maj-ko");
       }
       return;
@@ -619,13 +620,16 @@ async function renderTranslationStatus(game) {
 
     if (maj) {
       maj.classList.remove("maj-ok", "maj-ko");
-      maj.textContent = up ? "✅ Traduction à jour" : "🔄 Traduction non à jour";
-      maj.classList.add(up ? "maj-ok" : "maj-ko");
 
-      // petit détail utile (sans spam)
-      const curV = clean(j.currentVersion || "");
-      if (curV && storedVersion && curV !== storedVersion) {
-        maj.textContent += ` — F95 v${curV} (toi v${storedVersion})`;
+      if (up) {
+        maj.textContent = "✅ Traduction à jour";
+        maj.classList.add("maj-ok");
+      } else {
+        const curV = clean(j.currentVersion || "");
+        maj.textContent = curV
+          ? `🔄 Traduction non à jour — F95 v${curV}`
+          : "🔄 Traduction non à jour";
+        maj.classList.add("maj-ko");
       }
     }
   } catch {
