@@ -609,7 +609,7 @@ async function renderTranslationStatus(game) {
 
     if (!j?.ok) {
       if (maj) {
-        maj.textContent = "⚠️ Vérif F95 impossible";
+        maj.textContent = "⚠️ Vérif F95Zone impossible";
         maj.classList.remove("maj-ok", "maj-ko");
         maj.classList.add("maj-ko");
       }
@@ -627,14 +627,14 @@ async function renderTranslationStatus(game) {
       } else {
         const curV = clean(j.currentVersion || "");
         maj.textContent = curV
-          ? `🔄 Traduction non à jour — F95 v${curV}`
+          ? `🔄 Traduction non à jour — F95Zone v${curV}`
           : "🔄 Traduction non à jour";
         maj.classList.add("maj-ko");
       }
     }
   } catch {
     if (maj) {
-      maj.textContent = "⚠️ Vérif F95 impossible";
+      maj.textContent = "⚠️ Vérif F95Zone impossible";
       maj.classList.remove("maj-ok", "maj-ko");
       maj.classList.add("maj-ko");
     }
