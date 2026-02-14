@@ -16,18 +16,33 @@
 
   /* ✅ un peu plus compact qu’avant */
   --topbar-h: 78px;
-  --card-hover-border: rgba(255,255,255,0.22);
-  --card-hover-glow: rgba(255,255,255,0.18);
 
+  /* ✅ Scrollbar (alignée site principal) */
+  --scrollbar-thumb: #2a314b;
+  --scrollbar-thumb-hover: #3b4568;
+  --scrollbar-track: #0f1117;
+
+  /* ✅ dit au navigateur qu'on est en dark (évite scrollbar blanche) */
+  color-scheme: dark;
 }
 
 *{box-sizing:border-box}
 html,body{height:100%}
+
+/* ✅ empêche le "shift" quand la scrollbar apparaît + Firefox */
+html{
+  overflow-y: scroll;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  scrollbar-width: auto;
+}
 body{
   margin:0;
   font-family:system-ui,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;
   color:var(--fg);
   background:linear-gradient(180deg,#0d1018,#101425 30%,#0f1117);
+
+  /* Firefox fallback */
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
 /* ---------- TOPBAR FIXE ---------- */
@@ -270,7 +285,7 @@ body{
 .total-inline #countTotal{
   font-size: 15px;
   font-weight: 900;
-  color: var(--muted);
+  color: var(--fg);
 }
 
 /* ----- MAIN ----- */
@@ -293,31 +308,13 @@ main{
 .card{
   background:var(--card);
   border:1px solid var(--border);
-
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset;
-  transition: border-color .18s ease, box-shadow .18s ease, transform .12s ease, filter .12s ease;
-  will-change: transform;
   border-radius:14px;
   overflow:hidden;
 
   display:grid;
-  grid-template-rows: var(--thumb-h) auto;
-  min-height: auto;
+  grid-template-rows: var(--thumb-h) 1fr;
+  min-height: calc(var(--thumb-h) + 160px);
 }
-
-/* ✅ Surélévation au survol (comme le site principal) */
-.card:hover{
-  border-color: var(--card-hover-border);
-  box-shadow:
-    0 0 0 1px var(--card-hover-glow),
-    0 0 22px -6px var(--card-hover-glow),
-    0 14px 38px rgba(0,0,0,0.45);
-  transform: translateY(-3px);
-}
-.card:active{
-  transform: translateY(-1px);
-}
-
 
 .thumb{
   width:100%;
@@ -623,37 +620,55 @@ main{
 }
 
 /* =========================
-   Scrollbar PREMIUM
+   Scrollbar (page + zones scroll)
    ========================= */
 
-/* largeur verticale */
+/* Chrome / Edge / Brave */
 ::-webkit-scrollbar{
-  width: 14px;
-}
-
-/* horizontale un peu plus fine */
-::-webkit-scrollbar:horizontal{
-  height: 10px;
+  width: 16px;
+  height: 16px;
 }
 
 ::-webkit-scrollbar-track{
-  background: var(--scrollbar-track-webkit);
+  background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb{
-  background: var(--scrollbar-thumb-webkit);
+  background: var(--scrollbar-thumb);
   border-radius: 999px;
-
-  /* crée l'effet flottant sans bouffer la largeur */
-  border: 3px solid var(--scrollbar-track-webkit);
+  border: 4px solid var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb:hover{
-  background: var(--scrollbar-thumb-webkit-hover);
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* ✅ barre scroll horizontale de la topbar (overflow-x) */
+.top-actions{
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+.top-actions::-webkit-scrollbar:horizontal{
+  height: 12px; /* plus fin que le vertical */
+}
+.top-actions::-webkit-scrollbar-track{
+  background: var(--scrollbar-track);
+}
+.top-actions::-webkit-scrollbar-thumb{
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 3px solid var(--scrollbar-track);
+}
+.top-actions::-webkit-scrollbar-thumb:hover{
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* Firefox (modales) */
+.modal-body{
+  scrollbar-width: auto;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
 /* =========================
-   Scrollbar LARGE pour la mod/* =========================
    Scrollbar LARGE pour la modale Extension
    ========================= */
 
@@ -663,27 +678,29 @@ main{
 }
 
 .modal-body::-webkit-scrollbar-track{
-  background: var(--bg);
+  background: var(--scrollbar-track);
 }
 
 .modal-body::-webkit-scrollbar-thumb{
-  background: var(--scrollbar-thumb-webkit);
+  background: var(--scrollbar-thumb);
   border-radius: 999px;
 
   /* thumb plus fin que le rail */
-  border: 4px solid var(--bg);
+  border: 4px solid var(--scrollbar-track);
 }
 
 .modal-body::-webkit-scrollbar-thumb:hover{
-  background: var(--scrollbar-thumb-webkit-hover);
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* Firefox */
 .modal-body{
-  scrollbar-width: auto;               /* ⬅ plus large que thin */
-  scrollbar-color: var(--scrollbar-thumb) var(--bg);
+  scrollbar-width: auto;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
+/* =========================
+   📢 Viewer Annonce (bandeau)
    ========================= */
 
 #viewerAnnonceHost {
@@ -1685,23 +1702,4 @@ body.mode-game #extraLinksRow .btnLike:not(.like-btn){
   min-height: 40px !important;
   border-radius: 12px !important;
 }
-/* ✅ Tuile entièrement cliquable (comme le site principal) */
-a.card.card-link,
-a.card.card-link:visited,
-a.card.card-link:hover,
-a.card.card-link:active{
-  text-decoration:none;
-  color:inherit;
-  cursor:pointer;
-  display:grid; /* garde la mise en page */
-}
 
-a.card.card-link *{
-  text-decoration:none;
-  color:inherit;
-}
-
-a.card.card-link:focus-visible{
-  outline: 2px solid rgba(255,255,255,0.35);
-  outline-offset: 3px;
-}
