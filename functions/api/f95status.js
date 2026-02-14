@@ -75,7 +75,11 @@ export async function onRequestGet({ request }) {
       noStoreHeaders()
     );
   } catch (e) {
-    return json({ ok: false, error: "exception", message: String(e?.message || e) }, 200, noStoreHeaders());
+    return json(
+      { ok: false, error: "exception", message: String(e?.message || e) },
+      200,
+      noStoreHeaders()
+    );
   }
 }
 
@@ -89,17 +93,26 @@ function extractVersion(title) {
   return "";
 }
 
+// ✅ strip + decode entités HTML (nbsp, &#039;, etc.)
 function stripHtml(s) {
-  return String(s || "")
+  const raw = String(s || "")
     .replace(/<br\s*\/?>/gi, " ")
-    .replace(/<[^>]+>/g, "")
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
+    .replace(/<[^>]+>/g, "");
+
+  return decodeEntities(raw)
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function decodeEntities(str) {
+  return String(str || "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&#0*39;/gi, "'")     // &#039;
+    .replace(/&apos;/gi, "'")
+    .replace(/&quot;/gi, '"')
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">");
 }
 
 function noStoreHeaders() {
