@@ -585,11 +585,14 @@ function renderBadgesFromGame(display, entry, isCollectionChild) {
 // ✅ Traduction status (F95) + fallback local
 // ============================================================================
 async function renderTranslationStatus(game) {
-  if (!game?.url || !game?.title) return;
+  // Compare like threads viewer: current F95 title (H1) vs stored raw title.
+  // But on game page we get currentTitle from API (/api/f95status), so we can compare locally.
+  if (!game?.url) return;
 
   try {
+    const storedTitleParam = String(game.title || "").trim();
     const r = await fetch(
-      `/api/f95status?url=${encodeURIComponent(game.url)}&storedTitle=${encodeURIComponent(game.title)}`,
+      `/api/f95status?url=${encodeURIComponent(game.url)}&storedTitle=${encodeURIComponent(storedTitleParam)}`,
       { cache: "no-store" }
     );
     if (!r.ok) return;
@@ -606,11 +609,22 @@ async function renderTranslationStatus(game) {
       maj.classList.remove("maj-ok", "maj-ko");
     }
 
-    // ✅ même logique que le viewer "threads" : comparaison stricte du H1 (F95) vs titre stocké
-    const cleanForCompare = (s) => String(s || "").replace(/\s+/g, " ").trim();
-    const stored = cleanForCompare(game.title);
-    const current = cleanForCompare(j.currentTitle);
-    const up = !!stored && !!current && stored === current;
+    const clean = (s) => String(s || "").replace(/\s+/g, " ").trim();
+
+    const current = clean(j.currentTitle);
+
+    // ✅ candidates (certains JSON peuvent stocker le titre dans des champs différents)
+    const candidatesRaw = [
+      game.title,
+      game.rawTitle,
+      game.cleanTitle,
+      game.gameData?.title,
+      game.gameData?.cleanTitle,
+    ];
+
+    const candidates = candidatesRaw.map(clean).filter(Boolean);
+
+    const up = !!current && candidates.some((t) => t === current);
 
     if (up) {
       badge.textContent = "✅ Traduction à jour";
@@ -625,6 +639,7 @@ async function renderTranslationStatus(game) {
     const wrap = $("badges");
     if (wrap) wrap.appendChild(badge);
   } catch {
+    // Fallback local (dates) si l’API échoue
     try {
       const maj = document.getElementById("majState");
       const f95Ts = parseFrenchDateFR(game.updatedAt || "");
@@ -1136,7 +1151,7 @@ function renderVideoBlock({ id, videoUrl }) {
 
     // Badges + status
     renderBadgesFromGame(display, entry, isCollectionChild);
-    renderTranslationStatus(entry);
+    renderTranslationStatus(isCollectionChild ? (page.parent || entry) : entry);
 
     // 2) Related (après tags)
     const relatedOut = ensureRelatedContainer();
