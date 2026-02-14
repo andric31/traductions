@@ -5,21 +5,175 @@
 (() => {
   "use strict";
 
+  const $ = (sel) => document.querySelector(sel);
+
+  // =========================
+  // ✅ Détection universelle SLUG + chemins
+  // =========================
+  function detectSlug() {
+    try {
+      const forced = (window.__SITE_SLUG__ || "").toString().trim();
+      if (forced) return forced;
+    } catch {}
+    const segs = (location.pathname || "/").split("/").filter(Boolean);
+    return (segs[0] || "").trim();
+  }
+
+  const SLUG = detectSlug();
+  const APP_PATH = SLUG ? `/${SLUG}/` : `/`;
+  const DEFAULT_URL = SLUG ? `/f95list_${SLUG}.json` : `/f95list.json`;
+
+  // =========================
+  // Thèmes (themes.css) — FIX: tout reste dans la même IIFE
+  // =========================
+  function getViewerTheme() {
+    try {
+      return (localStorage.getItem("viewerTheme") || "auto").trim() || "auto";
+    } catch {
+      return "auto";
+    }
+  }
+
+  function setViewerTheme(v) {
+    try {
+      localStorage.setItem("viewerTheme", String(v || "auto"));
+    } catch {}
+  }
+
+  function applyViewerTheme(t) {
+    const v = (t || "auto").toString().trim() || "auto";
+    const root = document.documentElement; // <html>
+
+    root.removeAttribute("data-theme");
+    if (v === "auto") return;
+
+    root.setAttribute("data-theme", v);
+  }
+
+  function initThemeUI() {
+    const themeSel = document.getElementById("theme");
+    const t = getViewerTheme();
+    applyViewerTheme(t);
+    if (themeSel) themeSel.value = t;
+
+    themeSel?.addEventListener("change", (e) => {
+      const v = (e.target?.value || "auto").trim() || "auto";
+      setViewerTheme(v);
+      applyViewerTheme(v);
+      updateTopToolsThemeLabel();
+    });
+  }
+
+  // =========================
+  // ✅ TOP RIGHT TOOLS (inject dans #topTitleTools)
+  // =========================
+  function ensureTopToolsCssOnce() {
+    if (document.getElementById("topToolsInlineCss")) return;
+    const s = document.createElement("style");
+    s.id = "topToolsInlineCss";
+    s.textContent = `
+      .topToolsBar{ display:flex; align-items:center; gap:8px; }
+      .topToolsBtn{
+        display:inline-flex; align-items:center; justify-content:center;
+        height:34px; min-width:34px; padding:0 10px;
+        border-radius:10px;
+        border:1px solid var(--border, rgba(255,255,255,.12));
+        background: rgba(255,255,255,0.05);
+        color: var(--text, #fff);
+        cursor:pointer; user-select:none;
+        font: inherit;
+      }
+      .topToolsBtn:hover{ filter: brightness(1.10); }
+      .topToolsBtn:active{ transform: translateY(1px); }
+      .topToolsBtn .lbl{ margin-left:6px; font-size:12px; opacity:.9; }
+    `;
+    document.head.appendChild(s);
+  }
+
+  function updateTopToolsThemeLabel() {
+    const el = document.getElementById("topToolsThemeLabel");
+    if (!el) return;
+    const t = getViewerTheme();
+    const nice =
+      t === "auto" ? "Auto" :
+      t === "dark" ? "Sombre" :
+      t === "white" ? "Blanc" :
+      t === "noel" ? "Noël" :
+      t === "halloween" ? "Halloween" : t;
+    el.textContent = nice;
+  }
+
+  function initTopTitleTools() {
+    const host = document.getElementById("topTitleTools");
+    if (!host) return;
+
+    ensureTopToolsCssOnce();
+
+    // évite double init
+    if (host.dataset.built === "1") {
+      updateTopToolsThemeLabel();
+      return;
+    }
+    host.dataset.built = "1";
+
+    const bar = document.createElement("div");
+    bar.className = "topToolsBar";
+
+    // 🌍 Accueil
+    const aHome = document.createElement("a");
+    aHome.className = "topToolsBtn";
+    aHome.href = "https://traductions.pages.dev/";
+    aHome.target = "_self";
+    aHome.rel = "noopener";
+    aHome.title = "Accueil";
+    aHome.textContent = "🌍";
+    bar.appendChild(aHome);
+
+    // 🎨 Thème (focus le select #theme)
+    const bTheme = document.createElement("button");
+    bTheme.type = "button";
+    bTheme.className = "topToolsBtn";
+    bTheme.title = "Thème";
+    bTheme.innerHTML = `🎨 <span class="lbl" id="topToolsThemeLabel"></span>`;
+    bTheme.addEventListener("click", () => {
+      const sel = document.getElementById("theme");
+      if (sel) {
+        sel.focus();
+        // ouvre le menu sur certains navigateurs
+        try { sel.click(); } catch {}
+      }
+    });
+    bar.appendChild(bTheme);
+
+    // 🔄 Refresh (clique ton bouton #refresh)
+    const bRefresh = document.createElement("button");
+    bRefresh.type = "button";
+    bRefresh.className = "topToolsBtn";
+    bRefresh.title = "Rafraîchir";
+    bRefresh.textContent = "🔄";
+    bRefresh.addEventListener("click", () => {
+      document.getElementById("refresh")?.click();
+    });
+    bar.appendChild(bRefresh);
+
+    host.appendChild(bar);
+    updateTopToolsThemeLabel();
+  }
+
   // =========================
   // ☰ Menu (popover) — lien vers l’accueil général
   // (utilisé par game.js via window.ViewerMenu.init())
   // =========================
-  (function ensureTopMenu(){
+  (function ensureTopMenu() {
     if (window.ViewerMenu && typeof window.ViewerMenu.init === "function") return;
-  
-    function prettyNameFromSlug(slug){
+
+    function prettyNameFromSlug(slug) {
       const s = String(slug || "").trim().toLowerCase();
       if (!s) return "";
-      // "ant28jsp" => "Ant28jsp", "andric31" => "Andric31"
       return s.charAt(0).toUpperCase() + s.slice(1);
     }
-  
-    function buildPopover(){
+
+    function buildPopover() {
       let pop = document.getElementById("topMenuPopover");
       if (!pop) {
         pop = document.createElement("div");
@@ -28,48 +182,38 @@
         pop.setAttribute("role", "menu");
         document.body.appendChild(pop);
       }
-  
-      // ✅ Toujours reconstruire (pour prendre en compte window.__SITE_NAME__)
+
       pop.dataset.built = "1";
-      pop.innerHTML = ""; // <-- purge et reconstruit
-  
-      // ✅ détecte si on est sur "page jeu" (index.html?id=... ou ?uid=...)
+      pop.innerHTML = "";
+
       let isGame = false;
       try {
         const p = new URLSearchParams(location.search);
         isGame = !!(p.get("id") || p.get("uid"));
       } catch {}
-  
-      // ✅ calcule le chemin du traducteur (retour liste)
+
       const slug = String(window.__SITE_SLUG__ || "").trim().toLowerCase();
       const appPath = slug ? `/${slug}/` : `/`;
       const niceName = String(window.__SITE_NAME__ || prettyNameFromSlug(slug) || "");
-  
-      // ✅ Afficher "Retour à la liste" seulement si on est sur une page jeu
+
       if (isGame) {
         const aBack = document.createElement("a");
         aBack.className = "menu-item";
-        aBack.href = appPath;               // ✅ enlève ?id= / ?uid=
+        aBack.href = appPath;
         aBack.target = "_self";
         aBack.rel = "noopener";
-  
-        aBack.textContent = niceName
-          ? `📚 Retour à la liste · ${niceName}`
-          : "📚 Retour à la liste";
-  
+        aBack.textContent = niceName ? `📚 Retour à la liste · ${niceName}` : "📚 Retour à la liste";
         aBack.style.display = "block";
         aBack.style.textDecoration = "none";
         pop.appendChild(aBack);
-  
-        // séparateur léger
+
         const sep = document.createElement("div");
         sep.style.height = "1px";
         sep.style.margin = "6px 8px";
         sep.style.background = "rgba(255,255,255,0.08)";
         pop.appendChild(sep);
       }
-  
-      // Item : Accueil général (toujours)
+
       const aHome = document.createElement("a");
       aHome.className = "menu-item";
       aHome.href = "https://traductions.pages.dev/";
@@ -79,63 +223,37 @@
       aHome.style.display = "block";
       aHome.style.textDecoration = "none";
       pop.appendChild(aHome);
-  
-      // (plus de bouton "Fermer")
+
       return pop;
     }
-  
+
     window.ViewerMenu = {
-      init(){
-        buildPopover();
-      },
-      closeMenu(){
+      init() { buildPopover(); },
+      closeMenu() {
         const pop = document.getElementById("topMenuPopover");
         if (pop) pop.classList.add("hidden");
-      }
+      },
     };
   })();
-
-
-  // =========================
-  // ✅ Détection universelle SLUG + chemins
-  // =========================
-  function detectSlug() {
-    // 1) override possible depuis index.html : window.__SITE_SLUG__ = "ikaros";
-    try {
-      const forced = (window.__SITE_SLUG__ || "").toString().trim();
-      if (forced) return forced;
-    } catch {}
-
-    // 2) sinon, 1er segment du pathname
-    // ex: /ikaros/ -> ikaros ; /ikaros/index.html -> ikaros
-    const segs = (location.pathname || "/").split("/").filter(Boolean);
-    return (segs[0] || "").trim();
-  }
-
-  const SLUG = detectSlug();                 // "ikaros" / "ant28jsp" / "..."
-  const APP_PATH = SLUG ? `/${SLUG}/` : `/`; // base pour les liens internes
-  const DEFAULT_URL = SLUG ? `/f95list_${SLUG}.json` : `/f95list.json`;
-
-  const $ = (sel) => document.querySelector(sel);
 
   // =========================
   // 🔞 Age gate (intégré ici)
   // =========================
-  (function initAgeGate(){
+  (function initAgeGate() {
     const KEY = "ageVerified";
     const gate = document.getElementById("age-gate");
     if (!gate) return;
 
-    try{
+    try {
       if (!localStorage.getItem(KEY)) {
         gate.style.display = "flex";
         document.body.classList.add("age-gate-active");
         document.body.style.overflow = "hidden";
       }
-    }catch{}
+    } catch {}
 
     document.getElementById("age-yes")?.addEventListener("click", () => {
-      try{ localStorage.setItem(KEY, "1"); }catch{}
+      try { localStorage.setItem(KEY, "1"); } catch {}
       gate.style.display = "none";
       document.body.classList.remove("age-gate-active");
       document.body.style.overflow = "";
@@ -154,11 +272,8 @@
     const id = (g.id || "").toString().trim();
     const uid = (g.uid ?? "").toString().trim();
 
-    // Sous-jeu de collection : /<slug>/?id=<collection>&uid=<uid>
     if (coll) return `${APP_PATH}?id=${encodeURIComponent(coll)}&uid=${encodeURIComponent(uid)}`;
-    // Jeu normal / collection parent : /<slug>/?id=<id>
     if (id) return `${APP_PATH}?id=${encodeURIComponent(id)}`;
-    // Fallback uid seul
     return `${APP_PATH}?uid=${encodeURIComponent(uid)}`;
   }
 
@@ -184,7 +299,7 @@
   };
 
   // =========================
-  // ✅ Compteur vues page principale (Viewer)
+  // ✅ Compteur vues page principale (ensure)
   // =========================
   const MAIN_PAGE_ID = `__viewer_main__:${SLUG || "root"}`;
   let MAIN_VIEW_HIT_DONE = false;
@@ -196,19 +311,14 @@
     catch { return String(Math.floor(x)); }
   }
 
-  // =========================
   // ✅ UID ONLY — clés compteurs
-  // =========================
   function counterKeyOfUid(uid) {
     const u = String(uid ?? "").trim();
     return u ? `uid:${u}` : "";
   }
 
-  // =========================
-  // Stats jeux (vues + likes + téléchargements)
-  // =========================
   const GAME_STATS = {
-    views: new Map(), // key(uid:xxx) -> number
+    views: new Map(),
     mega: new Map(),
     likes: new Map(),
     loaded: false,
@@ -340,20 +450,17 @@
     const s = String(str).trim().toLowerCase();
     const months = {
       janvier: 0,
-      fevrier: 1,
-      février: 1,
+      fevrier: 1, février: 1,
       mars: 2,
       avril: 3,
       mai: 4,
       juin: 5,
       juillet: 6,
-      aout: 7,
-      août: 7,
+      aout: 7, août: 7,
       septembre: 8,
       octobre: 9,
       novembre: 10,
-      decembre: 11,
-      décembre: 11,
+      decembre: 11, décembre: 11,
     };
     const m = s.match(/^(\d{1,2})\s+([a-zêéèûôîïùç]+)\s+(\d{4})$/i);
     if (!m) return null;
@@ -455,12 +562,8 @@
     const coll = String(game.collection || "");
     const uid = game.uid ?? "";
 
-    const displayTitleRaw = String(
-      game.gameData && game.gameData.title ? game.gameData.title : game.title || ""
-    );
-    const displayImageRaw = String(
-      game.gameData && game.gameData.imageUrl ? game.gameData.imageUrl : game.imageUrl || ""
-    );
+    const displayTitleRaw = String(game.gameData?.title ? game.gameData.title : (game.title || ""));
+    const displayImageRaw = String(game.gameData?.imageUrl ? game.gameData.imageUrl : (game.imageUrl || ""));
 
     const displayTags = Array.isArray(game.gameData?.tags)
       ? game.gameData.tags.slice()
@@ -483,7 +586,6 @@
 
     const ckey = counterKeyOfUid(uid);
 
-    // moteur : priorité gameData.engine si présent
     let engines = Array.isArray(c.engines) ? c.engines : [];
     if (game.gameData?.engine) {
       const engNorm = ENGINE_RAW[slugify(game.gameData.engine)] || game.gameData.engine;
@@ -521,7 +623,7 @@
   }
 
   // =========================
-  // TAGS MULTI (popover + save)
+  // TAGS MULTI
   // =========================
   const TAGS_STORE_KEY = `viewerSelectedTags:${SLUG || "root"}`;
 
@@ -741,25 +843,28 @@
     }
 
     if (k === "views") {
-      state.filtered.sort((a, b) => ( (GAME_STATS.views.get(a.ckey)||0) - (GAME_STATS.views.get(b.ckey)||0) ) * mul
-        || ( (a.updatedAtLocalTs||0) - (b.updatedAtLocalTs||0) ) * mul
-        || a.title.localeCompare(b.title)
+      state.filtered.sort((a, b) =>
+        (((GAME_STATS.views.get(a.ckey) || 0) - (GAME_STATS.views.get(b.ckey) || 0)) * mul) ||
+        (((a.updatedAtLocalTs || 0) - (b.updatedAtLocalTs || 0)) * mul) ||
+        a.title.localeCompare(b.title)
       );
       return;
     }
 
     if (k === "mega") {
-      state.filtered.sort((a, b) => ( (GAME_STATS.mega.get(a.ckey)||0) - (GAME_STATS.mega.get(b.ckey)||0) ) * mul
-        || ( (a.updatedAtLocalTs||0) - (b.updatedAtLocalTs||0) ) * mul
-        || a.title.localeCompare(b.title)
+      state.filtered.sort((a, b) =>
+        (((GAME_STATS.mega.get(a.ckey) || 0) - (GAME_STATS.mega.get(b.ckey) || 0)) * mul) ||
+        (((a.updatedAtLocalTs || 0) - (b.updatedAtLocalTs || 0)) * mul) ||
+        a.title.localeCompare(b.title)
       );
       return;
     }
 
     if (k === "likes") {
-      state.filtered.sort((a, b) => ( (GAME_STATS.likes.get(a.ckey)||0) - (GAME_STATS.likes.get(b.ckey)||0) ) * mul
-        || ( (a.updatedAtLocalTs||0) - (b.updatedAtLocalTs||0) ) * mul
-        || a.title.localeCompare(b.title)
+      state.filtered.sort((a, b) =>
+        (((GAME_STATS.likes.get(a.ckey) || 0) - (GAME_STATS.likes.get(b.ckey) || 0)) * mul) ||
+        (((a.updatedAtLocalTs || 0) - (b.updatedAtLocalTs || 0)) * mul) ||
+        a.title.localeCompare(b.title)
       );
       return;
     }
@@ -773,7 +878,11 @@
     const ft = state.filterTags;
 
     state.filtered = state.all.filter((g) => {
-      const mq = !q || g.title.toLowerCase().includes(q) || String(g.id || "").includes(q) || String(g.uid || "").includes(q);
+      const mq =
+        !q ||
+        g.title.toLowerCase().includes(q) ||
+        String(g.id || "").includes(q) ||
+        String(g.uid || "").includes(q);
 
       const mc = fc === "all" || (Array.isArray(g.categories) ? g.categories.includes(fc) : false);
       const me = fe === "all" || (Array.isArray(g.engines) ? g.engines.includes(fe) : false);
@@ -938,7 +1047,7 @@
     renderGrid();
   });
 
-  $("#cols")?.addEventListener("change", async (e) => {
+  $("#cols")?.addEventListener("change", (e) => {
     state.cols = e.target.value || "auto";
     applyGridCols();
     setViewerCols(state.cols);
@@ -986,6 +1095,10 @@
     $("#gridEmpty")?.classList.add("hidden");
 
     try {
+      // ✅ inject haut-droite (avant le rendu)
+      initTopTitleTools();
+      initThemeUI();
+
       state.cols = getViewerCols();
       const colsSel = $("#cols");
       if (colsSel) colsSel.value = state.cols;
@@ -1006,6 +1119,12 @@
 
       applyFilters();
       initMainPageCounter();
+
+      // reconstruit toolbar après que le titre/slug aient été posés par index.html
+      setTimeout(() => {
+        initTopTitleTools();
+        updateTopToolsThemeLabel();
+      }, 50);
     } catch (e) {
       console.error("[viewer] load error:", e);
 
