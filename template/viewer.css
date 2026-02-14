@@ -623,38 +623,37 @@ main{
 }
 
 /* =========================
-   Scrollbar sombre (modales & page)
+   Scrollbar PREMIUM
    ========================= */
 
-/* Chrome / Edge / Brave */
+/* largeur verticale */
 ::-webkit-scrollbar{
-  width: 16px;   /* ⬅ rail légèrement plus large */
-  height: 16px;
+  width: 14px;
+}
+
+/* horizontale un peu plus fine */
+::-webkit-scrollbar:horizontal{
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track{
-  background: #0f1117;
+  background: var(--scrollbar-track-webkit);
 }
 
 ::-webkit-scrollbar-thumb{
-  background: #2a314b;
+  background: var(--scrollbar-thumb-webkit);
   border-radius: 999px;
 
-  /* ⬅ crée l’effet “thumb plus petit que le rail” */
-  border: 4px solid #0f1117;
+  /* crée l'effet flottant sans bouffer la largeur */
+  border: 3px solid var(--scrollbar-track-webkit);
 }
 
 ::-webkit-scrollbar-thumb:hover{
-  background: #3b4568;
-}
-
-/* Scrollbar spécifique aux modales */
-.modal-body{
-  scrollbar-width: thin;                 /* Firefox */
-  scrollbar-color: #2a314b #0f1117;       /* Firefox */
+  background: var(--scrollbar-thumb-webkit-hover);
 }
 
 /* =========================
+   Scrollbar LARGE pour la mod/* =========================
    Scrollbar LARGE pour la modale Extension
    ========================= */
 
@@ -664,29 +663,27 @@ main{
 }
 
 .modal-body::-webkit-scrollbar-track{
-  background: #0f1117;
+  background: var(--bg);
 }
 
 .modal-body::-webkit-scrollbar-thumb{
-  background: #2a314b;
+  background: var(--scrollbar-thumb-webkit);
   border-radius: 999px;
 
   /* thumb plus fin que le rail */
-  border: 4px solid #0f1117;
+  border: 4px solid var(--bg);
 }
 
 .modal-body::-webkit-scrollbar-thumb:hover{
-  background: #3b4568;
+  background: var(--scrollbar-thumb-webkit-hover);
 }
 
 /* Firefox */
 .modal-body{
   scrollbar-width: auto;               /* ⬅ plus large que thin */
-  scrollbar-color: #2a314b #0f1117;
+  scrollbar-color: var(--scrollbar-thumb) var(--bg);
 }
 
-/* =========================
-   📢 Viewer Annonce (bandeau)
    ========================= */
 
 #viewerAnnonceHost {
