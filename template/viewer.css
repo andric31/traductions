@@ -62,6 +62,37 @@ body{
   flex-wrap:nowrap;
 }
 
+/* ✅ Total (pastille) en haut à droite */
+.stat-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  height:34px;
+  padding:0 10px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background: var(--btn);
+  color: var(--text);
+  font-size:13px;
+  white-space:nowrap;
+}
+
+/* ✅ même look pour les selects/boutons du topbar */
+.top-title-tools select,
+.top-title-tools button{
+  height:34px;
+  border-radius:10px;
+}
+.top-title-tools button{
+  padding:0 12px;
+  border:1px solid var(--border);
+  background: var(--btn);
+  color: var(--text);
+  cursor:pointer;
+}
+.top-title-tools button:hover{ filter: brightness(1.12); }
+.top-title-tools button:active{ transform: translateY(1px); }
+
 /* ✅ bouton hamburger */
 .hamburger-btn{
   width:34px;
@@ -295,7 +326,9 @@ main{
 
   display:grid;
   grid-template-rows: var(--thumb-h) 1fr;
-  min-height: calc(var(--thumb-h) + 160px);
+  /* ✅ évite l'espace "réservé" à un bouton supprimé */
+  min-height: 0;
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
 }
 
 .thumb{
@@ -1667,23 +1700,30 @@ body.mode-game #extraLinksRow .btnLike:not(.like-btn){
   min-height: 40px !important;
   border-radius: 12px !important;
 }
-/* ✅ Tuile entièrement cliquable (comme le site principal) */
-a.card.card-link,
-a.card.card-link:visited,
-a.card.card-link:hover,
-a.card.card-link:active{
-  text-decoration:none;
-  color:inherit;
-  cursor:pointer;
-  display:grid; /* garde la mise en page */
-}
 
-a.card.card-link *{
-  text-decoration:none;
-  color:inherit;
-}
 
-a.card.card-link:focus-visible{
+
+
+/* =========================
+   ✅ Tuile cliquable (ouvre la page jeu)
+   ========================= */
+a.card-link{
+  display:block;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+a.card-link:focus{
   outline: 2px solid rgba(255,255,255,0.35);
-  outline-offset: 3px;
+  outline-offset: 2px;
+}
+
+/* ✅ Hover / soulèvement (comme le site principal) */
+a.card-link:hover .card{
+  transform: translateY(-3px);
+  box-shadow: 0 18px 55px rgba(0,0,0,.45);
+  border-color: rgba(255,255,255,0.18);
+}
+a.card-link:active .card{
+  transform: translateY(-1px);
 }
