@@ -4,7 +4,8 @@
 
 (() => {
   "use strict";
-// =========================
+
+  // =========================
   // Thèmes (themes.css)
   // =========================
   function getViewerTheme() {
@@ -16,23 +17,12 @@
     try { localStorage.setItem("viewerTheme", String(v || "auto")); } catch {}
   }
 
-  function applyViewerTheme(t) {
-    const v = (t || "auto").toString().trim() || "auto";
-    const root = document.documentElement; // ✅ <html> (=> :root)
-
-    // reset propre
+  function applyViewerTheme(v) {
+    const t = (v || "auto").toString().trim() || "auto";
+    const root = document.documentElement;
     root.removeAttribute("data-theme");
-
-    // auto = laisse prefers-color-scheme gérer (media query)
-    if (v === "auto") return;
-
-    // force un thème : :root[data-theme="..."]
-    root.setAttribute("data-theme", v);
+    if (t !== "auto") root.setAttribute("data-theme", t);
   }
-
-  // applique le thème au plus tôt (évite flash)
-  applyViewerTheme(getViewerTheme());
-
 
   // =========================
   // ☰ Menu (popover) — lien vers l’accueil général
@@ -1015,25 +1005,27 @@
     $("#gridEmpty")?.classList.add("hidden");
 
     try {
+      // ✅ thème (persistant)
+      const themeSel = document.getElementById("theme");
+      const themeVal = getViewerTheme();
+      applyViewerTheme(themeVal);
+      if (themeSel) {
+        themeSel.value = themeVal;
+        if (themeSel.dataset.bound !== "1") {
+          themeSel.dataset.bound = "1";
+          themeSel.addEventListener("change", (e) => {
+            const v = (e.target?.value || "auto").trim() || "auto";
+            setViewerTheme(v);
+            applyViewerTheme(v);
+          });
+        }
+      }
+
       state.cols = getViewerCols();
       const colsSel = $("#cols");
       if (colsSel) colsSel.value = state.cols;
 
-      
-
-      // ✅ thème (themes.css)
-      const themeSel = document.getElementById("theme");
-      const t = getViewerTheme();
-      applyViewerTheme(t);
-      if (themeSel) {
-        themeSel.value = t;
-        themeSel.addEventListener("change", (e) => {
-          const v = (e.target && e.target.value ? e.target.value : "auto").toString().trim() || "auto";
-          setViewerTheme(v);
-          applyViewerTheme(v);
-        });
-      }
-const raw = await loadList();
+      const raw = await loadList();
       state.all = Array.isArray(raw) ? raw.map(normalizeGame) : [];
 
       if (!state.filterTags || !state.filterTags.length) {

@@ -196,13 +196,46 @@
         </button>
 
         <h1 id="viewerTitle">f95list_viewer</h1>
-        <div id="topTitleTools" class="top-title-tools"></div>
+
+        <!-- ✅ Outils en haut à droite (comme le site principal) -->
+        <div id="topTitleTools" class="top-title-tools">
+          <span class="stat-pill">Total : <strong id="countTotal">0</strong></span>
+
+          <select id="cols" title="Vignettes par ligne">
+            <option value="auto">7 par ligne</option>
+            <option value="1">1 par ligne</option>
+            <option value="2">2 par ligne</option>
+            <option value="3">3 par ligne</option>
+            <option value="4">4 par ligne</option>
+            <option value="5">5 par ligne</option>
+            <option value="6">6 par ligne</option>
+            <option value="7">7 par ligne</option>
+            <option value="8">8 par ligne</option>
+            <option value="9">9 par ligne</option>
+            <option value="10">10 par ligne</option>
+          </select>
+
+          <select id="pageSize" title="Affichage progressif">
+            <option value="50">Afficher par 50</option>
+            <option value="100">Afficher par 100</option>
+            <option value="all">Tout afficher</option>
+          </select>
+
+          <select id="theme" title="Thème">
+            <option value="auto">Thème : Auto</option>
+            <option value="dark">Thème : Sombre</option>
+            <option value="white">Thème : Blanc</option>
+            <option value="noel">Thème : Noël</option>
+            <option value="halloween">Thème : Halloween</option>
+          </select>
+
+          <button id="refresh" type="button">Rafraîchir</button>
+        </div>
       </div>
 
       <div class="top-actions">
         <div class="search-wrap">
           <input id="search" type="search" placeholder="Rechercher un jeu." autocomplete="off" />
-          <span class="stat-in-bar total-inline">Total : <strong id="countTotal">0</strong></span>
         </div>
 
         <select id="sort" title="Trier">
@@ -242,27 +275,7 @@
           🏷️ Tags <span id="tagsCount" class="tags-count hidden">0</span>
         </button>
 
-        <select id="cols" title="Vignettes par ligne">
-          <option value="auto">Vignettes/ligne : Auto</option>
-          <option value="1">1 par ligne</option>
-          <option value="2">2 par ligne</option>
-          <option value="3">3 par ligne</option>
-          <option value="4">4 par ligne</option>
-          <option value="5">5 par ligne</option>
-          <option value="6">6 par ligne</option>
-          <option value="7">7 par ligne</option>
-          <option value="8">8 par ligne</option>
-          <option value="9">9 par ligne</option>
-          <option value="10">10 par ligne</option>
-        </select>
-
-        <select id="pageSize" title="Affichage progressif">
-          <option value="50">Afficher par 50</option>
-          <option value="100">Afficher par 100</option>
-          <option value="all">Tout afficher</option>
-        </select>
-
-        <select id="theme" title="Thème"><option value="auto">Thème : Auto (Windows)</option><option value="dark">Thème : Sombre</option><option value="white">Thème : Blanc</option><option value="noel">Thème : Noël</option><option value="halloween">Thème : Halloween</option></select><button id="refresh" type="button">Rafraîchir</button>
+        <!-- (cols/pageSize/theme/refresh déplacés en haut à droite) -->
       </div>
     </header>
 
