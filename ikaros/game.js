@@ -606,7 +606,13 @@ async function renderTranslationStatus(game) {
       maj.classList.remove("maj-ok", "maj-ko");
     }
 
-    if (j.isUpToDate) {
+    // ✅ même logique que le viewer "threads" : comparaison stricte du H1 (F95) vs titre stocké
+    const cleanForCompare = (s) => String(s || "").replace(/\s+/g, " ").trim();
+    const stored = cleanForCompare(game.title);
+    const current = cleanForCompare(j.currentTitle);
+    const up = !!stored && !!current && stored === current;
+
+    if (up) {
       badge.textContent = "✅ Traduction à jour";
       badge.classList.add("status-updated");
       if (maj) { maj.textContent = "✅ Traduction à jour"; maj.classList.add("maj-ok"); }
