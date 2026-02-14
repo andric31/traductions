@@ -582,70 +582,70 @@ function renderBadgesFromGame(display, entry, isCollectionChild) {
 }
 
 // ============================================================================
-// ✅ Traduction status (F95) + fallback local
+// ✅ Traduction status (F95) + fallback local (SAFE)
 // ============================================================================
 async function renderTranslationStatus(game) {
-  if (!game?.url || !game?.title) return;
+  if (!game?.url) return;
+
+  const maj = document.getElementById("majState");
+  if (maj) {
+    maj.style.display = "";
+    maj.classList.remove("maj-ok", "maj-ko");
+    maj.textContent = "⏳ Vérification…";
+  }
+
+  const cleanCmp = (s) => String(s || "").replace(/\s+/g, " ").trim();
+
+  // candidats côté JSON (comme threads)
+  const candidates = [
+    game.rawTitle,
+    game.title,
+    game.cleanTitle,
+    (game.gameData && game.gameData.title) ? game.gameData.title : "",
+  ].map(cleanCmp).filter(Boolean);
 
   try {
     const r = await fetch(
       `/api/f95status?url=${encodeURIComponent(game.url)}&storedTitle=${encodeURIComponent(game.rawTitle || game.title || "")}`,
       { cache: "no-store" }
     );
-    if (!r.ok) return;
+
+    if (!r.ok) throw new Error("HTTP " + r.status);
 
     const j = await r.json();
-    if (!j?.ok || !j?.currentTitle) return;
-
-    const badge = document.createElement("span");
-    badge.classList.add("badge");
-
-    const maj = document.getElementById("majState");
-    if (maj) {
-      maj.style.display = "";
-      maj.classList.remove("maj-ok", "maj-ko");
-    }
-
-    // ✅ Même logique que le viewer "threads" : comparaison stricte du titre (H1) avec le titre stocké
-    const cleanCmp = (s) => String(s || "").replace(/\s+/g, " ").trim();
+    if (!j?.ok || !j?.currentTitle) throw new Error("bad json");
 
     const currentTitle = cleanCmp(j.currentTitle);
-
-    // candidats possibles côté JSON (selon les variantes / anciens champs)
-    const candidates = [
-      game.rawTitle,
-      game.title,
-      game.cleanTitle,
-      (game.gameData && game.gameData.title) ? game.gameData.title : "",
-    ].map(cleanCmp).filter(Boolean);
-
     const upToDate = !!currentTitle && candidates.some(t => t === currentTitle);
 
-    if (upToDate) {
-      badge.textContent = "✅ Traduction à jour";
-      badge.classList.add("status-updated");
-      if (maj) { maj.textContent = "✅ Traduction à jour"; maj.classList.add("maj-ok"); }
-    } else {
-      badge.textContent = "🔄 Traduction non à jour";
-      badge.classList.add("status-outdated");
-      if (maj) { maj.textContent = "🔄 Traduction non à jour"; maj.classList.add("maj-ko"); }
-    }
-
+    // Badge visuel (optionnel)
+    const badge = document.createElement("span");
+    badge.classList.add("badge");
+    badge.textContent = upToDate ? "✅ Traduction à jour" : "🔄 Traduction non à jour";
+    badge.classList.add(upToDate ? "status-updated" : "status-outdated");
     const wrap = $("badges");
     if (wrap) wrap.appendChild(badge);
 
-  } catch {
-    try {
-      const maj = document.getElementById("majState");
-      const f95Ts = parseFrenchDateFR(game.updatedAt || "");
-      const trdTs = Date.parse(game.updatedAtLocal || "");
-      if (!maj) return;
-      if (!f95Ts || !Number.isFinite(trdTs)) return;
-      maj.style.display = "";
+    if (maj) {
       maj.classList.remove("maj-ok", "maj-ko");
-      if (trdTs >= f95Ts) { maj.textContent = "✅ Traduction à jour"; maj.classList.add("maj-ok"); }
-      else { maj.textContent = "🔄 Traduction non à jour"; maj.classList.add("maj-ko"); }
-    } catch {}
+      maj.textContent = upToDate ? "✅ Traduction à jour" : "🔄 Traduction non à jour";
+      maj.classList.add(upToDate ? "maj-ok" : "maj-ko");
+    }
+
+    return;
+
+  } catch (e) {
+    // ✅ IMPORTANT : on ne conclut JAMAIS "à jour" si l'API échoue
+    if (maj) {
+      maj.classList.remove("maj-ok", "maj-ko");
+      maj.textContent = "⚠️ Statut inconnu (vérif F95 impossible)";
+      maj.classList.add("maj-ko");
+    }
+
+    // (Optionnel) hint date MAIS sans dire "à jour"
+    // const f95Ts = parseFrenchDateFR(game.updatedAt || "");
+    // const trdTs = Date.parse(game.updatedAtLocal || "");
+    // si tu veux afficher un petit "(d'après dates…)" je te le fais, mais pas de ✅.
   }
 }
 
