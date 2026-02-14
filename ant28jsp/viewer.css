@@ -1032,9 +1032,10 @@ body.mode-game .btnLike .f95-word .f95-red{
   border-color: rgba(0,200,83,0.55);
   background: rgba(0,200,83,0.10);
 }
-.majState.maj-ko{
-  border-color: rgba(255,152,0,0.55);
-  background: rgba(255,152,0,0.10);
+.maj-ko{
+  background: rgba(220, 53, 69, 0.15);
+  border: 1px solid #ff3b3b;
+  color: #ff3b3b;
 }
 
 /* Badge texte (dans la ligne de badges) */
