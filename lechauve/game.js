@@ -626,9 +626,18 @@ async function renderTranslationStatus(game) {
         maj.classList.add("maj-ok");
       } else {
         const curV = clean(j.currentVersion || "");
-        maj.textContent = curV
-          ? `🔄 Traduction non à jour — F95Zone v${curV}`
-          : "🔄 Traduction non à jour";
+        const curT = clean(j.currentTitle || "");
+      
+        if (curV) {
+          maj.textContent = `🔄 Traduction non à jour — F95 v${curV}`;
+        } else if (curT) {
+          // ✅ pas de version détectable -> on montre le titre F95 (court)
+          const shortT = curT.length > 70 ? (curT.slice(0, 70) + "…") : curT;
+          maj.textContent = `🔄 Traduction non à jour — F95: ${shortT}`;
+        } else {
+          maj.textContent = "🔄 Traduction non à jour";
+        }
+      
         maj.classList.add("maj-ko");
       }
     }
