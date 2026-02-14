@@ -582,54 +582,62 @@ function renderBadgesFromGame(display, entry, isCollectionChild) {
 }
 
 // ============================================================================
-// ✅ Traduction status (F95) + fallback local
+// ✅ Traduction status (F95)
 // ============================================================================
 async function renderTranslationStatus(game) {
-  if (!game?.url || !game?.title) return;
+  if (!game?.url) return;
+
+  const maj = document.getElementById("majState");
+  const clean = (s) => String(s || "").replace(/\s+/g, " ").trim();
+  const storedTitle = clean(game.rawTitle || game.title || "");
+  const storedVersion = clean(game.version || "");
+
+  if (maj) {
+    maj.style.display = "";
+    maj.classList.remove("maj-ok", "maj-ko");
+    maj.textContent = "⏳ Vérification F95…";
+  }
 
   try {
-    const r = await fetch(
-      `/api/f95status?url=${encodeURIComponent(game.url)}&storedTitle=${encodeURIComponent(game.title)}`,
-      { cache: "no-store" }
-    );
-    if (!r.ok) return;
+    const qs =
+      `url=${encodeURIComponent(game.url)}` +
+      `&storedTitle=${encodeURIComponent(storedTitle)}` +
+      `&storedVersion=${encodeURIComponent(storedVersion)}`;
 
+    const r = await fetch(`/api/f95status?${qs}`, { cache: "no-store" });
     const j = await r.json();
-    if (!j?.ok || !j?.currentTitle) return;
 
-    const badge = document.createElement("span");
-    badge.classList.add("badge");
+    if (!j?.ok) {
+      if (maj) {
+        maj.textContent = "⚠️ Vérif F95Zone impossible";
+        maj.classList.remove("maj-ok", "maj-ko");
+        maj.classList.add("maj-ko");
+      }
+      return;
+    }
 
-    const maj = document.getElementById("majState");
+    const up = !!j.isUpToDate;
+
     if (maj) {
-      maj.style.display = "";
       maj.classList.remove("maj-ok", "maj-ko");
-    }
 
-    if (j.isUpToDate) {
-      badge.textContent = "✅ Traduction à jour";
-      badge.classList.add("status-updated");
-      if (maj) { maj.textContent = "✅ Traduction à jour"; maj.classList.add("maj-ok"); }
-    } else {
-      badge.textContent = "🔄 Traduction non à jour";
-      badge.classList.add("status-outdated");
-      if (maj) { maj.textContent = "🔄 Traduction non à jour"; maj.classList.add("maj-ko"); }
+      if (up) {
+        maj.textContent = "✅ Traduction à jour";
+        maj.classList.add("maj-ok");
+      } else {
+        const curV = clean(j.currentVersion || "");
+        maj.textContent = curV
+          ? `🔄 Traduction non à jour — F95Zone v${curV}`
+          : "🔄 Traduction non à jour";
+        maj.classList.add("maj-ko");
+      }
     }
-
-    const wrap = $("badges");
-    if (wrap) wrap.appendChild(badge);
   } catch {
-    try {
-      const maj = document.getElementById("majState");
-      const f95Ts = parseFrenchDateFR(game.updatedAt || "");
-      const trdTs = Date.parse(game.updatedAtLocal || "");
-      if (!maj) return;
-      if (!f95Ts || !Number.isFinite(trdTs)) return;
-      maj.style.display = "";
+    if (maj) {
+      maj.textContent = "⚠️ Vérif F95Zone impossible";
       maj.classList.remove("maj-ok", "maj-ko");
-      if (trdTs >= f95Ts) { maj.textContent = "✅ Traduction à jour"; maj.classList.add("maj-ok"); }
-      else { maj.textContent = "🔄 Traduction non à jour"; maj.classList.add("maj-ko"); }
-    } catch {}
+      maj.classList.add("maj-ko");
+    }
   }
 }
 
