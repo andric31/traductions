@@ -616,7 +616,7 @@ async function renderTranslationStatus(game) {
       game.rawTitle,
       game.title,
       game.cleanTitle,
-      game.gameData && game.gameData.title ? game.gameData.title : "",
+      (game.gameData && game.gameData.title) ? game.gameData.title : "",
     ].map(cleanCmp).filter(Boolean);
 
     const upToDate = !!currentTitle && candidates.some(t => t === currentTitle);
@@ -630,10 +630,10 @@ async function renderTranslationStatus(game) {
       badge.classList.add("status-outdated");
       if (maj) { maj.textContent = "🔄 Traduction non à jour"; maj.classList.add("maj-ko"); }
     }
-}
 
     const wrap = $("badges");
     if (wrap) wrap.appendChild(badge);
+
   } catch {
     try {
       const maj = document.getElementById("majState");
