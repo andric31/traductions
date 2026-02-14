@@ -582,30 +582,60 @@ function renderBadgesFromGame(display, entry, isCollectionChild) {
 }
 
 // ============================================================================
-// ✅ Traduction status (F95) + fallback local
+// ✅ Traduction status (F95)
 // ============================================================================
 async function renderTranslationStatus(game) {
-  // OPTION 2 : pas d’API / pas de vérif F95 (plus stable)
-  // On affiche uniquement un statut *local* basé sur les infos du JSON.
+  if (!game?.url) return;
+
   const maj = document.getElementById("majState");
-  if (!maj) return;
+  if (maj) {
+    maj.style.display = "";
+    maj.classList.remove("maj-ok", "maj-ko");
+    maj.textContent = "⏳ Vérification F95…";
+  }
 
-  const ver = String(game?.version || game?.gameData?.version || "").trim();
-  const updatedAt = String(game?.updatedAt || "").trim();           // date F95 stockée dans ton JSON (peut être ancienne)
-  const updatedAtLocal = String(game?.updatedAtLocal || "").trim(); // date de ton update local (traduction)
+  const clean = (s) => String(s || "").replace(/\s+/g, " ").trim();
+  const storedTitle = clean(game.rawTitle || game.title || "");
+  const storedVersion = clean(game.version || "");
 
-  maj.style.display = "";
-  maj.classList.remove("maj-ok", "maj-ko");
-  maj.classList.add("maj-ko"); // style "avertissement" pour éviter un faux ✅
+  try {
+    const qs =
+      `url=${encodeURIComponent(game.url)}` +
+      `&storedTitle=${encodeURIComponent(storedTitle)}` +
+      `&storedVersion=${encodeURIComponent(storedVersion)}`;
 
-  const parts = [];
-  parts.push("ℹ️ Vérification F95 désactivée");
-  if (ver) parts.push(`Version listée : v${ver}`);
-  if (updatedAt) parts.push(`F95 (stocké) : ${updatedAt}`);
-  if (updatedAtLocal) parts.push(`Local : ${updatedAtLocal}`);
-  maj.textContent = parts.join(" — ");
+    const r = await fetch(`/api/f95status?${qs}`, { cache: "no-store" });
+    const j = await r.json();
+
+    if (!j?.ok) {
+      if (maj) {
+        maj.textContent = "⚠️ Vérif F95 impossible";
+        maj.classList.add("maj-ko");
+      }
+      return;
+    }
+
+    const up = !!j.isUpToDate;
+
+    if (maj) {
+      maj.classList.remove("maj-ok", "maj-ko");
+      maj.textContent = up ? "✅ Traduction à jour" : "🔄 Traduction non à jour";
+      maj.classList.add(up ? "maj-ok" : "maj-ko");
+
+      // petit détail utile (sans spam)
+      const curV = clean(j.currentVersion || "");
+      if (curV && storedVersion && curV !== storedVersion) {
+        maj.textContent += ` — F95 v${curV} (toi v${storedVersion})`;
+      }
+    }
+  } catch {
+    if (maj) {
+      maj.textContent = "⚠️ Vérif F95 impossible";
+      maj.classList.remove("maj-ok", "maj-ko");
+      maj.classList.add("maj-ko");
+    }
+  }
 }
-
 
 // ============================================================================
 // ✅ MENU ☰ (page game) — réutilise menu racine
