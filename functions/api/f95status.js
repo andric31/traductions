@@ -42,20 +42,25 @@ export async function onRequestGet({ request }) {
 
     const currentVersion = extractVersion(currentTitle);
 
-    // Compare:
-    // 1) si on a un storedVersion -> compare versions
-    // 2) sinon -> compare titres (comme viewer threads)
+    // ✅ Compare robuste :
+    // - si version stockée ET version F95 détectée -> compare version
+    // - sinon -> compare titre (comme viewer threads)
     const clean = (s) => String(s || "").replace(/\s+/g, " ").trim();
 
-    let isUpToDate = false;
-    let mode = "title";
+    const curTitle = clean(currentTitle);
+    const stTitle  = clean(storedTitle);
+    const curV     = clean(currentVersion);
+    const stV      = clean(storedVersion);
 
-    if (storedVersion) {
+    let isUpToDate = false;
+    let mode = "unknown";
+
+    if (stV && curV) {
       mode = "version";
-      isUpToDate = !!currentVersion && clean(currentVersion) === clean(storedVersion);
-    } else if (storedTitle) {
+      isUpToDate = (curV === stV);
+    } else if (stTitle && curTitle) {
       mode = "title";
-      isUpToDate = clean(currentTitle) === clean(storedTitle);
+      isUpToDate = (curTitle === stTitle);
     }
 
     return json(
@@ -77,7 +82,7 @@ export async function onRequestGet({ request }) {
 function extractVersion(title) {
   // prend le premier [vX] ou [X] si format F95
   const s = String(title || "");
-  let m = s.match(/\[\s*v\s*([0-9][^\]]*)\]/i);     // [v2.00]
+  let m = s.match(/\[\s*v\s*([0-9][^\]]*)\]/i); // [v2.00]
   if (m) return m[1].trim();
   m = s.match(/\[\s*([0-9]+(?:\.[0-9]+)+[^\]]*)\]/i); // [2.00] ou [1.2.3b]
   if (m) return m[1].trim();
