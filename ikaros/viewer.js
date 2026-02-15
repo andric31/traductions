@@ -6,23 +6,21 @@
   "use strict";
 
   // =========================
-  // Thèmes (désactivés → dark forcé)
+  // Thèmes (dark forcé)
   // =========================
   
-  // Toujours dark
   function getViewerTheme() {
     return "dark";
   }
   
-  // Ignore toute tentative d'écriture
   function setViewerTheme() {
+    // on verrouille la valeur (et on évite que l'UI réécrive autre chose)
     try { localStorage.setItem("viewerTheme", "dark"); } catch {}
   }
   
-  // Supprime totalement les thèmes CSS
   function applyViewerTheme() {
-    // aucun data-theme = viewer.css uniquement (dark)
-    document.documentElement.removeAttribute("data-theme");
+    // 🔒 force themes.css à appliquer UNIQUEMENT le sombre
+    document.documentElement.setAttribute("data-theme", "dark");
   }
 
   // =========================
