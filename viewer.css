@@ -14,46 +14,95 @@
   --name-lines: 2;
   --badges-h: 28px;
 
-  /* ✅ un peu plus compact qu’avant */
   --topbar-h: 78px;
-  --card-hover-border: rgba(255,255,255,0.22);
-  --card-hover-glow: rgba(255,255,255,0.18);
 
+  --topbar-bg: rgba(16,20,37,.9);
 
-  /* scrollbar (aligné site principal) */
+  /* scrollbar (évite le hardcode dark) */
   --scrollbar-thumb: #303a57;
   --scrollbar-track: #0b0e14;
+
+  /* ✅ NOUVEAU : variables "thémables" (évite le hardcode dark partout) */
+  --body-grad-1: #0d1018;
+  --body-grad-2: #101425;
+  --body-grad-3: #0f1117;
+
+  --title: var(--fg);
+
+  --popover-bg: rgba(20,24,38,0.98);
+  --hover-bg: rgba(255,255,255,0.06);
+
   --scrollbar-track-webkit: var(--scrollbar-track);
   --scrollbar-thumb-webkit: var(--scrollbar-thumb);
   --scrollbar-thumb-webkit-hover: #3f4b6b;
 
-  /* dit au navigateur que c'est dark (évite scrollbar blanche) */
-  color-scheme: dark;
+  --overlay-bg: rgba(0,0,0,0.55);
 
+  --thumb-bg: #1c1f2e;
+  --thumb-fallback-bg: #0f0f10;
+
+  /* éléments avec transparence */
+  --border-soft: rgba(255,255,255,0.06);
+  --top-actions-border: rgba(255,255,255,0.03);
+  --card-hover-border: rgba(255,255,255,0.22);
+  --card-hover-glow: rgba(255,255,255,0.18);
+
+  /* UI "soft" */
+  --soft-04: rgba(255,255,255,0.04);
+  --soft-05: rgba(255,255,255,0.05);
+
+  /* ✅ dit aux navigateurs que ton site est dark (sera overridé en light dans themes.css) */
+  color-scheme: dark;
 }
 
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
 
-*{box-sizing:border-box}
-html,body{height:100%}
-
-/* ✅ évite le "shift" quand la scrollbar apparaît + force scrollbar dark */
+/* ✅ empêche le "zoom" quand la scrollbar apparaît */
 html{
   background: var(--bg);
   overflow-y: scroll;
 
-  /* Firefox */
+  /* 🔥 Firefox scrollbar */
   scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
-  scrollbar-width: auto;
+  scrollbar-width: auto; /* ← largeur normale, plus premium */
 }
+
+/* Firefox peut parfois utiliser body */
 body{
+  margin:0;
+  min-height:100%;
+  font-family:system-ui,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;
+  color:var(--fg);
+  background: linear-gradient(
+    180deg,
+    var(--body-grad-1),
+    var(--body-grad-2) 30%,
+    var(--body-grad-3)
+  );
+
   scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
-body{
-  margin:0;
-  font-family:system-ui,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;
-  color:var(--fg);
-  background:linear-gradient(180deg,#0d1018,#101425 30%,#0f1117);
+/* ✅ Carte cliquable (anti violet/souligné + visited inclus) */
+a.card.card-link,
+a.card.card-link:visited,
+a.card.card-link:hover,
+a.card.card-link:active{
+  text-decoration:none;
+  color:inherit;
+  cursor:pointer;
+  display:grid; /* garde la mise en page */
+}
+
+a.card.card-link:focus-visible{
+  outline: 2px solid rgba(255,255,255,0.35);
+  outline-offset: 3px;
+}
+
+/* mini "bouton" indicatif (sans lien interne) */
+.btn-page--ghost{
+  pointer-events:none;
 }
 
 /* ---------- TOPBAR FIXE ---------- */
@@ -61,7 +110,7 @@ body{
   position:fixed;
   top:0; left:0; right:0;
   z-index:1000;
-  background:rgba(16,20,37,.9);
+  background: var(--topbar-bg);
   backdrop-filter: blur(6px);
   border-bottom:1px solid var(--border);
 }
@@ -78,7 +127,7 @@ body{
 .top-title-row h1{
   font-size:18px;
   margin:0;
-  color:#fff;
+  color: var(--title);
   white-space:nowrap;
 }
 
@@ -119,7 +168,7 @@ body{
   display:block;
   height:2px;
   border-radius:999px;
-  background:#ffffff;
+  background: var(--fg);
   opacity:0.92;
 }
 
@@ -128,7 +177,7 @@ body{
   position:fixed;
   z-index:2000;
   min-width: 220px;
-  background: rgba(20,24,38,0.98);
+  background: var(--popover-bg);
   border:1px solid var(--border);
   border-radius:12px;
   box-shadow: 0 18px 45px rgba(0,0,0,.45);
@@ -148,8 +197,8 @@ body{
   font-weight:700;
 }
 .menu-item:hover{
-  background: rgba(255,255,255,0.06);
-  border-color: rgba(255,255,255,0.06);
+  background: var(--hover-bg);
+  border-color: var(--hover-bg);
 }
 
 /* ✅ modal À propos */
@@ -157,7 +206,7 @@ body{
   position:fixed;
   inset:0;
   z-index:3000;
-  background: rgba(0,0,0,0.55);
+  background: var(--overlay-bg);
   display:flex;
   align-items:center;
   justify-content:center;
@@ -185,12 +234,12 @@ body{
   align-items:center;
   justify-content:space-between;
   padding: 12px 14px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid var(--border-soft);
   background: rgba(255,255,255,0.02);
 }
 .modal-title{
   font-weight: 900;
-  color:#fff;
+  color: var(--title);
 }
 .modal-close{
   width:32px;
@@ -224,14 +273,14 @@ body{
   display:flex;
   justify-content:flex-end;
   gap:10px;
-  border-top: 1px solid rgba(255,255,255,0.06);
+  border-top: 1px solid var(--border-soft);
 }
 .modal-btn{
   padding: 10px 14px;
   border-radius: 12px;
   border: 1px solid var(--border);
-  background: rgba(255,255,255,0.05);
-  color:#fff;
+  background: var(--soft-05);
+  color: var(--title);
   font-weight:800;
   cursor:pointer;
 }
@@ -244,9 +293,11 @@ body{
   gap:6px;
   align-items:center;
   padding:6px 12px 8px;
-  border-top:1px solid rgba(255,255,255,0.03);
+  border-top:1px solid var(--top-actions-border);
   width:100%;
+
   overflow-x:auto;
+  overflow-y:hidden;
 }
 
 /* Barre de recherche stretch */
@@ -296,7 +347,7 @@ body{
 .total-inline #countTotal{
   font-size: 15px;
   font-weight: 900;
-  color: var(--muted) !important;
+  color: var(--muted);
 }
 
 /* ----- MAIN ----- */
@@ -331,7 +382,26 @@ main{
   min-height: auto;
 }
 
-/* ✅ Surélévation au survol (comme le site principal) */
+/* ✅ Tuile entièrement cliquable : pas de violet, pas de souligné */
+a.card.card-link,
+a.card.card-link:visited,
+a.card.card-link:hover,
+a.card.card-link:active{
+  color: inherit;
+  text-decoration: none;
+}
+
+/* évite que des éléments internes réintroduisent un soulignement/couleur */
+a.card.card-link *{
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ✅ Surélévation au survol */
+.card{
+  transition: border-color .18s ease, box-shadow .18s ease, transform .12s ease, filter .12s ease;
+  will-change: transform;
+}
 .card:hover{
   border-color: var(--card-hover-border);
   box-shadow:
@@ -344,17 +414,21 @@ main{
   transform: translateY(-1px);
 }
 
+/* mini "bouton" indicatif (sans lien interne) */
+.btn-page--ghost{
+  pointer-events: none;
+}
 
 .thumb{
   width:100%;
   height:var(--thumb-h);
   object-fit:cover;
-  background:#1c1f2e;
+  background: var(--thumb-bg);
 }
 
 .thumb.is-fallback{
   object-fit:contain;
-  background:#0f0f10;
+  background: var(--thumb-fallback-bg);
 }
 
 .body{
@@ -368,7 +442,7 @@ main{
   margin:0 0 6px 0;
   font-size:1rem;
   line-height:var(--name-lh);
-  color:#fff;
+  color: var(--title);
 
   display:-webkit-box;
   -webkit-box-orient:vertical;
@@ -396,7 +470,7 @@ main{
   border-radius:999px;
   border:1px solid var(--border);
   white-space:nowrap;
-  color:#fff;
+  color: var(--fg);
 }
 
 .badges-line .badge{ line-height: 1; }
@@ -425,9 +499,27 @@ main{
 .badge.status-onhold{ background:#03A9F4; color:#000; }
 .badge.status-encours{ background:#607D8B; }
 
+.actions{
+  margin-top:auto;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+}
 
-
-
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:6px 8px;              /* ⬅ moins haut */
+  border-radius:8px;            /* ⬅ un peu plus fin */
+  background:#2e3652;
+  color:#ffffff;
+  border:1px solid #3c466a;
+  text-decoration:none;
+  font-size:13px;               /* ⬅ texte plus petit */
+  font-weight:600;              /* ⬅ moins “bold” */
+  transition:0.15s ease;
+}
 
 .btn:hover{
   background:#3b4568;
@@ -474,9 +566,208 @@ main{
 }
 .load-more-btn:hover{ filter:brightness(1.12); }
 
-.modal-body{
-  scrollbar-width: thin;                 /* Firefox */
-  scrollbar-color: #2a314b #0f1117;       /* Firefox */
+/* ===== Tags multi-sélection (bouton + popover) ===== */
+.tags-btn{
+  height:34px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--btn);
+  color:var(--fg);
+  padding:0 10px;
+  cursor:pointer;
+  white-space:nowrap;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+.tags-btn:hover{ filter:brightness(1.1); }
+
+.tags-count{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:18px;
+  height:18px;
+  padding:0 6px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background: var(--hover-bg);
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+}
+.tags-count.hidden{ display:none !important; }
+
+.tag-popover{
+  position:fixed;
+  z-index:2500;
+  width: 320px;
+  max-width: calc(100vw - 20px);
+  background: var(--popover-bg);
+  border:1px solid var(--border);
+  border-radius:12px;
+  box-shadow: 0 18px 45px rgba(0,0,0,.45);
+  overflow:hidden;
+}
+.tag-popover.hidden{ display:none !important; }
+
+.tag-popover .tag-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 10px;
+  border-bottom:1px solid var(--border-soft);
+}
+.tag-popover .tag-title{
+  font-weight:900;
+  color: var(--title);
+}
+.tag-popover .tag-clear{
+  border:1px solid var(--border);
+  background: rgba(255,255,255,0.04);
+  color: var(--fg);
+  border-radius:10px;
+  padding:6px 10px;
+  cursor:pointer;
+  font-weight:800;
+}
+.tag-popover .tag-clear:hover{ filter:brightness(1.10); }
+
+.tag-popover .tag-list{
+  max-height: 320px;
+  overflow:auto;
+  padding:6px;
+}
+
+.tag-item{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 10px;
+  border-radius:10px;
+  border:1px solid transparent;
+  background: transparent;
+  color: var(--fg);
+  cursor:pointer;
+  font-weight:700;
+  text-align:left;
+}
+.tag-item:hover{
+  background: var(--hover-bg);
+  border-color: var(--hover-bg);
+}
+
+.tag-item .tag-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+.tag-item .tag-name{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.tag-item .tag-check{
+  width:18px;
+  height:18px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background: rgba(255,255,255,0.03);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  color: transparent; /* invisible quand inactif */
+}
+
+.tag-item.active{
+  background: rgba(90,162,255,0.10);
+  border-color: rgba(90,162,255,0.25);
+}
+.tag-item.active .tag-check{
+  color: var(--fg);
+  background: rgba(90,162,255,0.18);
+  border-color: rgba(90,162,255,0.35);
+}
+
+.viewer-footer{
+  margin-top: 24px;
+  padding: 12px 0 18px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  user-select: none;
+}
+.viewer-footer strong{
+  color: var(--fg);
+  font-weight: 800;
+}
+
+/* =========================
+   ❤️ Bouton Like (icône seule)
+   ========================= */
+
+.like-btn{
+  padding: 0;
+  width: 34px;
+  height: 34px;
+
+  border-radius: 10px;
+  font-size: 18px;
+  line-height: 1;
+
+  background: var(--soft-05);
+  border: 1px solid var(--border);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #9aa0b4; /* gris */
+  cursor: pointer;
+
+  transition: transform .1s ease, filter .15s ease;
+}
+
+.like-btn:hover{
+  filter: brightness(1.15);
+}
+
+.like-btn:active{
+  transform: scale(0.95);
+}
+
+/* =========================
+   Scrollbar PREMIUM
+   ========================= */
+
+/* largeur verticale */
+::-webkit-scrollbar{
+  width: 14px;
+}
+
+/* horizontale un peu plus fine */
+::-webkit-scrollbar:horizontal{
+  height: 10px;
+}
+
+::-webkit-scrollbar-track{
+  background: var(--scrollbar-track-webkit);
+}
+
+::-webkit-scrollbar-thumb{
+  background: var(--scrollbar-thumb-webkit);
+  border-radius: 999px;
+
+  /* crée l'effet flottant sans bouffer la largeur */
+  border: 3px solid var(--scrollbar-track-webkit);
+}
+
+::-webkit-scrollbar-thumb:hover{
+  background: var(--scrollbar-thumb-webkit-hover);
 }
 
 /* =========================
@@ -484,10 +775,30 @@ main{
    ========================= */
 
 /* Chrome / Edge / Brave */
-.modal-body.modal-body.modal-body.modal-body/* Firefox */
+.modal-body::-webkit-scrollbar{
+  width: 16px;
+}
+
+.modal-body::-webkit-scrollbar-track{
+  background: var(--bg);
+}
+
+.modal-body::-webkit-scrollbar-thumb{
+  background: var(--scrollbar-thumb-webkit);
+  border-radius: 999px;
+
+  /* thumb plus fin que le rail */
+  border: 4px solid var(--bg);
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover{
+  background: var(--scrollbar-thumb-webkit-hover);
+}
+
+/* Firefox */
 .modal-body{
   scrollbar-width: auto;               /* ⬅ plus large que thin */
-  scrollbar-color: #2a314b #0f1117;
+  scrollbar-color: var(--scrollbar-thumb) var(--bg);
 }
 
 /* =========================
@@ -502,7 +813,7 @@ main{
   border: 1px solid rgba(255,255,255,.15);
   border-radius: 12px;
   overflow: hidden;
-  background: rgba(255,255,255,.04);
+  background: var(--soft-04);
 }
 
 .viewer-annonce__bar{
@@ -510,7 +821,7 @@ main{
   justify-content:space-between;
   align-items:center;
   padding:4px 8px; /* ⬅️ hauteur de la barre */
-  background: rgba(255,255,255,.06);
+  background: var(--hover-bg);
 }
 
 .viewer-annonce__title{
@@ -522,7 +833,7 @@ main{
   padding:6px 10px; /* bouton */
   border-radius:10px;
   border: 1px solid rgba(255,255,255,.18);
-  background: rgba(255,255,255,.06);
+  background: var(--hover-bg);
   color: inherit;
 }
 
@@ -641,297 +952,79 @@ main{
   border-color: #4752C4;
 }
 
-/* 🌐 F95Zone — noir / rouge */
+/* 🌐 F95Zone — noir / rouge (FIX spacing) */
 .btn-f95{
   background: #0b0b0b;
   border-color: #b71c1c;
   color: #ffffff;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 0; /* 🔥 IMPORTANT : jamais de gap sur le bouton */
 }
+
 .btn-f95:hover{
   background: #1a1a1a;
   border-color: #d32f2f;
 }
 
-/* 🔒 Supprimer l’espace interne UNIQUEMENT pour F95 */
-/* Micro espace contrôlé entre F95 et Zone */
-#btnF95{
-  gap: 0 !important;
+/* ✅ Logo F95Zone compact */
+.f95-logo{
+  display:inline-flex;
+  align-items:center;
+  gap: 2px;              /* ← Espace entre F95 et Zone */
+  white-space:nowrap;
 }
 
-#btnF95 .f95-red{
-  margin-left: 2px;   /* 🔥 parfait */
+/* supprime tout espace parasite */
+.f95-logo span{
+  margin:0 !important;
+  padding:0 !important;
 }
 
-/* =========================
-   Page jeu : boutons (MEGA / Archives)
-   ========================= */
-
+/* 📥 MEGA — rouge (utilisable aussi pour les liens extra) */
+.btnMega,
 .btn-mega{
-  background: #00c853;
-  border-color: #00c853;
-  color: #000;
-  font-weight: 900;
-}
-.btn-mega:hover{ filter: brightness(1.06); }
-
-.btn-archive{
-  background: rgba(255,255,255,0.06);
-  border-color: rgba(255,255,255,0.18);
-  color: rgba(255,255,255,0.90);
-}
-.btn-archive:hover{ filter: brightness(1.08); }
-
-/* ✅ F95 bicolore — utilisable aussi sur les boutons "extra" */
-.btn-f95{ gap: 0; }
-.btn-f95 .f95-white{
+  background: linear-gradient(180deg,#b71c1c 0%,#8e0e0e 100%);
+  border: 1px solid rgba(255,255,255,.04);
   color:#ffffff;
-  font-weight:800;
+  box-shadow: 0 8px 18px rgba(0,0,0,.40);
+  transform:none;
 }
-.btn-f95 .f95-red{
-  color:#8b2d2d;
-  font-weight:800;
-  margin-left: 0;
-}
-
-
-/* =========================
-   Extra links (entre MEGA et Archives)
-   - Couleur auto selon host (facile à étendre)
-   - MEGA + F95 gardent EXACTEMENT leurs styles
-   ========================= */
-
-/* base (sans écraser MEGA/F95) */
-#extraLinksRow .btnLike{
-  position: relative;
-  overflow: hidden;
-}
-
-/* style "premium" + glow UNIQUEMENT pour les autres hosts */
-#extraLinksRow .btnLike:not(.btn-mega):not(.btn-f95){
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(90,162,255,0.28);
-
-  box-shadow:
-    0 10px 26px rgba(0,0,0,.55),
-    0 0 0 1px rgba(90,162,255,0.10);
-
-  transition:
-    transform .14s ease,
-    box-shadow .18s ease,
-    border-color .18s ease,
-    filter .14s ease;
-}
-
-/* reflet interne */
-#extraLinksRow .btnLike:not(.btn-mega):not(.btn-f95)::before{
-  content:"";
-  position:absolute;
-  inset:-2px;
-  pointer-events:none;
-  opacity: 0;
-  transition: opacity .18s ease;
-  background:
-    radial-gradient(120% 80% at 50% -20%,
-      rgba(255,255,255,0.18) 0%,
-      rgba(255,255,255,0.06) 35%,
-      rgba(0,0,0,0.00) 70%
-    );
-}
-
-#extraLinksRow .btnLike:not(.btn-mega):not(.btn-f95):hover{
-  border-color: rgba(90,162,255,0.65);
-  box-shadow:
-    0 16px 44px rgba(0,0,0,.70),
-    0 0 0 1px rgba(90,162,255,0.18),
-    0 0 22px rgba(90,162,255,0.45);
-  transform: translateY(-2px);
-}
-
-#extraLinksRow .btnLike:not(.btn-mega):not(.btn-f95):hover::before{
-  opacity: 1;
-}
-
-#extraLinksRow .btnLike:not(.btn-mega):not(.btn-f95):active{
-  transform: translateY(0px) scale(0.98);
-  box-shadow:
-    0 10px 26px rgba(0,0,0,.60),
-    0 0 0 1px rgba(90,162,255,0.14),
-    0 0 14px rgba(90,162,255,0.35);
-}
-
-/* ===== F95Zone bicolore : espace contrôlé (principal + extra) ===== */
-body.mode-game .btnLike .f95-logo,
-body.mode-game .btnLike .f95-word{
-  display: inline-flex;
-  align-items: baseline;
-  gap: 2px;              /* ✅ espace entre F95 et Zone (mets 1px si tu veux plus serré) */
-  white-space: nowrap;
-}
-
-/* ✅ pas de marge parasite (on utilise uniquement gap) */
-body.mode-game .btnLike .f95-logo .f95-white,
-body.mode-game .btnLike .f95-logo .f95-red,
-body.mode-game .btnLike .f95-word .f95-white,
-body.mode-game .btnLike .f95-word .f95-red{
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-/* ✅ même rendu si le body n'a pas .mode-game (site secondaire) */
-.btnLike .f95-logo,
-.btnLike .f95-word{
-  display: inline-flex;
-  align-items: baseline;
-  gap: 2px;              /* ✅ espace entre F95 et Zone */
-  white-space: nowrap;
-}
-
-.btnLike .f95-logo .f95-white,
-.btnLike .f95-logo .f95-red,
-.btnLike .f95-word .f95-white,
-.btnLike .f95-word .f95-red{
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-/* ===== EXTRA LINKS : F95 EXACT même couleur/effet que le bouton principal ===== */
-#extraLinksRow .btnLike.btn-f95{
-  position: relative;
-  background: linear-gradient(180deg, #222222 0%, #161616 100%);
+.btnMega:hover,
+.btn-mega:hover{
+  background: linear-gradient(180deg,#c62828 0%,#9f1b1b 100%);
   border-color: rgba(255,255,255,.04);
+  transform:none;
+}
+
+/* ☁️ Google Drive */
+.btn-host-drive{
+  background: linear-gradient(180deg,#1a73e8 0%,#1558b0 100%);
+  border: 1px solid rgba(255,255,255,.04);
   color:#ffffff;
-  box-shadow: 0 8px 18px rgba(0,0,0,.35);
-  overflow: hidden;
-  transform: none;
 }
+.btn-host-drive:hover{ filter: brightness(1.08); }
 
-#extraLinksRow .btnLike.btn-f95:hover{
-  background: linear-gradient(180deg, #1a1a1a 0%, #111111 100%);
-  border-color: rgba(255,255,255,.04);
-  transform: none;
+/* 🗄️ GoFile */
+.btn-host-gofile{
+  background: linear-gradient(180deg,#2e7d32 0%,#1b5e20 100%);
+  border: 1px solid rgba(255,255,255,.04);
+  color:#ffffff;
 }
+.btn-host-gofile:hover{ filter: brightness(1.08); }
 
-/* 🔵 Google Drive */
-#extraLinksRow .btnLike.btn-host-drive{
-  background: linear-gradient(180deg, #4285F4 0%, #2a6adf 100%);
-  border: 1px solid rgba(255,255,255,.06);
-  color:#fff;
-}
-#extraLinksRow .btnLike.btn-host-drive:hover{
-  background: linear-gradient(180deg, #4c8df6 0%, #2f73ea 100%);
-}
-
-/* 🟠 GOFILE */
-#extraLinksRow .btnLike.btn-host-gofile{
-  background: linear-gradient(180deg, #ff9800 0%, #e68900 100%);
-  border: 1px solid rgba(255,255,255,.06);
-  color:#000;
-  font-weight:800;
-}
-#extraLinksRow .btnLike.btn-host-gofile:hover{
-  background: linear-gradient(180deg, #ffa726 0%, #fb8c00 100%);
-}
-
-/* ⚪ default (si tu ajoutes d'autres hosts) */
-#extraLinksRow .btnLike.btn-host-default{
+/* 🔗 Autres hosts (neutre) */
+.btn-host-default{
   background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.14);
-  color:#fff;
+  border: 1px solid rgba(255,255,255,.16);
+  color:#ffffff;
 }
+.btn-host-default:hover{ filter: brightness(1.08); }
 
 
-/* =========================
-   Page jeu : état de mise à jour
-   ========================= */
-
-.majState{
-  margin: 2px 0 10px;
-  padding: 8px 10px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.14);
-  background: rgba(255,255,255,0.04);
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: .1px;
-}
-.majState.maj-ok{
-  border-color: rgba(0,200,83,0.55);
-  background: rgba(0,200,83,0.10);
-}
-.maj-ko{
-  background: rgba(220, 53, 69, 0.15);
-  border: 1px solid #ff3b3b;
-  color: #ff3b3b;
-}
-
-/* Badge texte (dans la ligne de badges) */
-.badge.status-updated{
-  background: rgba(0,200,83,0.22);
-  border: 1px solid rgba(0,200,83,0.42);
-}
-.badge.status-outdated{
-  background: rgba(255,152,0,0.22);
-  border: 1px solid rgba(255,152,0,0.42);
-}
-
-
-/* =========================
-   Page jeu : tags (encadrés)
-   ========================= */
-.tagsBox{ margin-top: 12px; padding: 12px; }
-.tagsRow{ display:flex; flex-wrap:wrap; gap:8px; }
-.tagPill{
-  border: 1px solid var(--border);
-  background: rgba(255,255,255,0.04);
-  color:#fff;
-  border-radius: 999px;
-  font-size: 12px;
-  padding: 6px 10px;
-  user-select:none;
-}
-
-/* =========================
-   Page jeu : notation (étoiles)
-   ========================= */
-
-.ratingStar,
-.ratingCancel{
-  width: 42px;
-  height: 36px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.16);
-  background: rgba(255,255,255,0.05);
-  color: #fff;
-  cursor: pointer;
-  font-size: 20px;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  user-select: none;
-}
-.ratingStar:hover,
-.ratingCancel:hover{ filter: brightness(1.12); }
-.ratingStar:active,
-.ratingCancel:active{ transform: translateY(1px); }
-
-
-/* =========================
-   Footer stats (identique viewer principal)
-   ========================= */
-.viewer-footer{
-  margin-top: 24px;
-  padding: 12px 0 18px;
-  width: 100%;
-  text-align: center;
-  font-size: 13px;
-  color: var(--muted);
-  user-select: none;
-}
-.viewer-footer strong{
-  color: var(--fg);
-  font-weight: 800;
-}
 /* ===== AGE GATE ===== */
 #age-gate {
   position: fixed;
@@ -985,636 +1078,17 @@ body.age-gate-active footer {
   user-select: none;
 }
 
-/* ===== Boutons page jeu (EXACT main CSS) ===== */
-body.mode-game .btnRow{
-      display:flex;
-      gap:10px;
-      justify-content:center;
-      flex-wrap:wrap;
-      margin-top: 16px;
-    }
-
-body.mode-game .btnMainRow{
-      display:flex;
-      justify-content:center;
-      margin-top: 12px;
-    }
-
-body.mode-game .btnLike{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      padding: 10px 14px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.05);
-      color:#fff;
-      text-decoration:none;
-      font-weight: 700;
-      cursor:pointer;
-      user-select:none;
-    }
-
-body.mode-game .btnLike:hover{ filter: brightness(1.08); }
-
-body.mode-game #btnDiscord.btn-discord{
-      background:#5865F2;
-      border-color:#5865F2;
-      color:#fff;
-    }
-
-body.mode-game #btnDiscord.btn-discord:hover{
-      background:#4752C4;
-      border-color:#4752C4;
-    }
-
-body.mode-game /* Texte F95Zone bicolore (logo-like) */
-    #btnF95 .f95-white{
-      color:#ffffff;
-      font-weight:800;
-    }
-
-body.mode-game #btnF95 .f95-red{
-      color:#8b2d2d;
-      font-weight:800;
-    }
-
-body.mode-game /* Style bouton (comme avant) */
-    #btnF95.btn-f95{
-      position: relative;
-      background: linear-gradient(180deg, #222222 0%, #161616 100%);
-      border-color: rgba(255,255,255,.04);
-      color:#ffffff;
-      box-shadow: 0 8px 18px rgba(0,0,0,.35);
-      overflow: hidden;
-      transform: none;
-    }
-
-body.mode-game /* Assure que le texte reste au-dessus */
-    #btnF95.btn-f95 span{
-      position: relative;
-      z-index: 1;
-    }
-
-body.mode-game /* ✅ SUPPRIME la languette rouge */
-    #btnF95.btn-f95::before{
-      content: none !important;
-      display: none !important;
-    }
-
-body.mode-game /* Hover (comme avant) */
-    #btnF95.btn-f95:hover{
-      background: linear-gradient(180deg, #1a1a1a 0%, #111111 100%);
-      border-color: rgba(255,255,255,.04);
-      transform: none;
-    }
-
-body.mode-game #btnMega{
-      background: linear-gradient(
-        180deg,
-        #b71c1c 0%,
-        #8e0e0e 100%
-      );
-      border: 1px solid rgba(255,255,255,.04);
-      color:#ffffff;
-      box-shadow: 0 8px 18px rgba(0,0,0,.40);
-      transform: none;
-    }
-
-body.mode-game /* Hover : léger éclaircissement, body.mode-game sans mouvement */
-    #btnMega:hover{
-      background: linear-gradient(
-        180deg,
-        #c62828 0%,
-        #9f1b1b 100%
-      );
-      border-color: rgba(255,255,255,.04);
-      transform: none;
-    }
-
-/* ===== Viewer buttons (restore) ===== */
-.actions{
-  margin-top:auto;
-  display:flex;
-  flex-direction:column;
-  align-items:stretch;
-}
-
-.btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:6px 8px;              /* ⬅ moins haut */
-  border-radius:8px;            /* ⬅ un peu plus fin */
-  background:#2e3652;
-  color:#ffffff;
-  border:1px solid #3c466a;
-  text-decoration:none;
-  font-size:13px;               /* ⬅ texte plus petit */
-  font-weight:600;              /* ⬅ moins “bold” */
-  transition:0.15s ease;
-}
-
-.btn:hover{
-  background:#3b4568;
-  border-color:#4d5a84;
-  filter:brightness(1.05);      /* ⬅ hover plus doux */
-}
-
-.btn.btn-page{
-  width:100%;
-  padding:6px 8px;              /* cohérent */
-}
-
-.btn[aria-disabled="true"]{ opacity:.6; pointer-events:none }
-
-.btn:hover{ filter:brightness(1.07) }
-
-/* =========================
-   Boutons liens externes
-   ========================= */
-
-/* 💬 Discord — bleu Discord */
-.btn-discord{
-  background: #5865F2;
-  border-color: #5865F2;
-  color: #fff;
-}
-
-.btn-discord:hover{
-  background: #4752C4;
-  border-color: #4752C4;
-}
-
-/* 🌐 F95Zone — noir / rouge */
-.btn-f95{
-  background: #0b0b0b;
-  border-color: #b71c1c;
-  color: #ffffff;
-}
-
-.btn-f95:hover{
-  background: #1a1a1a;
-  border-color: #d32f2f;
-}
-
-/* ===== Rating spacing ===== */
-body.mode-game #ratingBox{ padding-top:14px; }
-body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12px; }
-
-/* ===== Topbar hamburger ===== */
-.menuBtn{
-  width:34px;
-  height:34px;
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,0.12);
-  background:rgba(255,255,255,0.06);
-  display:inline-flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  gap:4px;
-  margin-right:10px;
-  cursor:pointer;
-}
-.menuBtn:hover{ background:rgba(255,255,255,0.10); }
-.menuBtn .line{
-  width:16px;
-  height:2px;
-  background:rgba(255,255,255,0.85);
-  border-radius:2px;
-  display:block;
-}
-.top-title-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.title{
-  font-size: 22px;
-  line-height: 1.25;
-  margin: 12px 0 10px;
-}
-
-.infoText{
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--muted);   /* effet texte secondaire */
-}
-
-/* ⭐ Notation (même thème que andric31-traductions.pages.dev) */
-.ratingStar,
-.ratingCancel{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-
-  width: 40px;
-  height: 34px;
-
-  background: rgba(255,255,255,0.035);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-
-  cursor: pointer;
-  user-select: none;
-
-  font-size: 26px;
-  line-height: 1;
-  color: #ffd36b;
-
-  opacity: 0.7;
-
-  transition:
-    opacity 220ms cubic-bezier(.4,0,.2,1),
-    transform 220ms cubic-bezier(.4,0,.2,1),
-    filter 220ms cubic-bezier(.4,0,.2,1);
-}
-
-.ratingStar:hover,
-.ratingCancel:hover,
-.ratingStar:focus-visible,
-.ratingCancel:focus-visible{
-  opacity: 0.92;
-  filter: brightness(1.04);
-  transform: scale(1.02);
-}
-
-.ratingCancel{
-  font-size: 16px;
-  color: #fff;
-  opacity: 0.75;
-}
-
-.ratingCancel:hover{
-  color: #ff9a9a;
-  opacity: 0.95;
-}
-
-/* (optionnel) évite que ça passe à la ligne */
-#ratingChoices{ flex-wrap: nowrap; }
-
-/* ✨ Fade doux du texte de feedback */
-#ratingMsg{
-  opacity: 0.82;
-  transition: opacity 220ms cubic-bezier(.4,0,.2,1);
-  will-change: opacity;
-}
-@keyframes ratingMsgFade {
-  from { opacity: 0.35; }
-  to   { opacity: 0.82; }
-}
-#ratingMsg.msgFade{
-  animation: ratingMsgFade 520ms cubic-bezier(.4,0,.2,1);
-}
-
-.ratingStar{
-  transition: 
-    transform .15s ease,
-    filter .15s ease;
-}
-
-.ratingStar:hover{
-  filter: brightness(1.2);
-  transform: scale(1.08);
-}
-
-/* ✅ PATCH MINIMUM — étoiles premium (sans casser le reste) */
-.ratingStar,
-.ratingCancel{
-  transition:
-    opacity 220ms cubic-bezier(.4,0,.2,1),
-    transform 180ms cubic-bezier(.4,0,.2,1),
-    filter 220ms cubic-bezier(.4,0,.2,1);
-  opacity: 0.70;
-}
-
-/* ✅ NOTATION — fond sombre FIXE (comme stats / téléchargements) + reflet (sans surélévation) */
-#ratingBox{
-  position: relative;
-
-  background: rgba(0,0,0,.15) !important;
-  border: 1px solid rgba(255,255,255,.18) !important;
+.descInnerBox{
+  margin-top: 10px;
+  padding: 10px 12px;
   border-radius: 12px;
-
-  /* relief fixe */
+  border: 1px solid rgba(255,255,255,0.12);
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.05) 0%,
+    rgba(0,0,0,0.16) 100%
+  );
   box-shadow:
-    0 8px 22px rgba(0,0,0,0.45),
-    box-shadow: 0 8px 22px rgba(0,0,0,0.45) !important;
-
-  /* ✅ pas de translate / surélévation */
-  transform: none !important;
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    0 8px 18px rgba(0,0,0,0.22);
 }
-
-/* ✅ contenu au-dessus du reflet */
-#ratingBox > *{
-  position: relative;
-  z-index: 1;
-}
-
-/* ✅ hover léger MAIS fixe (pas de surélévation) */
-#ratingBox:hover{
-  border-color: rgba(255,255,255,.28) !important;
-  transform: none !important;
-}
-
-/* Doré seulement sur les étoiles */
-.ratingStar{ color:#ffd36b; }
-
-/* Hover léger */
-.ratingStar:hover,
-.ratingCancel:hover,
-.ratingStar:focus-visible,
-.ratingCancel:focus-visible{
-  opacity: 0.92;
-  filter: brightness(1.10);
-  transform: scale(1.06);
-}
-
-/* Clic = petit “press” */
-.ratingStar:active,
-.ratingCancel:active{
-  transform: scale(0.96);
-}
-
-/* ✅ Dégradé interne + vrai relief pour ℹ️ Informations */
-#notesBox{
-  position: relative;
-  overflow: hidden;
-
-  border-color: rgba(255,255,255,0.18);
-
-  /* relief externe + micro lumière interne */
-  box-shadow:
-    0 10px 28px rgba(0,0,0,0.45),
-    inset 0 1px 0 rgba(255,255,255,0.06);
-}
-
-/* couche visuelle interne (plus premium) */
-#notesBox::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-
-  background:
-    radial-gradient(
-      120% 90% at 50% -20%,
-      rgba(255,255,255,0.10) 0%,
-      rgba(255,255,255,0.03) 40%,
-      rgba(0,0,0,0.00) 65%
-    ),
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,0.06) 0%,
-      rgba(0,0,0,0.28) 100%
-    );
-}
-
-/* texte au-dessus */
-#notesBox > *{
-  position: relative;
-  z-index: 1;
-}
-
-/* spacing propre */
-#notesBox h3{
-  margin: 0 0 6px 0;
-}
-
-/* hover doux et moderne */
-#notesBox:hover{
-  border-color: rgba(90,162,255,0.32);
-
-  box-shadow:
-    0 16px 44px rgba(0,0,0,0.60),
-    0 0 0 1px rgba(90,162,255,0.10),
-    inset 0 1px 0 rgba(255,255,255,0.07);
-
-  transform: translateY(-2px);
-  transition: all .18s ease;
-}
-
-/* ===== Effet de surélévation (tags + résumé) ===== */
-
-.tagsBox,
-.game-block{
-  transition: transform .16s ease, box-shadow .16s ease;
-  box-shadow: 0 8px 22px rgba(0,0,0,0.45);
-}
-
-.tagsBox:hover,
-.game-block:hover{
-  transform: translateY(-3px);
-  box-shadow: 0 18px 46px rgba(0,0,0,0.65);
-}
-
-/* ===== Effet de surélévation (Informations) ===== */
-
-#notesBox{
-  box-shadow: 0 8px 22px rgba(0,0,0,0.45);
-  transition: transform .16s ease, box-shadow .16s ease;
-}
-
-#notesBox:hover{
-  transform: translateY(-3px);
-  box-shadow: 0 18px 46px rgba(0,0,0,0.65);
-}
-
-/* =========================================================
-   ✅ PATCH : même fond EXACT pour Notation + Stats (bas)
-   ========================================================= */
-
-/* même “carte sombre premium” pour les 2 */
-#ratingBox,
-#statsOut,
-.statsOut{
-  position: relative;
-
-  /* ✅ même fond */
-  background: rgba(0,0,0,.15) !important;
-
-  /* ✅ même bordure */
-  border: 1px solid rgba(255,255,255,.18) !important;
-  border-radius: 12px;
-
-  /* ✅ même relief */
-  box-shadow:
-    0 8px 22px rgba(0,0,0,0.45) !important;
-
-  transform: none !important;
-}
-
-/* Base un poil plus compact (optionnel) */
-body{ font-size: 14px; }
-
-/* Stats du bas (Vues / Téléchargements / J'aime) */
-#statsOut,
-.statsOut{
-  font-size: 12px;
-  color: var(--muted);
-}
-#statsOut strong,
-.statsOut strong{
-  font-size: 13px;
-  color: var(--fg);
-  font-weight: 800;
-}
-
-/* Texte “secondaire” (notes / descriptions / infos) */
-.infoText,
-.infoTextMuted,
-#notesText,
-#ratingMsg,
-.majState{
-  font-size: 13px;
-  line-height: 1.45;
-  color: var(--muted);
-}
-
-/* Titres des encadrés (Notation / Infos / Collection / Série) */
-.game-block h3,
-#notesBox h3{
-  font-size: 13px;
-  font-weight: 800;
-}
-
-/* Titre principal du jeu (si tu le veux un peu moins gros) */
-.title{
-  font-size: 20px;
-  line-height: 1.25;
-}
-
-/* =========================================================
-   ✅ PATCH : agrandir UNIQUEMENT les boutons page jeu
-   (Discord / F95 / MEGA / Archives / Extra)
-   ========================================================= */
-
-/* IMPORTANT: on exclut .like-btn (le coeur) si jamais il partage des classes */
-body.mode-game .btnLike:not(.like-btn){
-  font-size: 15px !important;
-  font-weight: 800 !important;
-  padding: 11px 16px !important;
-  min-height: 40px !important;
-  border-radius: 12px !important;
-  gap: 8px !important;
-}
-
-/* Optionnel: si tu veux que les boutons extra prennent exactement la même taille aussi */
-body.mode-game #extraLinksRow .btnLike:not(.like-btn){
-  font-size: 15px !important;
-  font-weight: 800 !important;
-  padding: 11px 16px !important;
-  min-height: 40px !important;
-  border-radius: 12px !important;
-}
-/* ✅ Tuile entièrement cliquable (comme le site principal) */
-a.card.card-link,
-a.card.card-link:visited,
-a.card.card-link:hover,
-a.card.card-link:active{
-  text-decoration:none;
-  color:inherit;
-  cursor:pointer;
-  display:grid; /* garde la mise en page */
-}
-
-a.card.card-link *{
-  text-decoration:none;
-  color:inherit;
-}
-
-a.card.card-link:focus-visible{
-  outline: 2px solid rgba(255,255,255,0.35);
-  outline-offset: 3px;
-}
-
-
-/* =========================
-   Scrollbar (alignée site principal)
-   ========================= */
-
-/* largeur verticale */
-::-webkit-scrollbar{
-  width: 14px;
-}
-
-/* horizontale un peu plus fine (topbar overflow-x) */
-::-webkit-scrollbar:horizontal{
-  height: 10px;
-}
-
-::-webkit-scrollbar-track{
-  background: var(--scrollbar-track-webkit);
-}
-
-::-webkit-scrollbar-thumb{
-  background: var(--scrollbar-thumb-webkit);
-  border-radius: 999px;
-  border: 3px solid var(--scrollbar-track-webkit);
-}
-
-::-webkit-scrollbar-thumb:hover{
-  background: var(--scrollbar-thumb-webkit-hover);
-}
-
-/* Modales: scrollbar un peu plus large */
-.modal-body::-webkit-scrollbar{
-  width: 16px;
-}
-.modal-body::-webkit-scrollbar-track{
-  background: var(--bg);
-}
-.modal-body::-webkit-scrollbar-thumb{
-  background: var(--scrollbar-thumb-webkit);
-  border-radius: 999px;
-  border: 4px solid var(--bg);
-}
-.modal-body::-webkit-scrollbar-thumb:hover{
-  background: var(--scrollbar-thumb-webkit-hover);
-}
-.modal-body{
-  scrollbar-width: auto;
-  scrollbar-color: var(--scrollbar-thumb) var(--bg);
-}
-
-
-
-/* ✅ Total en haut (même rendu que le site principal) */
-.top-title-tools .total-inline{
-  color: var(--muted);
-}
-.top-title-tools .total-inline #countTotal{
-  color: var(--fg);
-}
-
-
-
-/* ✅ Anti soulignement / anti violet (sécurité totale) */
-a.card.card-link,
-a.card.card-link:visited,
-a.card.card-link:hover,
-a.card.card-link:active{
-  color: inherit !important;
-  text-decoration: none !important;
-}
-a.card.card-link *{
-  color: inherit !important;
-  text-decoration: none !important;
-}
-a.card.card-link .name{
-  text-decoration: none !important;
-}
-
-
-
-/* ✅ évite que le dernier bouton (Rafraîchir) parte "trop à droite" */
-.top-actions > *{
-  flex: 0 0 auto;
-}
-.search-wrap{
-  flex: 1 1 420px;
-}
-
