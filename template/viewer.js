@@ -1,6 +1,12 @@
 // viewer.js — Vignettes + filtres + tri + affichage progressif + stats
 // Universel multi-traducteurs : détecte automatiquement le dossier (slug) dans l'URL.
 // ✅ UID ONLY pour les stats (aligné sur game.js)
+//
+// ✅ FIX THEME (IMPORTANT) :
+// - Ne force PLUS le thème au chargement quand "auto" (pour rester identique au site principal)
+// - Ne supprime PAS data-theme quand "auto" (sinon ça casse les couleurs si le site principal le pose)
+// - Si l'utilisateur choisit explicitement un thème ≠ auto, on applique data-theme.
+// - Si l'utilisateur repasse en "auto", on retire data-theme (retour au comportement CSS par défaut).
 
 (() => {
   "use strict";
@@ -8,26 +14,42 @@
   // =========================
   // Thèmes (themes.css)
   // =========================
-  function getViewerTheme() {
+  function getViewerThemePref() {
     try { return (localStorage.getItem("viewerTheme") || "auto").trim() || "auto"; }
     catch { return "auto"; }
   }
 
-  function setViewerTheme(v) {
+  function setViewerThemePref(v) {
     try { localStorage.setItem("viewerTheme", String(v || "auto")); } catch {}
   }
 
-  function applyViewerTheme(v) {
+  function getEffectiveTheme() {
+    // Si le document a déjà un thème (site principal / autre script), on le respecte
+    const cur = (document.documentElement.getAttribute("data-theme") || "").trim();
+    if (cur) return cur;
+    // sinon on utilise la pref (auto par défaut)
+    return getViewerThemePref();
+  }
+
+  function applyViewerTheme(v, { fromUser = false } = {}) {
     const t = (v || "auto").toString().trim() || "auto";
     const root = document.documentElement;
-    root.removeAttribute("data-theme");
-    if (t !== "auto") root.setAttribute("data-theme", t);
+
+    if (t === "auto") {
+      // ✅ comportement identique au site principal :
+      // - au chargement (fromUser=false) : NE TOUCHE PAS au data-theme existant
+      // - si l'utilisateur choisit "auto" (fromUser=true) : on retire pour revenir au défaut
+      if (fromUser) root.removeAttribute("data-theme");
+      return;
+    }
+
+    root.setAttribute("data-theme", t);
   }
 
   // =========================
   // ☰ Menu (popover) — lien vers l’accueil général
   // (utilisé par game.js via window.ViewerMenu.init())
-  
+  // =========================
 
   // =========================
   // ✅ Détection universelle SLUG + chemins
@@ -44,7 +66,6 @@
   const SLUG = detectSlug();
   const APP_PATH = SLUG ? `/${SLUG}/` : `/`;
   const DEFAULT_URL = SLUG ? `/f95list_${SLUG}.json` : `/f95list.json`;
-
 
   // =========================
   // ☰ Menu : items communs (le noyau est dans viewer.menu.js)
@@ -83,19 +104,15 @@
     const refreshBtn = document.getElementById("refresh");
     if (!host || !mini) return;
 
-    // évite de refaire 50 fois si init() relance
     if (host.dataset.moved === "1") {
-      // mais on sécurise quand même refresh
       if (refreshBtn && actions && refreshBtn.parentElement !== actions) actions.appendChild(refreshBtn);
       return;
     }
     host.dataset.moved = "1";
 
-    // on déplace tout ce que contient .top-mini sauf #refresh
     const toMove = [...mini.children].filter(el => el && el.id !== "refresh");
     toMove.forEach(el => host.appendChild(el));
 
-    // si refresh se trouvait dans .top-mini ou ailleurs, on le remet en bas
     if (refreshBtn && actions && refreshBtn.parentElement !== actions) {
       actions.appendChild(refreshBtn);
     }
@@ -103,7 +120,7 @@
 
   // =========================
   // 🔞 Age gate (intégré ici)
-  
+  // =========================
 
   // =========================
   // ✅ URL page jeu (id central + support collection child)
@@ -800,7 +817,6 @@
       const imgSrc = (g.image || "").trim() || "/favicon.png";
       const pageHref = buildGameUrl(g.__raw || g);
 
-      // ✅ Tuile entièrement cliquable (comme le site principal)
       card.href = pageHref;
       card.target = "_blank";
       card.rel = "noopener";
@@ -938,18 +954,25 @@
     $("#gridEmpty")?.classList.add("hidden");
 
     try {
-      // ✅ thème (persistant)
+      // ✅ thème (persistant) — FIX : ne force pas au chargement si "auto"
       const themeSel = document.getElementById("theme");
-      const themeVal = getViewerTheme();
-      applyViewerTheme(themeVal);
+      const effective = getEffectiveTheme();        // (data-theme existant OU pref)
+      const pref = getViewerThemePref();            // (auto par défaut)
+
+      // On n'applique que si ce n'est pas "auto" (et uniquement depuis la pref)
+      // => évite de casser le thème du site principal
+      applyViewerTheme(pref, { fromUser: false });
+
       if (themeSel) {
-        themeSel.value = themeVal;
+        // On affiche le thème réellement actif si data-theme existe, sinon la pref (auto)
+        themeSel.value = (document.documentElement.getAttribute("data-theme") || "").trim() || pref || "auto";
+
         if (themeSel.dataset.bound !== "1") {
           themeSel.dataset.bound = "1";
           themeSel.addEventListener("change", (e) => {
             const v = (e.target?.value || "auto").trim() || "auto";
-            setViewerTheme(v);
-            applyViewerTheme(v);
+            setViewerThemePref(v);
+            applyViewerTheme(v, { fromUser: true });
           });
         }
       }
@@ -994,3 +1017,4 @@
 
   init();
 })();
+
