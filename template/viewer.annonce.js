@@ -1,11 +1,12 @@
 // viewer.annonce.js — Bandeau annonce au-dessus des tuiles (minimisable)
 // Dépend uniquement de annonce.html (contenu)
-// ✅ Reload (F5) => force déplié
-// ✅ Réouverture plus tard => respecte l'état réduit (localStorage)
+// Fonctionne même si f95list.json échoue.
 
 (() => {
-  const LS_KEY = "viewer_annonce_minimized"; // persiste entre sessions
-  const ANNOUNCE_URL = "./annonce.html";     // ✅ relatif (template GitHub Pages)
+  const SS_KEY = "viewer_annonce_minimized";
+  const ANNOUNCE_URL = "./annonce.html";
+
+  function $(sel) { return document.querySelector(sel); }
 
   function ensureHost() {
     // Host placé dans index.html: <div id="viewerAnnonceHost"></div>
@@ -31,32 +32,18 @@
     return t.length === 0;
   }
 
-  function navIsReload() {
-    try {
-      const nav = performance.getEntriesByType?.("navigation")?.[0];
-      if (nav && typeof nav.type === "string") return nav.type === "reload";
-    } catch {}
-    // fallback ancien
-    try {
-      return performance.navigation && performance.navigation.type === 1;
-    } catch {}
-    return false;
-  }
-
   function getMinimized() {
-    try { return localStorage.getItem(LS_KEY) === "1"; }
+    try { return sessionStorage.getItem(SS_KEY) === "1"; }
     catch { return false; }
   }
-
+  
   function setMinimized(v) {
-    try { localStorage.setItem(LS_KEY, v ? "1" : "0"); } catch {}
+    try { sessionStorage.setItem(SS_KEY, v ? "1" : "0"); } catch {}
   }
 
   function render(html, opts = {}) {
     const host = ensureHost();
-
-    // ✅ Si c'est un reload (F5), on force open
-    const minimized = (opts.forceOpen || navIsReload()) ? false : getMinimized();
+    const minimized = opts.forceOpen ? false : getMinimized();
 
     // Si annonce vide => on cache totalement
     if (!opts.forceShow && isEmptyHtml(html)) {
@@ -81,15 +68,13 @@
       btn.addEventListener("click", () => {
         const nowMin = getMinimized();
         setMinimized(!nowMin);
-        render(html, { forceOpen: false, forceShow: true });
+        render(html);
       });
     }
   }
 
   async function loadAnnonce() {
-    // ✅ cache-bust léger + no-store pour GitHub Pages/CDN
-    const url = `${ANNOUNCE_URL}?v=${Date.now()}`;
-    const r = await fetch(url, { cache: "no-store" });
+    const r = await fetch(ANNOUNCE_URL, { cache: "no-store" });
     if (!r.ok) throw new Error("annonce.html introuvable (HTTP " + r.status + ")");
     return await r.text();
   }
@@ -106,10 +91,14 @@
     refresh() {
       loadAnnonce()
         .then(html => render(html))
-        .catch(() => render("", { forceShow: false }));
+        .catch(() => {
+          // si annonce.html ne charge pas -> on n’affiche rien (ou tu peux mettre un fallback)
+          render("", { forceShow: false });
+        });
     }
   };
 
+  // Init
   document.addEventListener("DOMContentLoaded", () => {
     window.viewerAnnonce.refresh();
   });
