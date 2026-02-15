@@ -1,9 +1,12 @@
-/* themes.css — Thèmes via variables
-   Auto (par défaut) suit le thème Windows via prefers-color-scheme.
+/* themes.css — Thèmes ultra-visibles (variables + ambiance)
+   -------------------------------------------------------
+   Objectif :
+   - Clair : fini le blanc pur « hôpital » → blanc cassé + profondeur + contrastes propres.
+   - Noël / Halloween : ambiance immédiatement reconnaissable (fond + glow + accents + hover).
 
-   ✅ IMPORTANT :
-   - Les variables utilisées par html{ background: var(--bg) } doivent être sur :root (= html)
-   - Donc on force les thèmes sur :root[data-theme="..."] (et non body)
+   IMPORTANT :
+   - Les variables utilisées par html{ background: var(--bg) } doivent être sur :root (= html).
+   - Donc on force les thèmes sur :root[data-theme="..."] (et non body).
 */
 
 /* =========================================================
@@ -100,9 +103,12 @@
 }
 
 /* =========================================================
-   FORCÉ : sombre (identique à ton style actuel)
+   FORCÉ : sombre (identique à ton style actuel, mais complet)
    ========================================================= */
-:root[data-theme="dark"]{
+/* ✅ Supporte aussi si l'attribut est posé sur <html> ou <body> */
+:root[data-theme="dark"],
+html[data-theme="dark"],
+body[data-theme="dark"]{
   --bg:#0f1117;
   --bg2:#141826;
   --fg:#e8eaf0;
@@ -110,11 +116,12 @@
   --primary:#5aa2ff;
   --accent:#6ce0b0;
   --border:#23283b;
+
   --card:#171b29;
   --btn:#1e2437;
 
   --title: var(--fg);
-  --topbar-bg: rgba(16,20,37,.9);
+  --topbar-bg: rgba(16,20,37,.90);
 
   --body-grad-1:#0d1018;
   --body-grad-2:#101425;
@@ -129,7 +136,16 @@
   --scrollbar-thumb-webkit: var(--scrollbar-thumb);
   --scrollbar-thumb-webkit-hover:#3f4b6b;
 
-  /* ✅ hover “theme engine” (dark) */
+  --overlay-bg: rgba(0,0,0,0.55);
+  --thumb-bg: #1c1f2e;
+  --thumb-fallback-bg: #0f0f10;
+
+  --border-soft: rgba(255,255,255,0.06);
+  --top-actions-border: rgba(255,255,255,0.03);
+  --soft-04: rgba(255,255,255,0.04);
+  --soft-05: rgba(255,255,255,0.05);
+
+  /* hover “theme engine” (dark) */
   --card-hover-border: rgba(255,255,255,0.22);
   --card-hover-shadow:
     0 0 0 1px rgba(255,255,255,0.18),
@@ -203,112 +219,156 @@ body[data-theme="white"]{
 }
 
 /* =========================================================
-   NOËL (sapin + rouge + neige visible)
+   NOËL (sapin + rouge + neige visible, ambiance “magique”)
    ========================================================= */
-:root[data-theme="noel"]{
-
-  /* 🌌 fond nuit hivernale */
-  --bg:#061611;
-  --bg2:#0a2018;
+:root[data-theme="noel"],
+html[data-theme="noel"],
+body[data-theme="noel"]{
+  /* 🌌 nuit froide */
+  --bg:#050d12;
+  --bg2:#07151f;
 
   /* ❄️ texte neige */
-  --fg:#f4fff9;
-  --muted:#c7e6d6;
+  --fg:#f3fff9;
+  --muted:#c6ebdc;
 
-  /* 🎄 vert sapin */
-  --primary:#1faa59;
+  /* 🎄 vert sapin + 🎅 rouge vif */
+  --primary:#18c37a;
+  --accent:#ff2f43;
 
-  /* 🎅 rouge BIEN visible */
-  --accent:#ff3b3b;
+  --border:#163446;
+  --border-soft: rgba(243,255,249,0.10);
 
-  --border:#1f5a43;
-
-  /* cartes plus neutres, pas “full green” */
-  --card:#0f1c17;
-  --btn:#163a2c;
+  /* surfaces */
+  --card:#0a1a26;
+  --btn:#0d2535;
 
   --title: var(--fg);
 
-  /* 🔥 Topbar avec reflet rouge */
+  /* topbar : verre + liseré rouge/vert */
   --topbar-bg: linear-gradient(
-      90deg,
-      rgba(6,22,17,.95),
-      rgba(255,59,59,.22)
+    90deg,
+    rgba(5,13,18,.92) 0%,
+    rgba(255,47,67,.20) 55%,
+    rgba(24,195,122,.14) 100%
   );
 
-  --body-grad-1:#040d0a;
-  --body-grad-2:#061611;
-  --body-grad-3:#0b2219;
-
-  --popover-bg: rgba(15,28,23,.98);
+  /* hover + glow (Noël doit “briller”) */
   --hover-bg: rgba(255,255,255,0.08);
 
-  --scrollbar-thumb:#2f8f68;
-  --scrollbar-track:#030a07;
-  --scrollbar-thumb-webkit-hover:#3fb07c;
+  --scrollbar-thumb:#1f6f8a;
+  --scrollbar-track:#03070b;
+  --scrollbar-thumb-webkit-hover:#2b91b2;
 
-  /* ✅ hover “très Noël” (rouge + un peu vert) */
-  --card-hover-border: #ff3b3b;
+  --overlay-bg: rgba(0,0,0,0.62);
+  --thumb-bg: rgba(255,255,255,0.06);
+  --thumb-fallback-bg: rgba(0,0,0,0.22);
+
+  --top-actions-border: rgba(255,255,255,0.05);
+  --soft-04: rgba(255,255,255,0.04);
+  --soft-05: rgba(255,255,255,0.06);
+
+  --card-hover-border: rgba(255,47,67,0.90);
   --card-hover-shadow:
-    0 0 0 1px rgba(255,59,59,.65),
-    0 0 26px rgba(255,59,59,.22),
-    0 18px 44px rgba(0,0,0,.55);
+    0 0 0 1px rgba(255,47,67,0.45),
+    0 0 30px rgba(255,47,67,0.18),
+    0 0 34px rgba(24,195,122,0.14),
+    0 18px 44px rgba(0,0,0,0.62);
   --card-hover-bg:
-    linear-gradient(145deg, rgba(255,59,59,.10), rgba(31,170,89,.08));
+    linear-gradient(145deg, rgba(255,47,67,.10), rgba(24,195,122,.08));
 
   color-scheme: dark;
 }
 
+/* ❄️ neige + aurore froide (sans images, 100% CSS) */
+:root[data-theme="noel"] body{
+  background:
+    /* flocons (petits points) */
+    radial-gradient(circle at 10% 20%, rgba(255,255,255,0.22) 0 1px, transparent 2px),
+    radial-gradient(circle at 30% 80%, rgba(255,255,255,0.18) 0 1px, transparent 2px),
+    radial-gradient(circle at 70% 35%, rgba(255,255,255,0.20) 0 1px, transparent 2px),
+    radial-gradient(circle at 85% 70%, rgba(255,255,255,0.16) 0 1px, transparent 2px),
+    /* aurora (glow) */
+    radial-gradient(1200px 700px at 15% 0%, rgba(24,195,122,0.18), transparent 60%),
+    radial-gradient(1100px 650px at 85% 10%, rgba(255,47,67,0.12), transparent 55%),
+    radial-gradient(900px 600px at 60% 0%, rgba(72,155,255,0.12), transparent 60%),
+    /* base */
+    linear-gradient(180deg, #04080c 0%, #050d12 35%, #07151f 100%);
+  background-size:
+    220px 220px,
+    260px 260px,
+    240px 240px,
+    280px 280px,
+    auto, auto, auto,
+    auto;
+  background-attachment: fixed;
+}
+
 /* =========================================================
-   HALLOWEEN (cinematic pumpkin)
+   HALLOWEEN (cinematic pumpkin, contraste + violet magique)
    ========================================================= */
-:root[data-theme="halloween"]{
+:root[data-theme="halloween"],
+html[data-theme="halloween"],
+body[data-theme="halloween"]{
+  --bg:#06040a;
+  --bg2:#0b0612;
 
-  --bg:#08050c;
-  --bg2:#110916;
+  --fg:#fff1e2;
+  --muted:#e2c3a1;
 
-  --fg:#fff3e6;
-  --muted:#e4c9a6;
-
-  /* 🎃 ORANGE DOMINANT */
+  /* 🎃 ORANGE DOMINANT + 🔮 violet magique */
   --primary:#ff7a00;
+  --accent:#a57bff;
 
-  /* 🔮 violet magique */
-  --accent:#9c6bff;
+  --border:#2a153a;
+  --border-soft: rgba(255,241,226,0.10);
 
-  --border:#3a1f4d;
-  --card:#140a1a;
-  --btn:#1c0f25;
+  --card:#11071a;
+  --btn:#1a0c25;
 
   --title: var(--fg);
 
   --topbar-bg: linear-gradient(
-      90deg,
-      rgba(8,5,12,.95),
-      rgba(255,122,0,.22)
+    90deg,
+    rgba(6,4,10,.92) 0%,
+    rgba(255,122,0,.20) 55%,
+    rgba(165,123,255,.12) 100%
   );
 
-  --body-grad-1:#050308;
-  --body-grad-2:#08050c;
-  --body-grad-3:#120816;
-
-  --popover-bg: rgba(20,10,26,.98);
   --hover-bg: rgba(255,255,255,0.06);
 
-  --scrollbar-thumb:#6a35a0;
+  --scrollbar-thumb:#5b2aa0;
   --scrollbar-track:#030205;
-  --scrollbar-thumb-webkit-hover:#8446c8;
+  --scrollbar-thumb-webkit-hover:#7a3bd6;
 
-  /* ✅ hover “Halloween” (orange + glow) */
-  --card-hover-border: #ff7a00;
+  --overlay-bg: rgba(0,0,0,0.66);
+  --thumb-bg: rgba(255,122,0,0.10);
+  --thumb-fallback-bg: rgba(0,0,0,0.25);
+
+  --top-actions-border: rgba(255,255,255,0.05);
+  --soft-04: rgba(255,255,255,0.04);
+  --soft-05: rgba(255,255,255,0.06);
+
+  --card-hover-border: rgba(255,122,0,0.95);
   --card-hover-shadow:
-    0 0 0 1px rgba(255,122,0,.70),
-    0 0 30px rgba(255,122,0,.22),
-    0 18px 44px rgba(0,0,0,.60);
+    0 0 0 1px rgba(255,122,0,.48),
+    0 0 38px rgba(255,122,0,.20),
+    0 0 28px rgba(165,123,255,.16),
+    0 18px 46px rgba(0,0,0,.70);
   --card-hover-bg:
-    linear-gradient(145deg, rgba(255,122,0,.10), rgba(156,107,255,.07));
+    linear-gradient(145deg, rgba(255,122,0,.12), rgba(165,123,255,.08));
 
   color-scheme: dark;
+}
+
+/* 🎃 fumée + glow + vignette (sans images) */
+:root[data-theme="halloween"] body{
+  background:
+    radial-gradient(1200px 700px at 18% 0%, rgba(255,122,0,0.22), transparent 58%),
+    radial-gradient(1000px 700px at 80% 5%, rgba(165,123,255,0.18), transparent 55%),
+    radial-gradient(900px 600px at 50% 85%, rgba(0,0,0,0.55), transparent 55%),
+    linear-gradient(180deg, #020106 0%, #06040a 35%, #0b0612 100%);
+  background-attachment: fixed;
 }
 
 /* =====================================================
@@ -328,4 +388,24 @@ body[data-theme="white"]{
   border-color: var(--card-hover-border, var(--border));
   box-shadow: var(--card-hover-shadow, 0 12px 34px rgba(0,0,0,.25));
   background: var(--card-hover-bg, var(--card));
+}
+
+/* ✅ focus clavier : bleu en clair / orange en Halloween / rouge en Noël */
+@media (prefers-color-scheme: light){
+  :root:not([data-theme]) a.card.card-link:focus-visible{
+    outline: 2px solid rgba(45,108,223,0.45);
+    outline-offset: 3px;
+  }
+}
+:root[data-theme="white"] a.card.card-link:focus-visible{
+  outline: 2px solid rgba(45,108,223,0.45);
+  outline-offset: 3px;
+}
+:root[data-theme="halloween"] a.card.card-link:focus-visible{
+  outline: 2px solid rgba(255,122,0,0.55);
+  outline-offset: 3px;
+}
+:root[data-theme="noel"] a.card.card-link:focus-visible{
+  outline: 2px solid rgba(255,47,67,0.55);
+  outline-offset: 3px;
 }
