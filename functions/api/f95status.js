@@ -1,245 +1,205 @@
-// /functions/api/f95status.js  (Cloudflare Pages Function)
-export async function onRequest(context) {
-  const { request } = context;
-
-  const headers = {
-    "content-type": "application/json; charset=utf-8",
-    "cache-control": "no-store",
-    "access-control-allow-origin": "*",
-    "access-control-allow-methods": "GET,OPTIONS",
-    "access-control-allow-headers": "content-type",
-  };
-
+// /functions/api/f95status.js
+export async function onRequestGet({ request }) {
   try {
-    const url = new URL(request.url);
+    const u = new URL(request.url);
+    const url = (u.searchParams.get("url") || "").trim();
+    const storedTitle = (u.searchParams.get("storedTitle") || "").trim();
+    const storedVersion = (u.searchParams.get("storedVersion") || "").trim();
 
-    if (request.method === "OPTIONS") {
-      return new Response(null, { status: 204, headers });
+    // ✅ Sécurité : accepter
+    // - https://f95zone.to/threads/13345/
+    // - https://f95zone.to/threads/slug.13345/
+    if (!isAllowedF95ThreadUrl(url)) {
+      return json({ ok: false, error: "bad_url" }, 400, noStoreHeaders());
     }
 
-    const f95Url = (url.searchParams.get("url") || "").trim();
-    const storedTitle = (url.searchParams.get("storedTitle") || "").trim();
-    const storedVersion = (url.searchParams.get("storedVersion") || "").trim();
+    // Anti-cache (évite cache navigateur/CF)
+    const bustUrl = url + (url.includes("?") ? "&" : "?") + "cb=" + Date.now();
 
-    if (!f95Url || f95Url.length > 1000) {
-      return new Response(JSON.stringify({ ok: false, error: "url invalide" }), { status: 400, headers });
-    }
-    if ((!storedTitle || storedTitle.length > 800) && (!storedVersion || storedVersion.length > 80)) {
-      return new Response(
-        JSON.stringify({ ok: false, error: "storedTitle ou storedVersion requis" }),
-        { status: 400, headers }
-      );
-    }
+    const r = await fetch(bustUrl, {
+      headers: {
+        "user-agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
+        accept: "text/html,application/xhtml+xml",
+        "accept-language": "en-US,en;q=0.9,fr;q=0.8",
+        "cache-control": "no-store",
+        pragma: "no-cache",
+      },
+      cf: { cacheTtl: 0, cacheEverything: false },
+    });
 
-    // sécurité : f95zone uniquement
-    let u;
-    try { u = new URL(f95Url); }
-    catch { return new Response(JSON.stringify({ ok: false, error: "url invalide" }), { status: 400, headers }); }
-
-    const host = (u.hostname || "").toLowerCase();
-    if (!host.endsWith("f95zone.to")) {
-      return new Response(JSON.stringify({ ok: false, error: "host non autorisé" }), { status: 400, headers });
+    if (!r.ok) {
+      return json({ ok: false, error: "fetch_http_" + r.status }, 200, noStoreHeaders());
     }
 
-    // cache 30 min : on stocke UNIQUEMENT l'état F95 (pas les params user)
-    const cacheKey = new Request("https://cache.local/f95status?u=" + encodeURIComponent(f95Url), request);
-    const cache = caches.default;
+    const html = await r.text();
 
-    let current = await cache.match(cacheKey);
-    let data;
+    // H1 F95 : <h1 class="p-title-value">...</h1>
+    const m = html.match(/<h1[^>]*class="[^"]*\bp-title-value\b[^"]*"[^>]*>([\s\S]*?)<\/h1>/i);
+    const currentTitle = m ? stripHtml(m[1]) : "";
 
-    if (current) {
-      data = await current.json();
-    } else {
-      // Fetch F95 (anti-cache léger)
-      const bust = f95Url + (f95Url.includes("?") ? "&" : "?") + "cb=" + Date.now();
+    if (!currentTitle) {
+      return json({ ok: false, error: "no_title_found" }, 200, noStoreHeaders());
+    }
 
-      const resp = await fetch(bust, {
-        headers: {
-          "user-agent": "Mozilla/5.0 (compatible; andric31-trad/1.0)",
-          accept: "text/html,*/*",
-        },
-        cf: { cacheTtl: 0, cacheEverything: false },
-      });
+    const curTitle = cleanText(currentTitle);
+    const stTitle = cleanText(storedTitle);
 
-      if (!resp.ok) {
-        return new Response(
-          JSON.stringify({ ok: false, error: "fetch F95 failed", status: resp.status }),
-          { status: 502, headers }
-        );
+    // versions
+    const currentVersionRaw = extractVersionFromTitle(currentTitle);
+    const curV = normalizeVersion(currentVersionRaw);
+    const stV = normalizeVersion(storedVersion);
+
+    // Résultat + cause
+    const out = {
+      ok: true,
+      mode: "unknown",
+      isUpToDate: false,
+      reasonCode: "",
+      reasonText: "",
+      // infos utiles côté client
+      currentTitle,
+      currentVersion: currentVersionRaw || "",
+      storedTitle,
+      storedVersion,
+    };
+
+    // =========================
+    // ✅ Cas 1 : comparaison par version (si possible)
+    // =========================
+    if (stV && curV) {
+      out.mode = "version";
+
+      if (curV === stV) {
+        out.isUpToDate = true;
+        out.reasonCode = "version_match";
+        out.reasonText = `Version identique (v${stV}).`;
+      } else {
+        out.isUpToDate = false;
+        out.reasonCode = "version_mismatch";
+        out.reasonText = `Version différente : stockée v${stV} / F95 v${curV}.`;
       }
 
-      const html = await resp.text();
-
-      const h1 = extractH1(html);
-      const labels = extractLabels(html);
-
-      const currentTitleFull = clean([...(labels || []), h1].filter(Boolean).join(" "));
-      const currentTitleH1 = clean(h1);
-
-      const currentVersion = clean(extractVersionFromH1(h1));
-      const currentVersionNorm = normVersion(currentVersion);
-
-      data = {
-        currentTitleFull,
-        currentTitleH1,
-        labels,
-        currentVersion,
-        currentVersionNorm,
-      };
-
-      await cache.put(
-        cacheKey,
-        new Response(JSON.stringify(data), {
-          headers: {
-            "content-type": "application/json; charset=utf-8",
-            "cache-control": "public, max-age=1800",
-          },
-        })
-      );
+      return json(out, 200, noStoreHeaders());
     }
 
     // =========================
-    // Comparaison multi-cas
+    // ✅ Cas 2 : l’un a une version, l’autre non
     // =========================
-    const stTitle = clean(storedTitle);
-    const stV = clean(storedVersion);
-    const stVNorm = normVersion(stV);
-
-    const curFull = clean(data?.currentTitleFull || "");
-    const curH1 = clean(data?.currentTitleH1 || "");
-    const curV = clean(data?.currentVersion || "");
-    const curVNorm = String(data?.currentVersionNorm || normVersion(curV));
-
-    let isUpToDate = false;
-    let mode = "none";
-    let reason = "no_match";
-
-    // A) match titre complet (labels + H1)
-    if (stTitle && curFull && stTitle === curFull) {
-      isUpToDate = true;
-      mode = "title_full";
-      reason = "storedTitle === currentTitleFull";
-    }
-    // B) match H1 seul (si storedTitle est un cleanTitle)
-    else if (stTitle && curH1 && stTitle === curH1) {
-      isUpToDate = true;
-      mode = "title_h1";
-      reason = "storedTitle === currentTitleH1";
-    }
-    // C) match version (fallback)
-    else if (stVNorm && curVNorm && stVNorm === curVNorm) {
-      isUpToDate = true;
-      mode = "version";
-      reason = "storedVersion === currentVersion";
-    }
-    // D) sinon KO + explication
-    else {
-      mode = stTitle ? "mismatch" : "version_mismatch";
-      reason = stTitle
-        ? "title differs (full+h1), and version differs"
-        : "version differs";
+    if (stV && !curV) {
+      out.mode = "version_missing_on_f95";
+      // fallback titre
+      if (stTitle && curTitle) {
+        const sameTitle = stTitle === curTitle;
+        out.isUpToDate = sameTitle; // si titre strict identique, on considère OK
+        out.reasonCode = sameTitle ? "title_match_but_no_f95_version" : "no_f95_version_title_diff";
+        out.reasonText = sameTitle
+          ? `Impossible de détecter la version sur F95, mais le titre est identique.`
+          : `Impossible de détecter la version sur F95, et le titre diffère.`;
+      } else {
+        out.isUpToDate = false;
+        out.reasonCode = "missing_titles";
+        out.reasonText = `Version stockée mais comparaison impossible (titre manquant).`;
+      }
+      return json(out, 200, noStoreHeaders());
     }
 
-    return new Response(
-      JSON.stringify({
-        ok: true,
-        isUpToDate,
-        mode,
-        reason,
+    if (!stV && curV) {
+      out.mode = "version_missing_in_list";
+      // fallback titre
+      if (stTitle && curTitle) {
+        const sameTitle = stTitle === curTitle;
+        out.isUpToDate = sameTitle; // si titre identique, ok
+        out.reasonCode = sameTitle ? "title_match_but_no_stored_version" : "no_stored_version_title_diff";
+        out.reasonText = sameTitle
+          ? `Version trouvée sur F95 (v${curV}) mais pas stockée dans ta liste : comparaison par titre OK.`
+          : `Version trouvée sur F95 (v${curV}) mais pas stockée : et le titre diffère.`;
+      } else {
+        out.isUpToDate = false;
+        out.reasonCode = "missing_titles";
+        out.reasonText = `Version trouvée sur F95 mais comparaison impossible (titre manquant).`;
+      }
+      return json(out, 200, noStoreHeaders());
+    }
 
-        // debug utile (tu peux masquer côté front si tu veux)
-        currentTitleFull: data?.currentTitleFull || "",
-        currentTitleH1: data?.currentTitleH1 || "",
-        currentVersion: data?.currentVersion || "",
-        labels: data?.labels || [],
+    // =========================
+    // ✅ Cas 3 : comparaison par titre
+    // =========================
+    if (stTitle && curTitle) {
+      out.mode = "title";
+      const same = stTitle === curTitle;
 
-        // pour debug comparaison
-        storedTitle: storedTitle || "",
-        storedVersion: storedVersion || "",
-      }),
-      { headers }
-    );
-  } catch (err) {
-    return new Response(
-      JSON.stringify({
-        ok: false,
-        error: "Exception Worker",
-        detail: String(err?.message || err),
-      }),
-      { status: 500, headers }
+      out.isUpToDate = same;
+      out.reasonCode = same ? "title_match" : "title_mismatch";
+      out.reasonText = same
+        ? `Titre identique.`
+        : `Titre différent : stocké ≠ F95.`;
+
+      return json(out, 200, noStoreHeaders());
+    }
+
+    out.mode = "unknown";
+    out.isUpToDate = false;
+    out.reasonCode = "not_enough_data";
+    out.reasonText = "Comparaison impossible (données manquantes).";
+    return json(out, 200, noStoreHeaders());
+  } catch (e) {
+    return json(
+      { ok: false, error: "exception", message: String(e?.message || e) },
+      200,
+      noStoreHeaders()
     );
   }
 }
 
-// -------- extractors ----------
-function extractH1(html) {
-  const m = String(html || "").match(/<h1[^>]*class="[^"]*\bp-title-value\b[^"]*"[^>]*>([\s\S]*?)<\/h1>/i);
-  const raw = m ? m[1] : "";
-  const txt = clean(decodeHtml(stripTags(raw)));
-  return txt;
-}
+// ---------------- helpers ----------------
 
-function extractLabels(html) {
-  const out = [];
-  const s = String(html || "");
-  // labels dans le header : <a class="labelLink"...><span class="label ...">VN</span>
-  const re = /<a[^>]*class="[^"]*\blabelLink\b[^"]*"[^>]*>\s*<span[^>]*class="[^"]*\blabel\b[^"]*"[^>]*>([\s\S]*?)<\/span>/gi;
-  let m;
-  while ((m = re.exec(s)) !== null) {
-    const t = clean(decodeHtml(stripTags(m[1])));
-    if (t) out.push(t);
+function isAllowedF95ThreadUrl(url) {
+  try {
+    const u = new URL(url);
+    if (!/f95zone\.to$/i.test(u.hostname)) return false;
+
+    // /threads/13345/
+    // /threads/slug.13345/
+    const p = u.pathname || "";
+    return /^\/threads\/(\d+|[^/]+\.\d+)\/?$/i.test(p);
+  } catch {
+    return false;
   }
-  // dédoublonnage en conservant l'ordre
-  return [...new Set(out)];
 }
 
-function extractVersionFromH1(h1) {
-  const s = String(h1 || "");
+function extractVersionFromTitle(title) {
+  const s = String(title || "");
 
-  // [v0.1], [V 0.1a], etc
+  // 1) [v0.1], [V 2.10a], etc.
   let m = s.match(/\[\s*v\s*([0-9][^\]]*)\]/i);
+  if (m) return "v" + m[1].trim();
+
+  // 2) [0.1], [1.2.3b] (sans v)
+  m = s.match(/\[\s*([0-9]+(?:\.[0-9]+)+[^\]]*)\]/i);
   if (m) return m[1].trim();
 
-  // [0.1], [1.2.3b] etc (évite de capturer [Brainless])
-  m = s.match(/\[\s*([0-9]+(?:\.[0-9]+)+(?:[a-z0-9._-]*)?)\s*\]/i);
-  if (m) return m[1].trim();
-
+  // 3) rien
   return "";
 }
 
-// -------- helpers ----------
-function stripTags(s) {
-  return String(s || "").replace(/<[^>]+>/g, " ");
+function normalizeVersion(v) {
+  const s = cleanText(v);
+  if (!s) return "";
+  // v0.1 => 0.1 ; V 0.1 => 0.1
+  return s.replace(/^v\s*/i, "").trim();
 }
 
-function decodeHtml(s) {
-  let out = String(s || "");
-
-  out = out
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&#0*39;/g, "'")
-    .replace(/&apos;/gi, "'")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&nbsp;/gi, " ");
-
-  out = out.replace(/&#(\d+);/g, (_, n) => {
-    const code = Number(n);
-    return Number.isFinite(code) ? String.fromCodePoint(code) : _;
-  });
-
-  out = out.replace(/&#x([0-9a-f]+);/gi, (_, hx) => {
-    const code = parseInt(hx, 16);
-    return Number.isFinite(code) ? String.fromCodePoint(code) : _;
-  });
-
-  return out;
+// ✅ strip tags + decode entités HTML (nbsp, &#039;, etc.)
+function stripHtml(s) {
+  const raw = String(s || "")
+    .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<[^>]+>/g, " ");
+  return cleanText(decodeEntities(raw));
 }
 
-function clean(str) {
+// Nettoyage robuste (unicode, espaces invisibles, tirets, etc.)
+function cleanText(str) {
   return String(str || "")
     .normalize("NFKC")
     .replace(/[\u200B-\u200D\uFEFF]/g, "")
@@ -249,12 +209,25 @@ function clean(str) {
     .trim();
 }
 
-// normalise v / espaces / casse
-function normVersion(v) {
-  const s = clean(v).toLowerCase();
-  if (!s) return "";
-  // retire crochets éventuels
-  const t = s.replace(/^\[|\]$/g, "").trim();
-  // normalise "v0.1" "0.1" "V 0.1" -> "0.1"
-  return t.replace(/^v\s*/i, "");
+function decodeEntities(str) {
+  return String(str || "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&#0*39;/gi, "'")
+    .replace(/&apos;/gi, "'")
+    .replace(/&quot;/gi, '"')
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">");
+}
+
+function noStoreHeaders() {
+  return {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "no-store, no-cache, must-revalidate, max-age=0",
+    pragma: "no-cache",
+  };
+}
+
+function json(obj, status = 200, headers = {}) {
+  return new Response(JSON.stringify(obj), { status, headers });
 }
