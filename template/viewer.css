@@ -975,7 +975,7 @@ body.mode-game .btnLike .f95-word .f95-red{
   background: transparent;
   color: var(--fg);
   cursor:pointer;
-  font-weight:700;
+  font-size:14px;
   text-align:left;
 }
 .tag-item:hover{
