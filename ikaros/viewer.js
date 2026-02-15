@@ -6,22 +6,23 @@
   "use strict";
 
   // =========================
-  // Thèmes (themes.css)
+  // Thèmes (désactivés → dark forcé)
   // =========================
+  
+  // Toujours dark
   function getViewerTheme() {
-    try { return (localStorage.getItem("viewerTheme") || "auto").trim() || "auto"; }
-    catch { return "auto"; }
+    return "dark";
   }
-
-  function setViewerTheme(v) {
-    try { localStorage.setItem("viewerTheme", String(v || "auto")); } catch {}
+  
+  // Ignore toute tentative d'écriture
+  function setViewerTheme() {
+    try { localStorage.setItem("viewerTheme", "dark"); } catch {}
   }
-
-  function applyViewerTheme(v) {
-    const t = (v || "auto").toString().trim() || "auto";
-    const root = document.documentElement;
-    root.removeAttribute("data-theme");
-    if (t !== "auto") root.setAttribute("data-theme", t);
+  
+  // Supprime totalement les thèmes CSS
+  function applyViewerTheme() {
+    // aucun data-theme = viewer.css uniquement (dark)
+    document.documentElement.removeAttribute("data-theme");
   }
 
   // =========================
