@@ -17,19 +17,12 @@
   /* ✅ un peu plus compact qu’avant */
   --topbar-h: 78px;
   --card-hover-border: rgba(255,255,255,0.22);
-  --card-hover-glow: rgba(255,255,255,0.18)
-  /* Scrollbar (comme site principal) */
-  --scrollbar-thumb: #303a57;
-  --scrollbar-track: #0b0e14;
-  --scrollbar-thumb-hover: #3f4b6b;
+  --card-hover-glow: rgba(255,255,255,0.18);
 
-}
 }
 
 *{box-sizing:border-box}
-html,body{height:100%
-  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
-}
+html,body{height:100%}
 body{
   margin:0;
   font-family:system-ui,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;
@@ -392,11 +385,7 @@ main{
 .badge.eng-wolfrpg{ background:#4CAF50; color:#000; }
 
 .badge.eng-unrealengine{ background:#0D47A1; color:#fff; }
-.badge.eng-html{ background:#689F38; color:#000; 
-  color-scheme: dark;
-  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
-  scrollbar-gutter: stable both-edges;
-}
+.badge.eng-html{ background:#689F38; color:#000; }
 .badge.eng-java{ background:#52A6B0; color:#000; }
 .badge.eng-flash{ background:#616161; color:#fff; }
 .badge.eng-qsp{ background:#D32F2F; color:#fff; }
@@ -644,11 +633,11 @@ main{
 }
 
 ::-webkit-scrollbar-track{
-  background: var(--scrollbar-track);
+  background: #0f1117;
 }
 
 ::-webkit-scrollbar-thumb{
-  background: var(--scrollbar-thumb);
+  background: #2a314b;
   border-radius: 999px;
 
   /* ⬅ crée l’effet “thumb plus petit que le rail” */
@@ -656,7 +645,7 @@ main{
 }
 
 ::-webkit-scrollbar-thumb:hover{
-  background: var(--scrollbar-thumb-hover);
+  background: #3b4568;
 }
 
 /* Scrollbar spécifique aux modales */
@@ -675,11 +664,11 @@ main{
 }
 
 .modal-body::-webkit-scrollbar-track{
-  background: var(--scrollbar-track);
+  background: #0f1117;
 }
 
 .modal-body::-webkit-scrollbar-thumb{
-  background: var(--scrollbar-thumb);
+  background: #2a314b;
   border-radius: 999px;
 
   /* thumb plus fin que le rail */
@@ -687,7 +676,7 @@ main{
 }
 
 .modal-body::-webkit-scrollbar-thumb:hover{
-  background: var(--scrollbar-thumb-hover);
+  background: #3b4568;
 }
 
 /* Firefox */
@@ -1719,4 +1708,3 @@ a.card.card-link:focus-visible{
   outline: 2px solid rgba(255,255,255,0.35);
   outline-offset: 3px;
 }
-.name{ text-decoration: none; }
