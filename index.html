@@ -1,221 +1,356 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>Traductions FR</title>
+  <meta charset="utf-8" />
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>f95list_viewer</title>
 
-<link rel="icon" type="image/png" href="/favicon.png">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link id="dynamic-favicon" rel="icon" type="image/png" href="./avatar.png">
+  <script>
+  (function(){
+    const fav = document.getElementById("dynamic-favicon");
+    const testUrl = "./avatar.png?v=" + Date.now(); // anti-cache
+  
+    const img = new Image();
+    img.onload  = () => fav.href = testUrl;
+    img.onerror = () => fav.href = "/favicon.png?v=" + Date.now(); // fallback
+    img.src = testUrl;
+  })();
+  </script>
 
-<style>
+  <link rel="stylesheet" href="./viewer.css" />
+  <link rel="stylesheet" href="./themes.css" />
 
-body{
-  font-family: system-ui, sans-serif;
-  background:#0e1117;
-  color:#e6edf3;
-  margin:0;
-  padding:40px;
-}
+  <!-- ✅ Nom affiché via manifest (casse exacte), fallback slug — SANS BOUCLE -->
+  <script>
+  (async function(){
+  
+    function detectSlug(){
+      try{
+        const forced = (window.__SITE_SLUG__ || "").toString().trim();
+        if(forced) return forced.toLowerCase();
+      }catch{}
+      const segs = (location.pathname || "/").split("/").filter(Boolean);
+      return String(segs[0] || "").trim().toLowerCase();
+    }
+  
+    const slug = detectSlug();
+    window.__SITE_SLUG__ = slug;
+  
+    let nice = slug ? (slug[0].toUpperCase() + slug.slice(1)) : "";
+  
+    try{
+      const r = await fetch("/traducteurs_manifest.json", { cache:"no-store" });
+      if (r.ok){
+        const list = await r.json();
+        const found = Array.isArray(list)
+          ? list.find(x => String(x?.key||"").toLowerCase() === slug)
+          : null;
+        if (found && found.name) nice = String(found.name);
+      }
+    }catch(e){}
+  
+    window.__SITE_NAME__ = nice;
+  
+    const txt = nice || slug || "";
+    document.title = txt;
+  
+    function applyH1(){
+      const h1 = document.getElementById("viewerTitle");
+      if (h1) h1.textContent = txt;
+      return !!h1;
+    }
+  
+    // ✅ 1) si déjà là
+    if (applyH1()) return;
+  
+    // ✅ 2) au DOM ready
+    window.addEventListener("DOMContentLoaded", () => {
+      if (applyH1()) return;
+  
+      // ✅ 3) retry léger (max ~2s), au cas où un script recrée le header après
+      let tries = 0;
+      const timer = setInterval(() => {
+        tries++;
+        if (applyH1() || tries >= 20) clearInterval(timer); // 20 * 100ms = 2s
+      }, 100);
+    });
+  
+  })();
+  </script>
 
-/* HEADER */
+  <!-- PAGE VIEWER -->
+  <div id="page-viewer">
 
-h1{
-  margin-bottom:5px;
-  font-size:32px;
-}
+    <!-- 🔞 AGE GATE -->
+    <div id="age-gate" style="display:none;">
+      <div class="age-box">
+        <h2>🔞 Contenu réservé aux adultes</h2>
+        <p>
+          Ce site contient des images et contenus destinés à un public majeur.<br>
+          En continuant, vous confirmez avoir <strong>18 ans ou plus</strong>.
+        </p>
 
-.subtitle{
-  opacity:.75;
-  margin-bottom:35px;
-}
+        <button id="age-yes">J’ai 18 ans</button>
+        <button id="age-no">Quitter</button>
+      </div>
+    </div>
 
-/* CARD BASE */
+    <header class="topbar" role="banner">
+      <div class="top-title-row top-title-flex">
+        <!-- ✅ id unique (viewer) -->
+        <button id="hamburgerBtnViewer" class="hamburger-btn" type="button"
+                aria-label="Menu" title="Menu" aria-expanded="false">
+          <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
+        </button>
 
-.card{
-  background:#161b22;
-  border:1px solid #30363d;
-  border-radius:14px;
-  padding:20px;
-  margin-bottom:18px;
-  transition:.18s ease;
-}
+        <h1 id="viewerTitle">f95list_viewer</h1>
 
-.card:hover{
-  transform:translateY(-4px);
-  border-color:#58a6ff;
-  box-shadow:0 10px 30px rgba(0,0,0,.35);
-}
+        <!-- ✅ Outils en haut à droite (comme le site principal) -->
+        <div id="topTitleTools" class="top-title-tools">
+          <span class="total-inline">Total : <strong id="countTotal">0</strong></span>
 
-/* TRAD CARD */
+          <select id="cols" title="Vignettes par ligne">
+            <option value="auto">Vignettes/ligne : Auto</option>
+            <option value="1">1 par ligne</option>
+            <option value="2">2 par ligne</option>
+            <option value="3">3 par ligne</option>
+            <option value="4">4 par ligne</option>
+            <option value="5">5 par ligne</option>
+            <option value="6">6 par ligne</option>
+            <option value="7">7 par ligne</option>
+            <option value="8">8 par ligne</option>
+            <option value="9">9 par ligne</option>
+            <option value="10">10 par ligne</option>
+          </select>
 
-.trad-card{
-  display:flex;
-  align-items:center;
-  gap:20px;
-}
+          <select id="pageSize" title="Affichage progressif">
+            <option value="50">Afficher par 50</option>
+            <option value="100">Afficher par 100</option>
+            <option value="all">Tout afficher</option>
+          </select>
 
-/* AVATAR */
+          <select id="theme" title="Thème">
+            <option value="auto">Thème : Auto (Windows)</option>
+            <option value="dark">Thème : Sombre</option>
+            <option value="white">Thème : Blanc</option>
+            <option value="noel">Thème : Noël</option>
+            <option value="halloween">Thème : Halloween</option>
+          </select>
+        </div>
+      </div>
 
-.avatar{
-  width:72px;
-  height:72px;
-  border-radius:50%;
-  object-fit:cover;
-  border:2px solid #30363d;
-  background:#0e1117;
-  flex-shrink:0;
-}
+      <div class="top-actions">
+        <div class="search-wrap">
+          <input id="search" type="search" placeholder="Rechercher un jeu." autocomplete="off" />
+        </div>
 
-/* INFO */
+        <select id="sort" title="Trier">
+          <option value="updatedAtLocal-desc">Date de la traduction</option>
+          <option value="mega-desc">📥 Téléchargements</option>
+          <option value="views-desc">👁️ Vues</option>
+          <option value="likes-desc">❤️ J'aime</option>
+          <option value="title-asc">Titre A→Z</option>
+          <option value="title-desc">Titre Z→A</option>
+          <option value="updatedAt-desc">Date Thread F95 (Maj)</option>
+        </select>
 
-.trad-info a{
-  color:#58a6ff;
-  font-size:20px;
-  font-weight:600;
-  text-decoration:none;
-}
+        <select id="filterCat" title="Catégorie">
+          <option value="all">Catégorie : Toutes</option>
+          <option value="VN">VN</option>
+          <option value="Collection">Collection</option>
+        </select>
 
-.trad-info a:hover{
-  text-decoration:underline;
-}
+        <select id="filterEngine" title="Moteur">
+          <option value="all">Moteur : Tous</option>
+          <option value="Ren'Py">Ren'Py</option>
+          <option value="RPGM">RPGM</option>
+          <option value="Unity">Unity</option>
+          <option value="Others">Others</option>
+          <option value="Wolf RPG">Wolf RPG</option>
+        </select>
 
-small{
-  opacity:.8;
-}
+        <select id="filterStatus" title="Statut">
+          <option value="all">Statut : Tous</option>
+          <option value="Completed">Completed</option>
+          <option value="Abandoned">Abandoned</option>
+          <option value="Onhold">Onhold</option>
+          <option value="En cours">En cours</option>
+        </select>
 
-/* LISTE GLOBALE */
+        <button id="tagsBtn" type="button" class="tags-btn" aria-haspopup="menu" aria-expanded="false">
+          🏷️ Tags <span id="tagsCount" class="tags-count hidden">0</span>
+        </button>
 
-.big-link{
-  font-size:20px;
-  font-weight:600;
-  color:#58a6ff;
-  text-decoration:none;
-}
+        <!-- ✅ Rafraîchir remis en bas -->
+        <button id="refresh" type="button">Rafraîchir</button>
+      </div>
+    </header>
 
-.big-link:hover{
-  text-decoration:underline;
-}
+    <main role="main">
+      <section id="gridMode" class="grid-wrap" aria-label="Vignettes des jeux">
+        <div id="viewerAnnonceHost"></div>
 
-/* RESPONSIVE */
+        <div id="grid" class="grid"></div>
+        <div id="gridEmpty" class="empty hidden">Aucun résultat.</div>
+      </section>
 
-@media(max-width:700px){
+      <footer class="viewer-footer">
+        👁️ Vues de la page : <strong id="mainViews">—</strong>
+      </footer>
+    </main>
 
-  body{
-    padding:25px;
-  }
+  </div>
 
-  .trad-card{
-    flex-direction:column;
-    align-items:flex-start;
-  }
+  <!-- PAGE JEU (même page, via ?id= / ?uid=) -->
+  <div id="page-game" style="display:none;">
 
-  .avatar{
-    width:64px;
-    height:64px;
-  }
-}
+    <div class="wrap">
+      <div class="cardPreview" id="card" aria-live="polite">
+        <div class="cardInner">
 
-</style>
-</head>
+          <div class="headRow">
+            <!-- ✅ id unique (game) -->
+            <button type="button" class="hamburger-btn" id="hamburgerBtnGame"
+                    aria-label="Ouvrir le menu" aria-haspopup="menu" aria-expanded="false">
+              <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
+            </button>
 
+            <button class="btnLike like-btn" id="btnLike" type="button" aria-label="J’aime">🤍</button>
+            <div class="badgesRow" id="badges"></div>
+          </div>
 
-<body>
+          <div class="majState" id="majState" style="display:none;"></div>
 
-<h1>🌍 Projet Traductions FR</h1>
-<div class="subtitle">
-Traductions de jeux Visual Novel
-</div>
+          <h1 class="title" id="title">Chargement…</h1>
 
-<!-- LISTE -->
+          <img id="cover" class="cover is-placeholder" alt="" referrerpolicy="no-referrer">
 
-<div class="card">
-<a class="big-link" href="/liste/" target="_blank">
-🌐 Liste globale des traductions
-</a>
-</div>
+          <div class="infoBlock tagsBox" id="tagsBox"><div class="tagsRow" id="tags"></div></div>
 
+          <!-- 📝 Description -->
+          <div id="descriptionBox" class="infoBlock" style="display:none;">
+            <div id="descriptionText" class="infoText"></div>
+          </div>
 
-<!-- TRADUCTEURS -->
+          <div class="btnRow">
+            <a class="btnLike btn-discord" id="btnDiscord" target="_blank" rel="noopener" style="display:none;">💬 Discord</a>
+            <a class="btnLike btn-f95" id="btnF95" target="_blank" rel="noopener" style="display:none;">
+              <span class="f95-white">F95</span><span class="f95-red">Zone</span>
+            </a>
+          </div>
 
-<div class="card trad-card">
+          <div class="btnMainRow">
+            <a class="btnLike btnMega" id="btnMega" target="_blank" rel="noopener" style="display:none;">📥 Télécharger la traduction · MEGA</a>
+          </div>
 
-<img class="avatar"
-     src="/andric31/avatar.png"
-     onerror="this.src='/default-avatar.png'">
+          <div id="archiveBox" style="display:none; margin-top:12px; justify-content:center;">
+            <a id="archiveLink" class="btnLike" target="_blank" rel="noopener" style="justify-content:center;">
+              📦 Archives de la traduction
+            </a>
+          </div>
 
-<div class="trad-info">
-<a href="https://andric31-traductions.pages.dev/" target="_blank">
-andric31
-</a>
-<br>
-<small>
-Traducteur · Traductions automatiques de jeux Ren’Py, RPG Maker MV (RPGM), Unity (.json .xml .csv .txt), Godot, TyranoBuilder, KiriKiri / KAG, Visual Novel Maker, Electron, NW.js… Développeur.
-</small>
-</div>
+          <!-- ⭐ Notation -->
+          <div id="ratingBox" class="infoBlock" style="text-align:center;">
+            <div class="ratingTitle">Note de la traduction : <strong id="ratingAvg">—</strong> (<span id="ratingCount">0</span> votes)</div>
+            <div id="ratingChoices" style="display:flex; justify-content:center; gap:8px;"></div>
+            <div id="ratingMsg" style="margin-top:6px; color:var(--muted); font-size:12px;"></div>
+          </div>
 
-</div>
+          <!-- ✅ NOTES -->
+          <div id="notesBox" class="infoBlock" style="display:none;">
+            <h3>ℹ️ Informations</h3>
+            <div id="notesText" class="infoTextMuted"></div>
+          </div>
 
+        </div>
+      </div>
 
+      <div class="statsOut infoBlock" id="statsOut" style="display:none; text-align:center; margin-top:14px;">
+        👁️ Vues : <strong id="statViews">0</strong>
+        ·
+        ❤️ J’aime : <strong id="statLikes">0</strong>
+        ·
+        📥 Téléchargements : <strong id="statMegaClicks">0</strong>
+      </div>
 
-<div class="card trad-card">
+      <div class="err" id="errBox"></div>
+    </div>
 
-<img class="avatar"
-     src="/ant28jsp/avatar.png"
-     onerror="this.src='/default-avatar.png'">
+    <!-- ✅ Observer : mini fade sur #ratingMsg à chaque changement -->
+    <script>
+      (function(){
+        const msg = document.getElementById("ratingMsg");
+        if (!msg) return;
 
-<div class="trad-info">
-<a href="/ant28jsp/" target="_blank">
-Ant28jsp
-</a>
-<br>
-<small>
-Traducteur · Traductions automatiques de jeux Ren’Py, RPG Maker MV (RPGM)
-</small>
-</div>
+        const flash = () => {
+          msg.classList.remove("msgFade");
+          void msg.offsetWidth;
+          msg.classList.add("msgFade");
+        };
 
-</div>
+        const obs = new MutationObserver(() => flash());
+        obs.observe(msg, { childList: true, characterData: true, subtree: true });
 
+        if ((msg.textContent || "").trim()) flash();
+      })();
+    </script>
 
+  </div> <!-- ✅ FIN #page-game -->
 
-<div class="card trad-card">
+  <!-- ✅ JS externes en defer (plus stable en accès direct ?id= / ?uid=) -->
+  <!-- ✅ Modules UI (comme ton autre site) -->
+  <script src="./viewer.menu.js" defer></script>
+  <script src="./viewer.menu.about.js" defer></script>
+  <script src="./viewer.menu.extension.js" defer></script>
+  <script src="./viewer.annonce.js" defer></script>
+  <script src="./viewer.agegate.js" defer></script>
 
-<img class="avatar"
-     src="/lechauve/avatar.png"
-     onerror="this.src='/default-avatar.png'">
+  <script src="./viewer.js" defer></script>
+  <script src="./game.js" defer></script>
 
-<div class="trad-info">
-<a href="/lechauve/" target="_blank">
-Le Chauve
-</a>
-<br>
-<small>
-Traducteur · Traductions manuelles de jeux GMS (GameMaker Studio), RPGM-V, RPGM-Z et Ren'Py… Développeur.
-</small>
-</div>
+  <!-- ✅ switch viewer/game -->
+  <script>
+    (function(){
+      const p = new URLSearchParams(location.search);
+      const hasGame = (p.get("id")||"").trim() || (p.get("uid")||"").trim();
+      const v = document.getElementById("page-viewer");
+      const g = document.getElementById("page-game");
+      if (hasGame) {
+        document.body.classList.add("mode-game");
+        if (v) v.style.display = "none";
+        if (g) g.style.display = "";
+      } else {
+        document.body.classList.remove("mode-game");
+        if (g) g.style.display = "none";
+        if (v) v.style.display = "";
+      }
+    })();
+  </script>
 
-</div>
+  <!-- ✅ pont hamburger : si tes JS attendent #hamburgerBtn -->
+  <script>
+    (function(){
+      function ensureAlias(){
+        const hasAlias = document.getElementById("hamburgerBtn");
+        if (hasAlias) return;
 
+        const p = new URLSearchParams(location.search);
+        const hasGame = (p.get("id")||"").trim() || (p.get("uid")||"").trim();
 
+        const src = document.getElementById(hasGame ? "hamburgerBtnGame" : "hamburgerBtnViewer");
+        if (!src) return;
 
-<div class="card trad-card">
-
-<img class="avatar"
-     src="/ikaros/avatar.png"
-     onerror="this.src='/default-avatar.png'">
-
-<div class="trad-info">
-<a href="/ikaros/" target="_blank">
-Ikaros
-</a>
-<br>
-<small>
-Traducteur · Traductions manuelles et automatiques de jeux Unity, Ren’Py
-</small>
-</div>
-
-</div>
-
-
+        const alias = src.cloneNode(true);
+        alias.id = "hamburgerBtn";
+        alias.style.display = "none";
+        alias.addEventListener("click", (e)=>{ e.preventDefault(); e.stopPropagation(); src.click(); });
+        document.body.appendChild(alias);
+      }
+      window.addEventListener("DOMContentLoaded", ensureAlias);
+    })();
+  </script>
 
 </body>
 </html>
