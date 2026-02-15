@@ -75,8 +75,8 @@
       width:34px;
       height:34px;
       border-radius:10px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      background: var(--btn);
       display:inline-flex;
       align-items:center;
       justify-content:center;
@@ -87,7 +87,7 @@
     body.mode-game #page-game .hamburger-btn:hover{ filter: brightness(1.10); }
     body.mode-game #page-game .hamburger-btn:active{ transform: translateY(1px); }
     body.mode-game #page-game .ham-lines{ width:16px; height:12px; display:flex; flex-direction:column; justify-content:space-between; }
-    body.mode-game #page-game .ham-lines span{ display:block; height:2px; border-radius:999px; background:#ffffff; opacity:0.92; }
+    body.mode-game #page-game .ham-lines span{ display:block; height:2px; border-radius:999px; background: var(--fg); opacity:0.92; }
 
     /* Cover */
     body.mode-game #page-game .cover{
@@ -96,15 +96,15 @@
       display:block;
       border-radius: 14px;
       border: 1px solid var(--border);
-      background: rgba(255,255,255,0.03);
+      background: var(--thumb-bg);
       margin: 10px 0 12px;
       object-fit: cover;
     }
 
     /* Encadrés info */
     body.mode-game #page-game .infoBlock{
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: var(--soft-04);
+      border:  1px solid var(--border-soft);
       border-radius: 14px;
       padding: 12px;
       margin-top: 12px;
