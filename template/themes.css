@@ -1,10 +1,26 @@
-/* themes.css — Thèmes via variables (viewer.css reste propre)
+/* themes.css — Thèmes via variables
    Auto (par défaut) suit le thème Windows via prefers-color-scheme.
 
    ✅ IMPORTANT :
    - Les variables utilisées par html{ background: var(--bg) } doivent être sur :root (= html)
    - Donc on force les thèmes sur :root[data-theme="..."] (et non body)
 */
+
+/* =========================================================
+   BASE : petits overrides communs (tous thèmes)
+   ========================================================= */
+:root{
+  /* valeurs fallback si un thème ne définit pas tout */
+  --overlay-bg: rgba(0,0,0,0.55);
+  --thumb-bg: rgba(255,255,255,0.06);
+  --thumb-fallback-bg: rgba(0,0,0,0.15);
+
+  --border-soft: rgba(255,255,255,0.06);
+  --top-actions-border: rgba(255,255,255,0.03);
+
+  --soft-04: rgba(255,255,255,0.04);
+  --soft-05: rgba(255,255,255,0.05);
+}
 
 /* =========================================================
    AUTO (Windows) : mode clair
