@@ -582,7 +582,7 @@ function renderBadgesFromGame(display, entry, isCollectionChild) {
 }
 
 // ============================================================================
-// ✅ Traduction status (F95) — version UI propre
+// ✅ Traduction status (F95) — version UI propre (sans mode)
 // ============================================================================
 async function renderTranslationStatus(game) {
   if (!game?.url) return;
@@ -634,7 +634,6 @@ async function renderTranslationStatus(game) {
     // 🔄 NON A JOUR
     // =========================
     let reasonText = clean(j.reasonText || "");
-    const mode = clean(j.mode || "");
 
     // Version différente : stockée v1.09 / F95 v2.00. -> Version différente : v1.09 → v2.00
     reasonText = reasonText.replace(
@@ -648,17 +647,15 @@ async function renderTranslationStatus(game) {
       "Titre différent"
     );
 
-    // ✅ enlève un éventuel point final restant (ex: "v2.00.")
+    // enlève point final
     reasonText = reasonText.replace(/\.\s*$/, "");
 
     let text = "🔄 Traduction non à jour";
-    if (reasonText) {
-      text += SEP + reasonText;
-      if (mode) text += ` (${mode})`;
-    }
+    if (reasonText) text += SEP + reasonText;
 
     maj.textContent = text;
     maj.classList.add("maj-ko");
+
   } catch {
     if (maj) {
       maj.textContent = "⚠️ Vérif F95Zone impossible";
