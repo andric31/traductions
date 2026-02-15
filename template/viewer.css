@@ -19,36 +19,10 @@
   --card-hover-border: rgba(255,255,255,0.22);
   --card-hover-glow: rgba(255,255,255,0.18);
 
-
-  /* scrollbar (aligné site principal) */
-  --scrollbar-thumb: #303a57;
-  --scrollbar-track: #0b0e14;
-  --scrollbar-track-webkit: var(--scrollbar-track);
-  --scrollbar-thumb-webkit: var(--scrollbar-thumb);
-  --scrollbar-thumb-webkit-hover: #3f4b6b;
-
-  /* dit au navigateur que c'est dark (évite scrollbar blanche) */
-  color-scheme: dark;
-
 }
-
 
 *{box-sizing:border-box}
 html,body{height:100%}
-
-/* ✅ évite le "shift" quand la scrollbar apparaît + force scrollbar dark */
-html{
-  background: var(--bg);
-  overflow-y: scroll;
-
-  /* Firefox */
-  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
-  scrollbar-width: auto;
-}
-body{
-  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
-}
-
 body{
   margin:0;
   font-family:system-ui,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;
@@ -299,30 +273,6 @@ body{
   color: var(--muted);
 }
 
-
-/* ===== Total (pill en haut) ===== */
-.stat-pill{
-  height:34px;
-  border-radius:8px;
-  border:1px solid var(--border);
-  background:var(--bg2);
-  padding:0 10px;
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  white-space:nowrap;
-
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--muted);
-}
-
-.stat-pill strong{
-  font-size: 15px;
-  font-weight: 900;
-  color: inherit; /* ✅ même couleur que "Total :" */
-}
-
 /* ----- MAIN ----- */
 main{
   padding: calc(var(--topbar-h) + 36px) 12px 16px;
@@ -498,6 +448,207 @@ main{
 }
 .load-more-btn:hover{ filter:brightness(1.12); }
 
+/* ===== Tags multi-sélection (bouton + popover) ===== */
+.tags-btn{
+  height:34px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--btn);
+  color:var(--fg);
+  padding:0 10px;
+  cursor:pointer;
+  white-space:nowrap;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+.tags-btn:hover{ filter:brightness(1.1); }
+
+.tags-count{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:18px;
+  height:18px;
+  padding:0 6px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,0.06);
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+}
+.tags-count.hidden{ display:none !important; }
+
+.tag-popover{
+  position:fixed;
+  z-index:2500;
+  width: 320px;
+  max-width: calc(100vw - 20px);
+  background: rgba(20,24,38,0.98);
+  border:1px solid var(--border);
+  border-radius:12px;
+  box-shadow: 0 18px 45px rgba(0,0,0,.45);
+  overflow:hidden;
+}
+.tag-popover.hidden{ display:none !important; }
+
+.tag-popover .tag-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 10px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.tag-popover .tag-title{
+  font-weight:900;
+  color:#fff;
+}
+.tag-popover .tag-clear{
+  border:1px solid var(--border);
+  background: rgba(255,255,255,0.04);
+  color: var(--fg);
+  border-radius:10px;
+  padding:6px 10px;
+  cursor:pointer;
+  font-weight:800;
+}
+.tag-popover .tag-clear:hover{ filter:brightness(1.10); }
+
+.tag-popover .tag-list{
+  max-height: 320px;
+  overflow:auto;
+  padding:6px;
+}
+
+.tag-item{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 10px;
+  border-radius:10px;
+  border:1px solid transparent;
+  background: transparent;
+  color: var(--fg);
+  cursor:pointer;
+  font-weight:700;
+  text-align:left;
+}
+.tag-item:hover{
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.06);
+}
+
+.tag-item .tag-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+.tag-item .tag-name{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.tag-item .tag-check{
+  width:18px;
+  height:18px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background: rgba(255,255,255,0.03);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  color: transparent; /* invisible quand inactif */
+}
+
+.tag-item.active{
+  background: rgba(90,162,255,0.10);
+  border-color: rgba(90,162,255,0.25);
+}
+.tag-item.active .tag-check{
+  color: var(--fg);
+  background: rgba(90,162,255,0.18);
+  border-color: rgba(90,162,255,0.35);
+}
+
+.viewer-footer{
+  margin-top: 24px;
+  padding: 12px 0 18px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  user-select: none;
+}
+.viewer-footer strong{
+  color: var(--fg);
+  font-weight: 800;
+}
+
+/* =========================
+   ❤️ Bouton Like (icône seule)
+   ========================= */
+
+.like-btn{
+  padding: 0;
+  width: 34px;
+  height: 34px;
+
+  border-radius: 10px;
+  font-size: 18px;
+  line-height: 1;
+
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #9aa0b4; /* gris */
+  cursor: pointer;
+
+  transition: transform .1s ease, filter .15s ease;
+}
+
+.like-btn:hover{
+  filter: brightness(1.15);
+}
+
+.like-btn:active{
+  transform: scale(0.95);
+}
+
+/* =========================
+   Scrollbar sombre (modales & page)
+   ========================= */
+
+/* Chrome / Edge / Brave */
+::-webkit-scrollbar{
+  width: 16px;   /* ⬅ rail légèrement plus large */
+  height: 16px;
+}
+
+::-webkit-scrollbar-track{
+  background: #0f1117;
+}
+
+::-webkit-scrollbar-thumb{
+  background: #2a314b;
+  border-radius: 999px;
+
+  /* ⬅ crée l’effet “thumb plus petit que le rail” */
+  border: 4px solid #0f1117;
+}
+
+::-webkit-scrollbar-thumb:hover{
+  background: #3b4568;
+}
+
+/* Scrollbar spécifique aux modales */
 .modal-body{
   scrollbar-width: thin;                 /* Firefox */
   scrollbar-color: #2a314b #0f1117;       /* Firefox */
@@ -508,7 +659,27 @@ main{
    ========================= */
 
 /* Chrome / Edge / Brave */
-.modal-body.modal-body.modal-body.modal-body/* Firefox */
+.modal-body::-webkit-scrollbar{
+  width: 16px;
+}
+
+.modal-body::-webkit-scrollbar-track{
+  background: #0f1117;
+}
+
+.modal-body::-webkit-scrollbar-thumb{
+  background: #2a314b;
+  border-radius: 999px;
+
+  /* thumb plus fin que le rail */
+  border: 4px solid #0f1117;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover{
+  background: #3b4568;
+}
+
+/* Firefox */
 .modal-body{
   scrollbar-width: auto;               /* ⬅ plus large que thin */
   scrollbar-color: #2a314b #0f1117;
@@ -1540,88 +1711,26 @@ a.card.card-link:focus-visible{
 
 
 /* =========================
-   Scrollbar (alignée site principal)
+   FIX: Total (nombre) même couleur que libellé
    ========================= */
-
-/* largeur verticale */
-::-webkit-scrollbar{
-  width: 14px;
+#countTotal{
+  color: var(--muted) !important;
 }
 
-/* horizontale un peu plus fine (topbar overflow-x) */
-::-webkit-scrollbar:horizontal{
-  height: 10px;
+/* =========================
+   FIX: Footer stats centré + même rendu
+   ========================= */
+.viewer-footer{
+  width: 100% !important;
+  display: block !important;
+  text-align: center !important;
+  font-size: 13px !important;
+  color: var(--muted) !important;
+  padding: 12px 0 18px !important;
+  margin-top: 24px !important;
 }
-
-::-webkit-scrollbar-track{
-  background: var(--scrollbar-track-webkit);
-}
-
-::-webkit-scrollbar-thumb{
-  background: var(--scrollbar-thumb-webkit);
-  border-radius: 999px;
-  border: 3px solid var(--scrollbar-track-webkit);
-}
-
-::-webkit-scrollbar-thumb:hover{
-  background: var(--scrollbar-thumb-webkit-hover);
-}
-
-/* Modales: scrollbar un peu plus large */
-.modal-body::-webkit-scrollbar{
-  width: 16px;
-}
-.modal-body::-webkit-scrollbar-track{
-  background: var(--bg);
-}
-.modal-body::-webkit-scrollbar-thumb{
-  background: var(--scrollbar-thumb-webkit);
-  border-radius: 999px;
-  border: 4px solid var(--bg);
-}
-.modal-body::-webkit-scrollbar-thumb:hover{
-  background: var(--scrollbar-thumb-webkit-hover);
-}
-.modal-body{
-  scrollbar-width: auto;
-  scrollbar-color: var(--scrollbar-thumb) var(--bg);
-}
-
-
-
-/* ✅ Total en haut (même rendu que le site principal) */
-.top-title-tools .total-inline{
-  color: var(--muted);
-}
-.top-title-tools .total-inline #countTotal{
-  color: var(--fg);
-}
-
-
-
-/* ✅ Anti soulignement / anti violet (sécurité totale) */
-a.card.card-link,
-a.card.card-link:visited,
-a.card.card-link:hover,
-a.card.card-link:active{
-  color: inherit !important;
-  text-decoration: none !important;
-}
-a.card.card-link *{
-  color: inherit !important;
-  text-decoration: none !important;
-}
-a.card.card-link .name{
-  text-decoration: none !important;
-}
-
-
-
-/* ✅ évite que le dernier bouton (Rafraîchir) parte "trop à droite" */
-.top-actions > *{
-  flex: 0 0 auto;
-}
-.search-wrap{
-  flex: 1 1 420px;
+.viewer-footer strong{
+  color: var(--fg) !important;
+  font-weight: 800 !important;
 }
 
