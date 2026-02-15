@@ -896,13 +896,17 @@ body.mode-game .btnLike .f95-word .f95-red{
   border-radius:8px;
   border:1px solid var(--border);
   background:var(--btn);
-  color:var(--fg);
+  color:var(--title);        /* ← important */
   padding:0 10px;
   cursor:pointer;
   white-space:nowrap;
   display:inline-flex;
   align-items:center;
   gap:8px;
+
+  font-size:14px;            /* ← manquant */
+  font-weight:800;           /* ← clé principale */
+  letter-spacing:.25px;      /* ← perception taille */
 }
 .tags-btn:hover{ filter:brightness(1.1); }
 
