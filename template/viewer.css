@@ -296,7 +296,31 @@ body{
 .total-inline #countTotal{
   font-size: 15px;
   font-weight: 900;
-  color: inherit;
+  color: var(--muted);
+}
+
+
+/* ===== Total (pill en haut) ===== */
+.stat-pill{
+  height:34px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--bg2);
+  padding:0 10px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  white-space:nowrap;
+
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.stat-pill strong{
+  font-size: 15px;
+  font-weight: 900;
+  color: inherit; /* ✅ même couleur que "Total :" */
 }
 
 /* ----- MAIN ----- */
