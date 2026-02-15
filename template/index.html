@@ -20,7 +20,7 @@
   </script>
 
   <link rel="stylesheet" href="./viewer.css" />
-  <link rel="stylesheet" href="/themes.css" />
+  <link rel="stylesheet" href="./themes.css" />
 
   <!-- ✅ Styles page jeu (rendu comme sur andric31-traductions, sans dossier /game) -->
   <style>
@@ -392,6 +392,13 @@
   </div> <!-- ✅ FIN #page-game -->
 
   <!-- ✅ JS externes en defer (plus stable en accès direct ?id= / ?uid=) -->
+  <!-- ✅ Modules UI (comme ton autre site) -->
+  <script src="./viewer.menu.js" defer></script>
+  <script src="./viewer.menu.about.js" defer></script>
+  <script src="./viewer.menu.extension.js" defer></script>
+  <script src="./viewer.annonce.js" defer></script>
+  <script src="./viewer.agegate.js" defer></script>
+
   <script src="./viewer.js" defer></script>
   <script src="./game.js" defer></script>
 
