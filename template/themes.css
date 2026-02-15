@@ -13,50 +13,73 @@
    ========================================================= */
 @media (prefers-color-scheme: light){
   :root{
-    --bg:#ffffff;
+    /* 🌤️ base claire (blanc cassé, plus reposant) */
+    --bg:#f6f7fb;
     --bg2:#ffffff;
-    --fg:#111318;
-    --muted:#4c556a;
+    --fg:#141824;
+    --muted:#525b71;
 
+    /* 🎯 accents modernes */
     --primary:#2d6cdf;
     --accent:#0f7b50;
 
-    --border:#d6dae6;
+    /* borders / surfaces */
+    --border:#d9deeb;
+    --border-soft: rgba(20,24,36,0.10);
 
-    /* ✅ tuiles grisées, pas blanches */
-    --card:#f2f4f8;
-    --btn:#eef1f8;
+    /* ✅ cartes : plus blanches que le fond → effet premium */
+    --card:#ffffff;
+    --btn:#eef2fb;
 
-    /* ✅ titres */
-    --title:#111318;
+    --title:#0f1320;
 
-    /* ✅ topbar claire */
-    --topbar-bg: rgba(255,255,255,.92);
+    /* topbar : léger verre + ombre */
+    --topbar-bg: rgba(246,247,251,.88);
 
-    /* ✅ gradient body = blanc */
-    --body-grad-1:#ffffff;
-    --body-grad-2:#ffffff;
-    --body-grad-3:#ffffff;
+    /* body gradient : très subtil */
+    --body-grad-1:#f6f7fb;
+    --body-grad-2:#f3f6ff;
+    --body-grad-3:#f7f7fa;
 
-    /* ✅ popovers + hover */
-    --popover-bg: rgba(255,255,255,0.96);
-    --hover-bg: rgba(0,0,0,0.06);
+    /* popovers + hover */
+    --popover-bg: rgba(255,255,255,0.94);
+    --hover-bg: rgba(20,24,36,0.06);
 
-    /* ✅ scrollbars */
-    --scrollbar-thumb:#c4c9d6;
-    --scrollbar-track:#f1f3f7;
+    /* overlay (modals) : un peu plus doux en light */
+    --overlay-bg: rgba(12,14,18,0.45);
+
+    /* thumbs */
+    --thumb-bg: rgba(45,108,223,0.08);
+    --thumb-fallback-bg: rgba(20,24,36,0.06);
+
+    /* scrollbars */
+    --scrollbar-thumb:#c4cadb;
+    --scrollbar-track:#eef1f8;
     --scrollbar-track-webkit: var(--scrollbar-track);
     --scrollbar-thumb-webkit: var(--scrollbar-thumb);
-    --scrollbar-thumb-webkit-hover:#b0b6c6;
+    --scrollbar-thumb-webkit-hover:#b0b7cc;
 
-    /* ✅ hover “theme engine” (fallback light) */
-    --card-hover-border: rgba(0,0,0,0.18);
+    /* hover “theme engine” (light) */
+    --card-hover-border: rgba(45,108,223,0.55);
     --card-hover-shadow:
-      0 0 0 1px rgba(0,0,0,0.12),
-      0 12px 34px rgba(0,0,0,0.10);
+      0 0 0 1px rgba(45,108,223,0.18),
+      0 14px 38px rgba(17,19,24,0.12);
     --card-hover-bg: var(--card);
 
+    --top-actions-border: rgba(20,24,36,0.05);
+    --soft-04: rgba(20,24,36,0.04);
+    --soft-05: rgba(20,24,36,0.06);
+
     color-scheme: light;
+  }
+
+  /* 🌫️ ambiance “papier” très légère (évite le blanc plat) */
+  body{
+    background:
+      radial-gradient(1200px 600px at 18% 0%, rgba(45,108,223,0.10), transparent 60%),
+      radial-gradient(900px 500px at 90% 10%, rgba(15,123,80,0.08), transparent 55%),
+      linear-gradient(180deg, var(--body-grad-1), var(--body-grad-2) 30%, var(--body-grad-3));
+    background-attachment: fixed;
   }
 }
 
@@ -102,48 +125,65 @@
 }
 
 /* =========================================================
-   FORCÉ : blanc (même rendu que auto light, mais forcé)
+   FORCÉ : blanc (clair premium, pas “blanc pur”)
    ========================================================= */
-:root[data-theme="white"]{
-  --bg:#ffffff;
+:root[data-theme="white"],
+html[data-theme="white"],
+body[data-theme="white"]{
+  --bg:#f6f7fb;
   --bg2:#ffffff;
-  --fg:#111318;
-  --muted:#4c556a;
+  --fg:#141824;
+  --muted:#525b71;
 
   --primary:#2d6cdf;
   --accent:#0f7b50;
 
-  --border:#d6dae6;
+  --border:#d9deeb;
+  --border-soft: rgba(20,24,36,0.10);
 
-  /* ✅ tuiles grisées */
-  --card:#f2f4f8;
-  --btn:#eef1f8;
+  --card:#ffffff;
+  --btn:#eef2fb;
 
-  --title:#111318;
+  --title:#0f1320;
+  --topbar-bg: rgba(246,247,251,.88);
 
-  --topbar-bg: rgba(255,255,255,.92);
+  --body-grad-1:#f6f7fb;
+  --body-grad-2:#f3f6ff;
+  --body-grad-3:#f7f7fa;
 
-  --body-grad-1:#ffffff;
-  --body-grad-2:#ffffff;
-  --body-grad-3:#ffffff;
+  --popover-bg: rgba(255,255,255,0.94);
+  --hover-bg: rgba(20,24,36,0.06);
 
-  --popover-bg: rgba(255,255,255,0.96);
-  --hover-bg: rgba(0,0,0,0.06);
+  --overlay-bg: rgba(12,14,18,0.45);
 
-  --scrollbar-thumb:#c4c9d6;
-  --scrollbar-track:#f1f3f7;
+  --thumb-bg: rgba(45,108,223,0.08);
+  --thumb-fallback-bg: rgba(20,24,36,0.06);
+
+  --scrollbar-thumb:#c4cadb;
+  --scrollbar-track:#eef1f8;
   --scrollbar-track-webkit: var(--scrollbar-track);
   --scrollbar-thumb-webkit: var(--scrollbar-thumb);
-  --scrollbar-thumb-webkit-hover:#b0b6c6;
+  --scrollbar-thumb-webkit-hover:#b0b7cc;
 
-  /* ✅ hover “theme engine” (white) */
-  --card-hover-border: rgba(0,0,0,0.18);
+  --top-actions-border: rgba(20,24,36,0.05);
+  --soft-04: rgba(20,24,36,0.04);
+  --soft-05: rgba(20,24,36,0.06);
+
+  --card-hover-border: rgba(45,108,223,0.55);
   --card-hover-shadow:
-    0 0 0 1px rgba(0,0,0,0.12),
-    0 12px 34px rgba(0,0,0,0.10);
+    0 0 0 1px rgba(45,108,223,0.18),
+    0 14px 38px rgba(17,19,24,0.12);
   --card-hover-bg: var(--card);
 
   color-scheme: light;
+}
+
+:root[data-theme="white"] body{
+  background:
+    radial-gradient(1200px 600px at 18% 0%, rgba(45,108,223,0.10), transparent 60%),
+    radial-gradient(900px 500px at 90% 10%, rgba(15,123,80,0.08), transparent 55%),
+    linear-gradient(180deg, var(--body-grad-1), var(--body-grad-2) 30%, var(--body-grad-3));
+  background-attachment: fixed;
 }
 
 /* =========================================================
