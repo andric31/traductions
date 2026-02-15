@@ -203,15 +203,14 @@ body[data-theme="white"]{
 }
 
 /* =========================================================
-   NOËL (COULEURS = ton themes.css envoyé)
+   NOËL — couleurs originales + ambiance étoiles
    ========================================================= */
 :root[data-theme="noel"],
 html[data-theme="noel"],
 body[data-theme="noel"]{
-  /* ✅ couleurs exactes du fichier envoyé */
+  /* === TES COULEURS ORIGINALES (inchangées) === */
   --bg:#061611;
   --bg2:#0a2018;
-
   --fg:#f4fff9;
   --muted:#c7e6d6;
 
@@ -219,82 +218,58 @@ body[data-theme="noel"]{
   --accent:#ff3b3b;
 
   --border:#1f5a43;
-
   --card:#0f1c17;
   --btn:#163a2c;
 
   --title: var(--fg);
-
-  --topbar-bg: linear-gradient(
-    90deg,
-    rgba(6,22,17,.95),
-    rgba(255,59,59,.22)
-  );
-
-  --body-grad-1:#040d0a;
-  --body-grad-2:#061611;
-  --body-grad-3:#0b2219;
+  --topbar-bg: rgba(6,22,17,.92);
 
   --popover-bg: rgba(15,28,23,.98);
   --hover-bg: rgba(255,255,255,0.08);
 
   --scrollbar-thumb:#2f8f68;
   --scrollbar-track:#030a07;
-  --scrollbar-track-webkit: var(--scrollbar-track);
-  --scrollbar-thumb-webkit: var(--scrollbar-thumb);
   --scrollbar-thumb-webkit-hover:#3fb07c;
 
-  /* ✅ compléments pour rester cohérent avec ton viewer.css */
-  --border-soft: rgba(244,255,249,0.10);
-  --top-actions-border: rgba(255,255,255,0.05);
-  --soft-04: rgba(255,255,255,0.04);
-  --soft-05: rgba(255,255,255,0.06);
+  --border-soft: rgba(255,255,255,.08);
+  --soft-04: rgba(255,255,255,.04);
+  --soft-05: rgba(255,255,255,.06);
 
-  --overlay-bg: rgba(0,0,0,0.62);
-  --thumb-bg: rgba(255,255,255,0.06);
-  --thumb-fallback-bg: rgba(0,0,0,0.22);
+  --overlay-bg: rgba(0,0,0,.62);
+  --thumb-bg: rgba(255,255,255,.06);
+  --thumb-fallback-bg: rgba(0,0,0,.22);
 
-  /* ✅ hover “très Noël” (rouge + un peu vert) */
-  --card-hover-border: #ff3b3b;
+  /* hover visible mais discret */
+  --card-hover-border:#ff3b3b;
   --card-hover-shadow:
-    0 0 0 1px rgba(255,59,59,.65),
-    0 0 26px rgba(255,59,59,.22),
-    0 18px 44px rgba(0,0,0,.55);
-  --card-hover-bg:
-    linear-gradient(145deg, rgba(255,59,59,.10), rgba(31,170,89,.08));
+    0 0 0 1px rgba(255,59,59,.55),
+    0 0 18px rgba(255,59,59,.18),
+    0 14px 34px rgba(0,0,0,.55);
+  --card-hover-bg: var(--card);
 
   color-scheme: dark;
 }
 
-/* (tu peux garder ton background “neige + aurore” tel quel) */
+/* ⭐ ciel étoilé (garde ton effet préféré) */
 :root[data-theme="noel"] body{
   background:
-    radial-gradient(circle at 10% 20%, rgba(255,255,255,0.22) 0 1px, transparent 2px),
-    radial-gradient(circle at 30% 80%, rgba(255,255,255,0.18) 0 1px, transparent 2px),
-    radial-gradient(circle at 70% 35%, rgba(255,255,255,0.20) 0 1px, transparent 2px),
-    radial-gradient(circle at 85% 70%, rgba(255,255,255,0.16) 0 1px, transparent 2px),
-    radial-gradient(1200px 700px at 15% 0%, rgba(31,170,89,0.18), transparent 60%),
-    radial-gradient(1100px 650px at 85% 10%, rgba(255,59,59,0.12), transparent 55%),
-    radial-gradient(900px 600px at 60% 0%, rgba(72,155,255,0.12), transparent 60%),
-    linear-gradient(180deg, #04080c 0%, #061611 35%, #0a2018 100%);
-  background-size:
-    220px 220px,
-    260px 260px,
-    240px 240px,
-    280px 280px,
-    auto, auto, auto,
-    auto;
+    radial-gradient(circle at 10% 20%, rgba(255,255,255,.22) 0 1px, transparent 2px),
+    radial-gradient(circle at 30% 80%, rgba(255,255,255,.18) 0 1px, transparent 2px),
+    radial-gradient(circle at 70% 35%, rgba(255,255,255,.20) 0 1px, transparent 2px),
+    radial-gradient(circle at 85% 70%, rgba(255,255,255,.16) 0 1px, transparent 2px),
+    linear-gradient(180deg, #04080c 0%, #061611 40%, #0a2018 100%);
+  background-size: 220px 220px,260px 260px,240px 240px,280px 280px,auto;
   background-attachment: fixed;
 }
 
 
 /* =========================================================
-   HALLOWEEN (COULEURS = ton themes.css envoyé)
+   HALLOWEEN — couleurs originales + ambiance
    ========================================================= */
 :root[data-theme="halloween"],
 html[data-theme="halloween"],
 body[data-theme="halloween"]{
-  /* ✅ couleurs exactes du fichier envoyé */
+  /* === TES COULEURS ORIGINALES === */
   --bg:#08050c;
   --bg2:#110916;
 
@@ -305,62 +280,46 @@ body[data-theme="halloween"]{
   --accent:#9c6bff;
 
   --border:#3a1f4d;
-
   --card:#140a1a;
   --btn:#1c0f25;
 
   --title: var(--fg);
-
-  --topbar-bg: linear-gradient(
-    90deg,
-    rgba(8,5,12,.95),
-    rgba(255,122,0,.22)
-  );
-
-  --body-grad-1:#050308;
-  --body-grad-2:#08050c;
-  --body-grad-3:#120816;
+  --topbar-bg: rgba(8,5,12,.92);
 
   --popover-bg: rgba(20,10,26,.98);
   --hover-bg: rgba(255,255,255,0.06);
 
   --scrollbar-thumb:#6a35a0;
   --scrollbar-track:#030205;
-  --scrollbar-track-webkit: var(--scrollbar-track);
-  --scrollbar-thumb-webkit: var(--scrollbar-thumb);
   --scrollbar-thumb-webkit-hover:#8446c8;
 
-  /* ✅ compléments pour rester cohérent avec ton viewer.css */
-  --border-soft: rgba(255,243,230,0.10);
-  --top-actions-border: rgba(255,255,255,0.05);
-  --soft-04: rgba(255,255,255,0.04);
-  --soft-05: rgba(255,255,255,0.06);
+  --border-soft: rgba(255,255,255,.08);
+  --soft-04: rgba(255,255,255,.04);
+  --soft-05: rgba(255,255,255,.06);
 
-  --overlay-bg: rgba(0,0,0,0.66);
-  --thumb-bg: rgba(255,122,0,0.10);
-  --thumb-fallback-bg: rgba(0,0,0,0.25);
+  --overlay-bg: rgba(0,0,0,.66);
+  --thumb-bg: rgba(255,122,0,.10);
+  --thumb-fallback-bg: rgba(0,0,0,.25);
 
-  /* ✅ hover “Halloween” (orange + glow) */
-  --card-hover-border: #ff7a00;
+  --card-hover-border:#ff7a00;
   --card-hover-shadow:
-    0 0 0 1px rgba(255,122,0,.70),
-    0 0 30px rgba(255,122,0,.22),
-    0 18px 44px rgba(0,0,0,.60);
-  --card-hover-bg:
-    linear-gradient(145deg, rgba(255,122,0,.10), rgba(156,107,255,.07));
+    0 0 0 1px rgba(255,122,0,.55),
+    0 0 24px rgba(255,122,0,.18),
+    0 14px 34px rgba(0,0,0,.65);
+  --card-hover-bg: var(--card);
 
   color-scheme: dark;
 }
 
-/* (tu peux garder ton background “fumée + glow” tel quel) */
+/* 🌫️ brouillard */
 :root[data-theme="halloween"] body{
   background:
-    radial-gradient(1200px 700px at 18% 0%, rgba(255,122,0,0.22), transparent 58%),
-    radial-gradient(1000px 700px at 80% 5%, rgba(156,107,255,0.18), transparent 55%),
-    radial-gradient(900px 600px at 50% 85%, rgba(0,0,0,0.55), transparent 55%),
-    linear-gradient(180deg, #050308 0%, #08050c 35%, #110916 100%);
+    radial-gradient(1200px 700px at 18% 0%, rgba(255,122,0,.22), transparent 60%),
+    radial-gradient(1000px 700px at 80% 5%, rgba(156,107,255,.18), transparent 55%),
+    linear-gradient(180deg, #050308 0%, #08050c 40%, #110916 100%);
   background-attachment: fixed;
 }
+
 
 /* =====================================================
    THEME HOVER ENGINE (1 seule fois)
