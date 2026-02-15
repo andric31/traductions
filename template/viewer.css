@@ -296,7 +296,7 @@ body{
 .total-inline #countTotal{
   font-size: 15px;
   font-weight: 900;
-  color: var(--muted);
+  color: var(--muted) !important;
 }
 
 /* ----- MAIN ----- */
@@ -915,6 +915,23 @@ body.mode-game .btnLike .f95-word .f95-red{
 .ratingStar:active,
 .ratingCancel:active{ transform: translateY(1px); }
 
+
+/* =========================
+   Footer stats (identique viewer principal)
+   ========================= */
+.viewer-footer{
+  margin-top: 24px;
+  padding: 12px 0 18px;
+  width: 100%;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  user-select: none;
+}
+.viewer-footer strong{
+  color: var(--fg);
+  font-weight: 800;
+}
 /* ===== AGE GATE ===== */
 #age-gate {
   position: fixed;
