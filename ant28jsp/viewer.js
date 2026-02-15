@@ -6,19 +6,36 @@
   "use strict";
 
   // =========================
+  // Thèmes (dark forcé)
+  // =========================
+  
+  function getViewerTheme() {
+    return "dark";
+  }
+  
+  function setViewerTheme() {
+    // on verrouille la valeur (et on évite que l'UI réécrive autre chose)
+    try { localStorage.setItem("viewerTheme", "dark"); } catch {}
+  }
+  
+  function applyViewerTheme() {
+    // 🔒 force themes.css à appliquer UNIQUEMENT le sombre
+    document.documentElement.setAttribute("data-theme", "dark");
+  }
+
+  // =========================
   // ☰ Menu (popover) — lien vers l’accueil général
   // (utilisé par game.js via window.ViewerMenu.init())
   // =========================
   (function ensureTopMenu(){
     if (window.ViewerMenu && typeof window.ViewerMenu.init === "function") return;
-  
+
     function prettyNameFromSlug(slug){
       const s = String(slug || "").trim().toLowerCase();
       if (!s) return "";
-      // "ant28jsp" => "Ant28jsp", "andric31" => "Andric31"
       return s.charAt(0).toUpperCase() + s.slice(1);
     }
-  
+
     function buildPopover(){
       let pop = document.getElementById("topMenuPopover");
       if (!pop) {
@@ -28,48 +45,38 @@
         pop.setAttribute("role", "menu");
         document.body.appendChild(pop);
       }
-  
-      // ✅ Toujours reconstruire (pour prendre en compte window.__SITE_NAME__)
+
       pop.dataset.built = "1";
-      pop.innerHTML = ""; // <-- purge et reconstruit
-  
-      // ✅ détecte si on est sur "page jeu" (index.html?id=... ou ?uid=...)
+      pop.innerHTML = "";
+
       let isGame = false;
       try {
         const p = new URLSearchParams(location.search);
         isGame = !!(p.get("id") || p.get("uid"));
       } catch {}
-  
-      // ✅ calcule le chemin du traducteur (retour liste)
+
       const slug = String(window.__SITE_SLUG__ || "").trim().toLowerCase();
       const appPath = slug ? `/${slug}/` : `/`;
       const niceName = String(window.__SITE_NAME__ || prettyNameFromSlug(slug) || "");
-  
-      // ✅ Afficher "Retour à la liste" seulement si on est sur une page jeu
+
       if (isGame) {
         const aBack = document.createElement("a");
         aBack.className = "menu-item";
-        aBack.href = appPath;               // ✅ enlève ?id= / ?uid=
+        aBack.href = appPath;
         aBack.target = "_self";
         aBack.rel = "noopener";
-  
-        aBack.textContent = niceName
-          ? `📚 Retour à la liste · ${niceName}`
-          : "📚 Retour à la liste";
-  
+        aBack.textContent = niceName ? `📚 Retour à la liste · ${niceName}` : "📚 Retour à la liste";
         aBack.style.display = "block";
         aBack.style.textDecoration = "none";
         pop.appendChild(aBack);
-  
-        // séparateur léger
+
         const sep = document.createElement("div");
         sep.style.height = "1px";
         sep.style.margin = "6px 8px";
         sep.style.background = "rgba(255,255,255,0.08)";
         pop.appendChild(sep);
       }
-  
-      // Item : Accueil général (toujours)
+
       const aHome = document.createElement("a");
       aHome.className = "menu-item";
       aHome.href = "https://traductions.pages.dev/";
@@ -79,15 +86,12 @@
       aHome.style.display = "block";
       aHome.style.textDecoration = "none";
       pop.appendChild(aHome);
-  
-      // (plus de bouton "Fermer")
+
       return pop;
     }
-  
+
     window.ViewerMenu = {
-      init(){
-        buildPopover();
-      },
+      init(){ buildPopover(); },
       closeMenu(){
         const pop = document.getElementById("topMenuPopover");
         if (pop) pop.classList.add("hidden");
@@ -95,28 +99,54 @@
     };
   })();
 
-
   // =========================
   // ✅ Détection universelle SLUG + chemins
   // =========================
   function detectSlug() {
-    // 1) override possible depuis index.html : window.__SITE_SLUG__ = "ikaros";
     try {
       const forced = (window.__SITE_SLUG__ || "").toString().trim();
       if (forced) return forced;
     } catch {}
-
-    // 2) sinon, 1er segment du pathname
-    // ex: /ikaros/ -> ikaros ; /ikaros/index.html -> ikaros
     const segs = (location.pathname || "/").split("/").filter(Boolean);
     return (segs[0] || "").trim();
   }
 
-  const SLUG = detectSlug();                 // "ikaros" / "ant28jsp" / "..."
-  const APP_PATH = SLUG ? `/${SLUG}/` : `/`; // base pour les liens internes
+  const SLUG = detectSlug();
+  const APP_PATH = SLUG ? `/${SLUG}/` : `/`;
   const DEFAULT_URL = SLUG ? `/f95list_${SLUG}.json` : `/f95list.json`;
 
   const $ = (sel) => document.querySelector(sel);
+
+  // =========================
+  // ✅ TOP RIGHT TOOLS (comme ton site principal)
+  // - monte Total + Cols + Theme + PageSize dans #topTitleTools
+  // - NE MONTE PAS #refresh
+  // - remet #refresh en bas (top-actions)
+  // =========================
+  function relocateTopRightTools() {
+    const host = document.getElementById("topTitleTools");
+    const mini = document.querySelector(".top-mini");
+    const actions = document.querySelector(".top-actions");
+    const refreshBtn = document.getElementById("refresh");
+    if (!host || !mini) return;
+
+    // évite de refaire 50 fois si init() relance
+    if (host.dataset.moved === "1") {
+      // mais on sécurise quand même refresh
+      if (refreshBtn && actions && refreshBtn.parentElement !== actions) actions.appendChild(refreshBtn);
+      return;
+    }
+    host.dataset.moved = "1";
+
+    // on déplace tout ce que contient .top-mini sauf #refresh
+    const toMove = [...mini.children].filter(el => el && el.id !== "refresh");
+    toMove.forEach(el => host.appendChild(el));
+
+    // si refresh se trouvait dans .top-mini ou ailleurs, on le remet en bas
+    if (refreshBtn && actions && refreshBtn.parentElement !== actions) {
+      actions.appendChild(refreshBtn);
+    }
+  }
 
   // =========================
   // 🔞 Age gate (intégré ici)
@@ -154,11 +184,8 @@
     const id = (g.id || "").toString().trim();
     const uid = (g.uid ?? "").toString().trim();
 
-    // Sous-jeu de collection : /<slug>/?id=<collection>&uid=<uid>
     if (coll) return `${APP_PATH}?id=${encodeURIComponent(coll)}&uid=${encodeURIComponent(uid)}`;
-    // Jeu normal / collection parent : /<slug>/?id=<id>
     if (id) return `${APP_PATH}?id=${encodeURIComponent(id)}`;
-    // Fallback uid seul
     return `${APP_PATH}?uid=${encodeURIComponent(uid)}`;
   }
 
@@ -208,7 +235,7 @@
   // Stats jeux (vues + likes + téléchargements)
   // =========================
   const GAME_STATS = {
-    views: new Map(), // key(uid:xxx) -> number
+    views: new Map(),
     mega: new Map(),
     likes: new Map(),
     loaded: false,
@@ -455,12 +482,8 @@
     const coll = String(game.collection || "");
     const uid = game.uid ?? "";
 
-    const displayTitleRaw = String(
-      game.gameData && game.gameData.title ? game.gameData.title : game.title || ""
-    );
-    const displayImageRaw = String(
-      game.gameData && game.gameData.imageUrl ? game.gameData.imageUrl : game.imageUrl || ""
-    );
+    const displayTitleRaw = String(game.gameData?.title ? game.gameData.title : game.title || "");
+    const displayImageRaw = String(game.gameData?.imageUrl ? game.gameData.imageUrl : game.imageUrl || "");
 
     const displayTags = Array.isArray(game.gameData?.tags)
       ? game.gameData.tags.slice()
@@ -483,7 +506,6 @@
 
     const ckey = counterKeyOfUid(uid);
 
-    // moteur : priorité gameData.engine si présent
     let engines = Array.isArray(c.engines) ? c.engines : [];
     if (game.gameData?.engine) {
       const engNorm = ENGINE_RAW[slugify(game.gameData.engine)] || game.gameData.engine;
@@ -843,11 +865,17 @@
 
     for (let i = 0; i < limit; i++) {
       const g = state.filtered[i];
-      const card = document.createElement("article");
-      card.className = "card";
+      const card = document.createElement("a");
+      card.className = "card card-link";
 
       const imgSrc = (g.image || "").trim() || "/favicon.png";
       const pageHref = buildGameUrl(g.__raw || g);
+
+      // ✅ Tuile entièrement cliquable (comme le site principal)
+      card.href = pageHref;
+      card.target = "_blank";
+      card.rel = "noopener";
+      card.setAttribute("aria-label", `Ouvrir : ${getDisplayTitle(g.__raw || g)}`);
 
       card.innerHTML = `
         <img src="${imgSrc}" class="thumb" alt=""
@@ -856,11 +884,6 @@
         <div class="body">
           <h3 class="name clamp-2">${escapeHtml(getDisplayTitle(g.__raw || g))}</h3>
           <div class="badges-line one-line">${badgesLineHtml(g)}</div>
-          <div class="actions">
-            <a class="btn btn-page" href="${pageHref}" target="_blank" rel="noopener">
-              📄 Ouvrir la page
-            </a>
-          </div>
         </div>
       `;
 
@@ -986,6 +1009,25 @@
     $("#gridEmpty")?.classList.add("hidden");
 
     try {
+      // ✅ thème (persistant)
+      const themeSel = document.getElementById("theme");
+      const themeVal = getViewerTheme();
+      applyViewerTheme(themeVal);
+      if (themeSel) {
+        themeSel.value = themeVal;
+        if (themeSel.dataset.bound !== "1") {
+          themeSel.dataset.bound = "1";
+          themeSel.addEventListener("change", (e) => {
+            const v = (e.target?.value || "auto").trim() || "auto";
+            setViewerTheme(v);
+            applyViewerTheme(v);
+          });
+        }
+      }
+
+      // ✅ top-right tools (comme ton site) + refresh en bas
+      relocateTopRightTools();
+
       state.cols = getViewerCols();
       const colsSel = $("#cols");
       if (colsSel) colsSel.value = state.cols;
