@@ -75,8 +75,8 @@
       width:34px;
       height:34px;
       border-radius:10px;
-      border: 1px solid var(--border);
-      background: var(--btn);
+      border:1px solid var(--border);
+      background: rgba(255,255,255,0.05);
       display:inline-flex;
       align-items:center;
       justify-content:center;
@@ -87,7 +87,7 @@
     body.mode-game #page-game .hamburger-btn:hover{ filter: brightness(1.10); }
     body.mode-game #page-game .hamburger-btn:active{ transform: translateY(1px); }
     body.mode-game #page-game .ham-lines{ width:16px; height:12px; display:flex; flex-direction:column; justify-content:space-between; }
-    body.mode-game #page-game .ham-lines span{ display:block; height:2px; border-radius:999px; background: var(--fg); opacity:0.92; }
+    body.mode-game #page-game .ham-lines span{ display:block; height:2px; border-radius:999px; background:#ffffff; opacity:0.92; }
 
     /* Cover */
     body.mode-game #page-game .cover{
@@ -96,15 +96,15 @@
       display:block;
       border-radius: 14px;
       border: 1px solid var(--border);
-      background: var(--thumb-bg);
+      background: rgba(255,255,255,0.03);
       margin: 10px 0 12px;
       object-fit: cover;
     }
 
     /* Encadrés info */
     body.mode-game #page-game .infoBlock{
-      background: var(--soft-04);
-      border:  1px solid var(--border-soft);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
       border-radius: 14px;
       padding: 12px;
       margin-top: 12px;
@@ -190,95 +190,84 @@
     </div>
 
     <header class="topbar" role="banner">
-      <div class="top-title-row top-title-flex">
-        <!-- ✅ id unique (viewer) -->
-        <button id="hamburgerBtnViewer" class="hamburger-btn" type="button"
-                aria-label="Menu" title="Menu" aria-expanded="false">
-          <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
-        </button>
+  <div class="top-title-row">
+    <h1 id="viewerTitle">f95list_viewer</h1>
+  </div>
 
-        <h1 id="viewerTitle">f95list_viewer</h1>
+  <div class="top-actions">
+    <div class="search-wrap">
+      <input id="search" type="search" placeholder="Rechercher un jeu." autocomplete="off" />
+      <span class="stat-in-bar total-inline">Total : <strong id="countTotal">0</strong></span>
+    </div>
 
-        <!-- ✅ Outils en haut à droite (comme le site principal) -->
-        <div id="topTitleTools" class="top-title-tools">
-          <span class="total-inline">Total : <strong id="countTotal">0</strong></span>
+    <select id="sort" title="Trier">
+      <option value="updatedAtLocal-desc">Date de la traduction</option>
+      <option value="mega-desc">📥 Téléchargements</option>
+      <option value="views-desc">👁️ Vues</option>
+      <option value="likes-desc">❤️ J'aime</option>
+      <option value="title-asc">Titre A→Z</option>
+      <option value="title-desc">Titre Z→A</option>
+      <option value="updatedAt-desc">Date Thread F95 (Maj)</option>
+    </select>
 
-          <select id="cols" title="Vignettes par ligne">
-            <option value="auto">Vignettes/ligne : Auto</option>
-            <option value="1">1 par ligne</option>
-            <option value="2">2 par ligne</option>
-            <option value="3">3 par ligne</option>
-            <option value="4">4 par ligne</option>
-            <option value="5">5 par ligne</option>
-            <option value="6">6 par ligne</option>
-            <option value="7">7 par ligne</option>
-            <option value="8">8 par ligne</option>
-            <option value="9">9 par ligne</option>
-            <option value="10">10 par ligne</option>
-          </select>
+    <select id="filterCat" title="Catégorie">
+      <option value="all">Catégorie : Toutes</option>
+      <option value="VN">VN</option>
+      <option value="Collection">Collection</option>
+    </select>
 
-          <select id="pageSize" title="Affichage progressif">
-            <option value="50">Afficher par 50</option>
-            <option value="100">Afficher par 100</option>
-            <option value="all">Tout afficher</option>
-          </select>
+    <select id="filterEngine" title="Moteur">
+      <option value="all">Moteur : Tous</option>
+      <option value="Ren'Py">Ren'Py</option>
+      <option value="RPGM">RPGM</option>
+      <option value="Unity">Unity</option>
+      <option value="Others">Others</option>
+      <option value="Wolf RPG">Wolf RPG</option>
+    </select>
 
-          <select id="theme" title="Thème">
-            <option value="auto">Thème : Auto (Windows)</option>
-            <option value="dark">Thème : Sombre</option>
-            <option value="white">Thème : Blanc</option>
-            <option value="noel">Thème : Noël</option>
-            <option value="halloween">Thème : Halloween</option>
-          </select>
-        </div>
-      </div>
+    <select id="filterStatus" title="Statut">
+      <option value="all">Statut : Tous</option>
+      <option value="Completed">Completed</option>
+      <option value="Abandoned">Abandoned</option>
+      <option value="Onhold">Onhold</option>
+      <option value="En cours">En cours</option>
+    </select>
 
-      <div class="top-actions">
-        <div class="search-wrap">
-          <input id="search" type="search" placeholder="Rechercher un jeu." autocomplete="off" />
-        </div>
+    <button id="tagsBtn" type="button" class="tags-btn" aria-haspopup="menu" aria-expanded="false">
+      🏷️ Tags <span id="tagsCount" class="tags-count hidden">0</span>
+    </button>
 
-        <select id="sort" title="Trier">
-          <option value="updatedAtLocal-desc">Date de la traduction</option>
-          <option value="mega-desc">📥 Téléchargements</option>
-          <option value="views-desc">👁️ Vues</option>
-          <option value="likes-desc">❤️ J'aime</option>
-          <option value="title-asc">Titre A→Z</option>
-          <option value="title-desc">Titre Z→A</option>
-          <option value="updatedAt-desc">Date Thread F95 (Maj)</option>
-        </select>
+    <select id="cols" title="Vignettes par ligne">
+      <option value="auto">Vignettes/ligne : Auto</option>
+      <option value="1">1 par ligne</option>
+      <option value="2">2 par ligne</option>
+      <option value="3">3 par ligne</option>
+      <option value="4">4 par ligne</option>
+      <option value="5">5 par ligne</option>
+      <option value="6">6 par ligne</option>
+      <option value="7">7 par ligne</option>
+      <option value="8">8 par ligne</option>
+      <option value="9">9 par ligne</option>
+      <option value="10">10 par ligne</option>
+    </select>
 
-        <select id="filterCat" title="Catégorie">
-          <option value="all">Catégorie : Toutes</option>
-          <option value="VN">VN</option>
-          <option value="Collection">Collection</option>
-        </select>
+    <select id="pageSize" title="Affichage progressif">
+      <option value="50">Afficher par 50</option>
+      <option value="100">Afficher par 100</option>
+      <option value="all">Tout afficher</option>
+    </select>
 
-        <select id="filterEngine" title="Moteur">
-          <option value="all">Moteur : Tous</option>
-          <option value="Ren'Py">Ren'Py</option>
-          <option value="RPGM">RPGM</option>
-          <option value="Unity">Unity</option>
-          <option value="Others">Others</option>
-          <option value="Wolf RPG">Wolf RPG</option>
-        </select>
+    <select id="theme" title="Thème">
+      <option value="auto">Thème : Auto (Windows)</option>
+      <option value="dark">Thème : Sombre</option>
+      <option value="white">Thème : Blanc</option>
+      <option value="noel">Thème : Noël</option>
+      <option value="halloween">Thème : Halloween</option>
+    </select>
 
-        <select id="filterStatus" title="Statut">
-          <option value="all">Statut : Tous</option>
-          <option value="Completed">Completed</option>
-          <option value="Abandoned">Abandoned</option>
-          <option value="Onhold">Onhold</option>
-          <option value="En cours">En cours</option>
-        </select>
-
-        <button id="tagsBtn" type="button" class="tags-btn" aria-haspopup="menu" aria-expanded="false">
-          🏷️ Tags <span id="tagsCount" class="tags-count hidden">0</span>
-        </button>
-
-        <!-- ✅ Rafraîchir remis en bas -->
-        <button id="refresh" type="button">Rafraîchir</button>
-      </div>
-    </header>
+    <button id="refresh" type="button">Rafraîchir</button>
+  </div>
+</header>
 
     <main role="main">
       <section id="gridMode" class="grid-wrap" aria-label="Vignettes des jeux">
@@ -421,17 +410,18 @@
     })();
   </script>
 
-  <!-- ✅ pont hamburger : si tes JS attendent #hamburgerBtn -->
+  <!-- ✅ pont hamburger : en mode jeu seulement (game.js/menu attendent #hamburgerBtn) -->
   <script>
     (function(){
       function ensureAlias(){
-        const hasAlias = document.getElementById("hamburgerBtn");
-        if (hasAlias) return;
-
         const p = new URLSearchParams(location.search);
         const hasGame = (p.get("id")||"").trim() || (p.get("uid")||"").trim();
+        if (!hasGame) return; // ✅ en mode viewer, viewer.js injecte déjà le bouton
 
-        const src = document.getElementById(hasGame ? "hamburgerBtnGame" : "hamburgerBtnViewer");
+        // si déjà présent (ex: viewer.js a injecté), on ne touche pas
+        if (document.getElementById("hamburgerBtn")) return;
+
+        const src = document.getElementById("hamburgerBtnGame");
         if (!src) return;
 
         const alias = src.cloneNode(true);
