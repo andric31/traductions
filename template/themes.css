@@ -203,12 +203,11 @@ body[data-theme="white"]{
 }
 
 /* =========================================================
-   NOËL — couleurs originales + ambiance étoiles
+   NOËL — couleurs originales + étoiles + topbar ambiance
    ========================================================= */
 :root[data-theme="noel"],
 html[data-theme="noel"],
 body[data-theme="noel"]{
-  /* === TES COULEURS ORIGINALES (inchangées) === */
   --bg:#061611;
   --bg2:#0a2018;
   --fg:#f4fff9;
@@ -222,7 +221,14 @@ body[data-theme="noel"]{
   --btn:#163a2c;
 
   --title: var(--fg);
-  --topbar-bg: rgba(6,22,17,.92);
+
+  /* ⭐ barre ambiance rouge + vert */
+  --topbar-bg: linear-gradient(
+    90deg,
+    rgba(6,22,17,.92) 0%,
+    rgba(255,59,59,.22) 55%,
+    rgba(31,170,89,.16) 100%
+  );
 
   --popover-bg: rgba(15,28,23,.98);
   --hover-bg: rgba(255,255,255,0.08);
@@ -239,7 +245,6 @@ body[data-theme="noel"]{
   --thumb-bg: rgba(255,255,255,.06);
   --thumb-fallback-bg: rgba(0,0,0,.22);
 
-  /* hover visible mais discret */
   --card-hover-border:#ff3b3b;
   --card-hover-shadow:
     0 0 0 1px rgba(255,59,59,.55),
@@ -250,7 +255,7 @@ body[data-theme="noel"]{
   color-scheme: dark;
 }
 
-/* ⭐ ciel étoilé (garde ton effet préféré) */
+/* ⭐ ciel étoilé */
 :root[data-theme="noel"] body{
   background:
     radial-gradient(circle at 10% 20%, rgba(255,255,255,.22) 0 1px, transparent 2px),
@@ -264,12 +269,11 @@ body[data-theme="noel"]{
 
 
 /* =========================================================
-   HALLOWEEN — couleurs originales + ambiance
+   HALLOWEEN — couleurs originales + ambiance + topbar
    ========================================================= */
 :root[data-theme="halloween"],
 html[data-theme="halloween"],
 body[data-theme="halloween"]{
-  /* === TES COULEURS ORIGINALES === */
   --bg:#08050c;
   --bg2:#110916;
 
@@ -284,7 +288,14 @@ body[data-theme="halloween"]{
   --btn:#1c0f25;
 
   --title: var(--fg);
-  --topbar-bg: rgba(8,5,12,.92);
+
+  /* 🎃 barre orange + violet */
+  --topbar-bg: linear-gradient(
+    90deg,
+    rgba(8,5,12,.92) 0%,
+    rgba(255,122,0,.22) 55%,
+    rgba(156,107,255,.16) 100%
+  );
 
   --popover-bg: rgba(20,10,26,.98);
   --hover-bg: rgba(255,255,255,0.06);
@@ -311,7 +322,7 @@ body[data-theme="halloween"]{
   color-scheme: dark;
 }
 
-/* 🌫️ brouillard */
+/* 🌫️ brouillard Halloween */
 :root[data-theme="halloween"] body{
   background:
     radial-gradient(1200px 700px at 18% 0%, rgba(255,122,0,.22), transparent 60%),
