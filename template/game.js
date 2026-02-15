@@ -582,7 +582,7 @@ function renderBadgesFromGame(display, entry, isCollectionChild) {
 }
 
 // ============================================================================
-// ✅ Traduction status (F95)
+// ✅ Traduction status (F95) — cause sur UNE LIGNE
 // ============================================================================
 async function renderTranslationStatus(game) {
   if (!game?.url) return;
@@ -591,6 +591,14 @@ async function renderTranslationStatus(game) {
   const clean = (s) => String(s || "").replace(/\s+/g, " ").trim();
   const storedTitle = clean(game.rawTitle || game.title || "");
   const storedVersion = clean(game.version || "");
+
+  const esc = (s) =>
+    String(s || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
 
   if (maj) {
     maj.style.display = "";
@@ -610,41 +618,53 @@ async function renderTranslationStatus(game) {
     if (!j?.ok) {
       if (maj) {
         maj.textContent = "⚠️ Vérif F95Zone impossible";
-        maj.classList.remove("maj-ok", "maj-ko");
         maj.classList.add("maj-ko");
       }
       return;
     }
 
-    const up = !!j.isUpToDate;
+    if (!maj) return;
+    maj.classList.remove("maj-ok", "maj-ko");
 
-    if (maj) {
-      maj.classList.remove("maj-ok", "maj-ko");
-
-      if (up) {
-        maj.textContent = "✅ Traduction à jour";
-        maj.classList.add("maj-ok");
-      } else {
-        const curV = clean(j.currentVersion || "");
-        const curT = clean(j.currentTitle || "");
-      
-        if (curV) {
-          maj.textContent = `🔄 Traduction non à jour — F95 v${curV}`;
-        } else if (curT) {
-          // ✅ pas de version détectable -> on montre le titre F95 (court)
-          const shortT = curT.length > 70 ? (curT.slice(0, 70) + "…") : curT;
-          maj.textContent = `🔄 Traduction non à jour — F95: ${shortT}`;
-        } else {
-          maj.textContent = "🔄 Traduction non à jour";
-        }
-      
-        maj.classList.add("maj-ko");
-      }
+    // =========================
+    // ✅ A JOUR
+    // =========================
+    if (j.isUpToDate) {
+      maj.textContent = "✅ Traduction à jour";
+      maj.classList.add("maj-ok");
+      return;
     }
+
+    // =========================
+    // 🔄 NON A JOUR
+    // =========================
+    const curV = clean(j.currentVersion || "");
+    const curT = clean(j.currentTitle || "");
+    const reasonText = clean(j.reasonText || "");
+    const mode = clean(j.mode || "");
+
+    let text = "🔄 Traduction non à jour — F95";
+
+    if (curV) {
+      const prettyV = /^v/i.test(curV) ? curV : ("v" + curV);
+      text += ` ${prettyV}`;
+    } else if (curT) {
+      const shortT = curT.length > 60 ? (curT.slice(0, 60) + "…") : curT;
+      text += `: ${shortT}`;
+    }
+
+    // ajoute la cause sur la même ligne
+    if (reasonText) {
+      text += ` ${reasonText}`;
+      if (mode) text += ` (${mode})`;
+    }
+
+    maj.textContent = text;
+    maj.classList.add("maj-ko");
+
   } catch {
     if (maj) {
       maj.textContent = "⚠️ Vérif F95Zone impossible";
-      maj.classList.remove("maj-ok", "maj-ko");
       maj.classList.add("maj-ko");
     }
   }
