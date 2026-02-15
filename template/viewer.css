@@ -16,33 +16,25 @@
 
   /* ✅ un peu plus compact qu’avant */
   --topbar-h: 78px;
+  --card-hover-border: rgba(255,255,255,0.22);
+  --card-hover-glow: rgba(255,255,255,0.18)
+  /* Scrollbar (comme site principal) */
+  --scrollbar-thumb: #303a57;
+  --scrollbar-track: #0b0e14;
+  --scrollbar-thumb-hover: #3f4b6b;
 
-  /* ✅ Scrollbar (alignée site principal) */
-  --scrollbar-thumb: #2a314b;
-  --scrollbar-thumb-hover: #3b4568;
-  --scrollbar-track: #0f1117;
-
-  /* ✅ dit au navigateur qu'on est en dark (évite scrollbar blanche) */
-  color-scheme: dark;
+}
 }
 
 *{box-sizing:border-box}
-html,body{height:100%}
-
-/* ✅ empêche le "shift" quand la scrollbar apparaît + Firefox */
-html{
-  overflow-y: scroll;
+html,body{height:100%
   scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
-  scrollbar-width: auto;
 }
 body{
   margin:0;
   font-family:system-ui,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;
   color:var(--fg);
   background:linear-gradient(180deg,#0d1018,#101425 30%,#0f1117);
-
-  /* Firefox fallback */
-  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
 /* ---------- TOPBAR FIXE ---------- */
@@ -285,7 +277,7 @@ body{
 .total-inline #countTotal{
   font-size: 15px;
   font-weight: 900;
-  color: var(--fg);
+  color: var(--muted);
 }
 
 /* ----- MAIN ----- */
@@ -308,13 +300,31 @@ main{
 .card{
   background:var(--card);
   border:1px solid var(--border);
+
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset;
+  transition: border-color .18s ease, box-shadow .18s ease, transform .12s ease, filter .12s ease;
+  will-change: transform;
   border-radius:14px;
   overflow:hidden;
 
   display:grid;
-  grid-template-rows: var(--thumb-h) 1fr;
-  min-height: calc(var(--thumb-h) + 160px);
+  grid-template-rows: var(--thumb-h) auto;
+  min-height: auto;
 }
+
+/* ✅ Surélévation au survol (comme le site principal) */
+.card:hover{
+  border-color: var(--card-hover-border);
+  box-shadow:
+    0 0 0 1px var(--card-hover-glow),
+    0 0 22px -6px var(--card-hover-glow),
+    0 14px 38px rgba(0,0,0,0.45);
+  transform: translateY(-3px);
+}
+.card:active{
+  transform: translateY(-1px);
+}
+
 
 .thumb{
   width:100%;
@@ -382,7 +392,11 @@ main{
 .badge.eng-wolfrpg{ background:#4CAF50; color:#000; }
 
 .badge.eng-unrealengine{ background:#0D47A1; color:#fff; }
-.badge.eng-html{ background:#689F38; color:#000; }
+.badge.eng-html{ background:#689F38; color:#000; 
+  color-scheme: dark;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  scrollbar-gutter: stable both-edges;
+}
 .badge.eng-java{ background:#52A6B0; color:#000; }
 .badge.eng-flash{ background:#616161; color:#fff; }
 .badge.eng-qsp{ background:#D32F2F; color:#fff; }
@@ -620,12 +634,12 @@ main{
 }
 
 /* =========================
-   Scrollbar (page + zones scroll)
+   Scrollbar sombre (modales & page)
    ========================= */
 
 /* Chrome / Edge / Brave */
 ::-webkit-scrollbar{
-  width: 16px;
+  width: 16px;   /* ⬅ rail légèrement plus large */
   height: 16px;
 }
 
@@ -636,36 +650,19 @@ main{
 ::-webkit-scrollbar-thumb{
   background: var(--scrollbar-thumb);
   border-radius: 999px;
-  border: 4px solid var(--scrollbar-track);
+
+  /* ⬅ crée l’effet “thumb plus petit que le rail” */
+  border: 4px solid #0f1117;
 }
 
 ::-webkit-scrollbar-thumb:hover{
   background: var(--scrollbar-thumb-hover);
 }
 
-/* ✅ barre scroll horizontale de la topbar (overflow-x) */
-.top-actions{
-  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
-}
-.top-actions::-webkit-scrollbar:horizontal{
-  height: 12px; /* plus fin que le vertical */
-}
-.top-actions::-webkit-scrollbar-track{
-  background: var(--scrollbar-track);
-}
-.top-actions::-webkit-scrollbar-thumb{
-  background: var(--scrollbar-thumb);
-  border-radius: 999px;
-  border: 3px solid var(--scrollbar-track);
-}
-.top-actions::-webkit-scrollbar-thumb:hover{
-  background: var(--scrollbar-thumb-hover);
-}
-
-/* Firefox (modales) */
+/* Scrollbar spécifique aux modales */
 .modal-body{
-  scrollbar-width: auto;
-  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  scrollbar-width: thin;                 /* Firefox */
+  scrollbar-color: #2a314b #0f1117;       /* Firefox */
 }
 
 /* =========================
@@ -686,7 +683,7 @@ main{
   border-radius: 999px;
 
   /* thumb plus fin que le rail */
-  border: 4px solid var(--scrollbar-track);
+  border: 4px solid #0f1117;
 }
 
 .modal-body::-webkit-scrollbar-thumb:hover{
@@ -695,8 +692,8 @@ main{
 
 /* Firefox */
 .modal-body{
-  scrollbar-width: auto;
-  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  scrollbar-width: auto;               /* ⬅ plus large que thin */
+  scrollbar-color: #2a314b #0f1117;
 }
 
 /* =========================
@@ -1702,4 +1699,24 @@ body.mode-game #extraLinksRow .btnLike:not(.like-btn){
   min-height: 40px !important;
   border-radius: 12px !important;
 }
+/* ✅ Tuile entièrement cliquable (comme le site principal) */
+a.card.card-link,
+a.card.card-link:visited,
+a.card.card-link:hover,
+a.card.card-link:active{
+  text-decoration:none;
+  color:inherit;
+  cursor:pointer;
+  display:grid; /* garde la mise en page */
+}
 
+a.card.card-link *{
+  text-decoration:none;
+  color:inherit;
+}
+
+a.card.card-link:focus-visible{
+  outline: 2px solid rgba(255,255,255,0.35);
+  outline-offset: 3px;
+}
+.name{ text-decoration: none; }
