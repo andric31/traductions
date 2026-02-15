@@ -969,13 +969,19 @@ body.mode-game .btnLike .f95-word .f95-red{
   align-items:center;
   justify-content:space-between;
   gap:10px;
-  padding:10px 10px;
+
+  padding:12px 12px;
   border-radius:10px;
   border:1px solid transparent;
   background: transparent;
   color: var(--fg);
   cursor:pointer;
+
   font-size:14px;
+  line-height:1.45;
+  font-weight:700;
+  letter-spacing:.2px;
+
   text-align:left;
 }
 .tag-item:hover{
