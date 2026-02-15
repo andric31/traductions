@@ -1,4 +1,7 @@
 :root{
+  --topbar-bg: rgba(16,20,37,.9);
+  --title: #ffffff;
+
   --bg:#0f1117;
   --bg2:#141826;
   --fg:#e8eaf0;
@@ -16,9 +19,6 @@
 
   /* ✅ un peu plus compact qu’avant */
   --topbar-h: 78px;
-  --card-hover-border: rgba(255,255,255,0.22);
-  --card-hover-glow: rgba(255,255,255,0.18);
-
 }
 
 *{box-sizing:border-box}
@@ -35,7 +35,7 @@ body{
   position:fixed;
   top:0; left:0; right:0;
   z-index:1000;
-  background: var(--topbar-bg, rgba(16,20,37,.9));
+  background: var(--topbar-bg);
   backdrop-filter: blur(6px);
   border-bottom:1px solid var(--border);
 }
@@ -52,7 +52,7 @@ body{
 .top-title-row h1{
   font-size:18px;
   margin:0;
-  color:#fff;
+  color: var(--title);
   white-space:nowrap;
 }
 
@@ -93,7 +93,7 @@ body{
   display:block;
   height:2px;
   border-radius:999px;
-  background:#ffffff;
+  background: var(--title);
   opacity:0.92;
 }
 
@@ -204,7 +204,7 @@ body{
   padding: 10px 14px;
   border-radius: 12px;
   border: 1px solid var(--border);
-  background: var(--soft-05, rgba(255,255,255,0.05));
+  background: rgba(255,255,255,0.05);
   color:#fff;
   font-weight:800;
   cursor:pointer;
@@ -293,31 +293,13 @@ main{
 .card{
   background:var(--card);
   border:1px solid var(--border);
-
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset;
-  transition: border-color .18s ease, box-shadow .18s ease, transform .12s ease, filter .12s ease;
-  will-change: transform;
   border-radius:14px;
   overflow:hidden;
 
   display:grid;
-  grid-template-rows: var(--thumb-h) auto;
-  min-height: auto;
+  grid-template-rows: var(--thumb-h) 1fr;
+  min-height: calc(var(--thumb-h) + 160px);
 }
-
-/* ✅ Surélévation au survol (comme le site principal) */
-.card:hover{
-  border-color: var(--card-hover-border);
-  box-shadow:
-    0 0 0 1px var(--card-hover-glow),
-    0 0 22px -6px var(--card-hover-glow),
-    0 14px 38px rgba(0,0,0,0.45);
-  transform: translateY(-3px);
-}
-.card:active{
-  transform: translateY(-1px);
-}
-
 
 .thumb{
   width:100%;
@@ -601,7 +583,7 @@ main{
   font-size: 18px;
   line-height: 1;
 
-  background: var(--soft-05, rgba(255,255,255,0.05));
+  background: rgba(255,255,255,0.05);
   border: 1px solid var(--border);
 
   display: inline-flex;
@@ -633,11 +615,11 @@ main{
 }
 
 ::-webkit-scrollbar-track{
-  background: var(--scrollbar-track-webkit, var(--scrollbar-track, #0f1117));
+  background: #0f1117;
 }
 
 ::-webkit-scrollbar-thumb{
-  background: var(--scrollbar-thumb-webkit, var(--scrollbar-thumb, #2a314b));
+  background: #2a314b;
   border-radius: 999px;
 
   /* ⬅ crée l’effet “thumb plus petit que le rail” */
@@ -651,7 +633,7 @@ main{
 /* Scrollbar spécifique aux modales */
 .modal-body{
   scrollbar-width: thin;                 /* Firefox */
-  scrollbar-color: var(--scrollbar-thumb, #2a314b) var(--scrollbar-track, #0f1117);       /* Firefox */
+  scrollbar-color: #2a314b #0f1117;       /* Firefox */
 }
 
 /* =========================
@@ -664,11 +646,11 @@ main{
 }
 
 .modal-body::-webkit-scrollbar-track{
-  background: var(--scrollbar-track-webkit, var(--scrollbar-track, #0f1117));
+  background: #0f1117;
 }
 
 .modal-body::-webkit-scrollbar-thumb{
-  background: var(--scrollbar-thumb-webkit, var(--scrollbar-thumb, #2a314b));
+  background: #2a314b;
   border-radius: 999px;
 
   /* thumb plus fin que le rail */
@@ -682,7 +664,7 @@ main{
 /* Firefox */
 .modal-body{
   scrollbar-width: auto;               /* ⬅ plus large que thin */
-  scrollbar-color: var(--scrollbar-thumb, #2a314b) var(--scrollbar-track, #0f1117);
+  scrollbar-color: #2a314b #0f1117;
 }
 
 /* =========================
@@ -801,7 +783,7 @@ main{
   background:
     linear-gradient(
       180deg,
-      var(--soft-05, rgba(255,255,255,0.05)) 0%,
+      rgba(255,255,255,0.05) 0%,
       rgba(0,0,0,0.18) 100%
     );
   border-color: rgba(255,255,255,0.14);
@@ -903,7 +885,7 @@ main{
 
 /* style "premium" + glow UNIQUEMENT pour les autres hosts */
 #extraLinksRow .btnLike:not(.btn-mega):not(.btn-f95){
-  background: var(--soft-05, rgba(255,255,255,0.05));
+  background: rgba(255,255,255,0.05);
   border: 1px solid rgba(90,162,255,0.28);
 
   box-shadow:
@@ -1095,7 +1077,7 @@ body.mode-game .btnLike .f95-word .f95-red{
   height: 36px;
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.16);
-  background: var(--soft-05, rgba(255,255,255,0.05));
+  background: rgba(255,255,255,0.05);
   color: #fff;
   cursor: pointer;
   font-size: 20px;
@@ -1186,7 +1168,7 @@ body.mode-game .btnLike{
       padding: 10px 14px;
       border-radius: 12px;
       border: 1px solid var(--border);
-      background: var(--soft-05, rgba(255,255,255,0.05));
+      background: rgba(255,255,255,0.05);
       color:#fff;
       text-decoration:none;
       font-weight: 700;
@@ -1688,23 +1670,4 @@ body.mode-game #extraLinksRow .btnLike:not(.like-btn){
   min-height: 40px !important;
   border-radius: 12px !important;
 }
-/* ✅ Tuile entièrement cliquable (comme le site principal) */
-a.card.card-link,
-a.card.card-link:visited,
-a.card.card-link:hover,
-a.card.card-link:active{
-  text-decoration:none;
-  color:inherit;
-  cursor:pointer;
-  display:grid; /* garde la mise en page */
-}
 
-a.card.card-link *{
-  text-decoration:none;
-  color:inherit;
-}
-
-a.card.card-link:focus-visible{
-  outline: 2px solid rgba(255,255,255,0.35);
-  outline-offset: 3px;
-}
