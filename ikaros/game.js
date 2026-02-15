@@ -636,7 +636,7 @@ async function renderTranslationStatus(game) {
     let reasonText = clean(j.reasonText || "");
     const mode = clean(j.mode || "");
 
-    // Version différente : stockée v1.09 / F95 v2.00.  ->  Version différente : v1.09 → v2.00
+    // Version différente : stockée v1.09 / F95 v2.00. -> Version différente : v1.09 → v2.00
     reasonText = reasonText.replace(
       /Version différente\s*:\s*stockée\s*v?([0-9][0-9a-zA-Z.\-]*)\s*\/\s*F95\s*v?([0-9][0-9a-zA-Z.\-]*)\.?/i,
       "Version différente : v$1 → v$2"
@@ -647,6 +647,9 @@ async function renderTranslationStatus(game) {
       /Titre différent\s*:\s*stocké\s*≠\s*F95\.?/i,
       "Titre différent"
     );
+
+    // ✅ enlève un éventuel point final restant (ex: "v2.00.")
+    reasonText = reasonText.replace(/\.\s*$/, "");
 
     let text = "🔄 Traduction non à jour";
     if (reasonText) {
