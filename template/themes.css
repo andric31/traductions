@@ -10,22 +10,6 @@
 */
 
 /* =========================================================
-   BASE : petits overrides communs (tous thèmes)
-   ========================================================= */
-:root{
-  /* valeurs fallback si un thème ne définit pas tout */
-  --overlay-bg: rgba(0,0,0,0.55);
-  --thumb-bg: rgba(255,255,255,0.06);
-  --thumb-fallback-bg: rgba(0,0,0,0.15);
-
-  --border-soft: rgba(255,255,255,0.06);
-  --top-actions-border: rgba(255,255,255,0.03);
-
-  --soft-04: rgba(255,255,255,0.04);
-  --soft-05: rgba(255,255,255,0.05);
-}
-
-/* =========================================================
    AUTO (Windows) : mode clair
    - S'applique quand AUCUN data-theme n'est forcé
    - Si tu forces un thème (:root[data-theme="..."]), il override.
@@ -390,22 +374,3 @@ body[data-theme="halloween"]{
   background: var(--card-hover-bg, var(--card));
 }
 
-/* ✅ focus clavier : bleu en clair / orange en Halloween / rouge en Noël */
-@media (prefers-color-scheme: light){
-  :root:not([data-theme]) a.card.card-link:focus-visible{
-    outline: 2px solid rgba(45,108,223,0.45);
-    outline-offset: 3px;
-  }
-}
-:root[data-theme="white"] a.card.card-link:focus-visible{
-  outline: 2px solid rgba(45,108,223,0.45);
-  outline-offset: 3px;
-}
-:root[data-theme="halloween"] a.card.card-link:focus-visible{
-  outline: 2px solid rgba(255,122,0,0.55);
-  outline-offset: 3px;
-}
-:root[data-theme="noel"] a.card.card-link:focus-visible{
-  outline: 2px solid rgba(255,47,67,0.55);
-  outline-offset: 3px;
-}
