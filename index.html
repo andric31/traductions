@@ -23,20 +23,62 @@
       opacity: 0.8;
       margin-bottom: 30px;
     }
+
+    /* ====== Cards ====== */
     .card {
       background: #161b22;
       border: 1px solid #30363d;
       border-radius: 10px;
-      padding: 20px;
+      padding: 14px;
       margin-bottom: 15px;
+
+      display: flex;
+      align-items: center;
+      gap: 14px;
     }
+
+    /* avatar à gauche */
+    .avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid #30363d;
+      background: #0e1117;
+    }
+
+    /* contenu texte à droite */
+    .card-content {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
     .card a {
       color: #58a6ff;
       font-size: 18px;
       text-decoration: none;
+      font-weight: 600;
+      line-height: 1.2;
+      word-break: break-word;
     }
     .card a:hover {
       text-decoration: underline;
+    }
+    .card small {
+      opacity: 0.8;
+      margin-top: 6px;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+
+    /* card simple (sans avatar) pour les liens globaux */
+    .card.simple {
+      gap: 0;
+    }
+    .card.simple .card-content {
+      flex-direction: column;
     }
   </style>
 </head>
@@ -47,29 +89,52 @@
   Traductions de jeux VN
 </div>
 
+<!-- Lien global (pas d’avatar) -->
+<div class="card simple">
+  <div class="card-content">
+    <a href="/liste/" target="_blank" rel="noopener noreferrer">🌐 Liste globale des traductions</a>
+  </div>
+</div>
+
+<!-- Traducteurs : avatar = /<dossier>/avatar.png -->
 <div class="card">
-  <a href="/liste/" target="_blank" rel="noopener noreferrer">🌐 Liste globale des traductions</a><br>
+  <img class="avatar" src="/andric31/avatar.png" alt="andric31">
+  <div class="card-content">
+    <a href="https://andric31-traductions.pages.dev/" target="_blank" rel="noopener noreferrer">andric31</a>
+    <small>Traducteur · Traductions automatiques de jeux Ren’Py, RPG Maker MV (RPGM), 𝖴nity .json .xml .csv .txt, Godot, TyranoBuilder (TyranoScript), KiriKiri / KAG (KiriKiri Adventure Game), Visual Novel Maker (VNM), Electron, NW.js (Node-Webkit) ... Développeur ...</small>
+  </div>
 </div>
 
 <div class="card">
-  <a href="https://andric31-traductions.pages.dev/" target="_blank" rel="noopener noreferrer">andric31</a><br>
-  <small>Traducteur · Traductions automatiques de jeux Ren’Py, RPG Maker MV (RPGM), 𝖴nity .json .xml .csv .txt, Godot, TyranoBuilder (TyranoScript), KiriKiri / KAG (KiriKiri Adventure Game), Visual Novel Maker (VNM), Electron, NW.js (Node-Webkit) ... Développeur ...</small>
+  <img class="avatar" src="/ant28jsp/avatar.png" alt="Ant28jsp">
+  <div class="card-content">
+    <a href="/ant28jsp/" target="_blank" rel="noopener noreferrer">Ant28jsp</a>
+    <small>Traducteur · Traductions automatiques de jeux Ren’Py, RPG Maker MV (RPGM)</small>
+  </div>
 </div>
 
 <div class="card">
-  <a href="/ant28jsp/" target="_blank" rel="noopener noreferrer">Ant28jsp</a><br>
-  <small>Traducteur · Traductions automatiques de jeux Ren’Py, RPG Maker MV (RPGM)</small>
+  <img class="avatar" src="/lechauve/avatar.png" alt="Le Chauve">
+  <div class="card-content">
+    <a href="/lechauve/" target="_blank" rel="noopener noreferrer">Le Chauve</a>
+    <small>Traducteur · Traductions manuelles de jeux GMS (GameMaker Studio), RPGM-V, RPGM-Z et Ren'py ... Développeur ...</small>
+  </div>
 </div>
 
 <div class="card">
-  <a href="/lechauve/" target="_blank" rel="noopener noreferrer">Le Chauve</a><br>
-  <small>Traducteur · Traductions manuelles de jeux GMS (GameMaker Studio), RPGM-V, RPGM-Z et Ren'py ... Développeur ...</small>
+  <img class="avatar" src="/ikaros/avatar.png" alt="Ikaros">
+  <div class="card-content">
+    <a href="/ikaros/" target="_blank" rel="noopener noreferrer">Ikaros</a>
+    <small>Traducteur · Traductions manuelles et automatiques de jeux Unity, Ren’Py</small>
+  </div>
 </div>
 
-<div class="card">
-  <a href="/ikaros/" target="_blank" rel="noopener noreferrer">Ikaros</a><br>
-  <small>Traducteur · Traductions manuelles et automatiques de jeux Unity, Ren’Py</small>
-</div>
+<script>
+  // Fallback : si /<dossier>/avatar.png n’existe pas -> /favicon.png
+  document.querySelectorAll(".avatar").forEach(img => {
+    img.onerror = () => { img.src = "/favicon.png"; };
+  });
+</script>
 
 </body>
 </html>
