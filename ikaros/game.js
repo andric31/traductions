@@ -582,7 +582,7 @@ function renderBadgesFromGame(display, entry, isCollectionChild) {
 }
 
 // ============================================================================
-// ✅ Traduction status (F95) — version affichée intelligemment
+// ✅ Traduction status (F95) — version UI propre
 // ============================================================================
 async function renderTranslationStatus(game) {
   if (!game?.url) return;
@@ -591,6 +591,8 @@ async function renderTranslationStatus(game) {
   const clean = (s) => String(s || "").replace(/\s+/g, " ").trim();
   const storedTitle = clean(game.rawTitle || game.title || "");
   const storedVersion = clean(game.version || "");
+
+  const SEP = " · ";
 
   if (maj) {
     maj.style.display = "";
@@ -630,27 +632,13 @@ async function renderTranslationStatus(game) {
     // =========================
     // 🔄 NON A JOUR
     // =========================
-    const curV = clean(j.currentVersion || "");
-    const curT = clean(j.currentTitle || "");
     const reasonText = clean(j.reasonText || "");
     const mode = clean(j.mode || "");
 
-    let text = "🔄 Traduction non à jour — F95";
-
-    // 👉 Si la raison mentionne déjà la version F95 → ne pas la répéter
-    const reasonMentionsVersion = /F95\s*v?[0-9]/i.test(reasonText);
-
-    if (curV && !reasonMentionsVersion) {
-      const prettyV = /^v/i.test(curV) ? curV : ("v" + curV);
-      text += ` ${prettyV}`;
-    }
-    else if (!curV && curT) {
-      const shortT = curT.length > 60 ? (curT.slice(0, 60) + "…") : curT;
-      text += `: ${shortT}`;
-    }
+    let text = "🔄 Traduction non à jour";
 
     if (reasonText) {
-      text += ` ${reasonText}`;
+      text += SEP + reasonText;
       if (mode) text += ` (${mode})`;
     }
 
