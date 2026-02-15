@@ -6,17 +6,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>f95list_viewer</title>
 
-  <!-- ✅ Favicon dynamique (avatar.png si présent, sinon favicon.png) -->
   <link id="dynamic-favicon" rel="icon" type="image/png" href="./avatar.png">
   <script>
   (function(){
     const fav = document.getElementById("dynamic-favicon");
-    if(!fav) return;
-
-    const testUrl = "./avatar.png?v=" + Date.now();
+    const testUrl = "./avatar.png?v=" + Date.now(); // anti-cache
+  
     const img = new Image();
     img.onload  = () => fav.href = testUrl;
-    img.onerror = () => fav.href = "/favicon.png?v=" + Date.now();
+    img.onerror = () => fav.href = "/favicon.png?v=" + Date.now(); // fallback
     img.src = testUrl;
   })();
   </script>
@@ -24,9 +22,102 @@
   <link rel="stylesheet" href="./viewer.css" />
   <link rel="stylesheet" href="./themes.css" />
 
+  <!-- ✅ Styles page jeu (rendu comme sur andric31-traductions, sans dossier /game) -->
+  <style>
+    body.mode-game{
+      min-height: 100vh;
+      margin: 0;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      overflow: visible;
+      padding: 18px 0;
+    }
+
+    body.mode-game #page-viewer{ display:none !important; }
+
+    body.mode-game #page-game .wrap{
+      width: 820px;
+      max-width: 92vw;
+      padding: 18px;
+    }
+
+    body.mode-game #page-game .cardPreview{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow:hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,.35);
+    }
+
+    body.mode-game #page-game .cardInner{
+      padding: 16px 16px 18px 16px;
+    }
+
+    /* Ligne du haut : bouton ☰ + like + badges */
+    body.mode-game #page-game .headRow{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:10px;
+      flex-wrap:wrap;
+    }
+    body.mode-game #page-game .badgesRow{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin:0;
+    }
+
+    /* Bouton hamburger */
+    body.mode-game #page-game .hamburger-btn{
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      border: 1px solid var(--border);
+      background: var(--btn);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      user-select:none;
+      flex:0 0 auto;
+    }
+    body.mode-game #page-game .hamburger-btn:hover{ filter: brightness(1.10); }
+    body.mode-game #page-game .hamburger-btn:active{ transform: translateY(1px); }
+    body.mode-game #page-game .ham-lines{ width:16px; height:12px; display:flex; flex-direction:column; justify-content:space-between; }
+    body.mode-game #page-game .ham-lines span{ display:block; height:2px; border-radius:999px; background: var(--fg); opacity:0.92; }
+
+    /* Cover */
+    body.mode-game #page-game .cover{
+      width:100%;
+      height:auto;
+      display:block;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--thumb-bg);
+      margin: 10px 0 12px;
+      object-fit: cover;
+    }
+
+    /* Encadrés info */
+    body.mode-game #page-game .infoBlock{
+      background: var(--soft-04);
+      border:  1px solid var(--border-soft);
+      border-radius: 14px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+    body.mode-game #page-game .infoBlock h3{ margin:0 0 8px 0; font-size:14px; }
+  </style>
+</head>
+<body>
+
   <!-- ✅ Nom affiché via manifest (casse exacte), fallback slug — SANS BOUCLE -->
   <script>
   (async function(){
+  
     function detectSlug(){
       try{
         const forced = (window.__SITE_SLUG__ || "").toString().trim();
@@ -35,12 +126,12 @@
       const segs = (location.pathname || "/").split("/").filter(Boolean);
       return String(segs[0] || "").trim().toLowerCase();
     }
-
+  
     const slug = detectSlug();
     window.__SITE_SLUG__ = slug;
-
+  
     let nice = slug ? (slug[0].toUpperCase() + slug.slice(1)) : "";
-
+  
     try{
       const r = await fetch("/traducteurs_manifest.json", { cache:"no-store" });
       if (r.ok){
@@ -51,58 +142,100 @@
         if (found && found.name) nice = String(found.name);
       }
     }catch(e){}
-
+  
     window.__SITE_NAME__ = nice;
-
+  
     const txt = nice || slug || "";
     document.title = txt;
-
+  
     function applyH1(){
       const h1 = document.getElementById("viewerTitle");
       if (h1) h1.textContent = txt;
       return !!h1;
     }
-
+  
+    // ✅ 1) si déjà là
     if (applyH1()) return;
-
+  
+    // ✅ 2) au DOM ready
     window.addEventListener("DOMContentLoaded", () => {
       if (applyH1()) return;
+  
+      // ✅ 3) retry léger (max ~2s), au cas où un script recrée le header après
       let tries = 0;
       const timer = setInterval(() => {
         tries++;
-        if (applyH1() || tries >= 20) clearInterval(timer);
+        if (applyH1() || tries >= 20) clearInterval(timer); // 20 * 100ms = 2s
       }, 100);
     });
+  
   })();
   </script>
-</head>
-
-<body>
-
-  <!-- 🔞 AGE GATE -->
-  <div id="age-gate" style="display:none;">
-    <div class="age-box">
-      <h2>🔞 Contenu réservé aux adultes</h2>
-      <p>
-        Ce site contient des images et contenus destinés à un public majeur.<br>
-        En continuant, vous confirmez avoir <strong>18 ans ou plus</strong>.
-      </p>
-      <button id="age-yes">J’ai 18 ans</button>
-      <button id="age-no">Quitter</button>
-    </div>
-  </div>
 
   <!-- PAGE VIEWER -->
   <div id="page-viewer">
+
+    <!-- 🔞 AGE GATE -->
+    <div id="age-gate" style="display:none;">
+      <div class="age-box">
+        <h2>🔞 Contenu réservé aux adultes</h2>
+        <p>
+          Ce site contient des images et contenus destinés à un public majeur.<br>
+          En continuant, vous confirmez avoir <strong>18 ans ou plus</strong>.
+        </p>
+
+        <button id="age-yes">J’ai 18 ans</button>
+        <button id="age-no">Quitter</button>
+      </div>
+    </div>
+
     <header class="topbar" role="banner">
-      <div class="top-title-row">
+      <div class="top-title-row top-title-flex">
+        <!-- ✅ id unique (viewer) -->
+        <button id="hamburgerBtnViewer" class="hamburger-btn" type="button"
+                aria-label="Menu" title="Menu" aria-expanded="false">
+          <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
+        </button>
+
         <h1 id="viewerTitle">f95list_viewer</h1>
+
+        <!-- ✅ Outils en haut à droite (comme le site principal) -->
+        <div id="topTitleTools" class="top-title-tools">
+          <span class="total-inline">Total : <strong id="countTotal">0</strong></span>
+
+          <select id="cols" title="Vignettes par ligne">
+            <option value="auto">Vignettes/ligne : Auto</option>
+            <option value="1">1 par ligne</option>
+            <option value="2">2 par ligne</option>
+            <option value="3">3 par ligne</option>
+            <option value="4">4 par ligne</option>
+            <option value="5">5 par ligne</option>
+            <option value="6">6 par ligne</option>
+            <option value="7">7 par ligne</option>
+            <option value="8">8 par ligne</option>
+            <option value="9">9 par ligne</option>
+            <option value="10">10 par ligne</option>
+          </select>
+
+          <select id="pageSize" title="Affichage progressif">
+            <option value="50">Afficher par 50</option>
+            <option value="100">Afficher par 100</option>
+            <option value="all">Tout afficher</option>
+          </select>
+
+          <select id="theme" title="Thème">
+            <option value="auto">Thème : Auto (Windows)</option>
+            <option value="dark">Thème : Sombre</option>
+            <option value="white">Thème : Blanc</option>
+            <option value="noel">Thème : Noël</option>
+            <option value="halloween">Thème : Halloween</option>
+          </select>
+        </div>
       </div>
 
       <div class="top-actions">
         <div class="search-wrap">
           <input id="search" type="search" placeholder="Rechercher un jeu." autocomplete="off" />
-          <span class="stat-in-bar total-inline">Total : <strong id="countTotal">0</strong></span>
         </div>
 
         <select id="sort" title="Trier">
@@ -142,34 +275,7 @@
           🏷️ Tags <span id="tagsCount" class="tags-count hidden">0</span>
         </button>
 
-        <select id="cols" title="Vignettes par ligne">
-          <option value="auto">Vignettes/ligne : Auto</option>
-          <option value="1">1 par ligne</option>
-          <option value="2">2 par ligne</option>
-          <option value="3">3 par ligne</option>
-          <option value="4">4 par ligne</option>
-          <option value="5">5 par ligne</option>
-          <option value="6">6 par ligne</option>
-          <option value="7">7 par ligne</option>
-          <option value="8">8 par ligne</option>
-          <option value="9">9 par ligne</option>
-          <option value="10">10 par ligne</option>
-        </select>
-
-        <select id="pageSize" title="Affichage progressif">
-          <option value="50">Afficher par 50</option>
-          <option value="100">Afficher par 100</option>
-          <option value="all">Tout afficher</option>
-        </select>
-
-        <select id="theme" title="Thème">
-          <option value="auto">Thème : Auto (Windows)</option>
-          <option value="dark">Thème : Sombre</option>
-          <option value="white">Thème : Blanc</option>
-          <option value="noel">Thème : Noël</option>
-          <option value="halloween">Thème : Halloween</option>
-        </select>
-
+        <!-- ✅ Rafraîchir remis en bas -->
         <button id="refresh" type="button">Rafraîchir</button>
       </div>
     </header>
@@ -177,6 +283,7 @@
     <main role="main">
       <section id="gridMode" class="grid-wrap" aria-label="Vignettes des jeux">
         <div id="viewerAnnonceHost"></div>
+
         <div id="grid" class="grid"></div>
         <div id="gridEmpty" class="empty hidden">Aucun résultat.</div>
       </section>
@@ -185,56 +292,83 @@
         👁️ Vues de la page : <strong id="mainViews">—</strong>
       </footer>
     </main>
+
   </div>
 
   <!-- PAGE JEU (même page, via ?id= / ?uid=) -->
   <div id="page-game" style="display:none;">
-    <!-- ✅ on garde juste les IDs attendus par game.js (sans “mise en scène”) -->
-    <div id="majState" style="display:none;"></div>
-    <h1 id="title">Chargement…</h1>
 
-    <img id="cover" alt="" referrerpolicy="no-referrer">
+    <div class="wrap">
+      <div class="cardPreview" id="card" aria-live="polite">
+        <div class="cardInner">
 
-    <div id="badges"></div>
-    <div id="tagsBox"><div id="tags"></div></div>
+          <div class="headRow">
+            <!-- ✅ id unique (game) -->
+            <button type="button" class="hamburger-btn" id="hamburgerBtnGame"
+                    aria-label="Ouvrir le menu" aria-haspopup="menu" aria-expanded="false">
+              <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
+            </button>
 
-    <div id="descriptionBox" style="display:none;">
-      <div id="descriptionText"></div>
+            <button class="btnLike like-btn" id="btnLike" type="button" aria-label="J’aime">🤍</button>
+            <div class="badgesRow" id="badges"></div>
+          </div>
+
+          <div class="majState" id="majState" style="display:none;"></div>
+
+          <h1 class="title" id="title">Chargement…</h1>
+
+          <img id="cover" class="cover is-placeholder" alt="" referrerpolicy="no-referrer">
+
+          <div class="infoBlock tagsBox" id="tagsBox"><div class="tagsRow" id="tags"></div></div>
+
+          <!-- 📝 Description -->
+          <div id="descriptionBox" class="infoBlock" style="display:none;">
+            <div id="descriptionText" class="infoText"></div>
+          </div>
+
+          <div class="btnRow">
+            <a class="btnLike btn-discord" id="btnDiscord" target="_blank" rel="noopener" style="display:none;">💬 Discord</a>
+            <a class="btnLike btn-f95" id="btnF95" target="_blank" rel="noopener" style="display:none;">
+              <span class="f95-white">F95</span><span class="f95-red">Zone</span>
+            </a>
+          </div>
+
+          <div class="btnMainRow">
+            <a class="btnLike btnMega" id="btnMega" target="_blank" rel="noopener" style="display:none;">📥 Télécharger la traduction · MEGA</a>
+          </div>
+
+          <div id="archiveBox" style="display:none; margin-top:12px; justify-content:center;">
+            <a id="archiveLink" class="btnLike" target="_blank" rel="noopener" style="justify-content:center;">
+              📦 Archives de la traduction
+            </a>
+          </div>
+
+          <!-- ⭐ Notation -->
+          <div id="ratingBox" class="infoBlock" style="text-align:center;">
+            <div class="ratingTitle">Note de la traduction : <strong id="ratingAvg">—</strong> (<span id="ratingCount">0</span> votes)</div>
+            <div id="ratingChoices" style="display:flex; justify-content:center; gap:8px;"></div>
+            <div id="ratingMsg" style="margin-top:6px; color:var(--muted); font-size:12px;"></div>
+          </div>
+
+          <!-- ✅ NOTES -->
+          <div id="notesBox" class="infoBlock" style="display:none;">
+            <h3>ℹ️ Informations</h3>
+            <div id="notesText" class="infoTextMuted"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="statsOut infoBlock" id="statsOut" style="display:none; text-align:center; margin-top:14px;">
+        👁️ Vues : <strong id="statViews">0</strong>
+        ·
+        ❤️ J’aime : <strong id="statLikes">0</strong>
+        ·
+        📥 Téléchargements : <strong id="statMegaClicks">0</strong>
+      </div>
+
+      <div class="err" id="errBox"></div>
     </div>
-
-    <div>
-      <a id="btnDiscord" target="_blank" rel="noopener" style="display:none;">💬 Discord</a>
-      <a id="btnF95" target="_blank" rel="noopener" style="display:none;">
-        <span class="f95-white">F95</span><span class="f95-red">Zone</span>
-      </a>
-      <button id="btnLike" type="button" aria-label="J’aime">🤍</button>
-    </div>
-
-    <div>
-      <a id="btnMega" target="_blank" rel="noopener" style="display:none;">📥 Télécharger la traduction · MEGA</a>
-    </div>
-
-    <div id="archiveBox" style="display:none;">
-      <a id="archiveLink" target="_blank" rel="noopener">📦 Archives de la traduction</a>
-    </div>
-
-    <div id="ratingBox">
-      <div>Note de la traduction : <strong id="ratingAvg">—</strong> (<span id="ratingCount">0</span> votes)</div>
-      <div id="ratingChoices"></div>
-      <div id="ratingMsg"></div>
-    </div>
-
-    <div id="notesBox" style="display:none;">
-      <div id="notesText"></div>
-    </div>
-
-    <div id="statsOut" style="display:none;">
-      👁️ Vues : <strong id="statViews">0</strong>
-      · ❤️ J’aime : <strong id="statLikes">0</strong>
-      · 📥 Téléchargements : <strong id="statMegaClicks">0</strong>
-    </div>
-
-    <div id="errBox"></div>
 
     <!-- ✅ Observer : mini fade sur #ratingMsg à chaque changement -->
     <script>
@@ -254,14 +388,17 @@
         if ((msg.textContent || "").trim()) flash();
       })();
     </script>
-  </div>
 
-  <!-- ✅ JS externes (defer) -->
+  </div> <!-- ✅ FIN #page-game -->
+
+  <!-- ✅ JS externes en defer (plus stable en accès direct ?id= / ?uid=) -->
+  <!-- ✅ Modules UI (comme ton autre site) -->
   <script src="./viewer.menu.js" defer></script>
   <script src="./viewer.menu.about.js" defer></script>
   <script src="./viewer.menu.extension.js" defer></script>
   <script src="./viewer.annonce.js" defer></script>
   <script src="./viewer.agegate.js" defer></script>
+
   <script src="./viewer.js" defer></script>
   <script src="./game.js" defer></script>
 
@@ -272,7 +409,6 @@
       const hasGame = (p.get("id")||"").trim() || (p.get("uid")||"").trim();
       const v = document.getElementById("page-viewer");
       const g = document.getElementById("page-game");
-
       if (hasGame) {
         document.body.classList.add("mode-game");
         if (v) v.style.display = "none";
@@ -282,6 +418,29 @@
         if (g) g.style.display = "none";
         if (v) v.style.display = "";
       }
+    })();
+  </script>
+
+  <!-- ✅ pont hamburger : si tes JS attendent #hamburgerBtn -->
+  <script>
+    (function(){
+      function ensureAlias(){
+        const hasAlias = document.getElementById("hamburgerBtn");
+        if (hasAlias) return;
+
+        const p = new URLSearchParams(location.search);
+        const hasGame = (p.get("id")||"").trim() || (p.get("uid")||"").trim();
+
+        const src = document.getElementById(hasGame ? "hamburgerBtnGame" : "hamburgerBtnViewer");
+        if (!src) return;
+
+        const alias = src.cloneNode(true);
+        alias.id = "hamburgerBtn";
+        alias.style.display = "none";
+        alias.addEventListener("click", (e)=>{ e.preventDefault(); e.stopPropagation(); src.click(); });
+        document.body.appendChild(alias);
+      }
+      window.addEventListener("DOMContentLoaded", ensureAlias);
     })();
   </script>
 
