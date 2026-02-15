@@ -221,7 +221,24 @@ body{
   border-top:1px solid rgba(255,255,255,0.03);
   width:100%;
   overflow-x:auto;
+
+  overflow-y: hidden;
+  scrollbar-gutter: stable both-edges;
+  justify-content: flex-start;}
+
+
+/* ✅ évite des éléments qui s'étirent bizarrement dans la barre */
+.top-actions > *{
+  flex: 0 0 auto;
 }
+.top-actions .search-wrap{
+  flex: 1 1 auto;
+  min-width: 300px;
+}
+#refresh{
+  margin-left: 0 !important;
+}
+
 
 /* Barre de recherche stretch */
 .search-wrap{
@@ -258,6 +275,27 @@ body{
   cursor:pointer;
 }
 .top-actions button:hover{ filter:brightness(1.1) }
+
+/* ✅ Total en haut (template) — rendu identique */
+.stat-pill{
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+.stat-pill strong{
+  color: var(--fg);
+  font-size: 15px;
+  font-weight: 900;
+}
 
 /* Total */
 .total-inline{
@@ -627,25 +665,43 @@ main{
    ========================= */
 
 /* Chrome / Edge / Brave */
+/* =========================
+   Scrollbar PREMIUM (alignée site principal)
+   ========================= */
+
+/* Chrome / Edge / Brave */
 ::-webkit-scrollbar{
-  width: 16px;   /* ⬅ rail légèrement plus large */
-  height: 16px;
+  width: 14px;
+}
+
+/* horizontale un peu plus fine */
+::-webkit-scrollbar:horizontal{
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track{
-  background: #0f1117;
+  background: var(--scrollbar-track-webkit);
 }
 
 ::-webkit-scrollbar-thumb{
-  background: #2a314b;
+  background: var(--scrollbar-thumb-webkit);
   border-radius: 999px;
 
-  /* ⬅ crée l’effet “thumb plus petit que le rail” */
-  border: 4px solid #0f1117;
+  /* crée l'effet flottant sans bouffer la largeur */
+  border: 3px solid var(--scrollbar-track-webkit);
 }
 
 ::-webkit-scrollbar-thumb:hover{
-  background: #3b4568;
+  background: var(--scrollbar-thumb-webkit-hover);
+}
+
+/* Firefox */
+html{
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  scrollbar-width: auto;
+}
+body{
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
 /* Scrollbar spécifique aux modales */
@@ -1702,6 +1758,16 @@ a.card.card-link:active{
 a.card.card-link *{
   text-decoration:none;
   color:inherit;
+}
+
+a.card.card-link,
+a.card.card-link:visited,
+a.card.card-link:hover,
+a.card.card-link:active{
+  text-decoration: none !important;
+}
+.name{
+  text-decoration: none !important;
 }
 
 a.card.card-link:focus-visible{
