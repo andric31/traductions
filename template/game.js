@@ -582,23 +582,33 @@ function renderBadgesFromGame(display, entry, isCollectionChild) {
 }
 
 // ============================================================================
-// ✅ Traduction status (F95) — cause sur UNE LIGNE
+// ✅ Traduction status (F95) — UI propre (version stockée depuis TITLE)
 // ============================================================================
 async function renderTranslationStatus(game) {
   if (!game?.url) return;
 
   const maj = document.getElementById("majState");
   const clean = (s) => String(s || "").replace(/\s+/g, " ").trim();
-  const storedTitle = clean(game.rawTitle || game.title || "");
-  const storedVersion = clean(game.version || "");
 
-  const esc = (s) =>
-    String(s || "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
+  // ✅ storedTitle = titre complet (source de vérité)
+  const storedTitle = clean(game.rawTitle || game.title || "");
+
+  // ✅ version "fiable" = extraite du title (pas game.version)
+  // ex: "... [v0.12.0] ..." -> "0.12.0"
+  const extractVersionFromTitleLocal = (title) => {
+    const s = String(title || "");
+    let m = s.match(/\[\s*v\s*([0-9][^\]]*)\]/i);
+    if (m) return m[1].trim(); // sans le "v"
+    m = s.match(/\[\s*([0-9]+(?:\.[0-9]+)+[^\]]*)\]/i);
+    if (m) return m[1].trim();
+    return "";
+  };
+
+  const storedVersionFromTitle = clean(extractVersionFromTitleLocal(storedTitle));
+  // On envoie quand même storedVersion au worker (utile si tu veux), mais on ne l'affiche plus comme "stockée"
+  const storedVersion = storedVersionFromTitle;
+
+  const SEP = " · ";
 
   if (maj) {
     maj.style.display = "";
@@ -618,6 +628,7 @@ async function renderTranslationStatus(game) {
     if (!j?.ok) {
       if (maj) {
         maj.textContent = "⚠️ Vérif F95Zone impossible";
+        maj.classList.remove("maj-ok", "maj-ko");
         maj.classList.add("maj-ko");
       }
       return;
@@ -626,9 +637,6 @@ async function renderTranslationStatus(game) {
     if (!maj) return;
     maj.classList.remove("maj-ok", "maj-ko");
 
-    // =========================
-    // ✅ A JOUR
-    // =========================
     if (j.isUpToDate) {
       maj.textContent = "✅ Traduction à jour";
       maj.classList.add("maj-ok");
@@ -638,33 +646,41 @@ async function renderTranslationStatus(game) {
     // =========================
     // 🔄 NON A JOUR
     // =========================
-    const curV = clean(j.currentVersion || "");
-    const curT = clean(j.currentTitle || "");
-    const reasonText = clean(j.reasonText || "");
-    const mode = clean(j.mode || "");
+    let reasonText = clean(j.reasonText || "");
 
-    let text = "🔄 Traduction non à jour — F95";
-
-    if (curV) {
-      const prettyV = /^v/i.test(curV) ? curV : ("v" + curV);
-      text += ` ${prettyV}`;
-    } else if (curT) {
-      const shortT = curT.length > 60 ? (curT.slice(0, 60) + "…") : curT;
-      text += `: ${shortT}`;
+    // ✅ On remplace la "version stockée" par la version extraite du TITLE
+    // Pattern worker actuel: "Version différente : stockée vX / F95 vY."
+    if (storedVersionFromTitle) {
+      reasonText = reasonText.replace(
+        /Version différente\s*:\s*stockée\s*v?([0-9][0-9a-zA-Z.\-]*)\s*\/\s*F95\s*v?([0-9][0-9a-zA-Z.\-]*)\.?/i,
+        `Version différente : v${storedVersionFromTitle} → v$2`
+      );
+    } else {
+      // fallback si on ne peut pas extraire la version du title
+      reasonText = reasonText.replace(
+        /Version différente\s*:\s*stockée\s*v?([0-9][0-9a-zA-Z.\-]*)\s*\/\s*F95\s*v?([0-9][0-9a-zA-Z.\-]*)\.?/i,
+        "Version différente : v$1 → v$2"
+      );
     }
 
-    // ajoute la cause sur la même ligne
-    if (reasonText) {
-      text += ` ${reasonText}`;
-      if (mode) text += ` (${mode})`;
-    }
+    // Titre différent : stocké ≠ F95. -> Titre différent
+    reasonText = reasonText.replace(
+      /Titre différent\s*:\s*stocké\s*≠\s*F95\.?/i,
+      "Titre différent"
+    );
+
+    // enlève point final
+    reasonText = reasonText.replace(/\.\s*$/, "");
+
+    let text = "🔄 Traduction non à jour";
+    if (reasonText) text += SEP + reasonText;
 
     maj.textContent = text;
     maj.classList.add("maj-ko");
-
   } catch {
     if (maj) {
       maj.textContent = "⚠️ Vérif F95Zone impossible";
+      maj.classList.remove("maj-ok", "maj-ko");
       maj.classList.add("maj-ko");
     }
   }
