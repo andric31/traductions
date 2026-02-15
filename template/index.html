@@ -16,10 +16,13 @@
     const testUrl = "./avatar.png?v=" + Date.now();
     const img = new Image();
     img.onload  = () => fav.href = testUrl;
-    img.onerror = () => fav.href = "./favicon.png?v=" + Date.now();
+    img.onerror = () => fav.href = "/favicon.png?v=" + Date.now();
     img.src = testUrl;
   })();
   </script>
+
+  <link rel="stylesheet" href="./viewer.css" />
+  <link rel="stylesheet" href="./themes.css" />
 
   <!-- ✅ Nom affiché via manifest (casse exacte), fallback slug — SANS BOUCLE -->
   <script>
@@ -84,7 +87,6 @@
         Ce site contient des images et contenus destinés à un public majeur.<br>
         En continuant, vous confirmez avoir <strong>18 ans ou plus</strong>.
       </p>
-
       <button id="age-yes">J’ai 18 ans</button>
       <button id="age-no">Quitter</button>
     </div>
@@ -92,7 +94,6 @@
 
   <!-- PAGE VIEWER -->
   <div id="page-viewer">
-
     <header class="topbar" role="banner">
       <div class="top-title-row">
         <h1 id="viewerTitle">f95list_viewer</h1>
@@ -184,19 +185,17 @@
         👁️ Vues de la page : <strong id="mainViews">—</strong>
       </footer>
     </main>
-
   </div>
 
   <!-- PAGE JEU (même page, via ?id= / ?uid=) -->
   <div id="page-game" style="display:none;">
-
-    <!-- ✅ IDs attendus par game.js (sans design) -->
+    <!-- ✅ on garde juste les IDs attendus par game.js (sans “mise en scène”) -->
     <div id="majState" style="display:none;"></div>
-    <div id="badges"></div>
-
     <h1 id="title">Chargement…</h1>
+
     <img id="cover" alt="" referrerpolicy="no-referrer">
 
+    <div id="badges"></div>
     <div id="tagsBox"><div id="tags"></div></div>
 
     <div id="descriptionBox" style="display:none;">
@@ -237,15 +236,32 @@
 
     <div id="errBox"></div>
 
+    <!-- ✅ Observer : mini fade sur #ratingMsg à chaque changement -->
+    <script>
+      (function(){
+        const msg = document.getElementById("ratingMsg");
+        if (!msg) return;
+
+        const flash = () => {
+          msg.classList.remove("msgFade");
+          void msg.offsetWidth;
+          msg.classList.add("msgFade");
+        };
+
+        const obs = new MutationObserver(() => flash());
+        obs.observe(msg, { childList: true, characterData: true, subtree: true });
+
+        if ((msg.textContent || "").trim()) flash();
+      })();
+    </script>
   </div>
 
-  <!-- ✅ JS (on garde, sinon ça marche plus) -->
+  <!-- ✅ JS externes (defer) -->
   <script src="./viewer.menu.js" defer></script>
   <script src="./viewer.menu.about.js" defer></script>
   <script src="./viewer.menu.extension.js" defer></script>
   <script src="./viewer.annonce.js" defer></script>
   <script src="./viewer.agegate.js" defer></script>
-
   <script src="./viewer.js" defer></script>
   <script src="./game.js" defer></script>
 
@@ -256,6 +272,7 @@
       const hasGame = (p.get("id")||"").trim() || (p.get("uid")||"").trim();
       const v = document.getElementById("page-viewer");
       const g = document.getElementById("page-game");
+
       if (hasGame) {
         document.body.classList.add("mode-game");
         if (v) v.style.display = "none";
