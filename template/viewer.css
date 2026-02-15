@@ -512,9 +512,9 @@ a.card.card-link *{
   justify-content:center;
   padding:6px 8px;              /* ⬅ moins haut */
   border-radius:8px;            /* ⬅ un peu plus fin */
-  background: var(--btn);       /* ✅ thémable */
-  color: var(--title);          /* ✅ thémable */
-  border:1px solid var(--border);
+  background:#2e3652;
+  color:#ffffff;
+  border:1px solid #3c466a;
   text-decoration:none;
   font-size:13px;               /* ⬅ texte plus petit */
   font-weight:600;              /* ⬅ moins “bold” */
@@ -522,13 +522,10 @@ a.card.card-link *{
 }
 
 .btn:hover{
-  filter:brightness(1.08);
+  background:#3b4568;
+  border-color:#4d5a84;
+  filter:brightness(1.05);      /* ⬅ hover plus doux */
 }
-
-.btn:active{
-  transform: translateY(1px);
-}
-
 
 .btn.btn-page{
   width:100%;
