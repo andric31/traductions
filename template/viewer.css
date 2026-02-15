@@ -896,17 +896,13 @@ body.mode-game .btnLike .f95-word .f95-red{
   border-radius:8px;
   border:1px solid var(--border);
   background:var(--btn);
-  color:var(--title);        /* ← important */
+  color:var(--fg);
   padding:0 10px;
   cursor:pointer;
   white-space:nowrap;
   display:inline-flex;
   align-items:center;
   gap:8px;
-
-  font-size:14px;            /* ← manquant */
-  font-weight:800;           /* ← clé principale */
-  letter-spacing:.25px;      /* ← perception taille */
 }
 .tags-btn:hover{ filter:brightness(1.1); }
 
@@ -947,8 +943,10 @@ body.mode-game .btnLike .f95-word .f95-red{
   border-bottom:1px solid var(--border-soft);
 }
 .tag-popover .tag-title{
+  font-size:16px;
   font-weight:900;
-  color: var(--title);
+  letter-spacing:.35px;
+  color:var(--title);
 }
 .tag-popover .tag-clear{
   border:1px solid var(--border);
