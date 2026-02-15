@@ -945,7 +945,7 @@ body.mode-game .btnLike .f95-word .f95-red{
 .tag-popover .tag-title{
   font-size:16px;
   font-weight:900;
-  letter-spacing:.35px;
+  letter-spacing:-0.1px;
   color:var(--title);
 }
 .tag-popover .tag-clear{
