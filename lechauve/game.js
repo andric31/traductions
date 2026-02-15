@@ -582,7 +582,7 @@ function renderBadgesFromGame(display, entry, isCollectionChild) {
 }
 
 // ============================================================================
-// ✅ Traduction status (F95)
+// ✅ Traduction status (F95) — version UI propre (sans mode)
 // ============================================================================
 async function renderTranslationStatus(game) {
   if (!game?.url) return;
@@ -591,6 +591,8 @@ async function renderTranslationStatus(game) {
   const clean = (s) => String(s || "").replace(/\s+/g, " ").trim();
   const storedTitle = clean(game.rawTitle || game.title || "");
   const storedVersion = clean(game.version || "");
+
+  const SEP = " · ";
 
   if (maj) {
     maj.style.display = "";
@@ -616,31 +618,44 @@ async function renderTranslationStatus(game) {
       return;
     }
 
-    const up = !!j.isUpToDate;
+    if (!maj) return;
+    maj.classList.remove("maj-ok", "maj-ko");
 
-    if (maj) {
-      maj.classList.remove("maj-ok", "maj-ko");
-
-      if (up) {
-        maj.textContent = "✅ Traduction à jour";
-        maj.classList.add("maj-ok");
-      } else {
-        const curV = clean(j.currentVersion || "");
-        const curT = clean(j.currentTitle || "");
-      
-        if (curV) {
-          maj.textContent = `🔄 Traduction non à jour — F95 v${curV}`;
-        } else if (curT) {
-          // ✅ pas de version détectable -> on montre le titre F95 (court)
-          const shortT = curT.length > 70 ? (curT.slice(0, 70) + "…") : curT;
-          maj.textContent = `🔄 Traduction non à jour — F95: ${shortT}`;
-        } else {
-          maj.textContent = "🔄 Traduction non à jour";
-        }
-      
-        maj.classList.add("maj-ko");
-      }
+    // =========================
+    // ✅ A JOUR
+    // =========================
+    if (j.isUpToDate) {
+      maj.textContent = "✅ Traduction à jour";
+      maj.classList.add("maj-ok");
+      return;
     }
+
+    // =========================
+    // 🔄 NON A JOUR
+    // =========================
+    let reasonText = clean(j.reasonText || "");
+
+    // Version différente : stockée v1.09 / F95 v2.00. -> Version différente : v1.09 → v2.00
+    reasonText = reasonText.replace(
+      /Version différente\s*:\s*stockée\s*v?([0-9][0-9a-zA-Z.\-]*)\s*\/\s*F95\s*v?([0-9][0-9a-zA-Z.\-]*)\.?/i,
+      "Version différente : v$1 → v$2"
+    );
+
+    // Titre différent : stocké ≠ F95. -> Titre différent
+    reasonText = reasonText.replace(
+      /Titre différent\s*:\s*stocké\s*≠\s*F95\.?/i,
+      "Titre différent"
+    );
+
+    // enlève point final
+    reasonText = reasonText.replace(/\.\s*$/, "");
+
+    let text = "🔄 Traduction non à jour";
+    if (reasonText) text += SEP + reasonText;
+
+    maj.textContent = text;
+    maj.classList.add("maj-ko");
+
   } catch {
     if (maj) {
       maj.textContent = "⚠️ Vérif F95Zone impossible";

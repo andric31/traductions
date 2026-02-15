@@ -20,6 +20,7 @@
   </script>
 
   <link rel="stylesheet" href="./viewer.css" />
+  <link rel="stylesheet" href="/themes.css" />
 
   <!-- ✅ Styles page jeu (rendu comme sur andric31-traductions, sans dossier /game) -->
   <style>
@@ -29,9 +30,10 @@
       display:flex;
       align-items:flex-start;
       justify-content:center;
-      overflow-y:auto;
+      overflow: visible;
       padding: 18px 0;
     }
+
     body.mode-game #page-viewer{ display:none !important; }
 
     body.mode-game #page-game .wrap{
@@ -196,20 +198,47 @@
         </button>
 
         <h1 id="viewerTitle">f95list_viewer</h1>
-        <div id="topTitleTools" class="top-title-tools"></div>
+
+        <!-- ✅ Outils en haut à droite (comme le site principal) -->
+        <div id="topTitleTools" class="top-title-tools">
+          <span class="total-inline">Total : <strong id="countTotal">0</strong></span>
+
+          <select id="cols" title="Vignettes par ligne">
+            <option value="auto">Vignettes/ligne : Auto</option>
+            <option value="1">1 par ligne</option>
+            <option value="2">2 par ligne</option>
+            <option value="3">3 par ligne</option>
+            <option value="4">4 par ligne</option>
+            <option value="5">5 par ligne</option>
+            <option value="6">6 par ligne</option>
+            <option value="7">7 par ligne</option>
+            <option value="8">8 par ligne</option>
+            <option value="9">9 par ligne</option>
+            <option value="10">10 par ligne</option>
+          </select>
+
+          <select id="pageSize" title="Affichage progressif">
+            <option value="50">Afficher par 50</option>
+            <option value="100">Afficher par 100</option>
+            <option value="all">Tout afficher</option>
+          </select>
+
+          <select id="theme" title="Thème">
+            <option value="dark">Thème : Sombre</option>
+          </select>
+        </div>
       </div>
 
       <div class="top-actions">
         <div class="search-wrap">
           <input id="search" type="search" placeholder="Rechercher un jeu." autocomplete="off" />
-          <span class="stat-in-bar total-inline">Total : <strong id="countTotal">0</strong></span>
         </div>
 
         <select id="sort" title="Trier">
           <option value="updatedAtLocal-desc">Date de la traduction</option>
+          <option value="mega-desc">📥 Téléchargements</option>
           <option value="views-desc">👁️ Vues</option>
           <option value="likes-desc">❤️ J'aime</option>
-          <option value="mega-desc">📥 Téléchargements</option>
           <option value="title-asc">Titre A→Z</option>
           <option value="title-desc">Titre Z→A</option>
           <option value="updatedAt-desc">Date Thread F95 (Maj)</option>
@@ -242,26 +271,7 @@
           🏷️ Tags <span id="tagsCount" class="tags-count hidden">0</span>
         </button>
 
-        <select id="cols" title="Vignettes par ligne">
-          <option value="auto">Vignettes/ligne : Auto</option>
-          <option value="1">1 par ligne</option>
-          <option value="2">2 par ligne</option>
-          <option value="3">3 par ligne</option>
-          <option value="4">4 par ligne</option>
-          <option value="5">5 par ligne</option>
-          <option value="6">6 par ligne</option>
-          <option value="7">7 par ligne</option>
-          <option value="8">8 par ligne</option>
-          <option value="9">9 par ligne</option>
-          <option value="10">10 par ligne</option>
-        </select>
-
-        <select id="pageSize" title="Affichage progressif">
-          <option value="50">Afficher par 50</option>
-          <option value="100">Afficher par 100</option>
-          <option value="all">Tout afficher</option>
-        </select>
-
+        <!-- ✅ Rafraîchir remis en bas -->
         <button id="refresh" type="button">Rafraîchir</button>
       </div>
     </header>
