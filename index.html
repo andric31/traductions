@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Traductions FR</title>
 
-  <!-- Favicon (ic么ne de l鈥檕nglet) -->
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="/favicon.png">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,28 +16,21 @@
       margin: 0;
       padding: 40px;
     }
-    h1 {
-      margin-bottom: 10px;
-    }
-    .subtitle {
-      opacity: 0.8;
-      margin-bottom: 30px;
-    }
+    h1 { margin-bottom: 10px; }
+    .subtitle { opacity: 0.8; margin-bottom: 30px; }
 
-    /* ====== Cards ====== */
+    /* ===== Cards ===== */
     .card {
       background: #161b22;
       border: 1px solid #30363d;
       border-radius: 10px;
       padding: 14px;
       margin-bottom: 15px;
-
       display: flex;
       align-items: center;
       gap: 14px;
     }
 
-    /* avatar 脿 gauche */
     .avatar {
       width: 64px;
       height: 64px;
@@ -48,7 +41,6 @@
       background: #0e1117;
     }
 
-    /* contenu texte 脿 droite */
     .card-content {
       display: flex;
       flex-direction: column;
@@ -63,9 +55,8 @@
       line-height: 1.2;
       word-break: break-word;
     }
-    .card a:hover {
-      text-decoration: underline;
-    }
+    .card a:hover { text-decoration: underline; }
+
     .card small {
       opacity: 0.8;
       margin-top: 6px;
@@ -73,67 +64,62 @@
       word-break: break-word;
     }
 
-    /* card simple (sans avatar) pour les liens globaux */
-    .card.simple {
-      gap: 0;
-    }
-    .card.simple .card-content {
-      flex-direction: column;
-    }
+    .card.simple { gap: 0; }
   </style>
 </head>
 <body>
 
-<h1>馃實 Projet Traductions FR</h1>
+<h1>?? Projet Traductions FR</h1>
 <div class="subtitle">
   Traductions de jeux VN
 </div>
 
-<!-- Lien global (pas d鈥檃vatar) -->
 <div class="card simple">
   <div class="card-content">
-    <a href="/liste/" target="_blank" rel="noopener noreferrer">馃寪 Liste globale des traductions</a>
+    <a href="/liste/" target="_blank">?? Liste globale des traductions</a>
   </div>
 </div>
 
-<!-- Traducteurs : avatar = /<dossier>/avatar.png -->
 <div class="card">
   <img class="avatar" src="/andric31/avatar.png" alt="andric31">
   <div class="card-content">
-    <a href="https://andric31-traductions.pages.dev/" target="_blank" rel="noopener noreferrer">andric31</a>
-    <small>Traducteur 路 Traductions automatiques de jeux Ren鈥橮y, RPG Maker MV (RPGM), 饾柎nity .json .xml .csv .txt, Godot, TyranoBuilder (TyranoScript), KiriKiri / KAG (KiriKiri Adventure Game), Visual Novel Maker (VNM), Electron, NW.js (Node-Webkit) ... D茅veloppeur ...</small>
+    <a href="https://andric31-traductions.pages.dev/" target="_blank">andric31</a>
+    <small>Traducteur · Traductions automatiques de jeux Ren’Py, RPGM, Unity, etc...</small>
   </div>
 </div>
 
 <div class="card">
   <img class="avatar" src="/ant28jsp/avatar.png" alt="Ant28jsp">
   <div class="card-content">
-    <a href="/ant28jsp/" target="_blank" rel="noopener noreferrer">Ant28jsp</a>
-    <small>Traducteur 路 Traductions automatiques de jeux Ren鈥橮y, RPG Maker MV (RPGM)</small>
+    <a href="/ant28jsp/" target="_blank">Ant28jsp</a>
+    <small>Traducteur · Traductions automatiques Ren’Py et RPGM</small>
   </div>
 </div>
 
 <div class="card">
   <img class="avatar" src="/lechauve/avatar.png" alt="Le Chauve">
   <div class="card-content">
-    <a href="/lechauve/" target="_blank" rel="noopener noreferrer">Le Chauve</a>
-    <small>Traducteur 路 Traductions manuelles de jeux GMS (GameMaker Studio), RPGM-V, RPGM-Z et Ren'py ... D茅veloppeur ...</small>
+    <a href="/lechauve/" target="_blank">Le Chauve</a>
+    <small>Traducteur · Traductions manuelles RPGM et Ren'Py</small>
   </div>
 </div>
 
 <div class="card">
   <img class="avatar" src="/ikaros/avatar.png" alt="Ikaros">
   <div class="card-content">
-    <a href="/ikaros/" target="_blank" rel="noopener noreferrer">Ikaros</a>
-    <small>Traducteur 路 Traductions manuelles et automatiques de jeux Unity, Ren鈥橮y</small>
+    <a href="/ikaros/" target="_blank">Ikaros</a>
+    <small>Traducteur · Traductions Unity et Ren’Py</small>
   </div>
 </div>
 
 <script>
-  // Fallback : si /<dossier>/avatar.png n鈥檈xiste pas -> /favicon.png
-  document.querySelectorAll(".avatar").forEach(img => {
-    img.onerror = () => { img.src = "/favicon.png"; };
-  });
+/* fallback avatar automatique */
+document.querySelectorAll(".avatar").forEach(img => {
+  img.onerror = () => {
+    img.onerror = null; // évite boucle infinie
+    img.src = "/default-avatar.png";
+  };
+});
 </script>
 
 </body>
