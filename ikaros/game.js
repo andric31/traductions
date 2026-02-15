@@ -582,7 +582,7 @@ function renderBadgesFromGame(display, entry, isCollectionChild) {
 }
 
 // ============================================================================
-// ✅ Traduction status (F95) — cause sur UNE LIGNE
+// ✅ Traduction status (F95) — version affichée intelligemment
 // ============================================================================
 async function renderTranslationStatus(game) {
   if (!game?.url) return;
@@ -591,14 +591,6 @@ async function renderTranslationStatus(game) {
   const clean = (s) => String(s || "").replace(/\s+/g, " ").trim();
   const storedTitle = clean(game.rawTitle || game.title || "");
   const storedVersion = clean(game.version || "");
-
-  const esc = (s) =>
-    String(s || "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
 
   if (maj) {
     maj.style.display = "";
@@ -645,15 +637,18 @@ async function renderTranslationStatus(game) {
 
     let text = "🔄 Traduction non à jour — F95";
 
-    if (curV) {
+    // 👉 Si la raison mentionne déjà la version F95 → ne pas la répéter
+    const reasonMentionsVersion = /F95\s*v?[0-9]/i.test(reasonText);
+
+    if (curV && !reasonMentionsVersion) {
       const prettyV = /^v/i.test(curV) ? curV : ("v" + curV);
       text += ` ${prettyV}`;
-    } else if (curT) {
+    }
+    else if (!curV && curT) {
       const shortT = curT.length > 60 ? (curT.slice(0, 60) + "…") : curT;
       text += `: ${shortT}`;
     }
 
-    // ajoute la cause sur la même ligne
     if (reasonText) {
       text += ` ${reasonText}`;
       if (mode) text += ` (${mode})`;
