@@ -236,11 +236,11 @@
   color-scheme: light;
 }
 
+
 /* =========================================================
    NOËL (sapin + rouge + neige visible)
    ========================================================= */
 :root[data-theme="noel"]{
-
   /* 🌌 fond nuit hivernale */
   --bg:#061611;
   --bg2:#0a2018;
@@ -291,15 +291,8 @@
     linear-gradient(145deg, rgba(255,59,59,.10), rgba(31,170,89,.08));
 
   color-scheme: dark;
-}
 
-
-/* =========================================================
-   NOËL — ÉTOILES + NEIGE (sur html pour éviter override)
-   ========================================================= */
-
-/* Étoiles en fond (sur html) */
-:root[data-theme="noel"]{
+  /* ⭐ fond sur html (:root) */
   background:
     radial-gradient(2px 2px at 12% 18%, rgba(255,255,255,.55) 50%, transparent 52%),
     radial-gradient(1px 1px at 42% 32%, rgba(255,255,255,.35) 50%, transparent 52%),
@@ -311,15 +304,20 @@
   background-attachment: fixed;
 }
 
-/* Neige (sur html, 2 couches) */
+/* ✅ CRITIQUE : laisse voir le fond sur html (sinon body recouvre tout) */
+:root[data-theme="noel"] body{
+  background: transparent !important;
+}
+
+/* ❄️ Neige (sur html, 2 couches) */
 :root[data-theme="noel"]::before,
 :root[data-theme="noel"]::after{
   content:"";
   position:fixed;
   inset:0;
   pointer-events:none;
-  z-index:9999; /* au-dessus, donc visible */
-  mix-blend-mode: screen; /* optionnel, rend la neige plus “légère” */
+  z-index:9999;
+  mix-blend-mode: screen; /* optionnel */
 }
 
 /* couche proche */
@@ -346,14 +344,9 @@
   animation:snowFallSlow 18s linear infinite;
 }
 
-@keyframes snowFallFast{
-  from { transform:translateY(-100%); }
-  to   { transform:translateY(100%); }
-}
-@keyframes snowFallSlow{
-  from { transform:translateY(-100%); }
-  to   { transform:translateY(100%); }
-}
+@keyframes snowFallFast{ from{transform:translateY(-100%);} to{transform:translateY(100%);} }
+@keyframes snowFallSlow{ from{transform:translateY(-100%);} to{transform:translateY(100%);} }
+
 
 
 /* =========================================================
