@@ -317,6 +317,50 @@
   background-attachment: fixed;
 }
 
+/* ✅ Neige animée (2 couches), simple et visible */
+:root[data-theme="noel"] body::before,
+:root[data-theme="noel"] body::after{
+  content:"";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;        /* au-dessus de tout */
+}
+
+/* couche 1 : gros flocons + rapide */
+:root[data-theme="noel"] body::before{
+  background:
+    radial-gradient(2px 2px at 10% -10%, rgba(255,255,255,.95) 60%, transparent 61%),
+    radial-gradient(3px 3px at 30% -20%, rgba(255,255,255,.90) 60%, transparent 61%),
+    radial-gradient(2px 2px at 55% -30%, rgba(255,255,255,.95) 60%, transparent 61%),
+    radial-gradient(3px 3px at 75% -40%, rgba(255,255,255,.90) 60%, transparent 61%),
+    radial-gradient(2px 2px at 92% -50%, rgba(255,255,255,.95) 60%, transparent 61%);
+  opacity: .75;
+  animation: snowFast 10s linear infinite;
+}
+
+/* couche 2 : petits flocons + lent */
+:root[data-theme="noel"] body::after{
+  background:
+    radial-gradient(1px 1px at 20% -10%, rgba(255,255,255,.70) 60%, transparent 61%),
+    radial-gradient(1px 1px at 40% -30%, rgba(255,255,255,.65) 60%, transparent 61%),
+    radial-gradient(1px 1px at 60% -20%, rgba(255,255,255,.70) 60%, transparent 61%),
+    radial-gradient(1px 1px at 80% -40%, rgba(255,255,255,.65) 60%, transparent 61%),
+    radial-gradient(1px 1px at 95% -25%, rgba(255,255,255,.70) 60%, transparent 61%);
+  opacity: .55;
+  animation: snowSlow 18s linear infinite;
+}
+
+@keyframes snowFast{
+  from { transform: translateY(-100%); }
+  to   { transform: translateY(100%); }
+}
+@keyframes snowSlow{
+  from { transform: translateY(-100%); }
+  to   { transform: translateY(100%); }
+}
+
+
 /* =========================================================
    HALLOWEEN (cinematic pumpkin)
    ========================================================= */
