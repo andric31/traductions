@@ -443,69 +443,108 @@ html, body { min-height: 100%; }
 }
 
 /* =========================================================
-   🎄 GUIRLANDE NOËL — PREMIUM (propre, pas kermesse)
+   NOËL — GUILRANDE DE SAPIN EN HAUT
+   - S’accroche à la .topbar (safe pour menu/popover)
    ========================================================= */
 
-:root[data-theme="noel"] body::before{
-  content:"";
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:78px;
-  pointer-events:none;
-  z-index:5;
-
-  background:
-    /* câble très fin + légère vague (2 fils superposés) */
-    radial-gradient(140% 90px at 50% -52px, rgba(12,47,36,.95) 98%, transparent 100%),
-    radial-gradient(140% 92px at 50% -54px, rgba(5,20,16,.70) 98%, transparent 100%),
-
-    /* petits “culots” (bases) */
-    radial-gradient(6px 4px at 5% 26px, rgba(0,0,0,.45) 60%, transparent 70%),
-    radial-gradient(6px 4px at 11% 27px, rgba(0,0,0,.45) 60%, transparent 70%),
-    radial-gradient(6px 4px at 17% 26px, rgba(0,0,0,.45) 60%, transparent 70%),
-    radial-gradient(6px 4px at 23% 27px, rgba(0,0,0,.45) 60%, transparent 70%),
-    radial-gradient(6px 4px at 29% 26px, rgba(0,0,0,.45) 60%, transparent 70%),
-    radial-gradient(6px 4px at 35% 27px, rgba(0,0,0,.45) 60%, transparent 70%),
-    radial-gradient(6px 4px at 41% 26px, rgba(0,0,0,.45) 60%, transparent 70%),
-    radial-gradient(6px 4px at 47% 27px, rgba(0,0,0,.45) 60%, transparent 70%),
-    radial-gradient(6px 4px at 53% 26px, rgba(0,0,0,.45) 60%, transparent 70%),
-    radial-gradient(6px 4px at 59% 27px, rgba(0,0,0,.45) 60%, transparent 70%),
-    radial-gradient(6px 4px at 65% 26px, rgba(0,0,0,.45) 60%, transparent 70%),
-    radial-gradient(6px 4px at 71% 27px, rgba(0,0,0,.45) 60%, transparent 70%),
-    radial-gradient(6px 4px at 77% 26px, rgba(0,0,0,.45) 60%, transparent 70%),
-    radial-gradient(6px 4px at 83% 27px, rgba(0,0,0,.45) 60%, transparent 70%),
-    radial-gradient(6px 4px at 89% 26px, rgba(0,0,0,.45) 60%, transparent 70%),
-    radial-gradient(6px 4px at 95% 27px, rgba(0,0,0,.45) 60%, transparent 70%),
-
-    /* ampoules (petites + glow doux) */
-    radial-gradient(circle at 5% 34px, rgba(255, 90, 90, .95) 0 5px, transparent 7px),
-    radial-gradient(circle at 11% 35px, rgba(255, 220, 90, .95) 0 5px, transparent 7px),
-    radial-gradient(circle at 17% 34px, rgba(110, 255, 170, .95) 0 5px, transparent 7px),
-    radial-gradient(circle at 23% 35px, rgba(120, 190, 255, .95) 0 5px, transparent 7px),
-    radial-gradient(circle at 29% 34px, rgba(255, 150, 255, .95) 0 5px, transparent 7px),
-    radial-gradient(circle at 35% 35px, rgba(255, 90, 90, .95) 0 5px, transparent 7px),
-    radial-gradient(circle at 41% 34px, rgba(255, 220, 90, .95) 0 5px, transparent 7px),
-    radial-gradient(circle at 47% 35px, rgba(110, 255, 170, .95) 0 5px, transparent 7px),
-    radial-gradient(circle at 53% 34px, rgba(120, 190, 255, .95) 0 5px, transparent 7px),
-    radial-gradient(circle at 59% 35px, rgba(255, 150, 255, .95) 0 5px, transparent 7px),
-    radial-gradient(circle at 65% 34px, rgba(255, 90, 90, .95) 0 5px, transparent 7px),
-    radial-gradient(circle at 71% 35px, rgba(255, 220, 90, .95) 0 5px, transparent 7px),
-    radial-gradient(circle at 77% 34px, rgba(110, 255, 170, .95) 0 5px, transparent 7px),
-    radial-gradient(circle at 83% 35px, rgba(120, 190, 255, .95) 0 5px, transparent 7px),
-    radial-gradient(circle at 89% 34px, rgba(255, 150, 255, .95) 0 5px, transparent 7px),
-    radial-gradient(circle at 95% 35px, rgba(255, 220, 90, .95) 0 5px, transparent 7px);
-
-  filter: drop-shadow(0 0 5px rgba(255,255,255,.45));
-  animation: garlandGlow 3s ease-in-out infinite alternate;
+:root[data-theme="noel"] .topbar{
+  position: relative; /* nécessaire pour ::before/::after */
 }
 
-/* glow doux, pas disco */
-@keyframes garlandGlow{
-  0%   { filter:brightness(.92) drop-shadow(0 0 2px rgba(255,255,255,.30)); opacity:.92; }
-  50%  { filter:brightness(1.10) drop-shadow(0 0 7px rgba(255,255,255,.55)); opacity:1; }
-  100% { filter:brightness(1.00) drop-shadow(0 0 4px rgba(255,255,255,.40)); opacity:.96; }
+/* 🌲 la guirlande (sapin) */
+:root[data-theme="noel"] .topbar::before{
+  content:"";
+  position:absolute;
+  left:-14px;
+  right:-14px;
+  top:-22px;                 /* remonte pour dépasser */
+  height:72px;               /* épaisseur de la guirlande */
+  pointer-events:none;
+  z-index: 5;
+
+  /* 1) feuillage (dents)  2) ombre  3) petits reflets */
+  background:
+    /* reflets "aiguilles" */
+    repeating-linear-gradient(
+      135deg,
+      rgba(255,255,255,.06) 0 6px,
+      rgba(255,255,255,0) 6px 14px
+    ),
+    /* feuillage principal */
+    radial-gradient(120px 56px at 6% 58%, rgba(31,170,89,.95) 0 62%, transparent 64%),
+    radial-gradient(130px 60px at 16% 48%, rgba(26,145,78,.96) 0 62%, transparent 64%),
+    radial-gradient(120px 56px at 28% 62%, rgba(31,170,89,.94) 0 62%, transparent 64%),
+    radial-gradient(140px 64px at 40% 48%, rgba(26,145,78,.96) 0 62%, transparent 64%),
+    radial-gradient(120px 56px at 52% 62%, rgba(31,170,89,.94) 0 62%, transparent 64%),
+    radial-gradient(140px 64px at 64% 48%, rgba(26,145,78,.96) 0 62%, transparent 64%),
+    radial-gradient(120px 56px at 76% 62%, rgba(31,170,89,.94) 0 62%, transparent 64%),
+    radial-gradient(140px 64px at 88% 48%, rgba(26,145,78,.96) 0 62%, transparent 64%),
+    radial-gradient(120px 56px at 98% 60%, rgba(31,170,89,.92) 0 62%, transparent 64%),
+    /* ombre sous guirlande */
+    linear-gradient(180deg, rgba(0,0,0,.40), rgba(0,0,0,0) 70%);
+
+  border-bottom-left-radius: 28px;
+  border-bottom-right-radius: 28px;
+
+  filter:
+    drop-shadow(0 8px 14px rgba(0,0,0,.55))
+    saturate(1.08);
+
+  opacity: .98;
+}
+
+/* 🎄 décorations + guirlande lumineuse (scintille) */
+:root[data-theme="noel"] .topbar::after{
+  content:"";
+  position:absolute;
+  left:-14px;
+  right:-14px;
+  top:-22px;
+  height:72px;
+  pointer-events:none;
+  z-index: 6;
+
+  background:
+    /* fil (léger) */
+    radial-gradient(900px 90px at 50% 70%, rgba(0,0,0,.35), transparent 62%),
+
+    /* boules (rouge / or / bleu) */
+    radial-gradient(circle at 12% 70%, rgba(255,59,59,.95) 0 6px, transparent 7px),
+    radial-gradient(circle at 22% 62%, rgba(255,210,90,.95) 0 6px, transparent 7px),
+    radial-gradient(circle at 33% 74%, rgba(90,170,255,.95) 0 6px, transparent 7px),
+    radial-gradient(circle at 46% 62%, rgba(255,59,59,.92) 0 6px, transparent 7px),
+    radial-gradient(circle at 58% 74%, rgba(255,210,90,.94) 0 6px, transparent 7px),
+    radial-gradient(circle at 70% 64%, rgba(90,170,255,.94) 0 6px, transparent 7px),
+    radial-gradient(circle at 82% 74%, rgba(255,59,59,.92) 0 6px, transparent 7px),
+
+    /* petites LED (double halo) */
+    radial-gradient(circle at 16% 52%, rgba(255,255,255,.95) 0 2px, rgba(255,255,255,.18) 3px, transparent 9px),
+    radial-gradient(circle at 28% 58%, rgba(255,255,255,.95) 0 2px, rgba(255,255,255,.18) 3px, transparent 9px),
+    radial-gradient(circle at 40% 54%, rgba(255,255,255,.95) 0 2px, rgba(255,255,255,.18) 3px, transparent 9px),
+    radial-gradient(circle at 52% 58%, rgba(255,255,255,.95) 0 2px, rgba(255,255,255,.18) 3px, transparent 9px),
+    radial-gradient(circle at 64% 54%, rgba(255,255,255,.95) 0 2px, rgba(255,255,255,.18) 3px, transparent 9px),
+    radial-gradient(circle at 76% 58%, rgba(255,255,255,.95) 0 2px, rgba(255,255,255,.18) 3px, transparent 9px),
+    radial-gradient(circle at 88% 54%, rgba(255,255,255,.95) 0 2px, rgba(255,255,255,.18) 3px, transparent 9px);
+
+  mix-blend-mode: screen;
+  opacity: .72;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,.35));
+  animation: noelGarlandTwinkle 3.2s steps(2, end) infinite;
+}
+
+@keyframes noelGarlandTwinkle{
+  0%{ opacity:.55; }
+  20%{ opacity:.82; }
+  35%{ opacity:.60; }
+  55%{ opacity:.88; }
+  70%{ opacity:.64; }
+  100%{ opacity:.72; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  :root[data-theme="noel"] .topbar::after{
+    animation: none !important;
+  }
 }
 
 
