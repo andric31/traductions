@@ -402,14 +402,20 @@
   <script src="./viewer.js" defer></script>
   <script src="./game.js" defer></script>
 
-  <!-- ✅ switch viewer/game -->
+  <!-- ✅ switch viewer/game (SPA-safe : pushState/popstate) -->
   <script>
-    (function(){
+  (function(){
+    function hasGameParams(){
       const p = new URLSearchParams(location.search);
-      const hasGame = (p.get("id")||"").trim() || (p.get("uid")||"").trim();
+      return !!((p.get("id")||"").trim() || (p.get("uid")||"").trim());
+    }
+  
+    function applyMode(){
       const v = document.getElementById("page-viewer");
       const g = document.getElementById("page-game");
-      if (hasGame) {
+      const game = hasGameParams();
+  
+      if (game) {
         document.body.classList.add("mode-game");
         if (v) v.style.display = "none";
         if (g) g.style.display = "";
@@ -418,7 +424,37 @@
         if (g) g.style.display = "none";
         if (v) v.style.display = "";
       }
-    })();
+  
+      // (optionnel) évite certains caches CSS/layout sur changement de page
+      document.body.offsetHeight;
+    }
+  
+    // 1) initial
+    if (document.readyState === "loading") {
+      window.addEventListener("DOMContentLoaded", applyMode, { once:true });
+    } else {
+      applyMode();
+    }
+  
+    // 2) back/forward
+    window.addEventListener("popstate", applyMode);
+  
+    // 3) SPA nav : pushState / replaceState
+    const _push = history.pushState;
+    const _repl = history.replaceState;
+  
+    history.pushState = function(){
+      const r = _push.apply(this, arguments);
+      applyMode();
+      return r;
+    };
+    history.replaceState = function(){
+      const r = _repl.apply(this, arguments);
+      applyMode();
+      return r;
+    };
+  
+  })();
   </script>
 
   <!-- ✅ pont hamburger : si tes JS attendent #hamburgerBtn -->
