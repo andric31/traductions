@@ -318,11 +318,11 @@
 }
 
 /* =========================================================
-   NOËL — NEIGE QUI TOMBE (ROBUSTE) SUR HTML
+   NOËL — NEIGE QUI TOMBE (ROBUSTE + NATURELLE) SUR HTML
    ========================================================= */
 
 :root[data-theme="noel"]{
-  position: relative; /* ok pour certains moteurs */
+  position: relative;
 }
 
 /* 2 couches au-dessus de tout */
@@ -332,36 +332,44 @@
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 2147483647; /* max safe */
+  z-index: 2147483647;
   background-repeat: repeat;
   will-change: background-position;
 }
 
-/* gros flocons (rapides) */
+/* gros flocons (plus proches) */
 :root[data-theme="noel"]::before{
   background-image: radial-gradient(circle, rgba(255,255,255,.85) 0 1.2px, transparent 1.6px);
   background-size: 120px 120px;
-  background-position: 0 0;
   opacity: .55;
-  animation: snowDropFast 8s linear infinite;
+  animation: snowDropFast 9s cubic-bezier(.45,.05,.55,.95) infinite;
 }
 
-/* petits flocons (lents) */
+/* petits flocons (plus loin) */
 :root[data-theme="noel"]::after{
   background-image: radial-gradient(circle, rgba(255,255,255,.65) 0 0.8px, transparent 1.3px);
   background-size: 180px 180px;
-  background-position: 40px 0;
   opacity: .45;
-  animation: snowDropSlow 14s linear infinite;
+  filter: blur(.3px); /* profondeur */
+  animation: snowDropSlow 16s cubic-bezier(.4,.1,.3,.9) infinite;
 }
 
+/* dérive irrégulière (vent) + vitesse naturelle */
 @keyframes snowDropFast{
-  from { background-position: 0 0; }
-  to   { background-position: 0 120px; }
+  0%   { background-position:   0px  -120px; }
+  20%  { background-position:  18px  -60px; }
+  40%  { background-position: -12px   10px; }
+  60%  { background-position:  22px   60px; }
+  80%  { background-position:  -8px   95px; }
+  100% { background-position:  15px  120px; }
 }
+
 @keyframes snowDropSlow{
-  from { background-position: 40px 0; }
-  to   { background-position: 40px 180px; }
+  0%   { background-position:  40px -180px; }
+  25%  { background-position:  55px -110px; }
+  50%  { background-position:  28px  -30px; }
+  75%  { background-position:  60px   70px; }
+  100% { background-position:  35px  180px; }
 }
 
 
