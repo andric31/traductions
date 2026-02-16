@@ -1,13 +1,28 @@
-/* themes.css — Thèmes ultra-visibles (variables + ambiance)
-   -------------------------------------------------------
-   Objectif :
-   - Clair : fini le blanc pur « hôpital » → blanc cassé + profondeur + contrastes propres.
-   - Noël / Halloween : ambiance immédiatement reconnaissable (fond + glow + accents + hover).
+/* themes.css — Thèmes via variables (viewer.css reste propre)
+   Auto (par défaut) suit le thème Windows via prefers-color-scheme.
 
-   IMPORTANT :
-   - Les variables utilisées par html{ background: var(--bg) } doivent être sur :root (= html).
-   - Donc on force les thèmes sur :root[data-theme="..."] (et non body).
+   ✅ IMPORTANT :
+   - Les variables utilisées par html{ background: var(--bg) } doivent être sur :root (= html)
+   - Donc on force les thèmes sur :root[data-theme="..."] (et non body)
 */
+
+/* =========================================================
+   BASE : petits overrides communs (tous thèmes)
+   ========================================================= */
+:root{
+  /* valeurs fallback si un thème ne définit pas tout */
+  --overlay-bg: rgba(0,0,0,0.55);
+  --thumb-bg: rgba(255,255,255,0.06);
+  --thumb-fallback-bg: rgba(0,0,0,0.15);
+
+  --border-soft: rgba(255,255,255,0.06);
+  --top-actions-border: rgba(255,255,255,0.03);
+
+  --soft-04: rgba(255,255,255,0.04);
+  --soft-05: rgba(255,255,255,0.05);
+}
+
+
 
 /* =========================================================
    AUTO (Windows) : mode clair
@@ -16,84 +31,57 @@
    ========================================================= */
 @media (prefers-color-scheme: light){
   :root{
-    /* 🌤️ base claire (blanc cassé, plus reposant) */
-    --bg:#f6f7fb;
+    --bg:#ffffff;
     --bg2:#ffffff;
-    --fg:#141824;
-    --muted:#525b71;
+    --fg:#111318;
+    --muted:#4c556a;
 
-    /* 🎯 accents modernes */
     --primary:#2d6cdf;
     --accent:#0f7b50;
 
-    /* borders / surfaces */
-    --border:#d9deeb;
-    --border-soft: rgba(20,24,36,0.10);
+    --border:#d6dae6;
 
-    /* ✅ cartes : plus blanches que le fond → effet premium */
-    --card:#ffffff;
-    --btn:#eef2fb;
+    /* ✅ tuiles grisées, pas blanches */
+    --card:#f2f4f8;
+    --btn:#eef1f8;
 
-    --title:#0f1320;
+    /* ✅ titres */
+    --title:#111318;
 
-    /* topbar : léger verre + ombre */
-    --topbar-bg: rgba(246,247,251,.88);
+    /* ✅ topbar claire */
+    --topbar-bg: rgba(255,255,255,.92);
 
-    /* body gradient : très subtil */
-    --body-grad-1:#f6f7fb;
-    --body-grad-2:#f3f6ff;
-    --body-grad-3:#f7f7fa;
+    /* ✅ gradient body = blanc */
+    --body-grad-1:#ffffff;
+    --body-grad-2:#ffffff;
+    --body-grad-3:#ffffff;
 
-    /* popovers + hover */
-    --popover-bg: rgba(255,255,255,0.94);
-    --hover-bg: rgba(20,24,36,0.06);
+    /* ✅ popovers + hover */
+    --popover-bg: rgba(255,255,255,0.96);
+    --hover-bg: rgba(0,0,0,0.06);
 
-    /* overlay (modals) : un peu plus doux en light */
-    --overlay-bg: rgba(12,14,18,0.45);
-
-    /* thumbs */
-    --thumb-bg: rgba(45,108,223,0.08);
-    --thumb-fallback-bg: rgba(20,24,36,0.06);
-
-    /* scrollbars */
-    --scrollbar-thumb:#c4cadb;
-    --scrollbar-track:#eef1f8;
+    /* ✅ scrollbars */
+    --scrollbar-thumb:#c4c9d6;
+    --scrollbar-track:#f1f3f7;
     --scrollbar-track-webkit: var(--scrollbar-track);
     --scrollbar-thumb-webkit: var(--scrollbar-thumb);
-    --scrollbar-thumb-webkit-hover:#b0b7cc;
+    --scrollbar-thumb-webkit-hover:#b0b6c6;
 
-    /* hover “theme engine” (light) */
-    --card-hover-border: rgba(45,108,223,0.55);
+    /* ✅ hover “theme engine” (fallback light) */
+    --card-hover-border: rgba(0,0,0,0.18);
     --card-hover-shadow:
-      0 0 0 1px rgba(45,108,223,0.18),
-      0 14px 38px rgba(17,19,24,0.12);
+      0 0 0 1px rgba(0,0,0,0.12),
+      0 12px 34px rgba(0,0,0,0.10);
     --card-hover-bg: var(--card);
-
-    --top-actions-border: rgba(20,24,36,0.05);
-    --soft-04: rgba(20,24,36,0.04);
-    --soft-05: rgba(20,24,36,0.06);
 
     color-scheme: light;
   }
-
-  /* 🌫️ ambiance “papier” très légère (évite le blanc plat) */
-  body{
-    background:
-      radial-gradient(1200px 600px at 18% 0%, rgba(45,108,223,0.10), transparent 60%),
-      radial-gradient(900px 500px at 90% 10%, rgba(15,123,80,0.08), transparent 55%),
-      linear-gradient(180deg, var(--body-grad-1), var(--body-grad-2) 30%, var(--body-grad-3));
-    background-attachment: fixed;
-  }
 }
 
-
 /* =========================================================
-   FORCÉ : sombre (identique à ton style actuel, mais complet)
+   FORCÉ : sombre (identique à ton style actuel)
    ========================================================= */
-/* ✅ Supporte aussi si l'attribut est posé sur <html> ou <body> */
-:root[data-theme="dark"],
-html[data-theme="dark"],
-body[data-theme="dark"]{
+:root[data-theme="dark"]{
   --bg:#0f1117;
   --bg2:#141826;
   --fg:#e8eaf0;
@@ -101,12 +89,11 @@ body[data-theme="dark"]{
   --primary:#5aa2ff;
   --accent:#6ce0b0;
   --border:#23283b;
-
   --card:#171b29;
   --btn:#1e2437;
 
   --title: var(--fg);
-  --topbar-bg: rgba(16,20,37,.90);
+  --topbar-bg: rgba(16,20,37,.9);
 
   --body-grad-1:#0d1018;
   --body-grad-2:#101425;
@@ -121,16 +108,7 @@ body[data-theme="dark"]{
   --scrollbar-thumb-webkit: var(--scrollbar-thumb);
   --scrollbar-thumb-webkit-hover:#3f4b6b;
 
-  --overlay-bg: rgba(0,0,0,0.55);
-  --thumb-bg: #1c1f2e;
-  --thumb-fallback-bg: #0f0f10;
-
-  --border-soft: rgba(255,255,255,0.06);
-  --top-actions-border: rgba(255,255,255,0.03);
-  --soft-04: rgba(255,255,255,0.04);
-  --soft-05: rgba(255,255,255,0.05);
-
-  /* hover “theme engine” (dark) */
+  /* ✅ hover “theme engine” (dark) */
   --card-hover-border: rgba(255,255,255,0.22);
   --card-hover-shadow:
     0 0 0 1px rgba(255,255,255,0.18),
@@ -141,10 +119,12 @@ body[data-theme="dark"]{
   color-scheme: dark;
 }
 
-
 /* =========================================================
-   FORCÉ : blanc (clair premium, pas “blanc pur”)
+   FORCÉ : clair (alias : white) — clair premium, pas “blanc pur”
    ========================================================= */
+:root[data-theme="clair"],
+html[data-theme="clair"],
+body[data-theme="clair"],
 :root[data-theme="white"],
 html[data-theme="white"],
 body[data-theme="white"]{
@@ -196,6 +176,7 @@ body[data-theme="white"]{
   color-scheme: light;
 }
 
+:root[data-theme="clair"] body,
 :root[data-theme="white"] body{
   background:
     radial-gradient(1200px 600px at 18% 0%, rgba(45,108,223,0.10), transparent 60%),
@@ -204,34 +185,38 @@ body[data-theme="white"]{
   background-attachment: fixed;
 }
 
-
 /* =========================================================
-   NOËL (COULEURS = ton themes.css envoyé)
+   NOËL (sapin + rouge + neige visible)
    ========================================================= */
-:root[data-theme="noel"],
-html[data-theme="noel"],
-body[data-theme="noel"]{
-  /* ✅ couleurs exactes du fichier envoyé */
+:root[data-theme="noel"]{
+
+  /* 🌌 fond nuit hivernale */
   --bg:#061611;
   --bg2:#0a2018;
 
+  /* ❄️ texte neige */
   --fg:#f4fff9;
   --muted:#c7e6d6;
 
+  /* 🎄 vert sapin */
   --primary:#1faa59;
+
+  /* 🎅 rouge BIEN visible */
   --accent:#ff3b3b;
 
   --border:#1f5a43;
 
+  /* cartes plus neutres, pas “full green” */
   --card:#0f1c17;
   --btn:#163a2c;
 
   --title: var(--fg);
 
+  /* 🔥 Topbar avec reflet rouge */
   --topbar-bg: linear-gradient(
-    90deg,
-    rgba(6,22,17,.95),
-    rgba(255,59,59,.22)
+      90deg,
+      rgba(6,22,17,.95),
+      rgba(255,59,59,.22)
   );
 
   --body-grad-1:#040d0a;
@@ -243,19 +228,7 @@ body[data-theme="noel"]{
 
   --scrollbar-thumb:#2f8f68;
   --scrollbar-track:#030a07;
-  --scrollbar-track-webkit: var(--scrollbar-track);
-  --scrollbar-thumb-webkit: var(--scrollbar-thumb);
   --scrollbar-thumb-webkit-hover:#3fb07c;
-
-  /* ✅ compléments pour rester cohérent avec ton viewer.css */
-  --border-soft: rgba(244,255,249,0.10);
-  --top-actions-border: rgba(255,255,255,0.05);
-  --soft-04: rgba(255,255,255,0.04);
-  --soft-05: rgba(255,255,255,0.06);
-
-  --overlay-bg: rgba(0,0,0,0.62);
-  --thumb-bg: rgba(255,255,255,0.06);
-  --thumb-fallback-bg: rgba(0,0,0,0.22);
 
   /* ✅ hover “très Noël” (rouge + un peu vert) */
   --card-hover-border: #ff3b3b;
@@ -269,55 +242,33 @@ body[data-theme="noel"]{
   color-scheme: dark;
 }
 
-/* (tu peux garder ton background “neige + aurore” tel quel) */
-:root[data-theme="noel"] body{
-  background:
-    radial-gradient(circle at 10% 20%, rgba(255,255,255,0.22) 0 1px, transparent 2px),
-    radial-gradient(circle at 30% 80%, rgba(255,255,255,0.18) 0 1px, transparent 2px),
-    radial-gradient(circle at 70% 35%, rgba(255,255,255,0.20) 0 1px, transparent 2px),
-    radial-gradient(circle at 85% 70%, rgba(255,255,255,0.16) 0 1px, transparent 2px),
-    radial-gradient(1200px 700px at 15% 0%, rgba(31,170,89,0.18), transparent 60%),
-    radial-gradient(1100px 650px at 85% 10%, rgba(255,59,59,0.12), transparent 55%),
-    radial-gradient(900px 600px at 60% 0%, rgba(72,155,255,0.12), transparent 60%),
-    linear-gradient(180deg, #04080c 0%, #061611 35%, #0a2018 100%);
-  background-size:
-    220px 220px,
-    260px 260px,
-    240px 240px,
-    280px 280px,
-    auto, auto, auto,
-    auto;
-  background-attachment: fixed;
-}
-
-
 /* =========================================================
-   HALLOWEEN (COULEURS = ton themes.css envoyé)
+   HALLOWEEN (cinematic pumpkin)
    ========================================================= */
-:root[data-theme="halloween"],
-html[data-theme="halloween"],
-body[data-theme="halloween"]{
-  /* ✅ couleurs exactes du fichier envoyé */
+:root[data-theme="halloween"]{
+
   --bg:#08050c;
   --bg2:#110916;
 
   --fg:#fff3e6;
   --muted:#e4c9a6;
 
+  /* 🎃 ORANGE DOMINANT */
   --primary:#ff7a00;
+
+  /* 🔮 violet magique */
   --accent:#9c6bff;
 
   --border:#3a1f4d;
-
   --card:#140a1a;
   --btn:#1c0f25;
 
   --title: var(--fg);
 
   --topbar-bg: linear-gradient(
-    90deg,
-    rgba(8,5,12,.95),
-    rgba(255,122,0,.22)
+      90deg,
+      rgba(8,5,12,.95),
+      rgba(255,122,0,.22)
   );
 
   --body-grad-1:#050308;
@@ -329,19 +280,7 @@ body[data-theme="halloween"]{
 
   --scrollbar-thumb:#6a35a0;
   --scrollbar-track:#030205;
-  --scrollbar-track-webkit: var(--scrollbar-track);
-  --scrollbar-thumb-webkit: var(--scrollbar-thumb);
   --scrollbar-thumb-webkit-hover:#8446c8;
-
-  /* ✅ compléments pour rester cohérent avec ton viewer.css */
-  --border-soft: rgba(255,243,230,0.10);
-  --top-actions-border: rgba(255,255,255,0.05);
-  --soft-04: rgba(255,255,255,0.04);
-  --soft-05: rgba(255,255,255,0.06);
-
-  --overlay-bg: rgba(0,0,0,0.66);
-  --thumb-bg: rgba(255,122,0,0.10);
-  --thumb-fallback-bg: rgba(0,0,0,0.25);
 
   /* ✅ hover “Halloween” (orange + glow) */
   --card-hover-border: #ff7a00;
@@ -354,17 +293,6 @@ body[data-theme="halloween"]{
 
   color-scheme: dark;
 }
-
-/* (tu peux garder ton background “fumée + glow” tel quel) */
-:root[data-theme="halloween"] body{
-  background:
-    radial-gradient(1200px 700px at 18% 0%, rgba(255,122,0,0.22), transparent 58%),
-    radial-gradient(1000px 700px at 80% 5%, rgba(156,107,255,0.18), transparent 55%),
-    radial-gradient(900px 600px at 50% 85%, rgba(0,0,0,0.55), transparent 55%),
-    linear-gradient(180deg, #050308 0%, #08050c 35%, #110916 100%);
-  background-attachment: fixed;
-}
-
 
 /* =====================================================
    THEME HOVER ENGINE (1 seule fois)
