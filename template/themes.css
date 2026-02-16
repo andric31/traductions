@@ -324,6 +324,126 @@
   background: transparent !important;
 }
 
+/* =========================================================
+   NOËL — FX ANIMÉS SUR HTML (neige qui tombe + aurore qui bouge + scintillement)
+   - Ne touche pas au layout (tuiles inchangées)
+   - Body reste transparent (pas de coupure bas)
+   ========================================================= */
+
+:root[data-theme="noel"]{
+  position: relative;
+}
+
+/* 3 couches : ::before (neige proche), ::after (neige loin), .noel-glow (aurore animée) */
+:root[data-theme="noel"]::before,
+:root[data-theme="noel"]::after{
+  content:"";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;              /* derrière l'UI */
+  background-repeat: repeat;
+  will-change: background-position, transform, opacity;
+}
+
+/* ✅ neige proche (grosses) */
+:root[data-theme="noel"]::before{
+  opacity: .55;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.95) 0 1.25px, transparent 1.8px),
+    radial-gradient(circle, rgba(255,255,255,.70) 0 1.05px, transparent 1.7px);
+  background-size:
+    120px 160px,
+    210px 140px;
+  background-position:
+    0   -220px,
+    80px -140px;
+  animation: noelSnowNear 10.5s linear infinite;
+}
+
+/* ✅ neige loin (petites + plus lente) */
+:root[data-theme="noel"]::after{
+  opacity: .35;
+  filter: blur(.35px);
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.75) 0 0.85px, transparent 1.35px),
+    radial-gradient(circle, rgba(255,255,255,.45) 0 0.70px, transparent 1.25px);
+  background-size:
+    220px 260px,
+    340px 280px;
+  background-position:
+    40px -320px,
+    160px -240px;
+  animation: noelSnowFar 18s linear infinite;
+}
+
+/* ✅ aurore animée (sans pseudo en plus : on la met via background sur un fixed overlay) */
+:root[data-theme="noel"] body::before{
+  content:"";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;              /* derrière l'UI */
+  mix-blend-mode: screen;  /* glow plus “vivant” */
+  opacity: .22;
+  background:
+    radial-gradient(1200px 700px at 15% 0%, rgba(24,195,122,0.22), transparent 60%),
+    radial-gradient(1100px 650px at 85% 10%, rgba(255,47,67,0.16), transparent 55%),
+    radial-gradient(900px 600px at 60% 0%, rgba(72,155,255,0.16), transparent 60%);
+  filter: blur(14px);
+  animation: noelAurora 14s ease-in-out infinite alternate;
+}
+
+/* ✅ tout le contenu au-dessus des FX */
+:root[data-theme="noel"] body > *{
+  position: relative;
+  z-index: 1;
+}
+
+/* mouvements neige : non linéaire (offsets différents) */
+@keyframes noelSnowNear{
+  0%{
+    background-position: 0 -220px, 80px -140px;
+    transform: translateX(0);
+  }
+  30%{
+    background-position: 18px -60px, 60px 40px;
+    transform: translateX(6px);
+  }
+  60%{
+    background-position: -10px 140px, 95px 230px;
+    transform: translateX(-5px);
+  }
+  100%{
+    background-position: 8px 520px, 78px 460px;
+    transform: translateX(0);
+  }
+}
+
+@keyframes noelSnowFar{
+  0%{
+    background-position: 40px -320px, 160px -240px;
+    transform: translateX(0);
+  }
+  35%{
+    background-position: 56px -120px, 140px 0px;
+    transform: translateX(-4px);
+  }
+  70%{
+    background-position: 28px 160px, 190px 220px;
+    transform: translateX(5px);
+  }
+  100%{
+    background-position: 44px 560px, 168px 500px;
+    transform: translateX(0);
+  }
+}
+
+@keyframes noelAurora{
+  from{ transform: translate3d(-2%, -1%, 0) scale(1.02); opacity: .18; }
+  to  { transform: translate3d( 2%,  1%, 0) scale(1.05); opacity: .26; }
+}
+
 
 /* =========================================================
    HALLOWEEN (cinematic pumpkin + FX fond)
@@ -392,6 +512,68 @@
 /* body transparent → évite la coupure bas de page */
 :root[data-theme="halloween"] body{
   background: transparent !important;
+}
+
+/* =========================================================
+   HALLOWEEN — FX ANIMÉS SUR HTML (brume + flicker bougie)
+   - Ne touche pas au layout
+   - Body transparent OK
+   ========================================================= */
+
+:root[data-theme="halloween"]{
+  position: relative;
+}
+
+/* ✅ brume (derrière UI) */
+:root[data-theme="halloween"]::before{
+  content:"";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: .70;
+  background:
+    radial-gradient(520px 520px at 88% 12%, rgba(255,170,60,.22), transparent 62%),
+    radial-gradient(260px 260px at 88% 12%, rgba(255,170,60,.10), transparent 64%),
+    radial-gradient(900px 520px at 18% 22%, rgba(156,107,255,.14), transparent 62%),
+    radial-gradient(1200px 700px at 40% 90%, rgba(255,122,0,.10), transparent 62%);
+  filter: blur(12px);
+  animation: halloweenFog 14s ease-in-out infinite alternate;
+}
+
+/* ✅ flicker “bougie” (au-dessus de la brume mais toujours derrière UI) */
+:root[data-theme="halloween"]::after{
+  content:"";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: .12;
+  background:
+    radial-gradient(900px 520px at 55% 20%, rgba(255,122,0,.70), transparent 68%),
+    radial-gradient(700px 420px at 25% 70%, rgba(255,122,0,.35), transparent 72%);
+  mix-blend-mode: screen;
+  animation: halloweenFlicker 3.6s steps(2, end) infinite;
+}
+
+/* ✅ tout le contenu au-dessus des FX */
+:root[data-theme="halloween"] body > *{
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes halloweenFog{
+  from { transform: translate3d(-2%, 0, 0); }
+  to   { transform: translate3d( 2%, 0, 0); }
+}
+
+@keyframes halloweenFlicker{
+  0%{ opacity:.08; }
+  18%{ opacity:.14; }
+  26%{ opacity:.06; }
+  52%{ opacity:.16; }
+  68%{ opacity:.10; }
+  100%{ opacity:.12; }
 }
 
 
