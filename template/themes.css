@@ -293,11 +293,13 @@
   color-scheme: dark;
 }
 
+
 /* =========================================================
-   NOËL — étoiles / points dans le fond (sans image)
+   NOËL — ÉTOILES + NEIGE (sur html pour éviter override)
    ========================================================= */
-:root[data-theme="noel"] body{
-  /* 3 couches de "points" + ton fond existant (via --body-grad-*) */
+
+/* Étoiles en fond (sur html) */
+:root[data-theme="noel"]{
   background:
     radial-gradient(2px 2px at 12% 18%, rgba(255,255,255,.55) 50%, transparent 52%),
     radial-gradient(1px 1px at 42% 32%, rgba(255,255,255,.35) 50%, transparent 52%),
@@ -305,55 +307,49 @@
     radial-gradient(1px 1px at 66% 64%, rgba(255,255,255,.28) 50%, transparent 52%),
     radial-gradient(2px 2px at 88% 72%, rgba(255,255,255,.40) 50%, transparent 52%),
     radial-gradient(1px 1px at 18% 78%, rgba(255,255,255,.22) 50%, transparent 52%),
-    /* fond noel */
     linear-gradient(180deg, var(--body-grad-1), var(--body-grad-2) 30%, var(--body-grad-3));
   background-attachment: fixed;
 }
 
-/* =========================================================
-   NOËL — neige animée
-   ========================================================= */
-
-/* conteneur */
-:root[data-theme="noel"] body::before,
-:root[data-theme="noel"] body::after{
+/* Neige (sur html, 2 couches) */
+:root[data-theme="noel"]::before,
+:root[data-theme="noel"]::after{
   content:"";
   position:fixed;
   inset:0;
   pointer-events:none;
-  z-index:0;
+  z-index:9999; /* au-dessus, donc visible */
+  mix-blend-mode: screen; /* optionnel, rend la neige plus “légère” */
 }
 
-/* neige proche (plus grosse + rapide) */
-:root[data-theme="noel"] body::before{
+/* couche proche */
+:root[data-theme="noel"]::before{
   background-image:
-    radial-gradient(2px 2px at 10% -10%, #fff 60%, transparent 61%),
-    radial-gradient(3px 3px at 30% -20%, #fff 60%, transparent 61%),
-    radial-gradient(2px 2px at 50% -30%, #fff 60%, transparent 61%),
-    radial-gradient(3px 3px at 70% -40%, #fff 60%, transparent 61%),
-    radial-gradient(2px 2px at 90% -50%, #fff 60%, transparent 61%);
-  animation:snowFallFast 10s linear infinite;
+    radial-gradient(2px 2px at 10% -10%, rgba(255,255,255,.90) 60%, transparent 61%),
+    radial-gradient(3px 3px at 30% -20%, rgba(255,255,255,.85) 60%, transparent 61%),
+    radial-gradient(2px 2px at 50% -30%, rgba(255,255,255,.90) 60%, transparent 61%),
+    radial-gradient(3px 3px at 70% -40%, rgba(255,255,255,.85) 60%, transparent 61%),
+    radial-gradient(2px 2px at 90% -50%, rgba(255,255,255,.90) 60%, transparent 61%);
   opacity:.8;
+  animation:snowFallFast 10s linear infinite;
 }
 
-/* neige loin (petite + lente) */
-:root[data-theme="noel"] body::after{
+/* couche loin */
+:root[data-theme="noel"]::after{
   background-image:
-    radial-gradient(1px 1px at 20% -10%, #fff 60%, transparent 61%),
-    radial-gradient(1px 1px at 40% -30%, #fff 60%, transparent 61%),
-    radial-gradient(1px 1px at 60% -20%, #fff 60%, transparent 61%),
-    radial-gradient(1px 1px at 80% -40%, #fff 60%, transparent 61%),
-    radial-gradient(1px 1px at 95% -25%, #fff 60%, transparent 61%);
+    radial-gradient(1px 1px at 20% -10%, rgba(255,255,255,.70) 60%, transparent 61%),
+    radial-gradient(1px 1px at 40% -30%, rgba(255,255,255,.65) 60%, transparent 61%),
+    radial-gradient(1px 1px at 60% -20%, rgba(255,255,255,.70) 60%, transparent 61%),
+    radial-gradient(1px 1px at 80% -40%, rgba(255,255,255,.65) 60%, transparent 61%),
+    radial-gradient(1px 1px at 95% -25%, rgba(255,255,255,.70) 60%, transparent 61%);
+  opacity:.55;
   animation:snowFallSlow 18s linear infinite;
-  opacity:.6;
 }
 
-/* animations */
 @keyframes snowFallFast{
   from { transform:translateY(-100%); }
   to   { transform:translateY(100%); }
 }
-
 @keyframes snowFallSlow{
   from { transform:translateY(-100%); }
   to   { transform:translateY(100%); }
