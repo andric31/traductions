@@ -317,47 +317,48 @@
   background-attachment: fixed;
 }
 
-/* ✅ Neige animée (2 couches), simple et visible */
+/* ✅ NEIGE QUI TOMBE (visible, répétée, 2 couches) */
+:root[data-theme="noel"] body{
+  position: relative; /* important pour les ::before/::after */
+}
+
+/* couche neige 1 */
 :root[data-theme="noel"] body::before,
 :root[data-theme="noel"] body::after{
   content:"";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 999999;        /* au-dessus de tout */
+  z-index: 999999; /* au-dessus de tout */
+  background-repeat: repeat;
 }
 
-/* couche 1 : gros flocons + rapide */
+/* gros flocons (plus rapides) */
 :root[data-theme="noel"] body::before{
-  background:
-    radial-gradient(2px 2px at 10% -10%, rgba(255,255,255,.95) 60%, transparent 61%),
-    radial-gradient(3px 3px at 30% -20%, rgba(255,255,255,.90) 60%, transparent 61%),
-    radial-gradient(2px 2px at 55% -30%, rgba(255,255,255,.95) 60%, transparent 61%),
-    radial-gradient(3px 3px at 75% -40%, rgba(255,255,255,.90) 60%, transparent 61%),
-    radial-gradient(2px 2px at 92% -50%, rgba(255,255,255,.95) 60%, transparent 61%);
-  opacity: .75;
-  animation: snowFast 10s linear infinite;
-}
-
-/* couche 2 : petits flocons + lent */
-:root[data-theme="noel"] body::after{
-  background:
-    radial-gradient(1px 1px at 20% -10%, rgba(255,255,255,.70) 60%, transparent 61%),
-    radial-gradient(1px 1px at 40% -30%, rgba(255,255,255,.65) 60%, transparent 61%),
-    radial-gradient(1px 1px at 60% -20%, rgba(255,255,255,.70) 60%, transparent 61%),
-    radial-gradient(1px 1px at 80% -40%, rgba(255,255,255,.65) 60%, transparent 61%),
-    radial-gradient(1px 1px at 95% -25%, rgba(255,255,255,.70) 60%, transparent 61%);
+  background-image: radial-gradient(rgba(255,255,255,.85) 1.2px, transparent 1.6px);
+  background-size: 120px 120px;
+  background-position: 0 0;
   opacity: .55;
-  animation: snowSlow 18s linear infinite;
+  animation: snowDropFast 8s linear infinite;
 }
 
-@keyframes snowFast{
-  from { transform: translateY(-100%); }
-  to   { transform: translateY(100%); }
+/* petits flocons (plus lents) */
+:root[data-theme="noel"] body::after{
+  background-image: radial-gradient(rgba(255,255,255,.65) 0.8px, transparent 1.3px);
+  background-size: 180px 180px;
+  background-position: 40px 0;
+  opacity: .45;
+  animation: snowDropSlow 14s linear infinite;
 }
-@keyframes snowSlow{
-  from { transform: translateY(-100%); }
-  to   { transform: translateY(100%); }
+
+@keyframes snowDropFast{
+  from { background-position: 0 0; }
+  to   { background-position: 0 120px; }
+}
+
+@keyframes snowDropSlow{
+  from { background-position: 40px 0; }
+  to   { background-position: 40px 180px; }
 }
 
 
