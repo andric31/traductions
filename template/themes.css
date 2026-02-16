@@ -319,77 +319,42 @@
 
 
 /* =========================================================
-   HALLOWEEN (cinematic pumpkin)
-   ========================================================= */
-:root[data-theme="halloween"]{
-
-  --bg:#08050c;
-  --bg2:#110916;
-
-  --fg:#fff3e6;
-  --muted:#e4c9a6;
-
-  /* 🎃 ORANGE DOMINANT */
-  --primary:#ff7a00;
-
-  /* 🔮 violet magique */
-  --accent:#9c6bff;
-
-  --border:#3a1f4d;
-  --card:#140a1a;
-  --btn:#1c0f25;
-
-  --title: var(--fg);
-
-  --topbar-bg: linear-gradient(
-      90deg,
-      rgba(8,5,12,.95),
-      rgba(255,122,0,.22)
-  );
-
-  --body-grad-1:#050308;
-  --body-grad-2:#08050c;
-  --body-grad-3:#120816;
-
-  --popover-bg: rgba(20,10,26,.98);
-  --hover-bg: rgba(255,255,255,0.06);
-
-  --scrollbar-thumb:#6a35a0;
-  --scrollbar-track:#030205;
-  --scrollbar-thumb-webkit-hover:#8446c8;
-
-  /* ✅ hover “Halloween” (orange + glow) */
-  --card-hover-border: #ff7a00;
-  --card-hover-shadow:
-    0 0 0 1px rgba(255,122,0,.70),
-    0 0 30px rgba(255,122,0,.22),
-    0 18px 44px rgba(0,0,0,.60);
-  --card-hover-bg:
-    linear-gradient(145deg, rgba(255,122,0,.10), rgba(156,107,255,.07));
-
-  color-scheme: dark;
-}
-
-/* =========================================================
-   HALLOWEEN — FX PROPRE (AUCUN IMPACT LAYOUT)
+   HALLOWEEN — FX (VISIBLE + NE CASSE PAS LA TOPBAR)
+   - FX sur body::before/after en z-index:0
+   - Contenu au-dessus en z-index:1
    ========================================================= */
 
-:root[data-theme="halloween"]{
-  isolation: isolate; /* crée un contexte sans toucher au layout */
+:root[data-theme="halloween"] body{
+  position: relative;     /* crée un contexte */
+  isolation: isolate;     /* stacking fiable */
 }
 
-/* FX */
-:root[data-theme="halloween"]::before,
-:root[data-theme="halloween"]::after{
+/* FX derrière l'UI */
+:root[data-theme="halloween"] body::before,
+:root[data-theme="halloween"] body::after{
   content:"";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: -1; /* 🔥 derrière tout, donc aucun décalage */
+  z-index: 0;             /* ✅ visible (au-dessus du fond) */
+}
+
+/* ✅ remet le contenu au-dessus (sans toucher à position de la topbar) */
+:root[data-theme="halloween"] header,
+:root[data-theme="halloween"] main,
+:root[data-theme="halloween"] footer{
+  position: relative;
+  z-index: 1;
+}
+
+/* 🔥 IMPORTANT : NE PAS OVERRIDER .topbar (elle est déjà fixed)
+   on ne met PAS position:relative dessus, juste z-index au besoin */
+:root[data-theme="halloween"] .topbar{
+  z-index: 1000; /* garde ton header au-dessus des FX */
 }
 
 /* 🌕 Lune + brume */
-:root[data-theme="halloween"]::before{
+:root[data-theme="halloween"] body::before{
   opacity: 0.75;
   background:
     radial-gradient(520px 520px at 88% 12%, rgba(255,170,60,.22), transparent 62%),
@@ -405,8 +370,8 @@
   to   { transform: translate3d( 2%, 0, 0); }
 }
 
-/* 🔥 Flicker bougie */
-:root[data-theme="halloween"]::after{
+/* 🔥 Flicker “bougie” */
+:root[data-theme="halloween"] body::after{
   opacity: .12;
   background:
     radial-gradient(900px 520px at 55% 20%, rgba(255,122,0,.70), transparent 68%),
