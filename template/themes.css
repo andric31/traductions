@@ -319,20 +319,18 @@
 
 
 /* =========================================================
-   HALLOWEEN (cinematic pumpkin)
+   HALLOWEEN (cinematic pumpkin + FX fond)
    ========================================================= */
 :root[data-theme="halloween"]{
 
+  /* couleurs UI */
   --bg:#08050c;
   --bg2:#110916;
 
   --fg:#fff3e6;
   --muted:#e4c9a6;
 
-  /* 🎃 ORANGE DOMINANT */
   --primary:#ff7a00;
-
-  /* 🔮 violet magique */
   --accent:#9c6bff;
 
   --border:#3a1f4d;
@@ -358,7 +356,6 @@
   --scrollbar-track:#030205;
   --scrollbar-thumb-webkit-hover:#8446c8;
 
-  /* ✅ hover “Halloween” (orange + glow) */
   --card-hover-border: #ff7a00;
   --card-hover-shadow:
     0 0 0 1px rgba(255,122,0,.70),
@@ -368,10 +365,8 @@
     linear-gradient(145deg, rgba(255,122,0,.10), rgba(156,107,255,.07));
 
   color-scheme: dark;
-}
 
-/* 🎃 Halloween : FX sur HTML (root), body transparent => plus de trait en bas */
-:root[data-theme="halloween"]{
+  /* 🎃 FX fond DIRECTEMENT sur html */
   background:
     radial-gradient(circle at 12% 18%, rgba(255,140,0,0.20) 0 1px, transparent 2px),
     radial-gradient(circle at 30% 82%, rgba(255,120,0,0.16) 0 1px, transparent 2px),
@@ -387,7 +382,7 @@
   background-attachment: fixed;
 }
 
-/* important : on enlève le background du body dans ce thème */
+/* body transparent → évite la coupure bas de page */
 :root[data-theme="halloween"] body{
   background: transparent !important;
 }
