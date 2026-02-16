@@ -461,6 +461,59 @@
 
 
 /* =========================================================
+   HALLOWEEN (cinematic pumpkin)
+   ========================================================= */
+:root[data-theme="halloween"]{
+
+  --bg:#08050c;
+  --bg2:#110916;
+
+  --fg:#fff3e6;
+  --muted:#e4c9a6;
+
+  /* 🎃 ORANGE DOMINANT */
+  --primary:#ff7a00;
+
+  /* 🔮 violet magique */
+  --accent:#9c6bff;
+
+  --border:#3a1f4d;
+  --card:#140a1a;
+  --btn:#1c0f25;
+
+  --title: var(--fg);
+
+  --topbar-bg: linear-gradient(
+      90deg,
+      rgba(8,5,12,.95),
+      rgba(255,122,0,.22)
+  );
+
+  --body-grad-1:#050308;
+  --body-grad-2:#08050c;
+  --body-grad-3:#120816;
+
+  --popover-bg: rgba(20,10,26,.98);
+  --hover-bg: rgba(255,255,255,0.06);
+
+  --scrollbar-thumb:#6a35a0;
+  --scrollbar-track:#030205;
+  --scrollbar-thumb-webkit-hover:#8446c8;
+
+  /* ✅ hover “Halloween” (orange + glow) */
+  --card-hover-border: #ff7a00;
+  --card-hover-shadow:
+    0 0 0 1px rgba(255,122,0,.70),
+    0 0 30px rgba(255,122,0,.22),
+    0 18px 44px rgba(0,0,0,.60);
+  --card-hover-bg:
+    linear-gradient(145deg, rgba(255,122,0,.10), rgba(156,107,255,.07));
+
+  color-scheme: dark;
+}
+
+
+/* =========================================================
    HALLOWEEN — FX ROBUSTE (VISIBLE À COUP SÛR)
    - FX derrière l'UI mais devant le fond
    ========================================================= */
@@ -524,7 +577,6 @@
   68%{ opacity:.10; }
   100%{ opacity:.12; }
 }
-
 
 
 /* =====================================================
