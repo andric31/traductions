@@ -12,16 +12,36 @@
     try { return (localStorage.getItem("viewerTheme") || "auto").trim() || "auto"; }
     catch { return "auto"; }
   }
-
+  
   function setViewerTheme(v) {
     try { localStorage.setItem("viewerTheme", String(v || "auto")); } catch {}
   }
-
+  
   function applyViewerTheme(v) {
     const t = (v || "auto").toString().trim() || "auto";
     const root = document.documentElement;
     root.removeAttribute("data-theme");
     if (t !== "auto") root.setAttribute("data-theme", t);
+  }
+  
+  // ✅ Auto = suit Windows (clair/sombre) en live
+  let THEME_MQ_BOUND = false;
+  
+  function bindAutoThemeWatcher() {
+    if (THEME_MQ_BOUND) return;
+    THEME_MQ_BOUND = true;
+  
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    mq.addEventListener("change", () => {
+      try {
+        const t = getViewerTheme();
+        if ((t || "auto") === "auto") {
+          applyViewerTheme("auto"); // laisse le CSS suivre Windows
+          const sel = document.getElementById("theme");
+          if (sel) sel.value = "auto";
+        }
+      } catch {}
+    });
   }
 
   // =========================
@@ -936,12 +956,16 @@
   async function init() {
     $("#grid") && ($("#grid").innerHTML = "");
     $("#gridEmpty")?.classList.add("hidden");
-
+  
     try {
       // ✅ thème (persistant)
       const themeSel = document.getElementById("theme");
       const themeVal = getViewerTheme();
       applyViewerTheme(themeVal);
+  
+      // ✅ Auto suit Windows en live (clair/sombre)
+      bindAutoThemeWatcher();
+  
       if (themeSel) {
         themeSel.value = themeVal;
         if (themeSel.dataset.bound !== "1") {
@@ -950,39 +974,42 @@
             const v = (e.target?.value || "auto").trim() || "auto";
             setViewerTheme(v);
             applyViewerTheme(v);
+  
+            // ✅ si l’utilisateur revient sur auto, on suit Windows en live
+            if (v === "auto") bindAutoThemeWatcher();
           });
         }
       }
-
+  
       // ✅ top-right tools (comme ton site) + refresh en bas
       relocateTopRightTools();
-
+  
       try { window.ViewerMenu?.init?.(); registerMenuItems(); } catch {}
       try { window.viewerAnnonce?.refresh?.(); } catch {}
-
+  
       state.cols = getViewerCols();
       const colsSel = $("#cols");
       if (colsSel) colsSel.value = state.cols;
-
+  
       const raw = await loadList();
       state.all = Array.isArray(raw) ? raw.map(normalizeGame) : [];
-
+  
       if (!state.filterTags || !state.filterTags.length) {
         state.filterTags = getSavedTags();
       }
       updateTagsCountBadge();
-
+  
       buildDynamicFilters();
-
+  
       if (state.sort.startsWith("views") || state.sort.startsWith("mega") || state.sort.startsWith("likes")) {
         await ensureGameStatsLoaded();
       }
-
+  
       applyFilters();
       initMainPageCounter();
     } catch (e) {
       console.error("[viewer] load error:", e);
-
+  
       $("#grid") && ($("#grid").innerHTML = "");
       const ge = $("#gridEmpty");
       if (ge) {
