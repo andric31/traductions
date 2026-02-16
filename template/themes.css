@@ -317,65 +317,6 @@
   background-attachment: fixed;
 }
 
-/* =========================================================
-   NOËL — NEIGE QUI TOMBE
-   ========================================================= */
-
-:root[data-theme="noel"]{
-  position: relative;
-}
-
-:root[data-theme="noel"]::before,
-:root[data-theme="noel"]::after{
-  content:"";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 2147483647;
-  background-repeat: repeat;
-  will-change: transform, background-position;
-}
-
-/* couche proche : flocons + variés */
-:root[data-theme="noel"]::before{
-  opacity: .55;
-  /* 3 motifs = casse la répétition */
-  background-image:
-    radial-gradient(circle, rgba(255,255,255,.90) 0 1.2px, transparent 1.7px),
-    radial-gradient(circle, rgba(255,255,255,.70) 0 1.0px, transparent 1.6px),
-    radial-gradient(circle, rgba(255,255,255,.55) 0 0.9px, transparent 1.5px);
-  background-size:
-    110px 140px,
-    160px 120px,
-    220px 180px;
-  background-position:
-    0   -200px,
-    60px -120px,
-    120px -260px;
-
-  animation: snowNear 10.5s linear infinite;
-}
-
-/* couche loin : plus fine + lente */
-:root[data-theme="noel"]::after{
-  opacity: .38;
-  filter: blur(.35px);
-  background-image:
-    radial-gradient(circle, rgba(255,255,255,.70) 0 0.8px, transparent 1.35px),
-    radial-gradient(circle, rgba(255,255,255,.45) 0 0.7px, transparent 1.3px),
-    radial-gradient(circle, rgba(255,255,255,.35) 0 0.6px, transparent 1.2px);
-  background-size:
-    190px 220px,
-    260px 200px,
-    340px 280px;
-  background-position:
-    30px -260px,
-    140px -180px,
-    220px -340px;
-
-  animation: snowFar 17.5s linear infinite;
-}
-
 
 /* =========================================================
    HALLOWEEN (cinematic pumpkin)
