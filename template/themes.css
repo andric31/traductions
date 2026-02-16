@@ -443,7 +443,7 @@ html, body { min-height: 100%; }
 }
 
 /* =========================================================
-   🎄 GUIRLANDE CSS ONLY
+   🎄 GUIRLANDE NOËL — VERSION RICHE
    ========================================================= */
 
 :root[data-theme="noel"] body::before{
@@ -452,41 +452,66 @@ html, body { min-height: 100%; }
   top:0;
   left:0;
   width:100%;
-  height:70px;
+  height:95px;
   pointer-events:none;
   z-index:5;
 
-  /* fil */
   background:
-    linear-gradient(#0c2f24,#0c2f24) top 26px center / 100% 3px no-repeat,
 
-    /* ampoules */
-    radial-gradient(circle at 3% 32px,#ff3b3b 0 6px,transparent 7px),
-    radial-gradient(circle at 9% 38px,#ffd93b 0 6px,transparent 7px),
-    radial-gradient(circle at 15% 28px,#3bff7a 0 6px,transparent 7px),
-    radial-gradient(circle at 21% 38px,#3bb7ff 0 6px,transparent 7px),
-    radial-gradient(circle at 27% 32px,#ff7af6 0 6px,transparent 7px),
-    radial-gradient(circle at 33% 38px,#ff3b3b 0 6px,transparent 7px),
-    radial-gradient(circle at 39% 28px,#ffd93b 0 6px,transparent 7px),
-    radial-gradient(circle at 45% 38px,#3bff7a 0 6px,transparent 7px),
-    radial-gradient(circle at 51% 32px,#3bb7ff 0 6px,transparent 7px),
-    radial-gradient(circle at 57% 38px,#ff7af6 0 6px,transparent 7px),
-    radial-gradient(circle at 63% 28px,#ff3b3b 0 6px,transparent 7px),
-    radial-gradient(circle at 69% 38px,#ffd93b 0 6px,transparent 7px),
-    radial-gradient(circle at 75% 32px,#3bff7a 0 6px,transparent 7px),
-    radial-gradient(circle at 81% 38px,#3bb7ff 0 6px,transparent 7px),
-    radial-gradient(circle at 87% 28px,#ff7af6 0 6px,transparent 7px),
-    radial-gradient(circle at 93% 38px,#ffd93b 0 6px,transparent 7px);
+  /* FIL PRINCIPAL (courbe simulée) */
+  radial-gradient(120% 70px at 50% -20px,#0c2f24 98%,transparent 100%),
+
+  /* FIL SECONDAIRE */
+  radial-gradient(120% 80px at 50% -35px,#08231b 98%,transparent 100%),
+
+  /* rangée 1 */
+  radial-gradient(circle at 2% 50px,#ff3b3b 0 7px,transparent 8px),
+  radial-gradient(circle at 6% 62px,#ffd93b 0 6px,transparent 7px),
+  radial-gradient(circle at 10% 48px,#3bff7a 0 7px,transparent 8px),
+  radial-gradient(circle at 14% 60px,#3bb7ff 0 6px,transparent 7px),
+  radial-gradient(circle at 18% 52px,#ff7af6 0 7px,transparent 8px),
+  radial-gradient(circle at 22% 64px,#ff3b3b 0 6px,transparent 7px),
+  radial-gradient(circle at 26% 50px,#ffd93b 0 7px,transparent 8px),
+  radial-gradient(circle at 30% 60px,#3bff7a 0 6px,transparent 7px),
+  radial-gradient(circle at 34% 52px,#3bb7ff 0 7px,transparent 8px),
+  radial-gradient(circle at 38% 64px,#ff7af6 0 6px,transparent 7px),
+  radial-gradient(circle at 42% 48px,#ff3b3b 0 7px,transparent 8px),
+  radial-gradient(circle at 46% 60px,#ffd93b 0 6px,transparent 7px),
+  radial-gradient(circle at 50% 52px,#3bff7a 0 7px,transparent 8px),
+  radial-gradient(circle at 54% 64px,#3bb7ff 0 6px,transparent 7px),
+  radial-gradient(circle at 58% 48px,#ff7af6 0 7px,transparent 8px),
+  radial-gradient(circle at 62% 60px,#ff3b3b 0 6px,transparent 7px),
+  radial-gradient(circle at 66% 52px,#ffd93b 0 7px,transparent 8px),
+  radial-gradient(circle at 70% 64px,#3bff7a 0 6px,transparent 7px),
+  radial-gradient(circle at 74% 48px,#3bb7ff 0 7px,transparent 8px),
+  radial-gradient(circle at 78% 60px,#ff7af6 0 6px,transparent 7px),
+  radial-gradient(circle at 82% 52px,#ff3b3b 0 7px,transparent 8px),
+  radial-gradient(circle at 86% 64px,#ffd93b 0 6px,transparent 7px),
+  radial-gradient(circle at 90% 48px,#3bff7a 0 7px,transparent 8px),
+  radial-gradient(circle at 94% 60px,#3bb7ff 0 6px,transparent 7px),
+
+  /* rangée 2 (plus petites) */
+  radial-gradient(circle at 4% 75px,#ffd93b 0 5px,transparent 6px),
+  radial-gradient(circle at 12% 80px,#3bb7ff 0 5px,transparent 6px),
+  radial-gradient(circle at 20% 72px,#ff7af6 0 5px,transparent 6px),
+  radial-gradient(circle at 28% 82px,#3bff7a 0 5px,transparent 6px),
+  radial-gradient(circle at 36% 74px,#ff3b3b 0 5px,transparent 6px),
+  radial-gradient(circle at 44% 82px,#ffd93b 0 5px,transparent 6px),
+  radial-gradient(circle at 52% 74px,#3bb7ff 0 5px,transparent 6px),
+  radial-gradient(circle at 60% 82px,#ff7af6 0 5px,transparent 6px),
+  radial-gradient(circle at 68% 74px,#3bff7a 0 5px,transparent 6px),
+  radial-gradient(circle at 76% 82px,#ff3b3b 0 5px,transparent 6px),
+  radial-gradient(circle at 84% 74px,#ffd93b 0 5px,transparent 6px),
+  radial-gradient(circle at 92% 82px,#3bb7ff 0 5px,transparent 6px);
 
   filter: drop-shadow(0 0 6px rgba(255,255,255,.7));
-  animation: garlandGlow 2.2s ease-in-out infinite alternate;
+  animation: garlandGlow 1.8s ease-in-out infinite alternate;
 }
 
-/* glow animation */
 @keyframes garlandGlow{
-  0%  { filter:brightness(.9) drop-shadow(0 0 3px rgba(255,255,255,.5)); }
-  50% { filter:brightness(1.25) drop-shadow(0 0 12px rgba(255,255,255,.9)); }
-  100%{ filter:brightness(1.05) drop-shadow(0 0 6px rgba(255,255,255,.7)); }
+  0%  { filter:brightness(.85) drop-shadow(0 0 2px rgba(255,255,255,.5)); }
+  50% { filter:brightness(1.35) drop-shadow(0 0 14px rgba(255,255,255,1)); }
+  100%{ filter:brightness(1.05) drop-shadow(0 0 7px rgba(255,255,255,.8)); }
 }
 
 
