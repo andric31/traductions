@@ -317,34 +317,38 @@
   background-attachment: fixed;
 }
 
-/* ✅ NEIGE QUI TOMBE (visible, répétée, 2 couches) */
-:root[data-theme="noel"] body{
-  position: relative; /* important pour les ::before/::after */
+/* =========================================================
+   NOËL — NEIGE QUI TOMBE (ROBUSTE) SUR HTML
+   ========================================================= */
+
+:root[data-theme="noel"]{
+  position: relative; /* ok pour certains moteurs */
 }
 
-/* couche neige 1 */
-:root[data-theme="noel"] body::before,
-:root[data-theme="noel"] body::after{
+/* 2 couches au-dessus de tout */
+:root[data-theme="noel"]::before,
+:root[data-theme="noel"]::after{
   content:"";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 999999; /* au-dessus de tout */
+  z-index: 2147483647; /* max safe */
   background-repeat: repeat;
+  will-change: background-position;
 }
 
-/* gros flocons (plus rapides) */
-:root[data-theme="noel"] body::before{
-  background-image: radial-gradient(rgba(255,255,255,.85) 1.2px, transparent 1.6px);
+/* gros flocons (rapides) */
+:root[data-theme="noel"]::before{
+  background-image: radial-gradient(circle, rgba(255,255,255,.85) 0 1.2px, transparent 1.6px);
   background-size: 120px 120px;
   background-position: 0 0;
   opacity: .55;
   animation: snowDropFast 8s linear infinite;
 }
 
-/* petits flocons (plus lents) */
-:root[data-theme="noel"] body::after{
-  background-image: radial-gradient(rgba(255,255,255,.65) 0.8px, transparent 1.3px);
+/* petits flocons (lents) */
+:root[data-theme="noel"]::after{
+  background-image: radial-gradient(circle, rgba(255,255,255,.65) 0 0.8px, transparent 1.3px);
   background-size: 180px 180px;
   background-position: 40px 0;
   opacity: .45;
@@ -355,7 +359,6 @@
   from { background-position: 0 0; }
   to   { background-position: 0 120px; }
 }
-
 @keyframes snowDropSlow{
   from { background-position: 40px 0; }
   to   { background-position: 40px 180px; }
