@@ -512,6 +512,21 @@
   color-scheme: dark;
 }
 
+/* 🎃 Halloween — fond ciné (lune + brume) */
+:root[data-theme="halloween"] body{
+  background:
+    /* lune (coin haut droit) */
+    radial-gradient(420px 420px at 88% 12%, rgba(255,170,60,.16), transparent 60%),
+    radial-gradient(240px 240px at 88% 12%, rgba(255,170,60,.08), transparent 62%),
+
+    /* brume violette */
+    radial-gradient(900px 520px at 18% 22%, rgba(156,107,255,.11), transparent 60%),
+    radial-gradient(1100px 680px at 30% 85%, rgba(255,122,0,.08), transparent 60%),
+
+    /* base */
+    linear-gradient(180deg, #050308 0%, #08050c 35%, #120816 100%);
+  background-attachment: fixed;
+}
 
 /* =====================================================
    THEME HOVER ENGINE (1 seule fois)
