@@ -136,6 +136,9 @@ function setHref(id, href) {
 }
 
 function showError(msg) {
+  // ✅ FIX SCOPE CSS : si page erreur, on évite le "mode-game"
+  try { document.body.classList.remove("mode-game"); } catch {}
+
   const err = $("errBox");
   const card = $("card");
   const stats = $("statsOut");
@@ -1147,6 +1150,9 @@ function renderVideoBlock({ id, videoUrl }) {
 // ============================================================================
 (async function main() {
   try {
+    // ✅ FIX SCOPE CSS : active le mode page jeu (réactive .mode-game ... dans ton CSS)
+    try { document.body.classList.add("mode-game"); } catch {}
+
     initHamburgerMenu();
 
     const { id: idParam, uid: uidParam } = getParamsFromUrl();
@@ -1243,128 +1249,94 @@ function renderVideoBlock({ id, videoUrl }) {
       $("btnF95").classList.add("btn-f95");
     }
 
-    // 6) MEGA (bouton existant) + Archives
-    const megaHref = (entry.translation || "").trim();
-    const archiveHref = (entry.translationsArchive || "").trim();
-
-    setHref("btnMega", megaHref);
-    if ($("btnMega")) $("btnMega").textContent = "📥 Télécharger la traduction · MEGA";
-
-    // =========================
-    // 6b) Liens supplémentaires (translationsExtra) — SOUS MEGA (1 par ligne)
-    // =========================
+    // 6) MEGA + Archives
     function getHostClass(url){
       const u = (url || "").toLowerCase();
-      if (u.includes("mega.nz")) return "btnMega";        // rouge MEGA
-      if (u.includes("f95zone")) return "btn-f95";        // style F95
+    
+      if (u.includes("mega.nz")) return "btn-mega";
+      if (u.includes("f95zone")) return "btn-f95";
       if (u.includes("drive.google")) return "btn-host-drive";
       if (u.includes("gofile")) return "btn-host-gofile";
+    
       return "btn-host-default";
     }
-
-    const extraRaw = entry.translationsExtra;
-    const extraList = Array.isArray(extraRaw) ? extraRaw : (extraRaw ? [extraRaw] : []);
-    const extraValid = extraList
-      .map(x => {
-        if (!x) return null;
-        if (typeof x === "string") {
-          const u = x.trim();
-          return u ? { name: "Lien", link: u } : null;
-        }
-        if (typeof x !== "object") return null;
-        const name = String(x.name || "Lien").trim();
-        const link = String(x.link || x.url || "").trim();
-        return link ? { name, link } : null;
-      })
-      .filter(Boolean);
-
-    // ✅ On réutilise la ligne MEGA existante (même si megaHref est vide)
+    
+    const megaHref = (entry.translation || "").trim();
+    const archiveHref = (entry.translationsArchive || "").trim();
+    
+    setHref("btnMega", megaHref);
+    if ($("btnMega")) $("btnMega").textContent = "📥 Télécharger la traduction · MEGA";
+    
+    
+    // ⭐⭐⭐⭐⭐ FIX IMPORTANT ⭐⭐⭐⭐⭐
+    // on cache aussi la ligne entière sinon le margin crée un trou
     const megaRow = document.getElementById("btnMega")?.closest(".btnMainRow");
-    const megaBtn = document.getElementById("btnMega");
-
-    if (megaRow) {
-      // retire anciens extras + wrapper (si rechargement / navigation)
-      [...megaRow.querySelectorAll(".extraLinkBtn")].forEach(el => el.remove());
-      const oldWrap = megaRow.querySelector(".extraLinksCol");
-      if (oldWrap) oldWrap.remove();
-
-      // ✅ Colonne : MEGA puis extras (centré, pas full width)
-      megaRow.style.display = "flex";
-      megaRow.style.flexDirection = "column";
-      megaRow.style.flexWrap = "nowrap";
-      megaRow.style.gap = "10px";
-      megaRow.style.alignItems = "center";
-      megaRow.style.justifyContent = "flex-start";
-
-      // ✅ bouton MEGA : pas 100%
-      if (megaBtn) {
-        megaBtn.style.width = "auto";
-        megaBtn.style.margin = "0 auto";
-      }
-
-      // wrapper colonne pour les extras (sous MEGA)
-      const wrap = document.createElement("div");
-      wrap.className = "extraLinksCol";
-      wrap.style.display = "flex";
-      wrap.style.flexDirection = "column";
-      wrap.style.gap = "10px";
-      wrap.style.alignItems = "center";
-      wrap.style.width = "auto";
-
-      // insère wrapper juste après MEGA si possible, sinon à la fin
-      if (megaBtn && megaBtn.parentNode === megaRow) {
-        megaRow.insertBefore(wrap, megaBtn.nextSibling);
-      } else {
-        megaRow.appendChild(wrap);
-      }
-
-      // ajoute les extras (en colonne)
-      extraValid.forEach((x) => {
-        const name = String(x.name || "Lien").trim();
-        const link = String(x.link || "").trim();
-        const hostCls = getHostClass(link);
-
-        const a = document.createElement("a");
-        a.className = `btnLike ${hostCls} extraLinkBtn`;
-        a.target = "_blank";
-        a.rel = "noopener";
-        a.href = link;
-
-        // ✅ pas plein largeur
-        a.style.width = "auto";
-        a.style.margin = "0 auto";
-        a.style.justifyContent = "center";
-
-        // ✅ Patch : texte spécial uniquement si name === "Patch"
-        if (name.toLowerCase() === "patch") {
-          a.textContent = "📥 Télécharger · Patch";
-        } else {
-          // libellé (F95 bicolore identique)
-          if (hostCls === "btn-f95" && /f95\s*zone/i.test(name)) {
-            a.innerHTML = `📥 Télécharger la traduction · <span class="f95-logo"><span class="f95-white">F95</span><span class="f95-red">Zone</span></span>`;
-          } else {
-            a.textContent = `📥 Télécharger la traduction · ${name}`;
-          }
-        }
-
-        wrap.appendChild(a);
-      });
-
-      // ✅ Cache la ligne si rien (évite l'espace vide)
-      const hasMega = !!megaHref;
-      const hasExtra = extraValid.length > 0;
-      megaRow.style.display = (hasMega || hasExtra) ? "flex" : "none";
+    if (megaRow){
+      megaRow.style.display = megaHref ? "flex" : "none";
     }
-
-    // =========================
-    // 6c) Archives (bouton HTML existant sous MEGA) — sans encadré
-    // =========================
+    
+    
     setHref("archiveLink", archiveHref);
     if ($("archiveLink")) $("archiveLink").textContent = "📦 Archives de la traduction";
-
+    
     const ab = $("archiveBox");
     if (ab) ab.style.display = archiveHref ? "flex" : "none";
-// 7) Notes
+
+    // 6b) Extra links — entre MEGA et Archives (format BOUTONS, pas encadré)
+    const extra = Array.isArray(entry.translationsExtra) ? entry.translationsExtra : [];
+
+    // ligne de boutons (même placement que MEGA)
+    let extraRow = document.getElementById("extraLinksRow");
+    if (!extraRow) {
+      extraRow = document.createElement("div");
+      extraRow.id = "extraLinksRow";
+      extraRow.className = "btnMainRow";
+
+      // ✅ insérer JUSTE AVANT archiveBox (donc après MEGA)
+      const archiveBox = document.getElementById("archiveBox");
+      if (archiveBox && archiveBox.parentNode) {
+        archiveBox.parentNode.insertBefore(extraRow, archiveBox);
+      }
+    }
+
+    // rendu (boutons)
+    if (extraRow) {
+      const valid = extra.filter(x => x && (x.link || "").trim());
+      if (valid.length) {
+        extraRow.innerHTML = valid.map((x) => {
+          const name = (x.name || "Lien").trim();
+          const link = (x.link || "").trim();
+          const hostCls = getHostClass(link);
+
+          // ✅ libellé : 1 seul enfant dans le <a> (évite le gap flex entre texte et logo)
+          let labelHtml = `<span class="btnLabel">📥 Télécharger la traduction · ${escapeHtml(name)}</span>`;
+          
+          // ✅ F95Zone : bicolore (même rendu que le bouton principal)
+          if (hostCls === "btn-f95" && /f95\s*zone/i.test(name)) {
+            labelHtml = `<span class="btnLabel">📥 Télécharger la traduction · <span class="f95-logo"><span class="f95-white">F95</span><span class="f95-red">Zone</span></span></span>`;
+          }
+
+          return `
+            <a class="btnLike ${hostCls}"
+               target="_blank" rel="noopener"
+               href="${escapeHtml(link)}">
+              ${labelHtml}
+            </a>
+          `;
+        }).join("");
+
+        extraRow.style.display = "flex";
+        extraRow.style.flexWrap = "wrap";
+        extraRow.style.gap = "10px";
+        extraRow.style.justifyContent = "center";
+        extraRow.style.marginTop = "12px";
+      } else {
+        extraRow.style.display = "none";
+        extraRow.innerHTML = "";
+      }
+    }
+
+    // 7) Notes
     const notes = (entry.notes || "").trim();
     if (notes) {
       setHtml("notesText", escapeHtml(notes).replace(/\n/g, "<br>"));
