@@ -379,50 +379,83 @@
   animation: snowFar 17.5s linear infinite;
 }
 
-/* Vent + chute + petits "coups" */
+/* =========================================================
+   NEIGE PLUS NATURELLE (mouvements indépendants)
+   ========================================================= */
+
+/* couche proche */
 @keyframes snowNear{
   0%{
-    background-position: 0 -200px, 60px -120px, 120px -260px;
-    transform: translateX(0) translateY(0) rotate(0deg);
+    background-position:
+      0   -200px,
+      60px -120px,
+      120px -260px;
   }
-  20%{
-    background-position: 10px -90px, 45px -10px, 135px -150px;
-    transform: translateX(6px) translateY(0) rotate(.15deg);
+
+  25%{
+    background-position:
+      18px -80px,
+      40px  10px,
+      135px -150px;
   }
-  45%{
-    background-position: -14px 40px, 70px 120px, 95px 10px;
-    transform: translateX(-8px) translateY(0) rotate(-.2deg);
+
+  50%{
+    background-position:
+      -12px 60px,
+      75px  140px,
+      90px  -10px;
   }
-  70%{
-    background-position: 22px 140px, 35px 220px, 160px 120px;
-    transform: translateX(10px) translateY(0) rotate(.25deg);
+
+  75%{
+    background-position:
+      24px 170px,
+      30px 260px,
+      160px 120px;
   }
+
   100%{
-    background-position: 6px 260px, 58px 340px, 126px 240px;
-    transform: translateX(-2px) translateY(0) rotate(0deg);
+    background-position:
+      6px 320px,
+      58px 420px,
+      126px 260px;
   }
 }
 
+/* couche lointaine */
 @keyframes snowFar{
   0%{
-    background-position: 30px -260px, 140px -180px, 220px -340px;
-    transform: translateX(0) translateY(0);
+    background-position:
+      30px -260px,
+      140px -180px,
+      220px -340px;
   }
-  25%{
-    background-position: 46px -130px, 120px -40px, 250px -210px;
-    transform: translateX(10px) translateY(0);
+
+  30%{
+    background-position:
+      48px -120px,
+      120px  0px,
+      250px -210px;
   }
+
   55%{
-    background-position: 18px 20px, 160px 120px, 200px -20px;
-    transform: translateX(-12px) translateY(0);
+    background-position:
+      14px 40px,
+      165px 160px,
+      200px -20px;
   }
+
   80%{
-    background-position: 52px 150px, 110px 250px, 270px 120px;
-    transform: translateX(14px) translateY(0);
+    background-position:
+      52px 200px,
+      110px 320px,
+      270px 120px;
   }
+
   100%{
-    background-position: 34px 320px, 145px 400px, 235px 260px;
-    transform: translateX(-3px) translateY(0);
+    background-position:
+      34px 420px,
+      145px 520px,
+      235px 260px;
   }
 }
 
