@@ -443,7 +443,7 @@ html, body { min-height: 100%; }
 }
 
 /* =========================================================
-   🎄 GUIRLANDE NOËL — pendante réaliste
+   🎄 GUIRLANDE CSS ONLY
    ========================================================= */
 
 :root[data-theme="noel"] body::before{
@@ -452,51 +452,42 @@ html, body { min-height: 100%; }
   top:0;
   left:0;
   width:100%;
-  height:110px;
+  height:70px;
   pointer-events:none;
   z-index:5;
 
+  /* fil */
   background:
+    linear-gradient(#0c2f24,#0c2f24) top 26px center / 100% 3px no-repeat,
 
-  /* corde courbe */
-  radial-gradient(140% 120px at 50% -60px,#0b2a21 98%,transparent 100%),
+    /* ampoules */
+    radial-gradient(circle at 3% 32px,#ff3b3b 0 6px,transparent 7px),
+    radial-gradient(circle at 9% 38px,#ffd93b 0 6px,transparent 7px),
+    radial-gradient(circle at 15% 28px,#3bff7a 0 6px,transparent 7px),
+    radial-gradient(circle at 21% 38px,#3bb7ff 0 6px,transparent 7px),
+    radial-gradient(circle at 27% 32px,#ff7af6 0 6px,transparent 7px),
+    radial-gradient(circle at 33% 38px,#ff3b3b 0 6px,transparent 7px),
+    radial-gradient(circle at 39% 28px,#ffd93b 0 6px,transparent 7px),
+    radial-gradient(circle at 45% 38px,#3bff7a 0 6px,transparent 7px),
+    radial-gradient(circle at 51% 32px,#3bb7ff 0 6px,transparent 7px),
+    radial-gradient(circle at 57% 38px,#ff7af6 0 6px,transparent 7px),
+    radial-gradient(circle at 63% 28px,#ff3b3b 0 6px,transparent 7px),
+    radial-gradient(circle at 69% 38px,#ffd93b 0 6px,transparent 7px),
+    radial-gradient(circle at 75% 32px,#3bff7a 0 6px,transparent 7px),
+    radial-gradient(circle at 81% 38px,#3bb7ff 0 6px,transparent 7px),
+    radial-gradient(circle at 87% 28px,#ff7af6 0 6px,transparent 7px),
+    radial-gradient(circle at 93% 38px,#ffd93b 0 6px,transparent 7px);
 
-  /* supports (petites attaches) */
-  repeating-linear-gradient(
-    90deg,
-    transparent 0 5.5%,
-    #0b2a21 5.5% 6%,
-    transparent 6% 12%
-  ) top 34px left / 100% 40px no-repeat,
-
-  /* ampoules suspendues */
-  radial-gradient(circle at 6% 68px,#ff3b3b 0 6px,transparent 7px),
-  radial-gradient(circle at 12% 72px,#ffd93b 0 6px,transparent 7px),
-  radial-gradient(circle at 18% 66px,#3bff7a 0 6px,transparent 7px),
-  radial-gradient(circle at 24% 74px,#3bb7ff 0 6px,transparent 7px),
-  radial-gradient(circle at 30% 68px,#ff7af6 0 6px,transparent 7px),
-  radial-gradient(circle at 36% 72px,#ff3b3b 0 6px,transparent 7px),
-  radial-gradient(circle at 42% 66px,#ffd93b 0 6px,transparent 7px),
-  radial-gradient(circle at 48% 74px,#3bff7a 0 6px,transparent 7px),
-  radial-gradient(circle at 54% 68px,#3bb7ff 0 6px,transparent 7px),
-  radial-gradient(circle at 60% 72px,#ff7af6 0 6px,transparent 7px),
-  radial-gradient(circle at 66% 66px,#ff3b3b 0 6px,transparent 7px),
-  radial-gradient(circle at 72% 74px,#ffd93b 0 6px,transparent 7px),
-  radial-gradient(circle at 78% 68px,#3bff7a 0 6px,transparent 7px),
-  radial-gradient(circle at 84% 72px,#3bb7ff 0 6px,transparent 7px),
-  radial-gradient(circle at 90% 66px,#ff7af6 0 6px,transparent 7px);
-
-  filter: drop-shadow(0 0 6px rgba(255,255,255,.75));
-  animation: garlandGlow 2.6s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 6px rgba(255,255,255,.7));
+  animation: garlandGlow 2.2s ease-in-out infinite alternate;
 }
 
-/* scintillement doux */
+/* glow animation */
 @keyframes garlandGlow{
-  0%  { filter:brightness(.95) drop-shadow(0 0 3px rgba(255,255,255,.5)); }
-  50% { filter:brightness(1.2) drop-shadow(0 0 12px rgba(255,255,255,.95)); }
+  0%  { filter:brightness(.9) drop-shadow(0 0 3px rgba(255,255,255,.5)); }
+  50% { filter:brightness(1.25) drop-shadow(0 0 12px rgba(255,255,255,.9)); }
   100%{ filter:brightness(1.05) drop-shadow(0 0 6px rgba(255,255,255,.7)); }
 }
-
 
 /* =========================================================
    HALLOWEEN (cinematic pumpkin + FX fond)
