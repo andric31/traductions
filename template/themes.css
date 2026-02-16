@@ -512,27 +512,6 @@
   color-scheme: dark;
 }
 
-/* 🌫️ Halloween — fog animé */
-:root[data-theme="halloween"]::before{
-  content:"";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 5;              /* derrière topbar (1000), devant fond */
-  opacity: .25;
-  background:
-    radial-gradient(900px 500px at 20% 20%, rgba(255,255,255,.10), transparent 60%),
-    radial-gradient(800px 480px at 70% 35%, rgba(255,255,255,.08), transparent 60%),
-    radial-gradient(1000px 600px at 40% 90%, rgba(255,255,255,.06), transparent 60%);
-  filter: blur(10px);
-  animation: halloweenFog 14s ease-in-out infinite alternate;
-}
-
-@keyframes halloweenFog{
-  from { transform: translate3d(-2%, 0, 0); }
-  to   { transform: translate3d( 2%, 0, 0); }
-}
-
 
 /* 🕸️ Halloween — toiles coins */
 :root[data-theme="halloween"] body{
