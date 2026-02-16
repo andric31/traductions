@@ -443,7 +443,7 @@ html, body { min-height: 100%; }
 }
 
 /* =========================================================
-   🎄 GUIRLANDE CSS ONLY — FIL FIN NET + + D'AMPOULES
+   🎄 GUIRLANDE CSS ONLY — FIL FIN NET + DENSITÉ FIX
    ========================================================= */
 
 :root[data-theme="noel"] body::before{
@@ -456,43 +456,44 @@ html, body { min-height: 100%; }
   pointer-events:none;
   z-index:5;
 
-  /* 👇 densité ampoules (plus petit = plus dense) */
-  --step: 60px;
+  /* densité (plus grand = moins d’ampoules) */
+  --step: 72px;
 
-  /* FIL pixel-perfect + MOTIF AMPOULES (repeat-x) */
   background:
-    /* ===== FIL ultra fin (inchangé) ===== */
+
+    /* ===== FIL pixel-perfect ===== */
     linear-gradient(#0c2f24,#0c2f24)
       0 calc(26px + .5px) / 100% 1px no-repeat,
 
-    /* ===== AMPOULES (motif répété sur X) ===== */
-    radial-gradient(circle at 10px 32px,#ff3b3b 0 6px,transparent 7px)
+    /* ===== AMPOULES ===== */
+    radial-gradient(circle at 10px 32px,#ff3b3b 0 5px,transparent 6px)
       0 0 / var(--step) 70px repeat-x,
 
-    radial-gradient(circle at 25px 38px,#ffd93b 0 6px,transparent 7px)
+    radial-gradient(circle at 28px 38px,#ffd93b 0 5px,transparent 6px)
       0 0 / var(--step) 70px repeat-x,
 
-    radial-gradient(circle at 40px 28px,#3bff7a 0 6px,transparent 7px)
+    radial-gradient(circle at 46px 28px,#3bff7a 0 5px,transparent 6px)
       0 0 / var(--step) 70px repeat-x,
 
-    radial-gradient(circle at 55px 38px,#3bb7ff 0 6px,transparent 7px)
+    radial-gradient(circle at 64px 38px,#3bb7ff 0 5px,transparent 6px)
       0 0 / var(--step) 70px repeat-x,
 
-    radial-gradient(circle at 70px 32px,#ff7af6 0 6px,transparent 7px)
+    radial-gradient(circle at 82px 32px,#ff7af6 0 5px,transparent 6px)
       0 0 / var(--step) 70px repeat-x;
 
-  /* glow plus doux pour ne pas grossir le fil */
-  filter: drop-shadow(0 0 6px rgba(255,255,255,.6));
+  /* glow réduit pour éviter que les couleurs se mangent */
+  filter: drop-shadow(0 0 4px rgba(255,255,255,.45));
   animation: garlandGlow 2.2s ease-in-out infinite alternate;
 
   transform: translateZ(0);
 }
 
-/* glow animation */
+
+/* glow animation plus doux */
 @keyframes garlandGlow{
-  0%  { filter:brightness(.95) drop-shadow(0 0 3px rgba(255,255,255,.4)); }
-  50% { filter:brightness(1.2) drop-shadow(0 0 10px rgba(255,255,255,.8)); }
-  100%{ filter:brightness(1.05) drop-shadow(0 0 5px rgba(255,255,255,.6)); }
+  0%  { filter:brightness(.95) drop-shadow(0 0 2px rgba(255,255,255,.35)); }
+  50% { filter:brightness(1.15) drop-shadow(0 0 6px rgba(255,255,255,.6)); }
+  100%{ filter:brightness(1.05) drop-shadow(0 0 3px rgba(255,255,255,.45)); }
 }
 
 
