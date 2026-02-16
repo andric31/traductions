@@ -6,6 +6,8 @@
    - Donc on force les thèmes sur :root[data-theme="..."] (et non body)
 */
 
+html, body { min-height: 100%; }
+
 /* =========================================================
    BASE : petits overrides communs (tous thèmes)
    ========================================================= */
@@ -331,12 +333,13 @@
   inset: 0;
   pointer-events: none;
   z-index: -1; /* 🔥 derrière le contenu => menu OK */
-  background-repeat: repeat;
   will-change: background-position, transform, opacity;
 }
 
 /* ✅ Aurore + scintillement */
 :root[data-theme="noel"]::before{
+  background-repeat: no-repeat;
+  background-position: center;
   opacity: .22;
   mix-blend-mode: screen;
   background:
@@ -352,6 +355,7 @@
 
 /* ✅ Neige qui tombe (2 couches dans le même overlay) */
 :root[data-theme="noel"]::after{
+  background-repeat: repeat;
   opacity: .55;
   background-image:
     radial-gradient(circle, rgba(255,255,255,.95) 0 1.25px, transparent 1.8px),
@@ -443,6 +447,7 @@
    HALLOWEEN (cinematic pumpkin + FX fond)
    ========================================================= */
 :root[data-theme="halloween"]{
+  position: relative;
 
   /* couleurs UI */
   --bg:#08050c;
@@ -506,33 +511,26 @@
 /* body transparent → évite la coupure bas de page */
 :root[data-theme="halloween"] body{
   background: transparent !important;
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
 }
+
 
 /* =========================================================
    HALLOWEEN — FX ANIMÉS SUR HTML (brume + flicker bougie)
    - NE CASSE PAS le menu (popover fixed)
    ========================================================= */
 
-:root[data-theme="halloween"]{
-  position: relative;
-}
-
-/* ✅ Le contenu au-dessus des FX (sans toucher aux enfants) */
-:root[data-theme="halloween"] body{
-  background: transparent !important; /* comme tu fais déjà */
-  position: relative;
-  z-index: 0;            /* contenu normal */
-  isolation: isolate;    /* stacking clean */
-}
-
-/* ✅ FX derrière tout le contenu */
+/* ✅ FX derrière tout le contenu (les 2 pseudo-éléments existent) */
 :root[data-theme="halloween"]::before,
 :root[data-theme="halloween"]::after{
   content:"";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: -1;           /* 🔥 derrière le contenu */
+  z-index: -1;              /* derrière le contenu */
+  background-repeat: no-repeat;
 }
 
 /* 🌫️ brume */
@@ -544,8 +542,6 @@
     radial-gradient(900px 520px at 18% 22%, rgba(156,107,255,.14), transparent 62%),
     radial-gradient(1200px 700px at 40% 90%, rgba(255,122,0,.10), transparent 62%);
   filter: blur(12px);
-
-  /* ✅ pas de transform sur body/html => menu safe */
   animation: halloweenFog 14s ease-in-out infinite alternate;
 }
 
