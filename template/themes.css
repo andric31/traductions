@@ -381,10 +381,20 @@
   isolation: isolate; /* ✅ crée un stacking context fiable */
 }
 
-/* ✅ tout le contenu AU-DESSUS des FX */
+/* ✅ tout le contenu AU-DESSUS des FX
+   ⚠️ MAIS on ne doit PAS casser les éléments fixed (popovers/modales)
+*/
 :root[data-theme="halloween"] body > *{
   position: relative;
   z-index: 1;
+}
+
+/* ✅ exceptions : ces éléments doivent rester "fixed" sinon ils partent en bas */
+:root[data-theme="halloween"] .menu-popover,
+:root[data-theme="halloween"] .tag-popover,
+:root[data-theme="halloween"] .modal-overlay{
+  position: fixed;   /* 🔥 force le bon comportement */
+  z-index: 4000;     /* au-dessus de tout */
 }
 
 /* ✅ 2 couches FX (derrière l'UI) */
