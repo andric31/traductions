@@ -443,7 +443,7 @@ html, body { min-height: 100%; }
 }
 
 /* =========================================================
-   🎄 GUIRLANDE CSS ONLY
+   🎄 GUIRLANDE NOËL — PREMIUM (propre, pas kermesse)
    ========================================================= */
 
 :root[data-theme="noel"] body::before{
@@ -452,42 +452,62 @@ html, body { min-height: 100%; }
   top:0;
   left:0;
   width:100%;
-  height:70px;
+  height:78px;
   pointer-events:none;
   z-index:5;
 
-  /* fil */
   background:
-    linear-gradient(#0c2f24,#0c2f24) top 26px center / 100% 3px no-repeat,
+    /* câble très fin + légère vague (2 fils superposés) */
+    radial-gradient(140% 90px at 50% -52px, rgba(12,47,36,.95) 98%, transparent 100%),
+    radial-gradient(140% 92px at 50% -54px, rgba(5,20,16,.70) 98%, transparent 100%),
 
-    /* ampoules */
-    radial-gradient(circle at 3% 32px,#ff3b3b 0 6px,transparent 7px),
-    radial-gradient(circle at 9% 38px,#ffd93b 0 6px,transparent 7px),
-    radial-gradient(circle at 15% 28px,#3bff7a 0 6px,transparent 7px),
-    radial-gradient(circle at 21% 38px,#3bb7ff 0 6px,transparent 7px),
-    radial-gradient(circle at 27% 32px,#ff7af6 0 6px,transparent 7px),
-    radial-gradient(circle at 33% 38px,#ff3b3b 0 6px,transparent 7px),
-    radial-gradient(circle at 39% 28px,#ffd93b 0 6px,transparent 7px),
-    radial-gradient(circle at 45% 38px,#3bff7a 0 6px,transparent 7px),
-    radial-gradient(circle at 51% 32px,#3bb7ff 0 6px,transparent 7px),
-    radial-gradient(circle at 57% 38px,#ff7af6 0 6px,transparent 7px),
-    radial-gradient(circle at 63% 28px,#ff3b3b 0 6px,transparent 7px),
-    radial-gradient(circle at 69% 38px,#ffd93b 0 6px,transparent 7px),
-    radial-gradient(circle at 75% 32px,#3bff7a 0 6px,transparent 7px),
-    radial-gradient(circle at 81% 38px,#3bb7ff 0 6px,transparent 7px),
-    radial-gradient(circle at 87% 28px,#ff7af6 0 6px,transparent 7px),
-    radial-gradient(circle at 93% 38px,#ffd93b 0 6px,transparent 7px);
+    /* petits “culots” (bases) */
+    radial-gradient(6px 4px at 5% 26px, rgba(0,0,0,.45) 60%, transparent 70%),
+    radial-gradient(6px 4px at 11% 27px, rgba(0,0,0,.45) 60%, transparent 70%),
+    radial-gradient(6px 4px at 17% 26px, rgba(0,0,0,.45) 60%, transparent 70%),
+    radial-gradient(6px 4px at 23% 27px, rgba(0,0,0,.45) 60%, transparent 70%),
+    radial-gradient(6px 4px at 29% 26px, rgba(0,0,0,.45) 60%, transparent 70%),
+    radial-gradient(6px 4px at 35% 27px, rgba(0,0,0,.45) 60%, transparent 70%),
+    radial-gradient(6px 4px at 41% 26px, rgba(0,0,0,.45) 60%, transparent 70%),
+    radial-gradient(6px 4px at 47% 27px, rgba(0,0,0,.45) 60%, transparent 70%),
+    radial-gradient(6px 4px at 53% 26px, rgba(0,0,0,.45) 60%, transparent 70%),
+    radial-gradient(6px 4px at 59% 27px, rgba(0,0,0,.45) 60%, transparent 70%),
+    radial-gradient(6px 4px at 65% 26px, rgba(0,0,0,.45) 60%, transparent 70%),
+    radial-gradient(6px 4px at 71% 27px, rgba(0,0,0,.45) 60%, transparent 70%),
+    radial-gradient(6px 4px at 77% 26px, rgba(0,0,0,.45) 60%, transparent 70%),
+    radial-gradient(6px 4px at 83% 27px, rgba(0,0,0,.45) 60%, transparent 70%),
+    radial-gradient(6px 4px at 89% 26px, rgba(0,0,0,.45) 60%, transparent 70%),
+    radial-gradient(6px 4px at 95% 27px, rgba(0,0,0,.45) 60%, transparent 70%),
 
-  filter: drop-shadow(0 0 6px rgba(255,255,255,.7));
-  animation: garlandGlow 2.2s ease-in-out infinite alternate;
+    /* ampoules (petites + glow doux) */
+    radial-gradient(circle at 5% 34px, rgba(255, 90, 90, .95) 0 5px, transparent 7px),
+    radial-gradient(circle at 11% 35px, rgba(255, 220, 90, .95) 0 5px, transparent 7px),
+    radial-gradient(circle at 17% 34px, rgba(110, 255, 170, .95) 0 5px, transparent 7px),
+    radial-gradient(circle at 23% 35px, rgba(120, 190, 255, .95) 0 5px, transparent 7px),
+    radial-gradient(circle at 29% 34px, rgba(255, 150, 255, .95) 0 5px, transparent 7px),
+    radial-gradient(circle at 35% 35px, rgba(255, 90, 90, .95) 0 5px, transparent 7px),
+    radial-gradient(circle at 41% 34px, rgba(255, 220, 90, .95) 0 5px, transparent 7px),
+    radial-gradient(circle at 47% 35px, rgba(110, 255, 170, .95) 0 5px, transparent 7px),
+    radial-gradient(circle at 53% 34px, rgba(120, 190, 255, .95) 0 5px, transparent 7px),
+    radial-gradient(circle at 59% 35px, rgba(255, 150, 255, .95) 0 5px, transparent 7px),
+    radial-gradient(circle at 65% 34px, rgba(255, 90, 90, .95) 0 5px, transparent 7px),
+    radial-gradient(circle at 71% 35px, rgba(255, 220, 90, .95) 0 5px, transparent 7px),
+    radial-gradient(circle at 77% 34px, rgba(110, 255, 170, .95) 0 5px, transparent 7px),
+    radial-gradient(circle at 83% 35px, rgba(120, 190, 255, .95) 0 5px, transparent 7px),
+    radial-gradient(circle at 89% 34px, rgba(255, 150, 255, .95) 0 5px, transparent 7px),
+    radial-gradient(circle at 95% 35px, rgba(255, 220, 90, .95) 0 5px, transparent 7px);
+
+  filter: drop-shadow(0 0 5px rgba(255,255,255,.45));
+  animation: garlandGlow 3s ease-in-out infinite alternate;
 }
 
-/* glow animation */
+/* glow doux, pas disco */
 @keyframes garlandGlow{
-  0%  { filter:brightness(.9) drop-shadow(0 0 3px rgba(255,255,255,.5)); }
-  50% { filter:brightness(1.25) drop-shadow(0 0 12px rgba(255,255,255,.9)); }
-  100%{ filter:brightness(1.05) drop-shadow(0 0 6px rgba(255,255,255,.7)); }
+  0%   { filter:brightness(.92) drop-shadow(0 0 2px rgba(255,255,255,.30)); opacity:.92; }
+  50%  { filter:brightness(1.10) drop-shadow(0 0 7px rgba(255,255,255,.55)); opacity:1; }
+  100% { filter:brightness(1.00) drop-shadow(0 0 4px rgba(255,255,255,.40)); opacity:.96; }
 }
+
 
 /* =========================================================
    HALLOWEEN (cinematic pumpkin + FX fond)
