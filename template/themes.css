@@ -461,86 +461,70 @@
 
 
 /* =========================================================
-   HALLOWEEN (cinematic pumpkin)
+   HALLOWEEN — FX ROBUSTE (VISIBLE À COUP SÛR)
+   - FX derrière l'UI mais devant le fond
    ========================================================= */
-:root[data-theme="halloween"]{
 
-  --bg:#08050c;
-  --bg2:#110916;
-
-  --fg:#fff3e6;
-  --muted:#e4c9a6;
-
-  /* 🎃 ORANGE DOMINANT */
-  --primary:#ff7a00;
-
-  /* 🔮 violet magique */
-  --accent:#9c6bff;
-
-  --border:#3a1f4d;
-  --card:#140a1a;
-  --btn:#1c0f25;
-
-  --title: var(--fg);
-
-  --topbar-bg: linear-gradient(
-      90deg,
-      rgba(8,5,12,.95),
-      rgba(255,122,0,.22)
-  );
-
-  --body-grad-1:#050308;
-  --body-grad-2:#08050c;
-  --body-grad-3:#120816;
-
-  --popover-bg: rgba(20,10,26,.98);
-  --hover-bg: rgba(255,255,255,0.06);
-
-  --scrollbar-thumb:#6a35a0;
-  --scrollbar-track:#030205;
-  --scrollbar-thumb-webkit-hover:#8446c8;
-
-  /* ✅ hover “Halloween” (orange + glow) */
-  --card-hover-border: #ff7a00;
-  --card-hover-shadow:
-    0 0 0 1px rgba(255,122,0,.70),
-    0 0 30px rgba(255,122,0,.22),
-    0 18px 44px rgba(0,0,0,.60);
-  --card-hover-bg:
-    linear-gradient(145deg, rgba(255,122,0,.10), rgba(156,107,255,.07));
-
-  color-scheme: dark;
-}
-
-
-/* 🕸️ Halloween — toiles coins */
 :root[data-theme="halloween"] body{
   position: relative;
+  isolation: isolate; /* ✅ crée un stacking context fiable */
 }
 
-:root[data-theme="halloween"] body::before{
+/* ✅ tout le contenu AU-DESSUS des FX */
+:root[data-theme="halloween"] body > *{
+  position: relative;
+  z-index: 1;
+}
+
+/* ✅ 2 couches FX (derrière l'UI) */
+:root[data-theme="halloween"] body::before,
+:root[data-theme="halloween"] body::after{
   content:"";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 7;
-  opacity: .22;
-
-  background:
-    /* coin haut gauche */
-    radial-gradient(closest-side at 0% 0%, transparent 78%, rgba(255,255,255,.20) 79% 80%, transparent 81%),
-    radial-gradient(closest-side at 0% 0%, transparent 65%, rgba(255,255,255,.12) 66% 67%, transparent 68%),
-    radial-gradient(closest-side at 0% 0%, transparent 52%, rgba(255,255,255,.08) 53% 54%, transparent 55%),
-
-    /* coin haut droit */
-    radial-gradient(closest-side at 100% 0%, transparent 78%, rgba(255,255,255,.18) 79% 80%, transparent 81%),
-    radial-gradient(closest-side at 100% 0%, transparent 65%, rgba(255,255,255,.11) 66% 67%, transparent 68%),
-
-    /* coin bas gauche */
-    radial-gradient(closest-side at 0% 100%, transparent 78%, rgba(255,255,255,.10) 79% 80%, transparent 81%);
-
-  filter: blur(.3px);
+  z-index: 0;
 }
+
+/* 🌕 Lune + brume (visible) */
+:root[data-theme="halloween"] body::before{
+  opacity: 0.75; /* 🔥 augmente si tu veux tester encore plus */
+  background:
+    /* lune */
+    radial-gradient(520px 520px at 88% 12%, rgba(255,170,60,.22), transparent 62%),
+    radial-gradient(260px 260px at 88% 12%, rgba(255,170,60,.10), transparent 64%),
+
+    /* brume violette */
+    radial-gradient(900px 520px at 18% 22%, rgba(156,107,255,.14), transparent 62%),
+    radial-gradient(1200px 700px at 40% 90%, rgba(255,122,0,.10), transparent 62%);
+  filter: blur(10px);
+  animation: halloweenFog 14s ease-in-out infinite alternate;
+}
+
+@keyframes halloweenFog{
+  from { transform: translate3d(-2%, 0, 0); }
+  to   { transform: translate3d( 2%, 0, 0); }
+}
+
+/* 🔥 Flicker “bougie” discret */
+:root[data-theme="halloween"] body::after{
+  opacity: .12; /* mets .20 pour vérifier que ça marche */
+  background:
+    radial-gradient(900px 520px at 55% 20%, rgba(255,122,0,.70), transparent 68%),
+    radial-gradient(700px 420px at 25% 70%, rgba(255,122,0,.35), transparent 72%);
+  mix-blend-mode: screen;
+  animation: halloweenFlicker 3.6s steps(2, end) infinite;
+}
+
+@keyframes halloweenFlicker{
+  0%{ opacity:.08; }
+  18%{ opacity:.14; }
+  26%{ opacity:.06; }
+  52%{ opacity:.16; }
+  68%{ opacity:.10; }
+  100%{ opacity:.12; }
+}
+
 
 
 /* =====================================================
