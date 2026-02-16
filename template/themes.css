@@ -370,54 +370,26 @@
   color-scheme: dark;
 }
 
-
 /* =========================================================
-   HALLOWEEN — FX ROBUSTE (VISIBLE À COUP SÛR)
-   - FX derrière l'UI mais devant le fond
+   HALLOWEEN — FX PROPRE (AUCUN IMPACT LAYOUT)
    ========================================================= */
 
-/* =========================================================
-   HALLOWEEN — FX ROBUSTE (SANS CASSER LES POPOVERS)
-   ========================================================= */
-
-:root[data-theme="halloween"] body{
-  position: relative;
-  isolation: isolate; /* stacking context fiable */
+:root[data-theme="halloween"]{
+  isolation: isolate; /* crée un contexte sans toucher au layout */
 }
 
-/* ✅ FX derrière l'UI */
-:root[data-theme="halloween"] body::before,
-:root[data-theme="halloween"] body::after{
+/* FX */
+:root[data-theme="halloween"]::before,
+:root[data-theme="halloween"]::after{
   content:"";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 0; /* FX */
-}
-
-/* ✅ UI principale au-dessus des FX (ciblé, pas body > *) */
-:root[data-theme="halloween"] header,
-:root[data-theme="halloween"] .topbar,
-:root[data-theme="halloween"] main,
-:root[data-theme="halloween"] footer{
-  position: relative;
-  z-index: 1;
-}
-
-/* ✅ Popovers / modales : au-dessus de tout, et surtout FIXED */
-:root[data-theme="halloween"] .menu-popover,
-:root[data-theme="halloween"] .tag-popover{
-  position: fixed;
-  z-index: 5000;
-}
-
-:root[data-theme="halloween"] .modal-overlay{
-  position: fixed;
-  z-index: 6000;
+  z-index: -1; /* 🔥 derrière tout, donc aucun décalage */
 }
 
 /* 🌕 Lune + brume */
-:root[data-theme="halloween"] body::before{
+:root[data-theme="halloween"]::before{
   opacity: 0.75;
   background:
     radial-gradient(520px 520px at 88% 12%, rgba(255,170,60,.22), transparent 62%),
@@ -434,7 +406,7 @@
 }
 
 /* 🔥 Flicker bougie */
-:root[data-theme="halloween"] body::after{
+:root[data-theme="halloween"]::after{
   opacity: .12;
   background:
     radial-gradient(900px 520px at 55% 20%, rgba(255,122,0,.70), transparent 68%),
