@@ -237,10 +237,12 @@
 }
 
 /* =========================================================
-   NOËL (sapin + rouge + neige visible) + FX fond sur HTML
+   NOËL (sapin + rouge) + FOND FIXE + FX ANIMÉS SUR HTML
+   - Body transparent (pas de coupure bas)
+   - NE CASSE PAS le hamburger / popover
    ========================================================= */
-:root[data-theme="noel"]{
 
+:root[data-theme="noel"]{
   /* 🌌 fond nuit hivernale */
   --bg:#061611;
   --bg2:#0a2018;
@@ -257,7 +259,7 @@
 
   --border:#1f5a43;
 
-  /* cartes plus neutres, pas “full green” */
+  /* cartes plus neutres */
   --card:#0f1c17;
   --btn:#163a2c;
 
@@ -265,9 +267,9 @@
 
   /* 🔥 Topbar avec reflet rouge */
   --topbar-bg: linear-gradient(
-      90deg,
-      rgba(6,22,17,.95),
-      rgba(255,59,59,.22)
+    90deg,
+    rgba(6,22,17,.95),
+    rgba(255,59,59,.22)
   );
 
   --body-grad-1:#040d0a;
@@ -281,7 +283,7 @@
   --scrollbar-track:#030a07;
   --scrollbar-thumb-webkit-hover:#3fb07c;
 
-  /* ✅ hover “très Noël” (rouge + un peu vert) */
+  /* hover Noël */
   --card-hover-border: #ff3b3b;
   --card-hover-shadow:
     0 0 0 1px rgba(255,59,59,.65),
@@ -292,50 +294,23 @@
 
   color-scheme: dark;
 
-  /* ❄️ neige + aurore froide (100% CSS) SUR HTML */
+  /* ✅ FOND FIXE SUR HTML (évite la coupure bas) */
   background:
-    /* petits points neige (grille cassée avec 4 tailles/offsets) */
     radial-gradient(circle at 10% 20%, rgba(255,255,255,0.22) 0 1px, transparent 2px),
     radial-gradient(circle at 30% 80%, rgba(255,255,255,0.18) 0 1px, transparent 2px),
     radial-gradient(circle at 70% 35%, rgba(255,255,255,0.20) 0 1px, transparent 2px),
     radial-gradient(circle at 85% 70%, rgba(255,255,255,0.16) 0 1px, transparent 2px),
 
-    /* aurora (glow) */
     radial-gradient(1200px 700px at 15% 0%, rgba(24,195,122,0.18), transparent 60%),
     radial-gradient(1100px 650px at 85% 10%, rgba(255,47,67,0.12), transparent 55%),
     radial-gradient(900px 600px at 60% 0%, rgba(72,155,255,0.12), transparent 60%),
 
-    /* base */
     linear-gradient(180deg, #04080c 0%, #050d12 35%, #07151f 100%);
-
-  background-size:
-    220px 220px,
-    260px 260px,
-    240px 240px,
-    280px 280px,
-    auto, auto, auto,
-    auto;
 
   background-attachment: fixed;
 }
 
-/* body transparent → évite la coupure bas de page */
-:root[data-theme="noel"] body{
-  background: transparent !important;
-}
-
-/* =========================================================
-   NOËL — FX ANIMÉS SUR HTML (neige + aurore + scintillement)
-   - NE CASSE PAS le hamburger / popover
-   - Layout inchangé
-   - Body transparent (pas de coupure en bas)
-   ========================================================= */
-
-:root[data-theme="noel"]{
-  position: relative;
-}
-
-/* ✅ Le contenu reste au-dessus, sans toucher aux enfants */
+/* ✅ BODY TRANSPARENT (sinon trait/coupure bas) */
 :root[data-theme="noel"] body{
   background: transparent !important;
   position: relative;
@@ -343,21 +318,24 @@
   isolation: isolate;
 }
 
-/* 3 overlays SUR HTML (root) : aurora + neige near + neige far / z-index:-1 => derrière l'UI, donc aucun conflit menu */
+/* =========================================================
+   FX ANIMÉS SUR HTML (derrière UI, safe pour menu)
+   - ::before = aurore + scintillement
+   - ::after  = neige (multi-couches)
+   ========================================================= */
 
-/* base commune */
 :root[data-theme="noel"]::before,
 :root[data-theme="noel"]::after{
   content:"";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: -1; /* 🔥 derrière tout */
+  z-index: -1; /* 🔥 derrière le contenu => menu OK */
   background-repeat: repeat;
   will-change: background-position, transform, opacity;
 }
 
-/* ✅ Aurore + scintillement (sur ::before) */
+/* ✅ Aurore + scintillement */
 :root[data-theme="noel"]::before{
   opacity: .22;
   mix-blend-mode: screen;
@@ -372,35 +350,29 @@
   animation: noelAurora 14s ease-in-out infinite alternate, noelTwinkle 3.8s steps(2,end) infinite;
 }
 
-/* ✅ Neige (2 couches) : on les met sur ::after via multi-background */
+/* ✅ Neige qui tombe (2 couches dans le même overlay) */
 :root[data-theme="noel"]::after{
   opacity: .55;
   background-image:
-    /* neige proche (grosses) */
     radial-gradient(circle, rgba(255,255,255,.95) 0 1.25px, transparent 1.8px),
     radial-gradient(circle, rgba(255,255,255,.70) 0 1.05px, transparent 1.7px),
-
-    /* neige loin (petites) */
     radial-gradient(circle, rgba(255,255,255,.75) 0 0.85px, transparent 1.35px),
     radial-gradient(circle, rgba(255,255,255,.45) 0 0.70px, transparent 1.25px);
-
   background-size:
     120px 160px,
     210px 140px,
     220px 260px,
     340px 280px;
-
   background-position:
     0   -220px,
     80px -140px,
     40px -320px,
     160px -240px;
-
   filter: blur(.20px);
   animation: noelSnowAll 15.5s linear infinite;
 }
 
-/* Animations (pas trop “linéaire”, offsets différents) */
+/* Animations */
 
 @keyframes noelSnowAll{
   0%{
@@ -459,7 +431,6 @@
   100%{ opacity:.22; }
 }
 
-/* ✅ optionnel : si tu veux désactiver pour ceux qui préfèrent moins d'anim */
 @media (prefers-reduced-motion: reduce){
   :root[data-theme="noel"]::before,
   :root[data-theme="noel"]::after{
