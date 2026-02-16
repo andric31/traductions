@@ -237,7 +237,7 @@
 }
 
 /* =========================================================
-   NOËL (sapin + rouge + neige visible)
+   NOËL (sapin + rouge + neige visible) + FX fond sur HTML
    ========================================================= */
 :root[data-theme="noel"]{
 
@@ -291,22 +291,23 @@
     linear-gradient(145deg, rgba(255,59,59,.10), rgba(31,170,89,.08));
 
   color-scheme: dark;
-}
 
-/* ❄️ neige + aurore froide (sans images, 100% CSS) */
-:root[data-theme="noel"] body{
+  /* ❄️ neige + aurore froide (100% CSS) SUR HTML */
   background:
-    /* flocons (petits points) */
+    /* petits points neige (grille cassée avec 4 tailles/offsets) */
     radial-gradient(circle at 10% 20%, rgba(255,255,255,0.22) 0 1px, transparent 2px),
     radial-gradient(circle at 30% 80%, rgba(255,255,255,0.18) 0 1px, transparent 2px),
     radial-gradient(circle at 70% 35%, rgba(255,255,255,0.20) 0 1px, transparent 2px),
     radial-gradient(circle at 85% 70%, rgba(255,255,255,0.16) 0 1px, transparent 2px),
+
     /* aurora (glow) */
     radial-gradient(1200px 700px at 15% 0%, rgba(24,195,122,0.18), transparent 60%),
     radial-gradient(1100px 650px at 85% 10%, rgba(255,47,67,0.12), transparent 55%),
     radial-gradient(900px 600px at 60% 0%, rgba(72,155,255,0.12), transparent 60%),
+
     /* base */
     linear-gradient(180deg, #04080c 0%, #050d12 35%, #07151f 100%);
+
   background-size:
     220px 220px,
     260px 260px,
@@ -314,7 +315,13 @@
     280px 280px,
     auto, auto, auto,
     auto;
+
   background-attachment: fixed;
+}
+
+/* body transparent → évite la coupure bas de page */
+:root[data-theme="noel"] body{
+  background: transparent !important;
 }
 
 
