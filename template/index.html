@@ -11,7 +11,7 @@
   (function(){
     const fav = document.getElementById("dynamic-favicon");
     const testUrl = "./avatar.png?v=" + Date.now(); // anti-cache
-  
+
     const img = new Image();
     img.onload  = () => fav.href = testUrl;
     img.onerror = () => fav.href = "/favicon.png?v=" + Date.now(); // fallback
@@ -22,23 +22,36 @@
   <link rel="stylesheet" href="./viewer.css" />
   <link rel="stylesheet" href="./themes.css" />
 
-  <!-- ✅ Styles page jeu (rendu comme sur andric31-traductions, sans dossier /game) -->
+  <!-- ✅ Styles page jeu (identique à index.game.andric31.html, mais scoppé au template) -->
   <style>
+    /* =========
+       MODE GAME
+       ========= */
+
+    /* IMPORTANT : pas de scroll interne */
+    html{
+      height:auto;
+      overflow-y: scroll;
+    }
+
     body.mode-game{
-      min-height: 100vh;
-      margin: 0;
+      margin:0;
+      min-height:100dvh;
+      overflow-y: visible;
       display:flex;
       align-items:flex-start;
       justify-content:center;
-      overflow: visible;
       padding: 18px 0;
     }
 
     body.mode-game #page-viewer{ display:none !important; }
 
+    /* ✅ NE DOIT PAS SCROLLER */
     body.mode-game #page-game .wrap{
       width: 820px;
       max-width: 92vw;
+      height: auto;
+      overflow: visible;
       padding: 18px;
     }
 
@@ -62,6 +75,7 @@
       margin-bottom:10px;
       flex-wrap:wrap;
     }
+
     body.mode-game #page-game .badgesRow{
       display:flex;
       gap:8px;
@@ -75,8 +89,8 @@
       width:34px;
       height:34px;
       border-radius:10px;
-      border: 1px solid var(--border);
-      background: var(--btn);
+      border:1px solid var(--border);
+      background: rgba(255,255,255,0.05);
       display:inline-flex;
       align-items:center;
       justify-content:center;
@@ -86,50 +100,183 @@
     }
     body.mode-game #page-game .hamburger-btn:hover{ filter: brightness(1.10); }
     body.mode-game #page-game .hamburger-btn:active{ transform: translateY(1px); }
-    body.mode-game #page-game .ham-lines{ width:16px; height:12px; display:flex; flex-direction:column; justify-content:space-between; }
-    body.mode-game #page-game .ham-lines span{ display:block; height:2px; border-radius:999px; background: var(--fg); opacity:0.92; }
+
+    body.mode-game #page-game .ham-lines{
+      width:16px;
+      height:12px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+    body.mode-game #page-game .ham-lines span{
+      display:block;
+      height:2px;
+      border-radius:999px;
+      background: var(--fg);
+      opacity:0.92;
+    }
+
+    /* MENU (si besoin côté game) */
+    body.mode-game #page-game .menu-popover{
+      position:fixed;
+      z-index:2000;
+      min-width: 220px;
+      background: rgba(20,24,38,0.98);
+      border:1px solid var(--border);
+      border-radius:12px;
+      box-shadow: 0 18px 45px rgba(0,0,0,.45);
+      padding:6px;
+    }
+    body.mode-game #page-game .menu-popover.hidden{ display:none !important; }
+
+    body.mode-game #page-game .menu-item{
+      width:100%;
+      text-align:left;
+      padding:10px 10px;
+      border-radius:10px;
+      border:1px solid transparent;
+      background: transparent;
+      color: var(--fg);
+      cursor:pointer;
+      font-weight:700;
+    }
+    body.mode-game #page-game .menu-item:hover{
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.06);
+    }
+
+    /* MODAL (si besoin côté game) */
+    body.mode-game #page-game .modal-overlay{
+      position:fixed;
+      inset:0;
+      z-index:3000;
+      background: rgba(0,0,0,0.55);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+    }
+    body.mode-game #page-game .modal-overlay.hidden{ display:none !important; }
+
+    body.mode-game #page-game .modal{
+      width: 680px;
+      max-width: 92vw;
+      background: var(--card);
+      border:1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 18px 55px rgba(0,0,0,.55);
+      overflow:hidden;
+    }
+
+    body.mode-game #page-game .modal-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+    }
+    body.mode-game #page-game .modal-title{
+      font-weight: 900;
+      color:#fff;
+    }
+    body.mode-game #page-game .modal-close{
+      width:32px;
+      height:32px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      color: var(--fg);
+      cursor:pointer;
+    }
+    body.mode-game #page-game .modal-close:hover{ filter: brightness(1.10); }
+
+    body.mode-game #page-game .modal-body{
+      padding: 14px;
+      color: var(--fg);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    body.mode-game #page-game .aboutText a{
+      color: var(--primary);
+      text-decoration:none;
+    }
+    body.mode-game #page-game .aboutText a:hover{ text-decoration:underline; }
+
+    body.mode-game #page-game .modal-foot{
+      padding: 12px 14px 14px;
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    body.mode-game #page-game .modal-btn{
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      color:#fff;
+      font-weight:800;
+      cursor:pointer;
+      user-select:none;
+    }
+    body.mode-game #page-game .modal-btn:hover{ filter: brightness(1.08); }
+
+    /* Maj state */
+    body.mode-game #page-game .majState{
+      margin-top: -2px;
+      margin-bottom: 8px;
+      text-align: left;
+      font-size: 13px;
+      color: var(--muted);
+      user-select:none;
+    }
+    body.mode-game #page-game .majState.maj-ok{ color:#4ade80; font-weight:800; }
+    body.mode-game #page-game .majState.maj-ko{ color:#f97316; font-weight:800; }
+
+    /* Titre */
+    body.mode-game #page-game .title{
+      margin: 0 0 12px 0;
+      font-size: 22px;
+      line-height: 1.2;
+      color: #fff;
+    }
 
     /* Cover */
     body.mode-game #page-game .cover{
       width:100%;
-      height:auto;
-      display:block;
+      height: 190px;                /* ✅ comme l’autre site */
       border-radius: 14px;
       border: 1px solid var(--border);
-      background: var(--thumb-bg);
-      margin: 10px 0 12px;
+      background: #0f121a;
       object-fit: cover;
+      display:block;
+    }
+    body.mode-game #page-game .cover.is-placeholder{
+      background:
+        radial-gradient(1200px 300px at 20% 0%, rgba(255,255,255,0.06), rgba(0,0,0,0)),
+        linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0));
     }
 
-    /* Encadrés info */
-    body.mode-game #page-game .infoBlock{
-      background: var(--soft-04);
-      border:  1px solid var(--border-soft);
-      border-radius: 14px;
-      padding: 12px;
-      margin-top: 12px;
-    }
-    body.mode-game #page-game .infoBlock h3{ margin:0 0 8px 0; font-size:14px; }
-
-    /* ===========================
-       ✅ FIX rendu page jeu (template)
-       =========================== */
+    /* TAGS */
     body.mode-game #page-game .tagsRow{
       display:flex;
       flex-wrap:wrap;
       gap:8px;
+      margin-top: 12px;
     }
-    
+
     body.mode-game #page-game .tagPill{
       border: 1px solid var(--border);
       background: rgba(255,255,255,0.04);
-      color: var(--fg);
+      color:#fff;
       border-radius: 999px;
       font-size: 12px;
       padding: 6px 10px;
       user-select:none;
     }
-    
+
+    /* Boutons */
     body.mode-game #page-game .btnRow{
       display:flex;
       gap:10px;
@@ -137,13 +284,15 @@
       flex-wrap:wrap;
       margin-top: 16px;
     }
-    
+
     body.mode-game #page-game .btnMainRow{
       display:flex;
       justify-content:center;
       margin-top: 12px;
+      flex-wrap:wrap;
+      gap:10px;
     }
-    
+
     body.mode-game #page-game .btnLike{
       display:inline-flex;
       align-items:center;
@@ -153,14 +302,14 @@
       border-radius: 12px;
       border: 1px solid var(--border);
       background: rgba(255,255,255,0.05);
-      color: var(--fg);
+      color:#fff;
       text-decoration:none;
       font-weight: 700;
       cursor:pointer;
       user-select:none;
     }
     body.mode-game #page-game .btnLike:hover{ filter: brightness(1.08); }
-    
+
     body.mode-game #page-game .like-btn{
       width:34px;
       height:34px;
@@ -168,7 +317,7 @@
       border-radius:10px;
       font-size:18px;
     }
-    
+
     /* Discord */
     body.mode-game #page-game #btnDiscord.btn-discord{
       background:#5865F2;
@@ -179,13 +328,14 @@
       background:#4752C4;
       border-color:#4752C4;
     }
-    
+
     /* F95 */
     body.mode-game #page-game .btnLike .f95-white{ color:#ffffff; font-weight:800; }
     body.mode-game #page-game .btnLike .f95-red{ color:#8b2d2d; font-weight:800; }
-    
+
     body.mode-game #page-game .btnLike.btn-f95,
     body.mode-game #page-game #btnF95.btn-f95{
+      position: relative;
       background: linear-gradient(180deg, #222222 0%, #161616 100%);
       border-color: rgba(255,255,255,.04);
       color:#ffffff;
@@ -193,11 +343,26 @@
       overflow: hidden;
       transform: none;
     }
+
+    body.mode-game #page-game .btnLike.btn-f95 span,
+    body.mode-game #page-game #btnF95.btn-f95 span{
+      position: relative;
+      z-index: 1;
+    }
+
+    body.mode-game #page-game .btnLike.btn-f95::before,
+    body.mode-game #page-game #btnF95.btn-f95::before{
+      content: none !important;
+      display: none !important;
+    }
+
     body.mode-game #page-game .btnLike.btn-f95:hover,
     body.mode-game #page-game #btnF95.btn-f95:hover{
       background: linear-gradient(180deg, #1a1a1a 0%, #111111 100%);
+      border-color: rgba(255,255,255,.04);
+      transform: none;
     }
-    
+
     /* MEGA */
     body.mode-game #page-game .btnLike.btnMega,
     body.mode-game #page-game #btnMega{
@@ -207,11 +372,124 @@
       box-shadow: 0 8px 18px rgba(0,0,0,.40);
       transform: none;
     }
+
     body.mode-game #page-game .btnLike.btnMega:hover,
     body.mode-game #page-game #btnMega:hover{
       background: linear-gradient(180deg,#c62828 0%,#9f1b1b 100%);
+      border-color: rgba(255,255,255,.04);
+      transform: none;
     }
 
+    /* Rating */
+    body.mode-game #page-game .ratingStar,
+    body.mode-game #page-game .ratingCancel{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width: 40px;
+      height: 34px;
+      background: rgba(255,255,255,0.035);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 26px;
+      line-height: 1;
+      color: #ffd36b;
+      opacity: 0.7;
+      transition:
+        opacity 220ms cubic-bezier(.4,0,.2,1),
+        transform 220ms cubic-bezier(.4,0,.2,1),
+        filter 220ms cubic-bezier(.4,0,.2,1);
+    }
+
+    body.mode-game #page-game .ratingStar:hover,
+    body.mode-game #page-game .ratingCancel:hover,
+    body.mode-game #page-game .ratingStar:focus-visible,
+    body.mode-game #page-game .ratingCancel:focus-visible{
+      opacity: 0.92;
+      filter: brightness(1.04);
+      transform: scale(1.02);
+    }
+
+    body.mode-game #page-game .ratingCancel{
+      font-size: 16px;
+      color: #fff;
+      opacity: 0.75;
+    }
+
+    body.mode-game #page-game .ratingCancel:hover{
+      color: #ff9a9a;
+      opacity: 0.95;
+    }
+
+    body.mode-game #page-game #ratingChoices{ flex-wrap: nowrap; }
+
+    body.mode-game #page-game #ratingMsg{
+      opacity: 0.82;
+      transition: opacity 220ms cubic-bezier(.4,0,.2,1);
+      will-change: opacity;
+    }
+    @keyframes ratingMsgFade {
+      from { opacity: 0.35; }
+      to   { opacity: 0.82; }
+    }
+    body.mode-game #page-game #ratingMsg.msgFade{
+      animation: ratingMsgFade 520ms cubic-bezier(.4,0,.2,1);
+    }
+
+    /* Stats */
+    body.mode-game #page-game .statsOut{
+      margin-top: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.03);
+      color: var(--muted);
+      font-size: 12px;
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+      user-select:none;
+    }
+    body.mode-game #page-game .statsOut strong{
+      color: var(--fg);
+      font-weight: 800;
+    }
+
+    /* Error */
+    body.mode-game #page-game .err{
+      margin: 14px auto 0;
+      max-width: 820px;
+      color: #ffd6d6;
+      background: rgba(255, 0, 0, 0.08);
+      border: 1px solid rgba(255, 0, 0, 0.2);
+      padding: 12px 14px;
+      border-radius: 12px;
+      display:none;
+      white-space: pre-wrap;
+    }
+
+    /* Info blocks */
+    body.mode-game #page-game .infoBlock{
+      margin-top: 12px;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: rgba(0,0,0,.15);
+    }
+    body.mode-game #page-game .infoBlock h3{ margin: 0 0 6px 0; }
+    body.mode-game #page-game .infoBlock .infoText{
+      color: var(--fg);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    body.mode-game #page-game .infoBlock .infoTextMuted{
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
   </style>
 </head>
 <body>
@@ -219,7 +497,6 @@
   <!-- ✅ Nom affiché via manifest (casse exacte), fallback slug — SANS BOUCLE -->
   <script>
   (async function(){
-  
     function detectSlug(){
       try{
         const forced = (window.__SITE_SLUG__ || "").toString().trim();
@@ -228,12 +505,12 @@
       const segs = (location.pathname || "/").split("/").filter(Boolean);
       return String(segs[0] || "").trim().toLowerCase();
     }
-  
+
     const slug = detectSlug();
     window.__SITE_SLUG__ = slug;
-  
+
     let nice = slug ? (slug[0].toUpperCase() + slug.slice(1)) : "";
-  
+
     try{
       const r = await fetch("/traducteurs_manifest.json", { cache:"no-store" });
       if (r.ok){
@@ -244,33 +521,29 @@
         if (found && found.name) nice = String(found.name);
       }
     }catch(e){}
-  
+
     window.__SITE_NAME__ = nice;
-  
+
     const txt = nice || slug || "";
     document.title = txt;
-  
+
     function applyH1(){
       const h1 = document.getElementById("viewerTitle");
       if (h1) h1.textContent = txt;
       return !!h1;
     }
-  
-    // ✅ 1) si déjà là
+
     if (applyH1()) return;
-  
-    // ✅ 2) au DOM ready
+
     window.addEventListener("DOMContentLoaded", () => {
       if (applyH1()) return;
-  
-      // ✅ 3) retry léger (max ~2s), au cas où un script recrée le header après
+
       let tries = 0;
       const timer = setInterval(() => {
         tries++;
-        if (applyH1() || tries >= 20) clearInterval(timer); // 20 * 100ms = 2s
+        if (applyH1() || tries >= 20) clearInterval(timer);
       }, 100);
     });
-  
   })();
   </script>
 
@@ -293,7 +566,6 @@
 
     <header class="topbar" role="banner">
       <div class="top-title-row top-title-flex">
-        <!-- ✅ id unique (viewer) -->
         <button id="hamburgerBtnViewer" class="hamburger-btn" type="button"
                 aria-label="Menu" title="Menu" aria-expanded="false">
           <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
@@ -301,7 +573,6 @@
 
         <h1 id="viewerTitle">f95list_viewer</h1>
 
-        <!-- ✅ Outils en haut à droite (comme le site principal) -->
         <div id="topTitleTools" class="top-title-tools">
           <span class="total-inline">Total : <strong id="countTotal">0</strong></span>
 
@@ -377,7 +648,6 @@
           🏷️ Tags <span id="tagsCount" class="tags-count hidden">0</span>
         </button>
 
-        <!-- ✅ Rafraîchir remis en bas -->
         <button id="refresh" type="button">Rafraîchir</button>
       </div>
     </header>
@@ -394,12 +664,10 @@
         👁️ Vues de la page : <strong id="mainViews">—</strong>
       </footer>
     </main>
-
   </div>
 
   <!-- PAGE JEU (même page, via ?id= / ?uid=) -->
   <div id="page-game" style="display:none;">
-
     <div class="wrap">
       <div class="cardPreview" id="card" aria-live="polite">
         <div class="cardInner">
@@ -421,13 +689,17 @@
 
           <img id="cover" class="cover is-placeholder" alt="" referrerpolicy="no-referrer">
 
-          <div class="infoBlock tagsBox" id="tagsBox"><div class="tagsRow" id="tags"></div></div>
+          <!-- ✅ tags dans infoBlock (comme ton template) -->
+          <div class="infoBlock tagsBox" id="tagsBox">
+            <div class="tagsRow" id="tags"></div>
+          </div>
 
           <!-- 📝 Description -->
           <div id="descriptionBox" class="infoBlock" style="display:none;">
             <div id="descriptionText" class="infoText"></div>
           </div>
 
+          <!-- ✅ Boutons (identiques rendu andric31) -->
           <div class="btnRow">
             <a class="btnLike btn-discord" id="btnDiscord" target="_blank" rel="noopener" style="display:none;">💬 Discord</a>
             <a class="btnLike btn-f95" id="btnF95" target="_blank" rel="noopener" style="display:none;">
@@ -436,7 +708,10 @@
           </div>
 
           <div class="btnMainRow">
-            <a class="btnLike btnMega" id="btnMega" target="_blank" rel="noopener" style="display:none;">📥 Télécharger la traduction · MEGA</a>
+            <a class="btnLike btnMega" id="btnMega" target="_blank" rel="noopener" style="display:none;">
+              📥 Télécharger la traduction · MEGA
+            </a>
+            <!-- translationsExtra injecté ici par game.js (extraRow) -->
           </div>
 
           <div id="archiveBox" style="display:none; margin-top:12px; justify-content:center;">
@@ -447,7 +722,9 @@
 
           <!-- ⭐ Notation -->
           <div id="ratingBox" class="infoBlock" style="text-align:center;">
-            <div class="ratingTitle">Note de la traduction : <strong id="ratingAvg">—</strong> (<span id="ratingCount">0</span> votes)</div>
+            <div class="ratingTitle">
+              Note de la traduction : <strong id="ratingAvg">—</strong> (<span id="ratingCount">0</span> votes)
+            </div>
             <div id="ratingChoices" style="display:flex; justify-content:center; gap:8px;"></div>
             <div id="ratingMsg" style="margin-top:6px; color:var(--muted); font-size:12px;"></div>
           </div>
@@ -490,11 +767,9 @@
         if ((msg.textContent || "").trim()) flash();
       })();
     </script>
-
-  </div> <!-- ✅ FIN #page-game -->
+  </div>
 
   <!-- ✅ JS externes en defer (plus stable en accès direct ?id= / ?uid=) -->
-  <!-- ✅ Modules UI (comme ton autre site) -->
   <script src="./viewer.menu.js" defer></script>
   <script src="./viewer.menu.about.js" defer></script>
   <script src="./viewer.menu.extension.js" defer></script>
