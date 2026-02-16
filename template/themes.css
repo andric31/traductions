@@ -376,46 +376,52 @@
    - FX derrière l'UI mais devant le fond
    ========================================================= */
 
+/* =========================================================
+   HALLOWEEN — FX ROBUSTE (SANS CASSER LES POPOVERS)
+   ========================================================= */
+
 :root[data-theme="halloween"] body{
   position: relative;
-  isolation: isolate; /* ✅ crée un stacking context fiable */
+  isolation: isolate; /* stacking context fiable */
 }
 
-/* ✅ tout le contenu AU-DESSUS des FX
-   ⚠️ MAIS on ne doit PAS casser les éléments fixed (popovers/modales)
-*/
-:root[data-theme="halloween"] body > *{
-  position: relative;
-  z-index: 1;
-}
-
-/* ✅ exceptions : ces éléments doivent rester "fixed" sinon ils partent en bas */
-:root[data-theme="halloween"] .menu-popover,
-:root[data-theme="halloween"] .tag-popover,
-:root[data-theme="halloween"] .modal-overlay{
-  position: fixed;   /* 🔥 force le bon comportement */
-  z-index: 4000;     /* au-dessus de tout */
-}
-
-/* ✅ 2 couches FX (derrière l'UI) */
+/* ✅ FX derrière l'UI */
 :root[data-theme="halloween"] body::before,
 :root[data-theme="halloween"] body::after{
   content:"";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 0;
+  z-index: 0; /* FX */
 }
 
-/* 🌕 Lune + brume (visible) */
+/* ✅ UI principale au-dessus des FX (ciblé, pas body > *) */
+:root[data-theme="halloween"] header,
+:root[data-theme="halloween"] .topbar,
+:root[data-theme="halloween"] main,
+:root[data-theme="halloween"] footer{
+  position: relative;
+  z-index: 1;
+}
+
+/* ✅ Popovers / modales : au-dessus de tout, et surtout FIXED */
+:root[data-theme="halloween"] .menu-popover,
+:root[data-theme="halloween"] .tag-popover{
+  position: fixed;
+  z-index: 5000;
+}
+
+:root[data-theme="halloween"] .modal-overlay{
+  position: fixed;
+  z-index: 6000;
+}
+
+/* 🌕 Lune + brume */
 :root[data-theme="halloween"] body::before{
-  opacity: 0.75; /* 🔥 augmente si tu veux tester encore plus */
+  opacity: 0.75;
   background:
-    /* lune */
     radial-gradient(520px 520px at 88% 12%, rgba(255,170,60,.22), transparent 62%),
     radial-gradient(260px 260px at 88% 12%, rgba(255,170,60,.10), transparent 64%),
-
-    /* brume violette */
     radial-gradient(900px 520px at 18% 22%, rgba(156,107,255,.14), transparent 62%),
     radial-gradient(1200px 700px at 40% 90%, rgba(255,122,0,.10), transparent 62%);
   filter: blur(10px);
@@ -427,9 +433,9 @@
   to   { transform: translate3d( 2%, 0, 0); }
 }
 
-/* 🔥 Flicker “bougie” discret */
+/* 🔥 Flicker bougie */
 :root[data-theme="halloween"] body::after{
-  opacity: .12; /* mets .20 pour vérifier que ça marche */
+  opacity: .12;
   background:
     radial-gradient(900px 520px at 55% 20%, rgba(255,122,0,.70), transparent 68%),
     radial-gradient(700px 420px at 25% 70%, rgba(255,122,0,.35), transparent 72%);
