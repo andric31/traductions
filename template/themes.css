@@ -325,116 +325,122 @@
 }
 
 /* =========================================================
-   NOËL — FX ANIMÉS SUR HTML (neige qui tombe + aurore qui bouge + scintillement)
-   - Ne touche pas au layout (tuiles inchangées)
-   - Body reste transparent (pas de coupure bas)
+   NOËL — FX ANIMÉS SUR HTML (neige + aurore + scintillement)
+   - NE CASSE PAS le hamburger / popover
+   - Layout inchangé
+   - Body transparent (pas de coupure en bas)
    ========================================================= */
 
 :root[data-theme="noel"]{
   position: relative;
 }
 
-/* 3 couches : ::before (neige proche), ::after (neige loin), .noel-glow (aurore animée) */
+/* ✅ Le contenu reste au-dessus, sans toucher aux enfants */
+:root[data-theme="noel"] body{
+  background: transparent !important;
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
+}
+
+/* 3 overlays SUR HTML (root) : aurora + neige near + neige far / z-index:-1 => derrière l'UI, donc aucun conflit menu */
+
+/* base commune */
 :root[data-theme="noel"]::before,
 :root[data-theme="noel"]::after{
   content:"";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 0;              /* derrière l'UI */
+  z-index: -1; /* 🔥 derrière tout */
   background-repeat: repeat;
   will-change: background-position, transform, opacity;
 }
 
-/* ✅ neige proche (grosses) */
+/* ✅ Aurore + scintillement (sur ::before) */
 :root[data-theme="noel"]::before{
-  opacity: .55;
-  background-image:
-    radial-gradient(circle, rgba(255,255,255,.95) 0 1.25px, transparent 1.8px),
-    radial-gradient(circle, rgba(255,255,255,.70) 0 1.05px, transparent 1.7px);
-  background-size:
-    120px 160px,
-    210px 140px;
-  background-position:
-    0   -220px,
-    80px -140px;
-  animation: noelSnowNear 10.5s linear infinite;
-}
-
-/* ✅ neige loin (petites + plus lente) */
-:root[data-theme="noel"]::after{
-  opacity: .35;
-  filter: blur(.35px);
-  background-image:
-    radial-gradient(circle, rgba(255,255,255,.75) 0 0.85px, transparent 1.35px),
-    radial-gradient(circle, rgba(255,255,255,.45) 0 0.70px, transparent 1.25px);
-  background-size:
-    220px 260px,
-    340px 280px;
-  background-position:
-    40px -320px,
-    160px -240px;
-  animation: noelSnowFar 18s linear infinite;
-}
-
-/* ✅ aurore animée (sans pseudo en plus : on la met via background sur un fixed overlay) */
-:root[data-theme="noel"] body::before{
-  content:"";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;              /* derrière l'UI */
-  mix-blend-mode: screen;  /* glow plus “vivant” */
   opacity: .22;
+  mix-blend-mode: screen;
   background:
     radial-gradient(1200px 700px at 15% 0%, rgba(24,195,122,0.22), transparent 60%),
     radial-gradient(1100px 650px at 85% 10%, rgba(255,47,67,0.16), transparent 55%),
-    radial-gradient(900px 600px at 60% 0%, rgba(72,155,255,0.16), transparent 60%);
+    radial-gradient(900px 600px at 60% 0%, rgba(72,155,255,0.16), transparent 60%),
+    radial-gradient(circle at 12% 18%, rgba(255,255,255,.10) 0 1px, transparent 2px),
+    radial-gradient(circle at 72% 28%, rgba(255,255,255,.08) 0 1px, transparent 2px),
+    radial-gradient(circle at 34% 74%, rgba(255,255,255,.06) 0 1px, transparent 2px);
   filter: blur(14px);
-  animation: noelAurora 14s ease-in-out infinite alternate;
+  animation: noelAurora 14s ease-in-out infinite alternate, noelTwinkle 3.8s steps(2,end) infinite;
 }
 
-/* ✅ tout le contenu au-dessus des FX */
-:root[data-theme="noel"] body > *{
-  position: relative;
-  z-index: 1;
+/* ✅ Neige (2 couches) : on les met sur ::after via multi-background */
+:root[data-theme="noel"]::after{
+  opacity: .55;
+  background-image:
+    /* neige proche (grosses) */
+    radial-gradient(circle, rgba(255,255,255,.95) 0 1.25px, transparent 1.8px),
+    radial-gradient(circle, rgba(255,255,255,.70) 0 1.05px, transparent 1.7px),
+
+    /* neige loin (petites) */
+    radial-gradient(circle, rgba(255,255,255,.75) 0 0.85px, transparent 1.35px),
+    radial-gradient(circle, rgba(255,255,255,.45) 0 0.70px, transparent 1.25px);
+
+  background-size:
+    120px 160px,
+    210px 140px,
+    220px 260px,
+    340px 280px;
+
+  background-position:
+    0   -220px,
+    80px -140px,
+    40px -320px,
+    160px -240px;
+
+  filter: blur(.20px);
+  animation: noelSnowAll 15.5s linear infinite;
 }
 
-/* mouvements neige : non linéaire (offsets différents) */
-@keyframes noelSnowNear{
+/* Animations (pas trop “linéaire”, offsets différents) */
+
+@keyframes noelSnowAll{
   0%{
-    background-position: 0 -220px, 80px -140px;
+    background-position:
+      0   -220px,
+      80px -140px,
+      40px -320px,
+      160px -240px;
     transform: translateX(0);
   }
-  30%{
-    background-position: 18px -60px, 60px 40px;
+  25%{
+    background-position:
+      18px -40px,
+      60px  60px,
+      56px -140px,
+      140px -10px;
     transform: translateX(6px);
   }
-  60%{
-    background-position: -10px 140px, 95px 230px;
+  55%{
+    background-position:
+      -10px 180px,
+      95px  280px,
+      28px  140px,
+      190px 240px;
     transform: translateX(-5px);
   }
-  100%{
-    background-position: 8px 520px, 78px 460px;
-    transform: translateX(0);
-  }
-}
-
-@keyframes noelSnowFar{
-  0%{
-    background-position: 40px -320px, 160px -240px;
-    transform: translateX(0);
-  }
-  35%{
-    background-position: 56px -120px, 140px 0px;
-    transform: translateX(-4px);
-  }
-  70%{
-    background-position: 28px 160px, 190px 220px;
-    transform: translateX(5px);
+  80%{
+    background-position:
+      22px 360px,
+      70px  420px,
+      50px  360px,
+      150px 420px;
+    transform: translateX(4px);
   }
   100%{
-    background-position: 44px 560px, 168px 500px;
+    background-position:
+      8px 560px,
+      78px  520px,
+      44px  560px,
+      168px 520px;
     transform: translateX(0);
   }
 }
@@ -442,6 +448,23 @@
 @keyframes noelAurora{
   from{ transform: translate3d(-2%, -1%, 0) scale(1.02); opacity: .18; }
   to  { transform: translate3d( 2%,  1%, 0) scale(1.05); opacity: .26; }
+}
+
+@keyframes noelTwinkle{
+  0%{ opacity:.18; }
+  20%{ opacity:.26; }
+  35%{ opacity:.16; }
+  55%{ opacity:.28; }
+  70%{ opacity:.20; }
+  100%{ opacity:.22; }
+}
+
+/* ✅ optionnel : si tu veux désactiver pour ceux qui préfèrent moins d'anim */
+@media (prefers-reduced-motion: reduce){
+  :root[data-theme="noel"]::before,
+  :root[data-theme="noel"]::after{
+    animation: none !important;
+  }
 }
 
 
