@@ -516,21 +516,33 @@
 
 /* =========================================================
    HALLOWEEN — FX ANIMÉS SUR HTML (brume + flicker bougie)
-   - Ne touche pas au layout
-   - Body transparent OK
+   - NE CASSE PAS le menu (popover fixed)
    ========================================================= */
 
 :root[data-theme="halloween"]{
   position: relative;
 }
 
-/* ✅ brume (derrière UI) */
-:root[data-theme="halloween"]::before{
+/* ✅ Le contenu au-dessus des FX (sans toucher aux enfants) */
+:root[data-theme="halloween"] body{
+  background: transparent !important; /* comme tu fais déjà */
+  position: relative;
+  z-index: 0;            /* contenu normal */
+  isolation: isolate;    /* stacking clean */
+}
+
+/* ✅ FX derrière tout le contenu */
+:root[data-theme="halloween"]::before,
+:root[data-theme="halloween"]::after{
   content:"";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 0;
+  z-index: -1;           /* 🔥 derrière le contenu */
+}
+
+/* 🌫️ brume */
+:root[data-theme="halloween"]::before{
   opacity: .70;
   background:
     radial-gradient(520px 520px at 88% 12%, rgba(255,170,60,.22), transparent 62%),
@@ -538,16 +550,13 @@
     radial-gradient(900px 520px at 18% 22%, rgba(156,107,255,.14), transparent 62%),
     radial-gradient(1200px 700px at 40% 90%, rgba(255,122,0,.10), transparent 62%);
   filter: blur(12px);
+
+  /* ✅ pas de transform sur body/html => menu safe */
   animation: halloweenFog 14s ease-in-out infinite alternate;
 }
 
-/* ✅ flicker “bougie” (au-dessus de la brume mais toujours derrière UI) */
+/* 🔥 flicker “bougie” */
 :root[data-theme="halloween"]::after{
-  content:"";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
   opacity: .12;
   background:
     radial-gradient(900px 520px at 55% 20%, rgba(255,122,0,.70), transparent 68%),
@@ -556,15 +565,11 @@
   animation: halloweenFlicker 3.6s steps(2, end) infinite;
 }
 
-/* ✅ tout le contenu au-dessus des FX */
-:root[data-theme="halloween"] body > *{
-  position: relative;
-  z-index: 1;
-}
-
+/* ✅ animation brume SANS transform */
 @keyframes halloweenFog{
-  from { transform: translate3d(-2%, 0, 0); }
-  to   { transform: translate3d( 2%, 0, 0); }
+  0%   { opacity:.62; background-position: 0% 0%; }
+  50%  { opacity:.78; background-position: 3% 0%; }
+  100% { opacity:.62; background-position:-3% 0%; }
 }
 
 @keyframes halloweenFlicker{
