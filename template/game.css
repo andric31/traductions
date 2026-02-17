@@ -1,0 +1,421 @@
+/* ==========================================================================
+   game.css — Styles COMMUNS "page jeu"
+   - Compatible template (viewer+game) : body.mode-game #page-game ...
+   - Compatible page jeu dédiée : fallback sur body / .wrap etc.
+   ========================================================================== */
+
+/* ---------- Helpers de scope ---------- */
+:root{
+  /* rien ici, on utilise tes variables de viewer.css/themes.css */
+}
+
+/* ========================================================================
+   1) TEMPLATE (viewer + game)  => scope strict : body.mode-game #page-game
+   ======================================================================== */
+
+body.mode-game #page-viewer{ display:none !important; }
+
+body.mode-game{
+  margin:0;
+  min-height:100dvh;
+  overflow-y: visible;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding: 18px 0;
+}
+
+body.mode-game #page-game .wrap{
+  width: 820px;
+  max-width: 92vw;
+  height:auto;
+  overflow: visible;
+  padding: 18px;
+}
+
+body.mode-game #page-game .cardPreview{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow:hidden;
+  box-shadow: 0 10px 40px rgba(0,0,0,.35);
+}
+
+body.mode-game #page-game .cardInner{
+  padding: 16px 16px 18px 16px;
+}
+
+/* Ligne du haut : ☰ + like + badges */
+body.mode-game #page-game .headRow{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:10px;
+  flex-wrap:wrap;
+}
+body.mode-game #page-game .badgesRow{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin:0;
+}
+
+/* Hamburger */
+body.mode-game #page-game .hamburger-btn{
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background: rgba(255,255,255,0.05);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  user-select:none;
+  flex:0 0 auto;
+}
+body.mode-game #page-game .hamburger-btn:hover{ filter: brightness(1.10); }
+body.mode-game #page-game .hamburger-btn:active{ transform: translateY(1px); }
+
+body.mode-game #page-game .ham-lines{
+  width:16px;
+  height:12px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+body.mode-game #page-game .ham-lines span{
+  display:block;
+  height:2px;
+  border-radius:999px;
+  background: var(--fg);
+  opacity:0.92;
+}
+
+/* Maj state */
+body.mode-game #page-game .majState{
+  margin-top:-2px;
+  margin-bottom:8px;
+  text-align:left;
+  font-size:13px;
+  color: var(--muted);
+  user-select:none;
+}
+body.mode-game #page-game .majState.maj-ok{ color:#4ade80; font-weight:800; }
+body.mode-game #page-game .majState.maj-ko{ color:#f97316; font-weight:800; }
+
+/* Title */
+body.mode-game #page-game .title{
+  margin: 0 0 12px 0;
+  font-size: 22px;
+  line-height: 1.2;
+  color:#fff;
+}
+
+/* Cover */
+body.mode-game #page-game .cover{
+  width:100%;
+  height: 190px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: #0f121a;
+  object-fit: cover;
+  display:block;
+}
+body.mode-game #page-game .cover.is-placeholder{
+  background:
+    radial-gradient(1200px 300px at 20% 0%, rgba(255,255,255,0.06), rgba(0,0,0,0)),
+    linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0));
+}
+
+/* InfoBlock */
+body.mode-game #page-game .infoBlock{
+  margin-top: 12px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: rgba(0,0,0,.15);
+}
+body.mode-game #page-game .infoBlock h3{ margin:0 0 6px 0; }
+body.mode-game #page-game .infoBlock .infoText{
+  color: var(--fg);
+  font-size: 14px;
+  line-height: 1.45;
+}
+body.mode-game #page-game .infoBlock .infoTextMuted{
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+/* Tags */
+body.mode-game #page-game .tagsRow{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top: 12px;
+}
+body.mode-game #page-game .tagPill{
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.04);
+  color:#fff;
+  border-radius: 999px;
+  font-size: 12px;
+  padding: 6px 10px;
+  user-select:none;
+}
+
+/* Boutons */
+body.mode-game #page-game .btnRow{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-top: 16px;
+}
+body.mode-game #page-game .btnMainRow{
+  display:flex;
+  justify-content:center;
+  margin-top: 12px;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+body.mode-game #page-game .btnLike{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.05);
+  color:#fff;
+  text-decoration:none;
+  font-weight:700;
+  cursor:pointer;
+  user-select:none;
+}
+body.mode-game #page-game .btnLike:hover{ filter: brightness(1.08); }
+
+body.mode-game #page-game .like-btn{
+  width:34px;
+  height:34px;
+  padding:0;
+  border-radius:10px;
+  font-size:18px;
+}
+
+/* Discord */
+body.mode-game #page-game #btnDiscord.btn-discord{
+  background:#5865F2;
+  border-color:#5865F2;
+  color:#fff;
+}
+body.mode-game #page-game #btnDiscord.btn-discord:hover{
+  background:#4752C4;
+  border-color:#4752C4;
+}
+
+/* F95 */
+body.mode-game #page-game .btnLike .f95-white{ color:#ffffff; font-weight:800; }
+body.mode-game #page-game .btnLike .f95-red{ color:#8b2d2d; font-weight:800; }
+
+body.mode-game #page-game .btnLike.btn-f95,
+body.mode-game #page-game #btnF95.btn-f95{
+  position: relative;
+  background: linear-gradient(180deg, #222222 0%, #161616 100%);
+  border-color: rgba(255,255,255,.04);
+  color:#ffffff;
+  box-shadow: 0 8px 18px rgba(0,0,0,.35);
+  overflow: hidden;
+  transform:none;
+}
+body.mode-game #page-game .btnLike.btn-f95 span,
+body.mode-game #page-game #btnF95.btn-f95 span{ position:relative; z-index:1; }
+body.mode-game #page-game .btnLike.btn-f95::before,
+body.mode-game #page-game #btnF95.btn-f95::before{
+  content:none !important;
+  display:none !important;
+}
+body.mode-game #page-game .btnLike.btn-f95:hover,
+body.mode-game #page-game #btnF95.btn-f95:hover{
+  background: linear-gradient(180deg, #1a1a1a 0%, #111111 100%);
+}
+
+/* MEGA */
+body.mode-game #page-game .btnLike.btnMega,
+body.mode-game #page-game #btnMega{
+  background: linear-gradient(180deg,#b71c1c 0%,#8e0e0e 100%);
+  border: 1px solid rgba(255,255,255,.04);
+  color:#ffffff;
+  box-shadow: 0 8px 18px rgba(0,0,0,.40);
+  transform:none;
+}
+body.mode-game #page-game .btnLike.btnMega:hover,
+body.mode-game #page-game #btnMega:hover{
+  background: linear-gradient(180deg,#c62828 0%,#9f1b1b 100%);
+}
+
+/* Rating */
+body.mode-game #page-game .ratingStar,
+body.mode-game #page-game .ratingCancel{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width: 40px;
+  height: 34px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 26px;
+  line-height: 1;
+  color: #ffd36b;
+  opacity: 0.7;
+  transition: opacity 220ms cubic-bezier(.4,0,.2,1),
+              transform 220ms cubic-bezier(.4,0,.2,1),
+              filter 220ms cubic-bezier(.4,0,.2,1);
+}
+body.mode-game #page-game .ratingStar:hover,
+body.mode-game #page-game .ratingCancel:hover,
+body.mode-game #page-game .ratingStar:focus-visible,
+body.mode-game #page-game .ratingCancel:focus-visible{
+  opacity: 0.92;
+  filter: brightness(1.04);
+  transform: scale(1.02);
+}
+body.mode-game #page-game .ratingCancel{
+  font-size: 16px;
+  color:#fff;
+  opacity:0.75;
+}
+body.mode-game #page-game .ratingCancel:hover{
+  color:#ff9a9a;
+  opacity:0.95;
+}
+body.mode-game #page-game #ratingChoices{ flex-wrap:nowrap; }
+
+body.mode-game #page-game #ratingMsg{
+  opacity: 0.82;
+  transition: opacity 220ms cubic-bezier(.4,0,.2,1);
+  will-change: opacity;
+}
+@keyframes ratingMsgFade { from{opacity:.35;} to{opacity:.82;} }
+body.mode-game #page-game #ratingMsg.msgFade{
+  animation: ratingMsgFade 520ms cubic-bezier(.4,0,.2,1);
+}
+
+/* Stats */
+body.mode-game #page-game .statsOut{
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.03);
+  color: var(--muted);
+  font-size: 12px;
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  flex-wrap:wrap;
+  user-select:none;
+}
+body.mode-game #page-game .statsOut strong{
+  color: var(--fg);
+  font-weight:800;
+}
+
+/* Error */
+body.mode-game #page-game .err{
+  margin: 14px auto 0;
+  max-width: 820px;
+  color: #ffd6d6;
+  background: rgba(255, 0, 0, 0.08);
+  border: 1px solid rgba(255, 0, 0, 0.2);
+  padding: 12px 14px;
+  border-radius: 12px;
+  display:none;
+  white-space: pre-wrap;
+}
+
+
+/* ========================================================================
+   2) PAGE JEU DÉDIÉE (site "andric31" /game/index.html)
+   - On ne touche pas le template, mais on applique le même look si tu inclus
+     ce fichier dans la page dédiée.
+   ======================================================================== */
+
+body:not(.mode-game) .topbar{ display:none !important; }
+
+/* Si ta page dédiée n’a pas #page-game, on applique sur .wrap / .cardPreview */
+.wrap{
+  width: 820px;
+  max-width: 92vw;
+  padding: 18px;
+}
+
+.cardPreview{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow:hidden;
+  box-shadow: 0 10px 40px rgba(0,0,0,.35);
+}
+
+.cardInner{ padding: 16px 16px 18px 16px; }
+
+/* Reprend les mêmes classes (si elles existent déjà c’est identique) */
+.tagsRow{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+.tagPill{
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.04);
+  color:#fff;
+  border-radius:999px;
+  font-size:12px;
+  padding:6px 10px;
+  user-select:none;
+}
+
+.btnRow{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:16px; }
+.btnMainRow{ display:flex; justify-content:center; margin-top:12px; flex-wrap:wrap; gap:10px; }
+
+.btnLike{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.05);
+  color:#fff;
+  text-decoration:none;
+  font-weight:700;
+  cursor:pointer;
+  user-select:none;
+}
+.btnLike:hover{ filter:brightness(1.08); }
+.like-btn{ width:34px; height:34px; padding:0; border-radius:10px; font-size:18px; }
+
+#btnDiscord.btn-discord{ background:#5865F2; border-color:#5865F2; color:#fff; }
+#btnDiscord.btn-discord:hover{ background:#4752C4; border-color:#4752C4; }
+
+.btnLike .f95-white{ color:#fff; font-weight:800; }
+.btnLike .f95-red{ color:#8b2d2d; font-weight:800; }
+
+.btnLike.btn-f95, #btnF95.btn-f95{
+  background: linear-gradient(180deg, #222 0%, #161616 100%);
+  border-color: rgba(255,255,255,.04);
+  color:#fff;
+  box-shadow: 0 8px 18px rgba(0,0,0,.35);
+  overflow:hidden;
+}
+.btnLike.btnMega, #btnMega{
+  background: linear-gradient(180deg,#b71c1c 0%,#8e0e0e 100%);
+  border: 1px solid rgba(255,255,255,.04);
+  color:#fff;
+  box-shadow: 0 8px 18px rgba(0,0,0,.40);
+}
