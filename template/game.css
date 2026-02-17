@@ -415,7 +415,10 @@ html{
       white-space: pre-wrap;
     }
 
-    .topbar{ display:none !important; }
+    /* cacher la barre UNIQUEMENT dans la page jeu */
+    body.mode-game .topbar{
+      display:none !important;
+    }
 
     .infoBlock{
       margin-top: 12px;
