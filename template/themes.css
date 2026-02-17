@@ -443,61 +443,6 @@ html, body { min-height: 100%; }
 }
 
 /* =========================================================
-   🎄 GUIRLANDE CSS ONLY — VERSION NOËL RÉALISTE
-   ========================================================= */
-
-:root[data-theme="noel"] body::before{
-  content:"";
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:70px;
-  pointer-events:none;
-  z-index:5;
-
-  --step: 72px;
-
-  background:
-
-    /* FIL */
-    linear-gradient(#0c2f24,#0c2f24)
-      0 calc(26px + .5px) / 100% 1px no-repeat,
-
-    /* rouge profond */
-    radial-gradient(circle at 10px 32px,#c62828 0 5px,transparent 6px)
-      0 0 / var(--step) 70px repeat-x,
-
-    /* blanc chaud */
-    radial-gradient(circle at 28px 38px,#ffe6a3 0 5px,transparent 6px)
-      0 0 / var(--step) 70px repeat-x,
-
-    /* vert sapin */
-    radial-gradient(circle at 46px 28px,#2e7d32 0 5px,transparent 6px)
-      0 0 / var(--step) 70px repeat-x,
-
-    /* bleu glace */
-    radial-gradient(circle at 64px 38px,#90caf9 0 5px,transparent 6px)
-      0 0 / var(--step) 70px repeat-x,
-
-    /* ambre */
-    radial-gradient(circle at 82px 32px,#ffb74d 0 5px,transparent 6px)
-      0 0 / var(--step) 70px repeat-x;
-
-  filter: drop-shadow(0 0 4px rgba(255,235,200,.45));
-  animation: garlandGlow 2.6s ease-in-out infinite alternate;
-  transform: translateZ(0);
-}
-
-/* glow doux */
-@keyframes garlandGlow{
-  0%  { filter:brightness(.95) drop-shadow(0 0 2px rgba(255,230,180,.35)); }
-  50% { filter:brightness(1.12) drop-shadow(0 0 7px rgba(255,240,200,.6)); }
-  100%{ filter:brightness(1.05) drop-shadow(0 0 3px rgba(255,230,180,.45)); }
-}
-
-
-/* =========================================================
    HALLOWEEN (cinematic pumpkin + FX fond)
    ========================================================= */
 :root[data-theme="halloween"]{
