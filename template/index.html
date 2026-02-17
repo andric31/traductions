@@ -236,7 +236,6 @@
       <div class="cardPreview" id="card" aria-live="polite">
         <div class="cardInner">
 
-          <!-- ✅ bloc compatible game.js (IDs conservés) -->
           <div class="headRow">
             <button type="button" class="hamburger-btn" id="hamburgerBtnGame"
                     aria-label="Ouvrir le menu" aria-haspopup="menu" aria-expanded="false">
@@ -244,7 +243,6 @@
             </button>
 
             <button class="btnLike like-btn" id="btnLike" type="button" aria-label="J’aime">🤍</button>
-
             <div class="badgesRow" id="badges"></div>
           </div>
 
@@ -254,17 +252,14 @@
 
           <img id="cover" class="cover is-placeholder" alt="" referrerpolicy="no-referrer">
 
-          <!-- ✅ TAGS -->
-          <div class="infoBlock tagsBox" id="tagsBox" style="display:none;">
+          <div class="infoBlock tagsBox" id="tagsBox">
             <div class="tagsRow" id="tags"></div>
           </div>
 
-          <!-- ✅ DESCRIPTION (game.js attend #descriptionBox + #descriptionText) -->
           <div id="descriptionBox" class="infoBlock" style="display:none;">
             <div id="descriptionText" class="infoText"></div>
           </div>
 
-          <!-- ✅ BOUTONS -->
           <div class="btnRow">
             <a class="btnLike btn-discord" id="btnDiscord" target="_blank" rel="noopener" style="display:none;">💬 Discord</a>
             <a class="btnLike btn-f95" id="btnF95" target="_blank" rel="noopener" style="display:none;">
@@ -276,7 +271,6 @@
             <a class="btnLike btnMega" id="btnMega" target="_blank" rel="noopener" style="display:none;">
               📥 Télécharger la traduction · MEGA
             </a>
-            <!-- translationsExtra injecté par game.js -->
           </div>
 
           <div id="archiveBox" style="display:none; margin-top:12px; justify-content:center;">
@@ -285,22 +279,21 @@
             </a>
           </div>
 
-          <!-- ✅ INFOS -->
+          <!-- ⭐ Notation -->
+        <div id="ratingBox" class="infoBlock" style="text-align:center;">
+          <div style="color:var(--muted); font-size:12px; margin-bottom:6px;">
+            Note de la traduction :
+            <strong id="ratingAvg">—</strong>
+            (<span id="ratingCount">0</span> votes)
+          </div>
+
+          <div id="ratingChoices" style="display:flex; justify-content:center; gap:8px;"></div>
+          <div id="ratingMsg" style="margin-top:6px; color:var(--muted); font-size:12px;"></div>
+        </div>
+
           <div id="notesBox" class="infoBlock" style="display:none;">
             <h3>ℹ️ Informations</h3>
             <div id="notesText" class="infoTextMuted"></div>
-          </div>
-
-          <!-- ✅ NOTATION -->
-          <div id="ratingBox" class="infoBlock" style="text-align:center;">
-            <div style="color:var(--muted); font-size:12px; margin-bottom:6px;">
-              Note de la traduction :
-              <strong id="ratingAvg">—</strong>
-              (<span id="ratingCount">0</span> votes)
-            </div>
-
-            <div id="ratingChoices" style="display:flex; justify-content:center; gap:8px;"></div>
-            <div id="ratingMsg" style="margin-top:6px; color:var(--muted); font-size:12px;"></div>
           </div>
 
         </div>
