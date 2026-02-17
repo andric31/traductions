@@ -1,6 +1,36 @@
 "use strict";
 
 // ============================================================================
+// ✅ Harmonisation DOM (IDs/classes) avec game.andric31.js
+// Objectif : pouvoir réutiliser exactement le même CSS de thème.
+// - Ne change pas les liens / la logique métier
+// - Renomme uniquement (ou crée des alias) côté DOM quand nécessaire
+// ============================================================================
+function normalizeDomIdsForSharedTheme() {
+  const aliasId = (fromId, toId) => {
+    const to = document.getElementById(toId);
+    if (to) return to;
+    const from = document.getElementById(fromId);
+    if (!from) return null;
+    try { from.id = toId; } catch {}
+    return from;
+  };
+
+  // Hamburger: on force l'ID "hamburgerBtn" (game.andric31)
+  aliasId("hamburgerBtnGame", "hamburgerBtn");
+  aliasId("hamburgerBtnViewer", "hamburgerBtn");
+
+  // Boutons principaux : si un ancien id existe, on le renomme vers l'id standard
+  aliasId("discordBtn", "btnDiscord");
+  aliasId("f95Btn", "btnF95");
+  aliasId("megaBtn", "btnMega");
+  aliasId("archivesBtn", "archiveLink");
+
+  // Like
+  aliasId("likeBtn", "btnLike");
+}
+
+// ============================================================================
 // ✅ Détection universelle SLUG + chemins
 // ============================================================================
 function detectSlug() {
@@ -322,10 +352,8 @@ function resolveGamePage(params, games) {
 
 // Related container (inséré après tags)
 function ensureRelatedContainer() {
-  const main = document.getElementById("mainInfoBox");
-  const tags = document.getElementById("tags");
-  const descInner = document.getElementById("descInnerBox");
-  if (!main || !tags) return null;
+  const anchor = document.getElementById("tags");
+  if (!anchor) return null;
 
   let out = document.getElementById("relatedOut");
   if (!out) {
@@ -334,13 +362,7 @@ function ensureRelatedContainer() {
     out.style.marginTop = "12px";
     out.style.display = "grid";
     out.style.gap = "10px";
-
-    // ✅ on insère ENTRE tags et résumé (encadré interne)
-    if (descInner && descInner.parentNode === main) {
-      main.insertBefore(out, descInner);
-    } else {
-      main.appendChild(out);
-    }
+    anchor.parentNode.insertBefore(out, anchor.nextSibling);
   }
   return out;
 }
@@ -595,12 +617,15 @@ function renderBadgesFromGame(display, entry, isCollectionChild) {
 async function renderTranslationStatus(game) {
   if (!game?.url) return;
 
+  const maj = document.getElementById("majState");
+  const badgesWrap = document.getElementById("badges");
   const clean = (s) => String(s || "").replace(/\s+/g, " ").trim();
 
   // ✅ storedTitle = titre complet (source de vérité)
   const storedTitle = clean(game.rawTitle || game.title || "");
 
   // ✅ version "fiable" = extraite du title (pas game.version)
+  // ex: "... [v0.12.0] ..." -> "0.12.0"
   const extractVersionFromTitleLocal = (title) => {
     const s = String(title || "");
     let m = s.match(/\[\s*v\s*([0-9][^\]]*)\]/i);
@@ -611,32 +636,16 @@ async function renderTranslationStatus(game) {
   };
 
   const storedVersionFromTitle = clean(extractVersionFromTitleLocal(storedTitle));
+  // On envoie quand même storedVersion au worker (utile si tu veux), mais on ne l'affiche plus comme "stockée"
   const storedVersion = storedVersionFromTitle;
 
-  // (1) UI cible : majState si présent (legacy), sinon badge dans #badges (HTML commun)
-  const maj = document.getElementById("majState");
-  const badgesWrap = document.getElementById("badges");
+  const SEP = " · ";
 
-  const setState = (text, ok) => {
-    // majState
-    if (maj) {
-      maj.style.display = "";
-      maj.classList.remove("maj-ok", "maj-ko");
-      maj.classList.add(ok ? "maj-ok" : "maj-ko");
-      maj.textContent = text;
-    }
-    // badge fallback (évite doublon)
-    if (badgesWrap) {
-      const old = badgesWrap.querySelector(".majBadge");
-      if (old) old.remove();
-      const b = document.createElement("span");
-      b.className = "badge majBadge " + (ok ? "status-updated" : "status-outdated");
-      b.textContent = text;
-      badgesWrap.appendChild(b);
-    }
-  };
-
-  setState("⏳ Vérification F95…", false);
+  if (maj) {
+    maj.style.display = "";
+    maj.classList.remove("maj-ok", "maj-ko");
+    maj.textContent = "⏳ Vérification F95…";
+  }
 
   try {
     const qs =
@@ -648,12 +657,42 @@ async function renderTranslationStatus(game) {
     const j = await r.json();
 
     if (!j?.ok) {
-      setState("⚠️ Vérif F95Zone impossible", false);
+      if (maj) {
+        maj.textContent = "⚠️ Vérif F95Zone impossible";
+        maj.classList.remove("maj-ok", "maj-ko");
+        maj.classList.add("maj-ko");
+      }
       return;
     }
 
+    if (!maj) return;
+    maj.classList.remove("maj-ok", "maj-ko");
+
+    // ✅ Badge (même logique que game.andric31.js) — pour un CSS partagé
+    if (badgesWrap) {
+      // évite les doublons
+      const prev = badgesWrap.querySelector(".badge[data-f95status='1']");
+      if (prev) prev.remove();
+
+      const badge = document.createElement("span");
+      badge.classList.add("badge");
+      badge.setAttribute("data-f95status", "1");
+
+      if (j.isUpToDate) {
+        badge.textContent = "✅ Traduction à jour";
+        badge.classList.add("status-updated");
+      } else {
+        badge.textContent = "🔄 Traduction non à jour";
+        badge.classList.add("status-outdated");
+      }
+      badgesWrap.appendChild(badge);
+    }
+
     if (j.isUpToDate) {
-      setState("✅ Traduction à jour", true);
+      if (maj) {
+        maj.textContent = "✅ Traduction à jour";
+        maj.classList.add("maj-ok");
+      }
       return;
     }
 
@@ -662,29 +701,41 @@ async function renderTranslationStatus(game) {
     // =========================
     let reasonText = clean(j.reasonText || "");
 
-    // ✅ remplace la "version stockée" par la version extraite du TITLE
+    // ✅ On remplace la "version stockée" par la version extraite du TITLE
+    // Pattern worker actuel: "Version différente : stockée vX / F95 vY."
     if (storedVersionFromTitle) {
       reasonText = reasonText.replace(
         /Version différente\s*:\s*stockée\s*v?([0-9][0-9a-zA-Z.\-]*)\s*\/\s*F95\s*v?([0-9][0-9a-zA-Z.\-]*)\.?/i,
         `Version différente : v${storedVersionFromTitle} → v$2`
       );
     } else {
+      // fallback si on ne peut pas extraire la version du title
       reasonText = reasonText.replace(
         /Version différente\s*:\s*stockée\s*v?([0-9][0-9a-zA-Z.\-]*)\s*\/\s*F95\s*v?([0-9][0-9a-zA-Z.\-]*)\.?/i,
         "Version différente : v$1 → v$2"
       );
     }
 
-    reasonText = reasonText.replace(/Titre différent\s*:\s*stocké\s*≠\s*F95\.?/i, "Titre différent");
+    // Titre différent : stocké ≠ F95. -> Titre différent
+    reasonText = reasonText.replace(
+      /Titre différent\s*:\s*stocké\s*≠\s*F95\.?/i,
+      "Titre différent"
+    );
+
+    // enlève point final
     reasonText = reasonText.replace(/\.\s*$/, "");
 
-    const SEP = " · ";
     let text = "🔄 Traduction non à jour";
     if (reasonText) text += SEP + reasonText;
 
-    setState(text, false);
+    maj.textContent = text;
+    maj.classList.add("maj-ko");
   } catch {
-    setState("⚠️ Vérif F95Zone impossible", false);
+    if (maj) {
+      maj.textContent = "⚠️ Vérif F95Zone impossible";
+      maj.classList.remove("maj-ok", "maj-ko");
+      maj.classList.add("maj-ko");
+    }
   }
 }
 
@@ -1149,6 +1200,10 @@ function renderVideoBlock({ id, videoUrl }) {
 // ============================================================================
 (async function main() {
   try {
+    // ✅ Assure que les IDs/structures DOM correspondent à game.andric31.js
+    // (permet d'utiliser un seul CSS de thème)
+    try { normalizeDomIdsForSharedTheme(); } catch {}
+
     initHamburgerMenu();
 
     const { id: idParam, uid: uidParam } = getParamsFromUrl();
@@ -1208,47 +1263,27 @@ function renderVideoBlock({ id, videoUrl }) {
       relatedOut.innerHTML = parts.filter(Boolean).join("");
     }
 
-        // 3) Description (mêmes IDs que game.andric31.js)
-    const mainInfoBox = document.getElementById("mainInfoBox");
-        const descInnerBox = document.getElementById("descInnerBox"); // ⭐ AJOUT
-        const descTextEl = document.getElementById("descriptionText");
+    // 3) Description (force placement)
+    const tagsEl = document.getElementById("tags");
+    const descAnchor = relatedOut || tagsEl;
 
-        const description = (entry.description || "").trim();
-
-        if (mainInfoBox) {
-
-          const hasTags =
-            Array.isArray(display.tags || entry.tags) &&
-            (display.tags || entry.tags).length > 0;
-
-          const hasDesc = !!description;
-
-          // ✅ Remplit le résumé
-          if (descTextEl) {
-            descTextEl.innerHTML = hasDesc
-              ? escapeHtml(description).replace(/\n/g, "<br>")
-              : "";
-          }
-
-          // ✅ Affiche / masque l'encadré interne
-          if (descInnerBox) {
-            descInnerBox.style.display = hasDesc ? "" : "none";
-          }
-
-          // ✅ Affiche / masque le grand encadré
-          mainInfoBox.style.display = (hasTags || hasDesc) ? "" : "none";
-        }
-
-        // =========================
-
-
-// 4) Vidéo (si présent) — ancre robuste (évite descBox undefined)
     const descBox = document.getElementById("descriptionBox");
-    const videoAnchor =
-      (relatedOut && relatedOut.innerHTML && relatedOut.innerHTML.trim())
-        ? relatedOut
-        : (mainInfoBox || descBox || tagsEl);
+    const descTextEl = document.getElementById("descriptionText");
 
+    if (descBox && descAnchor && descAnchor.parentNode) {
+      descAnchor.parentNode.insertBefore(descBox, descAnchor.nextSibling);
+    }
+
+    const description = (entry.description || "").trim();
+    if (description && descBox && descTextEl) {
+      descTextEl.innerHTML = escapeHtml(description).replace(/\n/g, "<br>");
+      descBox.style.display = "";
+    } else if (descBox) {
+      descBox.style.display = "none";
+    }
+
+    // 4) Vidéo sous description
+    const videoAnchor = (descBox && descBox.style.display !== "none") ? descBox : (relatedOut || tagsEl);
     const videoHost = ensureBlockAfter(videoAnchor, "videoHost");
     renderVideoBlock({ id: "videoHost", videoUrl: (entry.videoUrl || "").trim() });
 
@@ -1298,115 +1333,70 @@ function renderVideoBlock({ id, videoUrl }) {
     const ab = $("archiveBox");
     if (ab) ab.style.display = archiveHref ? "flex" : "none";
 
-        // 6b) Liens supplémentaires (translationsExtra) — SOUS MEGA (1 par ligne)
-        // =========================
-        function getHostClass(url){
-          const u = (url || "").toLowerCase();
-          if (u.includes("mega.nz")) return "btnMega";        // rouge MEGA (garde)
-          if (u.includes("f95zone")) return "btn-f95";        // style F95
-          if (u.includes("drive.google")) return "btn-host-drive";
-          if (u.includes("gofile")) return "btn-host-gofile";
-          return "btn-host-default";
-        }
+    // 6b) Extra links — même DOM/classes que game.andric31.js (pour CSS partagé)
+    const extra = Array.isArray(entry.translationsExtra) ? entry.translationsExtra : [];
+    const extraValid = extra.filter((x) => x && (x.link || "").trim());
 
-        const extraRaw = entry.translationsExtra;
-        const extraList = Array.isArray(extraRaw) ? extraRaw : (extraRaw ? [extraRaw] : []);
-        const extraValid = extraList
-          .map(x => {
-            if (!x) return null;
-            if (typeof x === "string") {
-              const u = x.trim();
-              return u ? { name: "Lien", link: u } : null;
-            }
-            if (typeof x !== "object") return null;
-            const name = String(x.name || "Lien").trim();
-            const link = String(x.link || x.url || "").trim();
-            return link ? { name, link } : null;
-          })
-          .filter(Boolean);
+    // wrapper colonne (sous MEGA, dans la même ligne)
+    let extraWrap = document.querySelector(".extraLinksCol");
+    if (!extraWrap) {
+      extraWrap = document.createElement("div");
+      extraWrap.className = "extraLinksCol";
+      extraWrap.style.display = "flex";
+      extraWrap.style.flexDirection = "column";
+      extraWrap.style.gap = "10px";
+      extraWrap.style.alignItems = "center";
+      extraWrap.style.width = "auto";
 
-        // ✅ On réutilise la ligne MEGA existante
-        const megaRow = document.querySelector(".btnMainRow");
-        const megaBtn = document.getElementById("btnMega");
+      // insère juste après le bouton MEGA si possible
+      const megaBtn = document.getElementById("btnMega");
+      if (megaRow && megaBtn && megaBtn.parentNode === megaRow) {
+        megaRow.insertBefore(extraWrap, megaBtn.nextSibling);
+      } else if (megaRow) {
+        megaRow.appendChild(extraWrap);
+      }
+    }
 
-        if (megaRow) {
-          // retire anciens extras + wrapper (si rechargement / navigation)
-          [...megaRow.querySelectorAll(".extraLinkBtn")].forEach(el => el.remove());
-          const oldWrap = megaRow.querySelector(".extraLinksCol");
-          if (oldWrap) oldWrap.remove();
+    if (extraWrap) {
+      extraWrap.innerHTML = "";
 
-          // ✅ Colonne : MEGA puis extras (mais CENTRÉ, pas full width)
-          megaRow.style.display = "flex";
-          megaRow.style.flexDirection = "column";
-          megaRow.style.flexWrap = "nowrap";
-          megaRow.style.gap = "10px";
-          megaRow.style.alignItems = "center";        // ✅ au lieu de stretch
-          megaRow.style.justifyContent = "flex-start";
+      extraValid.forEach((x) => {
+        const name = String(x.name || "Lien").trim();
+        const link = String(x.link || "").trim();
+        const hostCls = getHostClass(link);
 
-          // ✅ bouton MEGA : revient comme avant (pas 100%)
-          if (megaBtn) {
-            megaBtn.style.width = "auto";
-            megaBtn.style.margin = "0 auto";
-          }
+        const a = document.createElement("a");
+        a.className = `btnLike ${hostCls} extraLinkBtn`;
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.href = link;
+        a.style.width = "auto";
+        a.style.margin = "0 auto";
+        a.style.justifyContent = "center";
 
-          // wrapper colonne pour les extras (sous MEGA)
-          const wrap = document.createElement("div");
-          wrap.className = "extraLinksCol";
-          wrap.style.display = "flex";
-          wrap.style.flexDirection = "column";
-          wrap.style.gap = "10px";
-          wrap.style.alignItems = "center";           // ✅ centré
-          wrap.style.width = "auto";                  // ✅ au lieu de 100%
-
-          // insère wrapper juste après MEGA si possible, sinon à la fin
-          if (megaBtn && megaBtn.parentNode === megaRow) {
-            megaRow.insertBefore(wrap, megaBtn.nextSibling);
+        // Patch : si name == Patch
+        if (name.toLowerCase() === "patch") {
+          a.textContent = "📥 Télécharger · Patch";
+        } else {
+          if (hostCls === "btn-f95" && /f95\s*zone/i.test(name)) {
+            a.innerHTML = `📥 Télécharger la traduction · <span class="f95-logo"><span class="f95-white">F95</span><span class="f95-red">Zone</span></span>`;
           } else {
-            megaRow.appendChild(wrap);
+            a.textContent = `📥 Télécharger la traduction · ${name}`;
           }
-
-          // ajoute les extras (en colonne)
-          extraValid.forEach((x) => {
-            const name = String(x.name || "Lien").trim();
-            const link = String(x.link || "").trim();
-            const hostCls = getHostClass(link);
-
-            const a = document.createElement("a");
-            a.className = `btnLike ${hostCls} extraLinkBtn`;
-            a.target = "_blank";
-            a.rel = "noopener";
-            a.href = link;
-
-            // ✅ plus plein largeur
-            a.style.width = "auto";
-            a.style.margin = "0 auto";
-            a.style.justifyContent = "center";
-
-            // ✅ Patch : texte spécial uniquement si name === "Patch"
-            if (name.toLowerCase() === "patch") {
-              a.textContent = "📥 Télécharger · Patch";
-            } else {
-              // libellé (F95 bicolore identique)
-              if (hostCls === "btn-f95" && /f95\s*zone/i.test(name)) {
-                a.innerHTML = `📥 Télécharger la traduction · <span class="f95-logo"><span class="f95-white">F95</span><span class="f95-red">Zone</span></span>`;
-              } else {
-                a.textContent = `📥 Télécharger la traduction · ${name}`;
-              }
-            }
-
-            wrap.appendChild(a);
-          });
-
-          // ✅ Cache la ligne si rien (évite l'espace vide)
-          const hasMega = !!megaHref;
-          const hasExtra = extraValid.length > 0;
-          megaRow.style.display = (hasMega || hasExtra) ? "flex" : "none";
         }
 
-        // =========================
+        extraWrap.appendChild(a);
+      });
+    }
 
+    // ✅ Cache/affiche la ligne MEGA selon (MEGA OU extras)
+    if (megaRow) {
+      const hasMega = !!megaHref;
+      const hasExtra = extraValid.length > 0;
+      megaRow.style.display = (hasMega || hasExtra) ? "flex" : "none";
+    }
 
-// 7) Notes
+    // 7) Notes
     const notes = (entry.notes || "").trim();
     if (notes) {
       setHtml("notesText", escapeHtml(notes).replace(/\n/g, "<br>"));
