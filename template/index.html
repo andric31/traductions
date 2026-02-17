@@ -230,56 +230,68 @@
     </main>
   </div>
 
-  <!-- PAGE JEU (même page, via ?id= / ?uid=) -->
-  <div id="page-game" style="display:none;">
-    <div class="wrap">
-      <div class="cardPreview" id="card" aria-live="polite">
-        <div class="cardInner">
+<body class="mode-game">
+  <div class="wrap">
+    <div class="cardPreview" id="card" aria-live="polite">
+      <div class="cardInner">
 
-          <div class="headRow">
-            <button type="button" class="hamburger-btn" id="hamburgerBtnGame"
-                    aria-label="Ouvrir le menu" aria-haspopup="menu" aria-expanded="false">
-              <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
-            </button>
+        <div class="headRow">
+          <button type="button" class="hamburger-btn" id="hamburgerBtn" aria-label="Ouvrir le menu" aria-haspopup="menu" aria-expanded="false">
+            <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
+          </button>
 
-            <button class="btnLike like-btn" id="btnLike" type="button" aria-label="J’aime">🤍</button>
-            <div class="badgesRow" id="badges"></div>
-          </div>
+          <button class="btnLike like-btn" id="btnLike" type="button" aria-label="J’aime">🤍</button>
 
-          <div class="majState" id="majState" style="display:none;"></div>
+          <div class="badgesRow" id="badges"></div>
+        </div>
 
-          <h1 class="title" id="title">Chargement…</h1>
+        <div class="majState" id="majState" style="display:none;"></div>
 
-          <img id="cover" class="cover is-placeholder" alt="" referrerpolicy="no-referrer">
+        <h1 class="title" id="title">Chargement…</h1>
 
-          <div class="infoBlock tagsBox" id="tagsBox">
-            <div class="tagsRow" id="tags"></div>
-          </div>
+        <img id="cover" class="cover is-placeholder" alt="" referrerpolicy="no-referrer">
 
-          <div id="descriptionBox" class="infoBlock" style="display:none;">
+        <div id="videoBox" class="infoBlock" style="display:none;">
+          <h3>📺 Vidéo</h3>
+          <iframe id="videoFrame"
+            style="width:100%; aspect-ratio:16/9; border-radius:12px; border:1px solid var(--border);"
+            loading="lazy"
+            allowfullscreen>
+          </iframe>
+        </div>
+
+        <div id="mainInfoBox" class="infoBlock" style="display:none;">
+          <div class="tagsRow" id="tags"></div>
+
+          <div id="descInnerBox" class="descInnerBox" style="display:none;">
             <div id="descriptionText" class="infoText"></div>
           </div>
+        </div>
 
-          <div class="btnRow">
-            <a class="btnLike btn-discord" id="btnDiscord" target="_blank" rel="noopener" style="display:none;">💬 Discord</a>
-            <a class="btnLike btn-f95" id="btnF95" target="_blank" rel="noopener" style="display:none;">
-              <span class="f95-white">F95</span><span class="f95-red">Zone</span>
-            </a>
-          </div>
+        <!-- ✅ BOUTONS : juste AU-DESSUS des étoiles -->
+        <div class="btnRow">
+          <a class="btnLike" id="btnDiscord" target="_blank" rel="noopener" style="display:none;">💬 Discord</a>
+          <a class="btnLike" id="btnF95" target="_blank" rel="noopener" style="display:none;">F95Zone</a>
+        </div>
 
-          <div class="btnMainRow">
-            <a class="btnLike btnMega" id="btnMega" target="_blank" rel="noopener" style="display:none;">
-              📥 Télécharger la traduction · MEGA
-            </a>
-          </div>
+        <div class="btnMainRow">
+          <a class="btnLike btnMega" id="btnMega" target="_blank" rel="noopener" style="display:none;">📥 Télécharger la traduction · MEGA</a>
+          <!-- translationsExtra injecté ici -->
+        </div>
 
-          <div id="archiveBox" style="display:none; margin-top:12px; justify-content:center;">
-            <a id="archiveLink" class="btnLike" target="_blank" rel="noopener" style="justify-content:center;">
-              📦 Archives de la traduction
-            </a>
-          </div>
+        <div id="archiveBox" style="display:none; margin-top:12px; justify-content:center;">
+          <a id="archiveLink" class="btnLike" target="_blank" rel="noopener" style="justify-content:center;">
+            📦 Archives de la traduction
+          </a>
+        </div>
 
-          <!-- ⭐ Notation -->
+        <!-- ✅ ℹ️ Informations AU-DESSUS des étoiles -->
+        <div id="notesBox" class="infoBlock" style="display:none;">
+          <h3>ℹ️ Informations</h3>
+          <div id="notesText" class="infoTextMuted"></div>
+        </div>
+
+        <!-- ⭐ Notation -->
         <div id="ratingBox" class="infoBlock" style="text-align:center;">
           <div style="color:var(--muted); font-size:12px; margin-bottom:6px;">
             Note de la traduction :
@@ -291,24 +303,19 @@
           <div id="ratingMsg" style="margin-top:6px; color:var(--muted); font-size:12px;"></div>
         </div>
 
-          <div id="notesBox" class="infoBlock" style="display:none;">
-            <h3>ℹ️ Informations</h3>
-            <div id="notesText" class="infoTextMuted"></div>
-          </div>
-
-        </div>
       </div>
-
-      <div class="statsOut infoBlock" id="statsOut" style="display:none;">
-        👁️ Vues : <strong id="statViews">0</strong>
-        ·
-        ❤️ J’aime : <strong id="statLikes">0</strong>
-        ·
-        📥 Téléchargements : <strong id="statMegaClicks">0</strong>
-      </div>
-
-      <div class="err" id="errBox"></div>
     </div>
+
+    <div class="statsOut infoBlock" id="statsOut" style="display:none;">
+      👁️ Vues : <strong id="statViews">0</strong>
+      ·
+      ❤️ J’aime : <strong id="statLikes">0</strong>
+      ·
+      📥 Téléchargements : <strong id="statMegaClicks">0</strong>
+    </div>
+
+    <div class="err" id="errBox"></div>
+  </div>
 
     <!-- ✅ Observer : mini fade sur #ratingMsg à chaque changement -->
     <script>
