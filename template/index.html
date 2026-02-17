@@ -6,6 +6,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>f95list_viewer</title>
 
+  <!-- ✅ Thème instant (comme le viewer) : localStorage.viewerTheme -> <html data-theme="..."> -->
+  <script>
+  (function(){
+    try{
+      const t = (localStorage.getItem("viewerTheme") || "auto").trim() || "auto";
+      const root = document.documentElement; // <html>
+      root.removeAttribute("data-theme");
+      if (t !== "auto") root.setAttribute("data-theme", t);
+    }catch{}
+  })();
+  </script>
+
   <link id="dynamic-favicon" rel="icon" type="image/png" href="./avatar.png">
   <script>
   (function(){
@@ -35,7 +47,13 @@
       padding: 18px 0;
     }
 
+    /* ✅ En mode jeu : cache le viewer */
     body.mode-game #page-viewer{ display:none !important; }
+    body.mode-game #page-game{ display:block !important; }
+
+    /* ✅ En mode viewer : cache la page jeu (évite un flash si le JS switch arrive après) */
+    body:not(.mode-game) #page-game{ display:none !important; }
+    body:not(.mode-game) #page-viewer{ display:block !important; }
   </style>
 </head>
 <body>
@@ -360,5 +378,19 @@
     })();
   </script>
 
+  <!-- ✅ Sync thème si changé dans un autre onglet -->
+  <script>
+  window.addEventListener("storage", (e) => {
+    if (e.key !== "viewerTheme") return;
+    try{
+      const t = (localStorage.getItem("viewerTheme") || "auto").trim() || "auto";
+      const root = document.documentElement;
+      root.removeAttribute("data-theme");
+      if (t !== "auto") root.setAttribute("data-theme", t);
+    }catch{}
+  });
+  </script>
+
 </body>
 </html>
+
