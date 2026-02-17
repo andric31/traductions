@@ -448,21 +448,34 @@ html{
       line-height: 1.45;
     }
 
-/* ===== Fix lisibilité bloc Informations (theme clair) ===== */
-html[data-theme="white"] .infoBlock{
-  background: #f4f6f8;
-  border-color: #d6dbe1;
+/* ✅ Lisibilité bloc ℹ️ Informations */
+
+/* 1) Thème "white" explicite */
+html[data-theme="white"] #notesBox{
+  background:#f4f6f8 !important;
+  border-color:#d6dbe1 !important;
+}
+html[data-theme="white"] #notesBox h3{
+  color:#111 !important;
+  opacity:1 !important;
+}
+html[data-theme="white"] #notesBox #notesText{
+  color:#333 !important;
+  opacity:1 !important;
 }
 
-html[data-theme="white"] .infoBlock h3{
-  color: #1a1a1a;
+/* 2) Thème "auto" (pas de data-theme) + système en clair */
+@media (prefers-color-scheme: light){
+  html:not([data-theme]) #notesBox{
+    background:#f4f6f8 !important;
+    border-color:#d6dbe1 !important;
+  }
+  html:not([data-theme]) #notesBox h3{
+    color:#111 !important;
+    opacity:1 !important;
+  }
+  html:not([data-theme]) #notesBox #notesText{
+    color:#333 !important;
+    opacity:1 !important;
+  }
 }
-
-html[data-theme="white"] .infoBlock .infoText{
-  color: #222;
-}
-
-html[data-theme="white"] .infoBlock .infoTextMuted{
-  color: #444;
-}
-
