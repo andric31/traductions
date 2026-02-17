@@ -34,7 +34,7 @@ html, body { min-height: 100%; }
   --bg:#f6f7fb;
   --bg2:#ffffff;
   --fg:#141824;
-  --muted:#5c667d;
+  --muted:#525b71;
 
   --primary:#2d6cdf;
   --accent:#0f7b50;
@@ -43,7 +43,7 @@ html, body { min-height: 100%; }
   --border-soft: rgba(20,24,36,0.10);
 
   --card:#ffffff;
-  --btn:#f1f4fb;
+  --btn:#eef2fb;
 
   --title:#0f1320;
   --topbar-bg: rgba(246,247,251,.88);
@@ -57,8 +57,8 @@ html, body { min-height: 100%; }
 
   --overlay-bg: rgba(12,14,18,0.45);
 
-  --thumb-bg: rgba(20,24,36,0.06);
-  --thumb-fallback-bg: rgba(20,24,36,0.08);
+  --thumb-bg: rgba(45,108,223,0.08);
+  --thumb-fallback-bg: rgba(20,24,36,0.06);
 
   --scrollbar-thumb:#c4cadb;
   --scrollbar-track:#eef1f8;
@@ -67,13 +67,12 @@ html, body { min-height: 100%; }
   --scrollbar-thumb-webkit-hover:#b0b7cc;
 
   --top-actions-border: rgba(20,24,36,0.05);
-  --soft-04: rgba(20,24,36,0.035);
-  --soft-05: rgba(20,24,36,0.055);
+  --soft-04: rgba(20,24,36,0.04);
+  --soft-05: rgba(20,24,36,0.06);
 
-  --card-hover-border: rgba(20,24,36,0.18);
+  --card-hover-border: rgba(45,108,223,0.55);
   --card-hover-shadow:
-    
-    0 0 0 1px rgba(20,24,36,0.10),
+    0 0 0 1px rgba(45,108,223,0.18),
     0 14px 38px rgba(17,19,24,0.12);
   --card-hover-bg: var(--card);
 
@@ -194,7 +193,7 @@ html, body { min-height: 100%; }
   --bg:#f6f7fb;
   --bg2:#ffffff;
   --fg:#141824;
-  --muted:#5c667d;
+  --muted:#525b71;
 
   --primary:#2d6cdf;
   --accent:#0f7b50;
@@ -203,7 +202,7 @@ html, body { min-height: 100%; }
   --border-soft: rgba(20,24,36,0.10);
 
   --card:#ffffff;
-  --btn:#f1f4fb;
+  --btn:#eef2fb;
 
   --title:#0f1320;
   --topbar-bg: rgba(246,247,251,.88);
@@ -217,8 +216,8 @@ html, body { min-height: 100%; }
 
   --overlay-bg: rgba(12,14,18,0.45);
 
-  --thumb-bg: rgba(20,24,36,0.06);
-  --thumb-fallback-bg: rgba(20,24,36,0.08);
+  --thumb-bg: rgba(45,108,223,0.08);
+  --thumb-fallback-bg: rgba(20,24,36,0.06);
 
   --scrollbar-thumb:#c4cadb;
   --scrollbar-track:#eef1f8;
@@ -227,13 +226,12 @@ html, body { min-height: 100%; }
   --scrollbar-thumb-webkit-hover:#b0b7cc;
 
   --top-actions-border: rgba(20,24,36,0.05);
-  --soft-04: rgba(20,24,36,0.035);
-  --soft-05: rgba(20,24,36,0.055);
+  --soft-04: rgba(20,24,36,0.04);
+  --soft-05: rgba(20,24,36,0.06);
 
-  --card-hover-border: rgba(20,24,36,0.18);
+  --card-hover-border: rgba(45,108,223,0.55);
   --card-hover-shadow:
-    
-    0 0 0 1px rgba(20,24,36,0.10),
+    0 0 0 1px rgba(45,108,223,0.18),
     0 14px 38px rgba(17,19,24,0.12);
   --card-hover-bg: var(--card);
 
