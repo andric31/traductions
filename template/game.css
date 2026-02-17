@@ -318,3 +318,58 @@ html{
       font-size: 13px;
       line-height: 1.45;
     }
+
+/* =========================================================
+   FALLBACK TEMPLATE : si mode-game ne s'applique pas,
+   on force le rendu "site principal" sur #page-game
+   (NE TOUCHE PAS AUX FONCTIONS JS)
+   ========================================================= */
+
+#page-game .wrap{
+  width: 820px;
+  max-width: 92vw;
+  padding: 18px;
+  height:auto;
+  overflow:visible;
+}
+
+#page-game .cardPreview{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow:hidden;
+  box-shadow: 0 10px 40px rgba(0,0,0,.35);
+}
+
+#page-game .cardInner{ padding: 16px 16px 18px; }
+
+/* ✅ ce qui manque sur ton screen : headRow + title */
+#page-game .headRow{
+  display:flex !important;
+  align-items:center;
+  gap:10px;
+  margin-bottom:10px;
+  flex-wrap:wrap;
+}
+
+#page-game .badgesRow{
+  display:flex !important;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin:0;
+}
+
+#page-game .title{
+  display:block !important;
+  margin: 0 0 12px 0;
+  font-size: 22px;
+  line-height: 1.2;
+  font-weight: 900;
+  color:#fff;
+}
+
+/* rating identique */
+#page-game #ratingBox{ font-size:13px; }
+#page-game #ratingBox strong{ font-weight:900; font-size:14px; }
+#page-game #ratingMsg{ font-size:12px; color:var(--muted); }
