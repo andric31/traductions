@@ -447,3 +447,22 @@ html{
       font-size: 13px;
       line-height: 1.45;
     }
+
+/* ===== Fix lisibilité bloc Informations (theme clair) ===== */
+html[data-theme="white"] .infoBlock{
+  background: #f4f6f8;
+  border-color: #d6dbe1;
+}
+
+html[data-theme="white"] .infoBlock h3{
+  color: #1a1a1a;
+}
+
+html[data-theme="white"] .infoBlock .infoText{
+  color: #222;
+}
+
+html[data-theme="white"] .infoBlock .infoTextMuted{
+  color: #444;
+}
+
