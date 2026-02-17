@@ -22,7 +22,6 @@
   <link rel="stylesheet" href="./themes.css" />
   <link rel="stylesheet" href="./game.css" />
 
-  <!-- Harmonisation "mode game" (sans toucher aux fonctions JS) -->
   <style>
     html{ height:auto; overflow-y: scroll; }
 
@@ -235,27 +234,14 @@
 
           <img id="cover" class="cover is-placeholder" alt="" referrerpolicy="no-referrer">
 
-          <!-- ✅ Ajout bloc vidéo (mêmes ids que la page "Jeu" de référence) -->
-          <div id="videoBox" class="infoBlock" style="display:none;">
-            <h3>📺 Vidéo</h3>
-            <iframe id="videoFrame"
-              style="width:100%; aspect-ratio:16/9; border-radius:12px; border:1px solid var(--border);"
-              loading="lazy"
-              allowfullscreen>
-            </iframe>
-          </div>
-
-          <!-- ✅ Zone tags + description (ids existants conservés pour game.js) -->
           <div class="infoBlock tagsBox" id="tagsBox">
             <div class="tagsRow" id="tags"></div>
-
-            <!-- on garde descriptionBox/descriptionText (game.js) mais on l'aligne visuellement -->
-            <div id="descriptionBox" class="descInnerBox" style="display:none; margin-top:10px;">
-              <div id="descriptionText" class="infoText"></div>
-            </div>
           </div>
 
-          <!-- ✅ BOUTONS : style harmonisé (ids inchangés) -->
+          <div id="descriptionBox" class="infoBlock" style="display:none;">
+            <div id="descriptionText" class="infoText"></div>
+          </div>
+
           <div class="btnRow">
             <a class="btnLike btn-discord" id="btnDiscord" target="_blank" rel="noopener" style="display:none;">💬 Discord</a>
             <a class="btnLike btn-f95" id="btnF95" target="_blank" rel="noopener" style="display:none;">
@@ -275,18 +261,17 @@
             </a>
           </div>
 
-          <!-- ✅ Notes AU-DESSUS des étoiles (comme la page "Jeu" de référence) -->
-          <div id="notesBox" class="infoBlock" style="display:none;">
-            <h3>ℹ️ Informations</h3>
-            <div id="notesText" class="infoTextMuted"></div>
-          </div>
-
           <div id="ratingBox" class="infoBlock" style="text-align:center;">
             <div class="ratingTitle">
               Note de la traduction : <strong id="ratingAvg">—</strong> (<span id="ratingCount">0</span> votes)
             </div>
             <div id="ratingChoices" style="display:flex; justify-content:center; gap:8px;"></div>
             <div id="ratingMsg" style="margin-top:6px; color:var(--muted); font-size:12px;"></div>
+          </div>
+
+          <div id="notesBox" class="infoBlock" style="display:none;">
+            <h3>ℹ️ Informations</h3>
+            <div id="notesText" class="infoTextMuted"></div>
           </div>
 
         </div>
@@ -323,7 +308,7 @@
     </script>
   </div>
 
-  <!-- ✅ JS externes en defer (inchangé) -->
+  <!-- ✅ JS externes en defer -->
   <script src="./viewer.menu.js" defer></script>
   <script src="./viewer.menu.about.js" defer></script>
   <script src="./viewer.menu.extension.js" defer></script>
@@ -333,7 +318,7 @@
   <script src="./viewer.js" defer></script>
   <script src="./game.js" defer></script>
 
-  <!-- ✅ switch viewer/game (inchangé) -->
+  <!-- ✅ switch viewer/game -->
   <script>
     (function(){
       const p = new URLSearchParams(location.search);
@@ -352,7 +337,7 @@
     })();
   </script>
 
-  <!-- ✅ pont hamburger : si tes JS attendent #hamburgerBtn (inchangé) -->
+  <!-- ✅ pont hamburger : si tes JS attendent #hamburgerBtn -->
   <script>
     (function(){
       function ensureAlias(){
