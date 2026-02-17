@@ -1,13 +1,8 @@
 /* ==========================================================================
    game.css — Styles COMMUNS "page jeu"
-   - Compatible template (viewer+game) : body.mode-game #page-game ...
-   - Compatible page jeu dédiée : fallback sur body / .wrap etc.
+   - Template (viewer+game) : body.mode-game #page-game ...
+   - Page jeu dédiée : body.game-only ...
    ========================================================================== */
-
-/* ---------- Helpers de scope ---------- */
-:root{
-  /* rien ici, on utilise tes variables de viewer.css/themes.css */
-}
 
 /* ========================================================================
    1) TEMPLATE (viewer + game)  => scope strict : body.mode-game #page-game
@@ -343,21 +338,31 @@ body.mode-game #page-game .err{
 
 
 /* ========================================================================
-   2) PAGE JEU DÉDIÉE (site "andric31" /game/index.html)
-   - On ne touche pas le template, mais on applique le même look si tu inclus
-     ce fichier dans la page dédiée.
+   2) PAGE JEU DÉDIÉE (ton autre site /game/index.html)
+   => ACTIVÉ UNIQUEMENT si <body class="game-only">
    ======================================================================== */
 
-body:not(.mode-game) .topbar{ display:none !important; }
+body.game-only .topbar{ display:none !important; }
 
-/* Si ta page dédiée n’a pas #page-game, on applique sur .wrap / .cardPreview */
-.wrap{
+body.game-only{
+  margin:0;
+  min-height:100dvh;
+  overflow-y: visible;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding: 18px 0;
+}
+
+body.game-only .wrap{
   width: 820px;
   max-width: 92vw;
   padding: 18px;
+  height:auto;
+  overflow: visible;
 }
 
-.cardPreview{
+body.game-only .cardPreview{
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 18px;
@@ -365,11 +370,10 @@ body:not(.mode-game) .topbar{ display:none !important; }
   box-shadow: 0 10px 40px rgba(0,0,0,.35);
 }
 
-.cardInner{ padding: 16px 16px 18px 16px; }
+body.game-only .cardInner{ padding: 16px 16px 18px 16px; }
 
-/* Reprend les mêmes classes (si elles existent déjà c’est identique) */
-.tagsRow{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
-.tagPill{
+body.game-only .tagsRow{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+body.game-only .tagPill{
   border: 1px solid var(--border);
   background: rgba(255,255,255,0.04);
   color:#fff;
@@ -379,10 +383,10 @@ body:not(.mode-game) .topbar{ display:none !important; }
   user-select:none;
 }
 
-.btnRow{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:16px; }
-.btnMainRow{ display:flex; justify-content:center; margin-top:12px; flex-wrap:wrap; gap:10px; }
+body.game-only .btnRow{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:16px; }
+body.game-only .btnMainRow{ display:flex; justify-content:center; margin-top:12px; flex-wrap:wrap; gap:10px; }
 
-.btnLike{
+body.game-only .btnLike{
   display:inline-flex;
   align-items:center;
   justify-content:center;
@@ -397,23 +401,23 @@ body:not(.mode-game) .topbar{ display:none !important; }
   cursor:pointer;
   user-select:none;
 }
-.btnLike:hover{ filter:brightness(1.08); }
-.like-btn{ width:34px; height:34px; padding:0; border-radius:10px; font-size:18px; }
+body.game-only .btnLike:hover{ filter:brightness(1.08); }
+body.game-only .like-btn{ width:34px; height:34px; padding:0; border-radius:10px; font-size:18px; }
 
-#btnDiscord.btn-discord{ background:#5865F2; border-color:#5865F2; color:#fff; }
-#btnDiscord.btn-discord:hover{ background:#4752C4; border-color:#4752C4; }
+body.game-only #btnDiscord.btn-discord{ background:#5865F2; border-color:#5865F2; color:#fff; }
+body.game-only #btnDiscord.btn-discord:hover{ background:#4752C4; border-color:#4752C4; }
 
-.btnLike .f95-white{ color:#fff; font-weight:800; }
-.btnLike .f95-red{ color:#8b2d2d; font-weight:800; }
+body.game-only .btnLike .f95-white{ color:#fff; font-weight:800; }
+body.game-only .btnLike .f95-red{ color:#8b2d2d; font-weight:800; }
 
-.btnLike.btn-f95, #btnF95.btn-f95{
+body.game-only .btnLike.btn-f95, body.game-only #btnF95.btn-f95{
   background: linear-gradient(180deg, #222 0%, #161616 100%);
   border-color: rgba(255,255,255,.04);
   color:#fff;
   box-shadow: 0 8px 18px rgba(0,0,0,.35);
   overflow:hidden;
 }
-.btnLike.btnMega, #btnMega{
+body.game-only .btnLike.btnMega, body.game-only #btnMega{
   background: linear-gradient(180deg,#b71c1c 0%,#8e0e0e 100%);
   border: 1px solid rgba(255,255,255,.04);
   color:#fff;
