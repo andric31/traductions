@@ -592,7 +592,7 @@ function renderBadgesFromGame(display, entry, isCollectionChild) {
 // ============================================================================
 // ✅ Traduction status (F95) — UI propre (version stockée depuis TITLE)
 // ============================================================================
-async async function renderTranslationStatus(game) {
+async function renderTranslationStatus(game) {
   if (!game?.url) return;
 
   const clean = (s) => String(s || "").replace(/\s+/g, " ").trim();
@@ -1242,8 +1242,13 @@ function renderVideoBlock({ id, videoUrl }) {
         // =========================
 
 
-// 4) Vidéo sous description
-    const videoAnchor = (descBox && descBox.style.display !== "none") ? descBox : (relatedOut || tagsEl);
+// 4) Vidéo (si présent) — ancre robuste (évite descBox undefined)
+    const descBox = document.getElementById("descriptionBox");
+    const videoAnchor =
+      (relatedOut && relatedOut.innerHTML && relatedOut.innerHTML.trim())
+        ? relatedOut
+        : (mainInfoBox || descBox || tagsEl);
+
     const videoHost = ensureBlockAfter(videoAnchor, "videoHost");
     renderVideoBlock({ id: "videoHost", videoUrl: (entry.videoUrl || "").trim() });
 
