@@ -639,3 +639,22 @@ html[data-theme="light"] .infoBlock .infoTextMuted{
   html:not([data-theme]) .infoBlock .infoText{ color:#222 !important; opacity:1 !important; }
   html:not([data-theme]) .infoBlock .infoTextMuted{ color:#555 !important; opacity:1 !important; }
 }
+
+/* ============================= */
+/*  Encadré NOTATION (ratingBox) */
+/* ============================= */
+
+#ratingBox{
+  margin-top: 12px;
+  padding: 12px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.03);
+}
+
+/* Hover “Ikaros” */
+#ratingBox:hover{
+  border-color: var(--primary);
+  box-shadow: 0 0 18px rgba(74,144,226,0.25);
+}
+
