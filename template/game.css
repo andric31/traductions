@@ -1,0 +1,481 @@
+html{
+      height:auto;          /* ou tu peux carrément enlever height */
+      overflow-y: scroll;   /* garde la réserve si tu veux */
+    }
+    
+    body{
+      margin:0;
+      min-height:100dvh;    /* mieux que 100% / 100vh */
+      overflow-y: visible;  /* IMPORTANT: pas de scroll interne */
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding: 18px 0;
+    }
+    
+    /* ✅ NE DOIT PAS SCROLLER */
+    .wrap{
+      width: 820px;
+      max-width: 92vw;
+    
+      height: auto;         /* important */
+      overflow: visible;    /* important */
+      padding: 18px;        /* garde ton padding */
+    }
+
+    .cardPreview{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow:hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,.35);
+    }
+
+    .cardInner{
+      padding: 16px 16px 18px 16px;
+    }
+
+    .headRow{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:10px;
+      flex-wrap:wrap;
+    }
+
+    .badgesRow{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin:0;
+    }
+
+    .hamburger-btn{
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background: var(--btn);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      user-select:none;
+      flex:0 0 auto;
+    }
+    .hamburger-btn:hover{ filter: brightness(1.10); }
+    .hamburger-btn:active{ transform: translateY(1px); }
+
+    .ham-lines{
+      width:16px;
+      height:12px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+    .ham-lines span{
+      display:block;
+      height:2px;
+      border-radius:999px;
+      background: var(--fg);
+      opacity:0.92;
+    }
+
+    .menu-popover{
+      position:fixed;
+      z-index:2000;
+      min-width: 220px;
+      background: var(--popover-bg);
+      border:1px solid var(--border);
+      border-radius:12px;
+      box-shadow: 0 18px 45px rgba(0,0,0,.45);
+      padding:6px;
+    }
+    .menu-popover.hidden{ display:none !important; }
+
+    .menu-item{
+      width:100%;
+      text-align:left;
+      padding:10px 10px;
+      border-radius:10px;
+      border:1px solid transparent;
+      background: transparent;
+      color: var(--fg);
+      cursor:pointer;
+      font-weight:700;
+    }
+    .menu-item:hover{
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.06);
+    }
+
+    .modal-overlay{
+      position:fixed;
+      inset:0;
+      z-index:3000;
+      background: rgba(0,0,0,0.55);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+    }
+    .modal-overlay.hidden{ display:none !important; }
+
+    .modal{
+      width: 680px;
+      max-width: 92vw;
+      background: var(--card);
+      border:1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 18px 55px rgba(0,0,0,.55);
+      overflow:hidden;
+    }
+
+    .modal-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+    }
+    .modal-title{
+      font-weight: 900;
+      color: var(--fg);
+    }
+    .modal-close{
+      width:32px;
+      height:32px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      color: var(--fg);
+      cursor:pointer;
+    }
+    .modal-close:hover{ filter: brightness(1.10); }
+
+    .modal-body{
+      padding: 14px;
+      color: var(--fg);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .aboutText a{
+      color: var(--primary);
+      text-decoration:none;
+    }
+    .aboutText a:hover{ text-decoration:underline; }
+
+    .modal-foot{
+      padding: 12px 14px 14px;
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .modal-btn{
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--btn);
+      color: var(--fg);
+      font-weight:800;
+      cursor:pointer;
+      user-select:none;
+    }
+    .modal-btn:hover{ filter: brightness(1.08); }
+
+    .majState{
+      margin-top: -2px;
+      margin-bottom: 8px;
+      text-align: left;
+      font-size: 13px;
+      color: var(--muted);
+      user-select:none;
+    }
+    .majState .ok{ color:#4ade80; font-weight:800; }
+    .majState .no{ color:#f97316; font-weight:800; }
+    .majState .wait{ color:#cbd5e1; font-weight:700; }
+
+    .title{
+      margin: 0 0 12px 0;
+      font-size: 22px;
+      line-height: 1.2;
+      color: var(--title);
+    }
+
+    .cover{
+      width:100%;
+      height: 190px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--thumb-fallback-bg);
+      object-fit: cover;
+      display:block;
+    }
+    .cover.is-placeholder{
+      background:
+        radial-gradient(1200px 300px at 20% 0%, rgba(255,255,255,0.06), rgba(0,0,0,0)),
+        linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0));
+    }
+
+    .tagsRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top: 12px;
+    }
+
+    .tagPill{
+      border: 1px solid var(--border);
+      background: var(--thumb-bg);
+      color: var(--fg);
+      border-radius: 999px;
+      font-size: 12px;
+      padding: 6px 10px;
+      user-select:none;
+    }
+
+    .btnRow{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top: 16px;
+    }
+
+    .btnMainRow{
+      display:flex;
+      justify-content:center;
+      margin-top: 12px;
+    }
+
+    .btnLike{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--btn);
+      color: var(--fg);
+      text-decoration:none;
+      font-weight: 700;
+      cursor:pointer;
+      user-select:none;
+    }
+    .btnLike:hover{ filter: brightness(1.08); }
+
+    #btnDiscord.btn-discord{
+      background:#5865F2;
+      border-color:#5865F2;
+      color:#fff;
+    }
+    #btnDiscord.btn-discord:hover{
+      background:#4752C4;
+      border-color:#4752C4;
+    }
+
+    .btnLike .f95-white{ color:#ffffff; font-weight:800; }
+    .btnLike .f95-red{ color:#8b2d2d; font-weight:800; }
+
+    .btnLike.btn-f95,
+    #btnF95.btn-f95{
+      position: relative;
+      background: linear-gradient(180deg, #222222 0%, #161616 100%);
+      border-color: rgba(255,255,255,.04);
+      color:#ffffff;
+      box-shadow: 0 8px 18px rgba(0,0,0,.35);
+      overflow: hidden;
+      transform: none;
+    }
+
+    .btnLike.btn-f95 span,
+    #btnF95.btn-f95 span{
+      position: relative;
+      z-index: 1;
+    }
+
+    .btnLike.btn-f95::before,
+    #btnF95.btn-f95::before{
+      content: none !important;
+      display: none !important;
+    }
+
+    .btnLike.btn-f95:hover,
+    #btnF95.btn-f95:hover{
+      background: linear-gradient(180deg, #1a1a1a 0%, #111111 100%);
+      border-color: rgba(255,255,255,.04);
+      transform: none;
+    }
+
+    .btnLike.btnMega,
+    #btnMega{
+      background: linear-gradient(180deg,#b71c1c 0%,#8e0e0e 100%);
+      border: 1px solid rgba(255,255,255,.04);
+      color:#ffffff;
+      box-shadow: 0 8px 18px rgba(0,0,0,.40);
+      transform: none;
+    }
+
+    .btnLike.btnMega:hover,
+    #btnMega:hover{
+      background: linear-gradient(180deg,#c62828 0%,#9f1b1b 100%);
+      border-color: rgba(255,255,255,.04);
+      transform: none;
+    }
+
+    .ratingStar,
+    .ratingCancel{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width: 40px;
+      height: 34px;
+      background: var(--btn);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      user-select: none;
+      line-height: 1;
+      transition:
+        opacity 220ms cubic-bezier(.4,0,.2,1),
+        transform 220ms cubic-bezier(.4,0,.2,1),
+        filter 220ms cubic-bezier(.4,0,.2,1);
+    }
+
+    .ratingStar{
+      font-size: 26px;
+      color: var(--game-rating-color);
+      opacity: var(--game-rating-opacity);
+    }
+
+      transition:
+        opacity 220ms cubic-bezier(.4,0,.2,1),
+        transform 220ms cubic-bezier(.4,0,.2,1),
+        filter 220ms cubic-bezier(.4,0,.2,1);
+    }
+
+    .ratingStar:hover,
+    .ratingCancel:hover,
+    .ratingStar:focus-visible,
+    .ratingCancel:focus-visible{
+      opacity: 0.92;
+      filter: brightness(1.04);
+      transform: scale(1.02);
+    }
+
+    .ratingCancel{
+      font-size: 16px;
+      color: var(--fg);
+      opacity: 0.85;
+    }
+
+    .ratingCancel:hover{
+      color: #ff4d4d;
+      opacity: 1;
+    }
+
+    #ratingChoices{ flex-wrap: nowrap; }
+
+    #ratingMsg{
+      opacity: 0.82;
+      transition: opacity 220ms cubic-bezier(.4,0,.2,1);
+      will-change: opacity;
+    }
+    @keyframes ratingMsgFade {
+      from { opacity: 0.35; }
+      to   { opacity: 0.82; }
+    }
+    #ratingMsg.msgFade{
+      animation: ratingMsgFade 520ms cubic-bezier(.4,0,.2,1);
+    }
+
+    .statsOut{
+      margin-top: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--panel) !important; /* fond opaque */
+      color: var(--muted);
+      font-size: 12px;
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+      user-select:none;
+    }
+    .statsOut strong{
+      color: var(--fg);
+      font-weight: 800;
+    }
+
+    .err{
+      margin: 14px auto 0;
+      max-width: 820px;
+      color: #7a0b0b;
+      background: rgba(255, 0, 0, 0.08);
+      border: 1px solid rgba(255, 0, 0, 0.2);
+      padding: 12px 14px;
+      border-radius: 12px;
+      display:none;
+      white-space: pre-wrap;
+    }
+
+    /* cacher la barre UNIQUEMENT dans la page jeu */
+    body.mode-game .topbar{
+      display:none !important;
+    }
+
+    .infoBlock{
+      margin-top: 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: var(--soft-04);
+    }
+    .infoBlock h3{ margin: 0 0 6px 0; }
+    .infoBlock .infoText{
+      color: var(--fg);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .infoBlock .infoTextMuted{
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+/* ✅ Lisibilité bloc ℹ️ Informations */
+
+/* 1) Thème "white" explicite */
+html[data-theme="white"] #notesBox{
+  background:#f4f6f8 !important;
+  border-color:#d6dbe1 !important;
+}
+html[data-theme="white"] #notesBox h3{
+  color:#111 !important;
+  opacity:1 !important;
+}
+html[data-theme="white"] #notesBox #notesText{
+  color:#333 !important;
+  opacity:1 !important;
+}
+
+/* 2) Thème "auto" (pas de data-theme) + système en clair */
+@media (prefers-color-scheme: light){
+  html:not([data-theme]) #notesBox{
+    background:#f4f6f8 !important;
+    border-color:#d6dbe1 !important;
+  }
+  html:not([data-theme]) #notesBox h3{
+    color:#111 !important;
+    opacity:1 !important;
+  }
+  html:not([data-theme]) #notesBox #notesText{
+    color:#333 !important;
+    opacity:1 !important;
+  }
+}
