@@ -327,70 +327,76 @@ html{
       transform: none;
     }
 
+    /* =========================
+       Boutons étoiles (ant28js)
+       ========================= */
     .ratingStar,
     .ratingCancel{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      width: 40px;
-      height: 34px;
-      background: var(--btn);
-      border: 1px solid var(--border);
-      border-radius: 10px;
+      background: #1f1f1f;
+      border: 1px solid #3a3a3a;
+      border-radius: 8px;
+      padding: 6px 10px;
       cursor: pointer;
-      user-select: none;
-      line-height: 1;
-      transition:
-        opacity 220ms cubic-bezier(.4,0,.2,1),
-        transform 220ms cubic-bezier(.4,0,.2,1),
-        filter 220ms cubic-bezier(.4,0,.2,1);
+      transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+      color: #ddd;
     }
-
-    .ratingStar{
-      font-size: 26px;
-      color: var(--game-rating-color);
-      opacity: var(--game-rating-opacity);
-    }
-
-      transition:
-        opacity 220ms cubic-bezier(.4,0,.2,1),
-        transform 220ms cubic-bezier(.4,0,.2,1),
-        filter 220ms cubic-bezier(.4,0,.2,1);
-    }
-
+    
+    /* Hover commun (comme ant28js) */
     .ratingStar:hover,
-    .ratingCancel:hover,
-    .ratingStar:focus-visible,
-    .ratingCancel:focus-visible{
-      opacity: 0.92;
-      filter: brightness(1.04);
-      transform: scale(1.02);
+    .ratingCancel:hover{
+      background: #2f2f2f;
+      border-color: #4a4a4a;
+      transform: translateY(-1px);
     }
-
+    
+    /* État actif (étoile sélectionnée) */
+    .ratingStar.active{
+      background: #ffb400;
+      color: #000;
+      border-color: #ffb400;
+    }
+    
+    /* Cancel : un peu plus "icône" + rouge au hover */
     .ratingCancel{
       font-size: 16px;
-      color: var(--fg);
       opacity: 0.85;
     }
-
+    
+    /* Cancel hover : conserve le fond hover, mais passe le texte en rouge */
     .ratingCancel:hover{
       color: #ff4d4d;
       opacity: 1;
     }
-
+    
     #ratingChoices{ flex-wrap: nowrap; }
-
+    
     #ratingMsg{
       opacity: 0.82;
       transition: opacity 220ms cubic-bezier(.4,0,.2,1);
       will-change: opacity;
     }
-    @keyframes ratingMsgFade {
-      from { opacity: 0.35; }
-      to   { opacity: 0.82; }
+    @keyframes ratingMsgFade{
+      from{ opacity: 0.35; }
+      to  { opacity: 0.82; }
     }
     #ratingMsg.msgFade{
       animation: ratingMsgFade 520ms cubic-bezier(.4,0,.2,1);
+    }
+
+    /* === Bloc notation (étoiles) === */
+    #ratingBox {
+      background: #2a2a2a;            /* gris */
+      border-radius: 12px;
+      padding: 14px;
+      transition: all 0.25s ease;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    /* Hover comme les tuiles viewer */
+    #ratingBox:hover {
+      background: #353535;            /* plus clair */
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.35);
     }
 
     .statsOut{
