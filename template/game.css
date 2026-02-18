@@ -398,7 +398,7 @@ html{
       padding: 10px 12px;
       border: 1px solid var(--border);
       border-radius: 12px;
-      background: var(--soft-04);
+      background: var(--panel) !important; /* fond opaque */
       color: var(--muted);
       font-size: 12px;
       display:flex;
