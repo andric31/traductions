@@ -343,10 +343,6 @@ body{
   line-height: 1;
   color: #ffd36b;
   opacity: 0.7;
-  transition:
-    opacity 220ms cubic-bezier(.4,0,.2,1),
-    transform 220ms cubic-bezier(.4,0,.2,1),
-    filter 220ms cubic-bezier(.4,0,.2,1);
 }
 
 .ratingStar:hover,
@@ -597,3 +593,46 @@ html[data-theme="light"] .infoBlock,
     background: var(--panel, rgba(0,0,0,0.04)) !important;
   }
 }
+
+/* ✅ Lisibilité bloc ℹ️ Informations (infoBlock) */
+
+/* 1) Thème clair explicite */
+html[data-theme="white"] .infoBlock,
+html[data-theme="clair"] .infoBlock,
+html[data-theme="light"] .infoBlock{
+  background:#f4f6f8 !important;
+  border-color:#d6dbe1 !important;
+}
+
+html[data-theme="white"] .infoBlock h3,
+html[data-theme="clair"] .infoBlock h3,
+html[data-theme="light"] .infoBlock h3{
+  color:#111 !important;
+  opacity:1 !important;
+}
+
+html[data-theme="white"] .infoBlock .infoText,
+html[data-theme="clair"] .infoBlock .infoText,
+html[data-theme="light"] .infoBlock .infoText{
+  color:#222 !important;
+  opacity:1 !important;
+}
+
+html[data-theme="white"] .infoBlock .infoTextMuted,
+html[data-theme="clair"] .infoBlock .infoTextMuted,
+html[data-theme="light"] .infoBlock .infoTextMuted{
+  color:#555 !important;
+  opacity:1 !important;
+}
+
+/* 2) Mode auto (pas de data-theme) + système en clair */
+@media (prefers-color-scheme: light){
+  html:not([data-theme]) .infoBlock{
+    background:#f4f6f8 !important;
+    border-color:#d6dbe1 !important;
+  }
+  html:not([data-theme]) .infoBlock h3{ color:#111 !important; opacity:1 !important; }
+  html:not([data-theme]) .infoBlock .infoText{ color:#222 !important; opacity:1 !important; }
+  html:not([data-theme]) .infoBlock .infoTextMuted{ color:#555 !important; opacity:1 !important; }
+}
+
