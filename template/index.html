@@ -257,20 +257,15 @@
   
           <img id="cover" class="cover is-placeholder" alt="" referrerpolicy="no-referrer">
   
-          <!-- ✅ TAGS (encadré + intérieur identique andric31) -->
           <div class="infoBlock tagsBox" id="tagsBox">
-            <div class="infoInner">
-              <div class="tagsRow" id="tags"></div>
-            </div>
+            <div class="tagsRow" id="tags"></div>
           </div>
-  
-          <!-- 📝 Description (encadré + intérieur identique andric31) -->
+          
+          <!-- 📝 Description -->
           <div id="descriptionBox" class="infoBlock" style="display:none;">
-            <div class="infoInner">
-              <div id="descriptionText" class="infoText"></div>
-            </div>
+            <div id="descriptionText" class="infoText"></div>
           </div>
-  
+
           <!-- ✅ BOUTONS -->
           <div class="btnRow">
             <a class="btnLike btn-discord" id="btnDiscord" target="_blank" rel="noopener" style="display:none;">💬 Discord</a>
@@ -285,49 +280,39 @@
             </a>
           </div>
   
-          <!-- 📦 Archives (même rendu encadré/inner) -->
-          <div id="archiveBox" class="infoBlock" style="display:none;">
-            <div class="infoInner" style="display:flex; justify-content:center;">
-              <a id="archiveLink" class="btnLike" target="_blank" rel="noopener" style="justify-content:center;">
-                📦 Archives de la traduction
-              </a>
-            </div>
+          <div id="archiveBox" style="display:none; margin-top:12px; justify-content:center;">
+            <a id="archiveLink" class="btnLike" target="_blank" rel="noopener" style="justify-content:center;">
+              📦 Archives de la traduction
+            </a>
           </div>
   
-          <!-- ✅ ℹ️ Informations (même rendu encadré/inner) -->
+          <!-- ✅ ℹ️ Informations -->
           <div id="notesBox" class="infoBlock" style="display:none;">
-            <div class="infoInner">
-              <h3>ℹ️ Informations</h3>
-              <div id="notesText" class="infoTextMuted"></div>
-            </div>
+            <h3>ℹ️ Informations</h3>
+            <div id="notesText" class="infoTextMuted"></div>
           </div>
   
-          <!-- ⭐ Notation (même rendu encadré/inner) -->
-          <div id="ratingBox" class="infoBlock">
-            <div class="infoInner" style="text-align:center;">
-              <div style="color:var(--muted); font-size:12px; margin-bottom:6px;">
-                Note de la traduction :
-                <strong id="ratingAvg">—</strong>
-                (<span id="ratingCount">0</span> votes)
-              </div>
-  
-              <div id="ratingChoices" style="display:flex; justify-content:center; gap:8px;"></div>
-              <div id="ratingMsg" style="margin-top:6px; color:var(--muted); font-size:12px;"></div>
+          <!-- ⭐ Notation -->
+          <div id="ratingBox" class="infoBlock" style="text-align:center;">
+            <div style="color:var(--muted); font-size:12px; margin-bottom:6px;">
+              Note de la traduction :
+              <strong id="ratingAvg">—</strong>
+              (<span id="ratingCount">0</span> votes)
             </div>
+  
+            <div id="ratingChoices" style="display:flex; justify-content:center; gap:8px;"></div>
+            <div id="ratingMsg" style="margin-top:6px; color:var(--muted); font-size:12px;"></div>
           </div>
   
         </div>
       </div>
   
-      <!-- ✅ Stats (même rendu encadré/inner) -->
       <div class="statsOut infoBlock" id="statsOut" style="display:none;">
-        <div class="infoInner" style="text-align:center;">
-          👁️ Vues : <strong id="statViews">0</strong>
-          ·
-          ❤️ J’aime : <strong id="statLikes">0</strong>
-          ·
-          📥 Téléchargements : <strong id="statMegaClicks">0</strong>
-        </div>
+        👁️ Vues : <strong id="statViews">0</strong>
+        ·
+        ❤️ J’aime : <strong id="statLikes">0</strong>
+        ·
+        📥 Téléchargements : <strong id="statMegaClicks">0</strong>
       </div>
   
       <div class="err" id="errBox"></div>
