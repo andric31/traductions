@@ -234,47 +234,45 @@
   <div id="page-game" style="display:none;">
     <div class="wrap">
       <div class="cardPreview" id="card" aria-live="polite">
-
-        <!-- ✅ requis par game.andric31.js / thème -->
+  
+        <!-- ✅ requis par game.js / thème -->
         <div id="topMenuPopover" class="menu-popover hidden"></div>
-
+  
         <div class="cardInner">
-
+  
           <div class="headRow">
             <!-- ✅ IMPORTANT : id hamburgerBtn (pas hamburgerBtnGame) -->
             <button type="button" class="hamburger-btn" id="hamburgerBtn"
                     aria-label="Ouvrir le menu" aria-haspopup="menu" aria-expanded="false">
               <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
             </button>
-
+  
             <button class="btnLike like-btn" id="btnLike" type="button" aria-label="J’aime">🤍</button>
             <div class="badgesRow" id="badges"></div>
           </div>
-
+  
           <div class="majState" id="majState" style="display:none;"></div>
-
+  
           <h1 class="title" id="title">Chargement…</h1>
-
+  
           <img id="cover" class="cover is-placeholder" alt="" referrerpolicy="no-referrer">
-
-          <!-- ✅ Conteneur principal attendu : tags -> related -> description -->
-          <div id="mainInfoBox">
-
+  
+          <!-- ✅ Conteneur principal : TAGS + DESCRIPTION dans le même encadré -->
+          <div id="mainInfoBox" class="infoBlock" style="display:none;">
+  
             <!-- Tags -->
-            <div class="infoBlock tagsBox" id="tagsBox">
-              <div class="tagsRow" id="tags"></div>
-            </div>
-
-            <!-- Related (Collection / Série) -->
-            <div id="relatedOut" class="infoBlock" style="display:none;"></div>
-
-            <!-- Description -->
-            <div id="descriptionBox" class="infoBlock" style="display:none;">
+            <div class="tagsRow" id="tags"></div>
+  
+            <!-- Description (même encadré que les tags) -->
+            <div id="descInnerBox" class="descInnerBox" style="display:none;">
               <div id="descriptionText" class="infoText"></div>
             </div>
-
+  
           </div>
-
+  
+          <!-- Related (Collection / Série) : encadré séparé -->
+          <div id="relatedOut" class="infoBlock" style="display:none;"></div>
+  
           <!-- ✅ BOUTONS -->
           <div class="btnRow">
             <a class="btnLike btn-discord" id="btnDiscord" target="_blank" rel="noopener" style="display:none;">💬 Discord</a>
@@ -282,25 +280,25 @@
               <span class="f95-white">F95</span><span class="f95-red">Zone</span>
             </a>
           </div>
-
+  
           <div class="btnMainRow">
             <a class="btnLike btnMega" id="btnMega" target="_blank" rel="noopener" style="display:none;">
               📥 Télécharger la traduction · MEGA
             </a>
           </div>
-
+  
           <div id="archiveBox" style="display:none; margin-top:12px; justify-content:center;">
             <a id="archiveLink" class="btnLike" target="_blank" rel="noopener" style="justify-content:center;">
               📦 Archives de la traduction
             </a>
           </div>
-
+  
           <!-- ✅ ℹ️ Informations -->
           <div id="notesBox" class="infoBlock" style="display:none;">
             <h3>ℹ️ Informations</h3>
             <div id="notesText" class="infoTextMuted"></div>
           </div>
-
+  
           <!-- ⭐ Notation -->
           <div id="ratingBox" class="infoBlock" style="text-align:center;">
             <div style="color:var(--muted); font-size:12px; margin-bottom:6px;">
@@ -308,14 +306,14 @@
               <strong id="ratingAvg">—</strong>
               (<span id="ratingCount">0</span> votes)
             </div>
-
+  
             <div id="ratingChoices" style="display:flex; justify-content:center; gap:8px;"></div>
             <div id="ratingMsg" style="margin-top:6px; color:var(--muted); font-size:12px;"></div>
           </div>
-
-        </div>
-      </div>
-
+  
+        </div><!-- ✅ fin .cardInner -->
+      </div><!-- fin .cardPreview -->
+  
       <div class="statsOut infoBlock" id="statsOut" style="display:none;">
         👁️ Vues : <strong id="statViews">0</strong>
         ·
@@ -323,25 +321,25 @@
         ·
         📥 Téléchargements : <strong id="statMegaClicks">0</strong>
       </div>
-
+  
       <div class="err" id="errBox"></div>
     </div>
-
+  
     <!-- ✅ Observer : mini fade sur #ratingMsg à chaque changement -->
     <script>
       (function(){
         const msg = document.getElementById("ratingMsg");
         if (!msg) return;
-
+  
         const flash = () => {
           msg.classList.remove("msgFade");
           void msg.offsetWidth;
           msg.classList.add("msgFade");
         };
-
+  
         const obs = new MutationObserver(() => flash());
         obs.observe(msg, { childList: true, characterData: true, subtree: true });
-
+  
         if ((msg.textContent || "").trim()) flash();
       })();
     </script>
