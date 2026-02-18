@@ -257,16 +257,15 @@
   
           <img id="cover" class="cover is-placeholder" alt="" referrerpolicy="no-referrer">
   
-          <!-- ✅ TAGS (structure exacte référence) -->
           <div class="infoBlock tagsBox" id="tagsBox">
             <div class="tagsRow" id="tags"></div>
           </div>
-  
-          <!-- 📝 Description (structure exacte référence) -->
+          
+          <!-- 📝 Description -->
           <div id="descriptionBox" class="infoBlock" style="display:none;">
             <div id="descriptionText" class="infoText"></div>
           </div>
-  
+
           <!-- ✅ BOUTONS -->
           <div class="btnRow">
             <a class="btnLike btn-discord" id="btnDiscord" target="_blank" rel="noopener" style="display:none;">💬 Discord</a>
@@ -281,16 +280,21 @@
             </a>
           </div>
   
-          <!-- ✅ ARCHIVES (structure exacte référence : PAS infoBlock) -->
           <div id="archiveBox" style="display:none; margin-top:12px; justify-content:center;">
             <a id="archiveLink" class="btnLike" target="_blank" rel="noopener" style="justify-content:center;">
               📦 Archives de la traduction
             </a>
           </div>
   
-          <!-- ⭐ Notation (structure exacte référence) -->
+          <!-- ✅ ℹ️ Informations -->
+          <div id="notesBox" class="infoBlock" style="display:none;">
+            <h3>ℹ️ Informations</h3>
+            <div id="notesText" class="infoTextMuted"></div>
+          </div>
+  
+          <!-- ⭐ Notation -->
           <div id="ratingBox" class="infoBlock" style="text-align:center;">
-            <div class="ratingTitle">
+            <div style="color:var(--muted); font-size:12px; margin-bottom:6px;">
               Note de la traduction :
               <strong id="ratingAvg">—</strong>
               (<span id="ratingCount">0</span> votes)
@@ -300,17 +304,10 @@
             <div id="ratingMsg" style="margin-top:6px; color:var(--muted); font-size:12px;"></div>
           </div>
   
-          <!-- ✅ ℹ️ Informations (structure exacte référence) -->
-          <div id="notesBox" class="infoBlock" style="display:none;">
-            <h3>ℹ️ Informations</h3>
-            <div id="notesText" class="infoTextMuted"></div>
-          </div>
-  
         </div>
       </div>
   
-      <!-- ✅ Stats (structure exacte référence) -->
-      <div class="statsOut infoBlock" id="statsOut" style="display:none; text-align:center; margin-top:14px;">
+      <div class="statsOut infoBlock" id="statsOut" style="display:none;">
         👁️ Vues : <strong id="statViews">0</strong>
         ·
         ❤️ J’aime : <strong id="statLikes">0</strong>
