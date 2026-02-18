@@ -479,20 +479,3 @@ html[data-theme="white"] #notesBox #notesText{
     opacity:1 !important;
   }
 }
-
-/* === Compat anciens IDs / classes Description === */
-#descriptionBox,
-#descBox,
-#description,
-.cardDesc,
-.descBox {
-  /* reprends exactement le style attendu de ton encadré */
-}
-
-#descriptionText,
-#descText,
-#desc,
-.descText {
-  /* style du texte */
-}
-
