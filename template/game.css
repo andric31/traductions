@@ -656,7 +656,7 @@ html[data-theme="light"] .infoBlock .infoTextMuted{
 
 .tagsBox:hover,
 .game-block:hover{
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   box-shadow: 0 10px 26px rgba(0,0,0,0.45);
 }
 
@@ -667,7 +667,7 @@ html[data-theme="light"] .infoBlock .infoTextMuted{
 }
 
 #notesBox:hover{
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   box-shadow: 0 10px 26px rgba(0,0,0,0.45);
 }
 
