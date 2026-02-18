@@ -235,7 +235,7 @@
     <div class="wrap">
       <div class="cardPreview" id="card" aria-live="polite">
   
-        <!-- ✅ requis par game.js / thème -->
+        <!-- ✅ requis par game.andric31.js / thème -->
         <div id="topMenuPopover" class="menu-popover hidden"></div>
   
         <div class="cardInner">
@@ -257,21 +257,21 @@
   
           <img id="cover" class="cover is-placeholder" alt="" referrerpolicy="no-referrer">
   
-          <!-- ✅ Conteneur principal : TAGS + DESCRIPTION dans le même encadré -->
+          <!-- ✅ Conteneur principal UNIQUE (comme andric31) : tags -> related -> description -->
           <div id="mainInfoBox" class="infoBlock" style="display:none;">
   
             <!-- Tags -->
             <div class="tagsRow" id="tags"></div>
   
-            <!-- Description (même encadré que les tags) -->
-            <div id="descInnerBox" class="descInnerBox" style="display:none;">
+            <!-- Related (Collection / Série) -->
+            <div id="relatedOut" style="display:none; margin-top:12px;"></div>
+  
+            <!-- Description -->
+            <div id="descInnerBox" style="display:none; margin-top:12px;">
               <div id="descriptionText" class="infoText"></div>
             </div>
   
           </div>
-  
-          <!-- Related (Collection / Série) : encadré séparé -->
-          <div id="relatedOut" class="infoBlock" style="display:none;"></div>
   
           <!-- ✅ BOUTONS -->
           <div class="btnRow">
@@ -311,8 +311,8 @@
             <div id="ratingMsg" style="margin-top:6px; color:var(--muted); font-size:12px;"></div>
           </div>
   
-        </div><!-- ✅ fin .cardInner -->
-      </div><!-- fin .cardPreview -->
+        </div>
+      </div>
   
       <div class="statsOut infoBlock" id="statsOut" style="display:none;">
         👁️ Vues : <strong id="statViews">0</strong>
