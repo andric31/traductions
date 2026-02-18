@@ -640,16 +640,14 @@ html[data-theme="light"] .infoBlock .infoTextMuted{
   html:not([data-theme]) .infoBlock .infoTextMuted{ color:#555 !important; opacity:1 !important; }
 }
 
-
-/* Encadré notation */
 #ratingBox{
   border: 1px solid var(--border);
   border-radius: 12px;
-  transition: border-color 0.25s ease;
+  transition: border-color 0.2s ease;
 }
 
-/* Hover contour simple (style Ikaros) */
 #ratingBox:hover{
-  border-color: var(--primary);
+  border-color: #6b7280; /* gris propre */
 }
+
 
