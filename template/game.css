@@ -479,3 +479,35 @@ html[data-theme="white"] #notesBox #notesText{
     opacity:1 !important;
   }
 }
+
+/* ===============================
+   ⭐ Notation
+   =============================== */
+
+#ratingBox{
+  /* intérieur + bordure comme un vrai "card" */
+  background: var(--card, rgba(255,255,255,0.04));
+  border: 1px solid var(--border, rgba(255,255,255,0.10));
+  border-radius: 14px;
+  padding: 16px 14px;
+
+  /* rendu + animation */
+  transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease;
+}
+
+/* bordure qui s’illumine au survol */
+#ratingBox:hover{
+  border-color: var(--accent, #7c5cff);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent, #7c5cff) 35%, transparent),
+    0 0 16px color-mix(in srgb, var(--accent, #7c5cff) 55%, transparent);
+  transform: translateY(-1px);
+}
+
+/* (optionnel) évite le glow quand on navigue au clavier */
+#ratingBox:focus-within{
+  border-color: var(--accent, #7c5cff);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent, #7c5cff) 35%, transparent),
+    0 0 16px color-mix(in srgb, var(--accent, #7c5cff) 55%, transparent);
+}
