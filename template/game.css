@@ -640,21 +640,16 @@ html[data-theme="light"] .infoBlock .infoTextMuted{
   html:not([data-theme]) .infoBlock .infoTextMuted{ color:#555 !important; opacity:1 !important; }
 }
 
-/* ============================= */
-/*  Encadré NOTATION (ratingBox) */
-/* ============================= */
 
+/* Encadré notation */
 #ratingBox{
-  margin-top: 12px;
-  padding: 12px 12px;
   border: 1px solid var(--border);
   border-radius: 12px;
-  background: rgba(255,255,255,0.03);
+  transition: border-color 0.25s ease;
 }
 
-/* Hover “Ikaros” */
+/* Hover contour simple (style Ikaros) */
 #ratingBox:hover{
   border-color: var(--primary);
-  box-shadow: 0 0 18px rgba(74,144,226,0.25);
 }
 
