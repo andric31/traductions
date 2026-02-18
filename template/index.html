@@ -58,6 +58,10 @@
 </head>
 <body>
 
+  <!-- ✅ Popover unique pour le menu ☰ (doit être hors #page-viewer/#page-game)
+       Sinon, en mode viewer, il reste dans un parent display:none et ne peut pas s'afficher. -->
+  <div id="topMenuPopover" class="menu-popover hidden"></div>
+
   <!-- ✅ Nom affiché via manifest (casse exacte), fallback slug — SANS BOUCLE -->
   <script>
   (async function(){
@@ -234,9 +238,6 @@
   <div id="page-game" style="display:none;">
     <div class="wrap">
       <div class="cardPreview" id="card" aria-live="polite">
-  
-        <!-- ✅ requis par game.andric31.js / thème -->
-        <div id="topMenuPopover" class="menu-popover hidden"></div>
   
         <div class="cardInner">
   
