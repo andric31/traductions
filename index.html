@@ -1,126 +1,386 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Traductions FR</title>
+  <meta charset="utf-8" />
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>f95list_viewer</title>
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="/favicon.png">
+  <!-- ✅ Thème instant (comme le viewer) : localStorage.viewerTheme -> <html data-theme="..."> -->
+  <script>
+  (function(){
+    try{
+      const t = (localStorage.getItem("viewerTheme") || "auto").trim() || "auto";
+      const root = document.documentElement; // <html>
+      root.removeAttribute("data-theme");
+      if (t !== "auto") root.setAttribute("data-theme", t);
+    }catch{}
+  })();
+  </script>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link id="dynamic-favicon" rel="icon" type="image/png" href="./avatar.png">
+  <script>
+  (function(){
+    const fav = document.getElementById("dynamic-favicon");
+    const testUrl = "./avatar.png?v=" + Date.now();
+    const img = new Image();
+    img.onload  = () => fav.href = testUrl;
+    img.onerror = () => fav.href = "/favicon.png?v=" + Date.now();
+    img.src = testUrl;
+  })();
+  </script>
+
+  <link rel="stylesheet" href="./viewer.css" />
+  <link rel="stylesheet" href="./themes.css" />
+  <link rel="stylesheet" href="./game.css" />
+
   <style>
-    body {
-      font-family: system-ui, sans-serif;
-      background: #0e1117;
-      color: #e6edf3;
-      margin: 0;
-      padding: 40px;
-    }
-    h1 { margin-bottom: 10px; }
-    .subtitle { opacity: 0.8; margin-bottom: 30px; }
+    html{ height:auto; overflow-y: scroll; }
 
-    /* ===== Cards ===== */
-    .card {
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 10px;
-      padding: 14px;
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
+    body.mode-game{
+      margin:0;
+      min-height:100dvh;
+      overflow-y: visible;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding: 18px 0;
     }
 
-    .avatar {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      object-fit: cover;
-      flex-shrink: 0;
-      border: 1px solid #30363d;
-      background: #0e1117;
-    }
+    /* ✅ En mode jeu : cache le viewer */
+    body.mode-game #page-viewer{ display:none !important; }
+    body.mode-game #page-game{ display:block !important; }
 
-    .card-content {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-
-    .card a {
-      color: #58a6ff;
-      font-size: 18px;
-      text-decoration: none;
-      font-weight: 600;
-      line-height: 1.2;
-      word-break: break-word;
-    }
-    .card a:hover { text-decoration: underline; }
-
-    .card small {
-      opacity: 0.8;
-      margin-top: 6px;
-      line-height: 1.35;
-      word-break: break-word;
-    }
-
-    .card.simple { gap: 0; }
+    /* ✅ En mode viewer : cache la page jeu (évite un flash si le JS switch arrive après) */
+    body:not(.mode-game) #page-game{ display:none !important; }
+    body:not(.mode-game) #page-viewer{ display:block !important; }
   </style>
 </head>
 <body>
 
-<h1>🌍 Projet Traductions FR</h1>
-<div class="subtitle">
-  Traductions de jeux VN
-</div>
+  <!-- ✅ Nom affiché via manifest (casse exacte), fallback slug — SANS BOUCLE -->
+  <script>
+  (async function(){
+    function detectSlug(){
+      try{
+        const forced = (window.__SITE_SLUG__ || "").toString().trim();
+        if(forced) return forced.toLowerCase();
+      }catch{}
+      const segs = (location.pathname || "/").split("/").filter(Boolean);
+      return String(segs[0] || "").trim().toLowerCase();
+    }
 
-<div class="card simple">
-  <div class="card-content">
-    <a href="/liste/" target="_blank">🌐 Liste globale des traductions</a>
+    const slug = detectSlug();
+    window.__SITE_SLUG__ = slug;
+
+    let nice = slug ? (slug[0].toUpperCase() + slug.slice(1)) : "";
+
+    try{
+      const r = await fetch("/traducteurs_manifest.json", { cache:"no-store" });
+      if (r.ok){
+        const list = await r.json();
+        const found = Array.isArray(list)
+          ? list.find(x => String(x?.key||"").toLowerCase() === slug)
+          : null;
+        if (found && found.name) nice = String(found.name);
+      }
+    }catch(e){}
+
+    window.__SITE_NAME__ = nice;
+
+    const txt = nice || slug || "";
+    document.title = txt;
+
+    function applyH1(){
+      const h1 = document.getElementById("viewerTitle");
+      if (h1) h1.textContent = txt;
+      return !!h1;
+    }
+
+    if (applyH1()) return;
+
+    window.addEventListener("DOMContentLoaded", () => {
+      if (applyH1()) return;
+
+      let tries = 0;
+      const timer = setInterval(() => {
+        tries++;
+        if (applyH1() || tries >= 20) clearInterval(timer);
+      }, 100);
+    });
+  })();
+  </script>
+
+  <!-- PAGE VIEWER -->
+  <div id="page-viewer">
+
+    <!-- 🔞 AGE GATE -->
+    <div id="age-gate" style="display:none;">
+      <div class="age-box">
+        <h2>🔞 Contenu réservé aux adultes</h2>
+        <p>
+          Ce site contient des images et contenus destinés à un public majeur.<br>
+          En continuant, vous confirmez avoir <strong>18 ans ou plus</strong>.
+        </p>
+
+        <button id="age-yes">J’ai 18 ans</button>
+        <button id="age-no">Quitter</button>
+      </div>
+    </div>
+
+    <header class="topbar" role="banner">
+      <div class="top-title-row top-title-flex">
+        <button id="hamburgerBtnViewer" class="hamburger-btn" type="button"
+                aria-label="Menu" title="Menu" aria-expanded="false">
+          <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
+        </button>
+
+        <h1 id="viewerTitle">f95list_viewer</h1>
+
+        <div id="topTitleTools" class="top-title-tools">
+          <span class="total-inline">Total : <strong id="countTotal">0</strong></span>
+
+          <select id="cols" title="Vignettes par ligne">
+            <option value="auto">Vignettes/ligne : Auto</option>
+            <option value="1">1 par ligne</option>
+            <option value="2">2 par ligne</option>
+            <option value="3">3 par ligne</option>
+            <option value="4">4 par ligne</option>
+            <option value="5">5 par ligne</option>
+            <option value="6">6 par ligne</option>
+            <option value="7">7 par ligne</option>
+            <option value="8">8 par ligne</option>
+            <option value="9">9 par ligne</option>
+            <option value="10">10 par ligne</option>
+          </select>
+
+          <select id="pageSize" title="Affichage progressif">
+            <option value="50">Afficher par 50</option>
+            <option value="100">Afficher par 100</option>
+            <option value="all">Tout afficher</option>
+          </select>
+
+          <select id="theme" title="Thème">
+            <option value="auto">Thème : Auto (Windows)</option>
+            <option value="dark">Thème : Sombre</option>
+            <option value="white">Thème : Clair</option>
+            <option value="noel">Thème : Noël</option>
+            <option value="halloween">Thème : Halloween</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <div class="search-wrap">
+          <input id="search" type="search" placeholder="Rechercher un jeu." autocomplete="off" />
+        </div>
+
+        <select id="sort" title="Trier">
+          <option value="updatedAtLocal-desc">Date de la traduction</option>
+          <option value="mega-desc">📥 Téléchargements</option>
+          <option value="views-desc">👁️ Vues</option>
+          <option value="likes-desc">❤️ J'aime</option>
+          <option value="title-asc">Titre A→Z</option>
+          <option value="title-desc">Titre Z→A</option>
+          <option value="updatedAt-desc">Date Thread F95 (Maj)</option>
+        </select>
+
+        <select id="filterCat" title="Catégorie">
+          <option value="all">Catégorie : Toutes</option>
+          <option value="VN">VN</option>
+          <option value="Collection">Collection</option>
+        </select>
+
+        <select id="filterEngine" title="Moteur">
+          <option value="all">Moteur : Tous</option>
+          <option value="Ren'Py">Ren'Py</option>
+          <option value="RPGM">RPGM</option>
+          <option value="Unity">Unity</option>
+          <option value="Others">Others</option>
+          <option value="Wolf RPG">Wolf RPG</option>
+        </select>
+
+        <select id="filterStatus" title="Statut">
+          <option value="all">Statut : Tous</option>
+          <option value="Completed">Completed</option>
+          <option value="Abandoned">Abandoned</option>
+          <option value="Onhold">Onhold</option>
+          <option value="En cours">En cours</option>
+        </select>
+
+        <button id="tagsBtn" type="button" class="tags-btn" aria-haspopup="menu" aria-expanded="false">
+          🏷️ Tags <span id="tagsCount" class="tags-count hidden">0</span>
+        </button>
+
+        <button id="refresh" type="button">Rafraîchir</button>
+      </div>
+    </header>
+
+    <main role="main">
+      <section id="gridMode" class="grid-wrap" aria-label="Vignettes des jeux">
+        <div id="viewerAnnonceHost"></div>
+
+        <div id="grid" class="grid"></div>
+        <div id="gridEmpty" class="empty hidden">Aucun résultat.</div>
+      </section>
+
+      <footer class="viewer-footer">
+        👁️ Vues de la page : <strong id="mainViews">—</strong>
+      </footer>
+    </main>
   </div>
-</div>
 
-<div class="card">
-  <img class="avatar" src="/andric31/avatar.png" alt="andric31">
-  <div class="card-content">
-    <a href="https://andric31-traductions.pages.dev/" target="_blank">andric31</a>
-    <small>Traducteur · Traductions automatiques de jeux Ren’Py, RPGM, Unity, etc...</small>
+  <!-- PAGE JEU (même page, via ?id= / ?uid=) -->
+  <div id="page-game" style="display:none;">
+    <div class="wrap">
+      <div class="cardPreview" id="card" aria-live="polite">
+  
+        <!-- ✅ requis par game.andric31.js / thème -->
+        <div id="topMenuPopover" class="menu-popover hidden"></div>
+  
+        <div class="cardInner">
+  
+          <div class="headRow">
+            <!-- ✅ IMPORTANT : id hamburgerBtn (pas hamburgerBtnGame) -->
+            <button type="button" class="hamburger-btn" id="hamburgerBtn"
+                    aria-label="Ouvrir le menu" aria-haspopup="menu" aria-expanded="false">
+              <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
+            </button>
+  
+            <button class="btnLike like-btn" id="btnLike" type="button" aria-label="J’aime">🤍</button>
+            <div class="badgesRow" id="badges"></div>
+          </div>
+  
+          <div class="majState" id="majState" style="display:none;"></div>
+  
+          <h1 class="title" id="title">Chargement…</h1>
+  
+          <img id="cover" class="cover is-placeholder" alt="" referrerpolicy="no-referrer">
+  
+          <!-- ✅ Conteneur principal (structure andric31) -->
+          <div id="mainInfoBox";>
+            <div class="tagsRow" id="tags"></div>
+          
+            <div id="descInnerBox" class="descInnerBox" style="display:none;">
+              <div id="descriptionText" class="infoText"></div>
+            </div>
+          
+          </div>
+  
+          <!-- ✅ BOUTONS -->
+          <div class="btnRow">
+            <a class="btnLike btn-discord" id="btnDiscord" target="_blank" rel="noopener" style="display:none;">💬 Discord</a>
+            <a class="btnLike btn-f95" id="btnF95" target="_blank" rel="noopener" style="display:none;">
+              <span class="f95-white">F95</span><span class="f95-red">Zone</span>
+            </a>
+          </div>
+  
+          <div class="btnMainRow">
+            <a class="btnLike btnMega" id="btnMega" target="_blank" rel="noopener" style="display:none;">
+              📥 Télécharger la traduction · MEGA
+            </a>
+          </div>
+  
+          <div id="archiveBox" style="display:none; margin-top:12px; justify-content:center;">
+            <a id="archiveLink" class="btnLike" target="_blank" rel="noopener" style="justify-content:center;">
+              📦 Archives de la traduction
+            </a>
+          </div>
+  
+          <!-- ✅ ℹ️ Informations -->
+          <div id="notesBox" class="infoBlock" style="display:none;">
+            <h3>ℹ️ Informations</h3>
+            <div id="notesText" class="infoTextMuted"></div>
+          </div>
+  
+          <!-- ⭐ Notation -->
+          <div id="ratingBox" class="infoBlock" style="text-align:center;">
+            <div style="color:var(--muted); font-size:12px; margin-bottom:6px;">
+              Note de la traduction :
+              <strong id="ratingAvg">—</strong>
+              (<span id="ratingCount">0</span> votes)
+            </div>
+  
+            <div id="ratingChoices" style="display:flex; justify-content:center; gap:8px;"></div>
+            <div id="ratingMsg" style="margin-top:6px; color:var(--muted); font-size:12px;"></div>
+          </div>
+  
+        </div>
+      </div>
+  
+      <div class="statsOut infoBlock" id="statsOut" style="display:none;">
+        👁️ Vues : <strong id="statViews">0</strong>
+        ·
+        ❤️ J’aime : <strong id="statLikes">0</strong>
+        ·
+        📥 Téléchargements : <strong id="statMegaClicks">0</strong>
+      </div>
+  
+      <div class="err" id="errBox"></div>
+    </div>
+  
+    <!-- ✅ Observer : mini fade sur #ratingMsg à chaque changement -->
+    <script>
+      (function(){
+        const msg = document.getElementById("ratingMsg");
+        if (!msg) return;
+  
+        const flash = () => {
+          msg.classList.remove("msgFade");
+          void msg.offsetWidth;
+          msg.classList.add("msgFade");
+        };
+  
+        const obs = new MutationObserver(() => flash());
+        obs.observe(msg, { childList: true, characterData: true, subtree: true });
+  
+        if ((msg.textContent || "").trim()) flash();
+      })();
+    </script>
   </div>
-</div>
 
-<div class="card">
-  <img class="avatar" src="/ant28jsp/avatar.png" alt="Ant28jsp">
-  <div class="card-content">
-    <a href="/ant28jsp/" target="_blank">Ant28jsp</a>
-    <small>Traducteur · Traductions automatiques Ren’Py et RPGM</small>
-  </div>
-</div>
+<!-- ✅ JS externes en defer -->
+  <script src="./viewer.menu.js" defer></script>
+  <script src="./viewer.menu.about.js" defer></script>
+  <script src="./viewer.menu.extension.js" defer></script>
+  <script src="./viewer.annonce.js" defer></script>
+  <script src="./viewer.agegate.js" defer></script>
 
-<div class="card">
-  <img class="avatar" src="/lechauve/avatar.png" alt="Le Chauve">
-  <div class="card-content">
-    <a href="/lechauve/" target="_blank">Le Chauve</a>
-    <small>Traducteur · Traductions manuelles RPGM et Ren'Py</small>
-  </div>
-</div>
+  <script src="./viewer.js" defer></script>
+  <script src="./game.js" defer></script>
 
-<div class="card">
-  <img class="avatar" src="/ikaros/avatar.png" alt="Ikaros">
-  <div class="card-content">
-    <a href="/ikaros/" target="_blank">Ikaros</a>
-    <small>Traducteur · Traductions Unity et Ren’Py</small>
-  </div>
-</div>
+  <!-- ✅ switch viewer/game -->
+  <script>
+    (function(){
+      const p = new URLSearchParams(location.search);
+      const hasGame = (p.get("id")||"").trim() || (p.get("uid")||"").trim();
+      const v = document.getElementById("page-viewer");
+      const g = document.getElementById("page-game");
+      if (hasGame) {
+        document.body.classList.add("mode-game");
+        if (v) v.style.display = "none";
+        if (g) g.style.display = "";
+      } else {
+        document.body.classList.remove("mode-game");
+        if (g) g.style.display = "none";
+        if (v) v.style.display = "";
+      }
+    })();
+  </script>
 
-<script>
-/* fallback avatar automatique */
-document.querySelectorAll(".avatar").forEach(img => {
-  img.onerror = () => {
-    img.onerror = null; // évite boucle infinie
-    img.src = "/default-avatar.png";
-  };
-});
-</script>
+  <!-- ✅ Sync thème si changé dans un autre onglet -->
+  <script>
+  window.addEventListener("storage", (e) => {
+    if (e.key !== "viewerTheme") return;
+    try{
+      const t = (localStorage.getItem("viewerTheme") || "auto").trim() || "auto";
+      const root = document.documentElement;
+      root.removeAttribute("data-theme");
+      if (t !== "auto") root.setAttribute("data-theme", t);
+    }catch{}
+  });
+  </script>
 
 </body>
 </html>
+
