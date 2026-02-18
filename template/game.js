@@ -352,10 +352,8 @@ function resolveGamePage(params, games) {
 
 // Related container (inséré après tags)
 function ensureRelatedContainer() {
-  const main = document.getElementById("mainInfoBox");
-  const tags = document.getElementById("tags");
-  const descInner = document.getElementById("descInnerBox");
-  if (!main || !tags) return null;
+  const anchor = document.getElementById("tags");
+  if (!anchor) return null;
 
   let out = document.getElementById("relatedOut");
   if (!out) {
@@ -364,13 +362,7 @@ function ensureRelatedContainer() {
     out.style.marginTop = "12px";
     out.style.display = "grid";
     out.style.gap = "10px";
-
-    // ✅ insère ENTRE les tags et le résumé (si présent)
-    if (descInner && descInner.parentNode === main) {
-      main.insertBefore(out, descInner);
-    } else {
-      main.appendChild(out);
-    }
+    anchor.parentNode.insertBefore(out, anchor.nextSibling);
   }
   return out;
 }
@@ -1270,47 +1262,28 @@ function renderVideoBlock({ id, videoUrl }) {
       parts.push(renderSeriesBlocks(seriesList, list, canonicalKey));
       relatedOut.innerHTML = parts.filter(Boolean).join("");
     }
-    // =========================
-    // 3) ✅ Encadré principal : Tags + Résumé (+ related entre les 2 si présent)
-    // =========================
-    const mainInfoBox = document.getElementById("mainInfoBox");
-    const descInnerBox = document.getElementById("descInnerBox");
+
+    // 3) Description (force placement)
+    const tagsEl = document.getElementById("tags");
+    const descAnchor = relatedOut || tagsEl;
+
+    const descBox = document.getElementById("descriptionBox");
     const descTextEl = document.getElementById("descriptionText");
 
-    const description = (entry.description || "").trim();
-
-    if (mainInfoBox) {
-      const hasTags =
-        Array.isArray(display.tags || entry.tags) &&
-        (display.tags || entry.tags).length > 0;
-
-      const hasDesc = !!description;
-
-      // ✅ Remplit le résumé
-      if (descTextEl) {
-        descTextEl.innerHTML = hasDesc
-          ? escapeHtml(description).replace(/
-/g, "<br>")
-          : "";
-      }
-
-      // ✅ Affiche / masque le bloc résumé
-      if (descInnerBox) {
-        descInnerBox.style.display = hasDesc ? "" : "none";
-      }
-
-      // ✅ Affiche / masque le grand encadré (tags + résumé)
-      mainInfoBox.style.display = (hasTags || hasDesc) ? "" : "none";
+    if (descBox && descAnchor && descAnchor.parentNode) {
+      descAnchor.parentNode.insertBefore(descBox, descAnchor.nextSibling);
     }
 
-    // =========================
-    // 4) Vidéo (si présent) sous le bloc principal
+    const description = (entry.description || "").trim();
+    if (description && descBox && descTextEl) {
+      descTextEl.innerHTML = escapeHtml(description).replace(/\n/g, "<br>");
+      descBox.style.display = "";
+    } else if (descBox) {
+      descBox.style.display = "none";
+    }
 
-    const videoAnchor =
-      (relatedOut && relatedOut.innerHTML.trim())
-        ? relatedOut
-        : mainInfoBox;
-
+    // 4) Vidéo sous description
+    const videoAnchor = (descBox && descBox.style.display !== "none") ? descBox : (relatedOut || tagsEl);
     const videoHost = ensureBlockAfter(videoAnchor, "videoHost");
     renderVideoBlock({ id: "videoHost", videoUrl: (entry.videoUrl || "").trim() });
 
