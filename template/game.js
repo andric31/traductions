@@ -1276,7 +1276,7 @@ function renderVideoBlock({ id, videoUrl }) {
 
     const description = (entry.description || "").trim();
     if (description && descBox && descTextEl) {
-      descTextEl.innerHTML = escapeHtml(description).replace(/\n/g, "<br>");
+      descTextEl.innerHTML = String(description).replace(/\n/g, "<br>");
       descBox.style.display = "";
     } else if (descBox) {
       descBox.style.display = "none";
