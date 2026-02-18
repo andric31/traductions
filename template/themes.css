@@ -9,14 +9,6 @@
 html, body { min-height: 100%; }
 
 /* =========================================================
-   GLOBAL : étoiles (fallback)
-   ========================================================= */
-:root{
-  --game-rating-color: #f6c945;   /* ⭐ jaune */
-  --game-rating-opacity: .85;
-}
-
-/* =========================================================
    BASE : petits overrides communs (tous thèmes)
    ========================================================= */
 :root{
@@ -30,9 +22,6 @@ html, body { min-height: 100%; }
 
   --soft-04: rgba(255,255,255,0.04);
   --soft-05: rgba(255,255,255,0.05);
-
-  /* ✅ hover glow fallback (évite bleus “fantômes” si viewer.css l’utilise) */
-  --card-hover-glow: rgba(0,0,0,0.10);
 }
 
 
@@ -41,6 +30,7 @@ html, body { min-height: 100%; }
    - s'applique quand aucun data-theme n'est forcé
    ========================================================= */
 :root:not([data-theme]){
+  /* <-- COPIE ICI EXACTEMENT les variables de ton thème clair premium */
   --bg:#f6f7fb;
   --bg2:#ffffff;
   --fg:#141824;
@@ -80,12 +70,10 @@ html, body { min-height: 100%; }
   --soft-04: rgba(20,24,36,0.04);
   --soft-05: rgba(20,24,36,0.06);
 
-  /* ✅ hover tuiles : gris/blanc (pas bleu) */
-  --card-hover-border: rgba(0,0,0,0.12);
-  --card-hover-glow: rgba(0,0,0,0.08);
+  --card-hover-border: rgba(45,108,223,0.55);
   --card-hover-shadow:
-    0 1px 2px rgba(0,0,0,0.05),
-    0 8px 24px rgba(0,0,0,0.10);
+    0 0 0 1px rgba(45,108,223,0.18),
+    0 14px 38px rgba(17,19,24,0.12);
   --card-hover-bg: var(--card);
 
   color-scheme: light;
@@ -116,6 +104,7 @@ html, body { min-height: 100%; }
    ========================================================= */
 @media (prefers-color-scheme: dark){
   :root:not([data-theme]){
+    /* <-- COPIE ICI EXACTEMENT les variables de :root[data-theme="dark"] */
     --bg:#0f1117;
     --bg2:#141826;
     --fg:#e8eaf0;
@@ -143,7 +132,6 @@ html, body { min-height: 100%; }
     --scrollbar-thumb-webkit-hover:#3f4b6b;
 
     --card-hover-border: rgba(255,255,255,0.22);
-    --card-hover-glow: rgba(255,255,255,0.14);
     --card-hover-shadow:
       0 0 0 1px rgba(255,255,255,0.18),
       0 0 22px -6px rgba(255,255,255,0.18),
@@ -187,7 +175,6 @@ html, body { min-height: 100%; }
 
   /* ✅ hover “theme engine” (dark) */
   --card-hover-border: rgba(255,255,255,0.22);
-  --card-hover-glow: rgba(255,255,255,0.14);
   --card-hover-shadow:
     0 0 0 1px rgba(255,255,255,0.18),
     0 0 22px -6px rgba(255,255,255,0.18),
@@ -242,17 +229,11 @@ html, body { min-height: 100%; }
   --soft-04: rgba(20,24,36,0.04);
   --soft-05: rgba(20,24,36,0.06);
 
-  /* ✅ hover tuiles : gris/blanc premium (pas bleu) */
-  --card-hover-border: rgba(0,0,0,0.12);
-  --card-hover-glow: rgba(0,0,0,0.08);
+  --card-hover-border: rgba(45,108,223,0.55);
   --card-hover-shadow:
-    0 1px 2px rgba(0,0,0,0.05),
-    0 8px 24px rgba(0,0,0,0.10);
+    0 0 0 1px rgba(45,108,223,0.18),
+    0 14px 38px rgba(17,19,24,0.12);
   --card-hover-bg: var(--card);
-
-  /* ⭐ couleur des étoiles */
-  --game-rating-color: #f1b90b;
-  --game-rating-opacity: .95;
 
   color-scheme: light;
 }
@@ -264,22 +245,29 @@ html, body { min-height: 100%; }
    ========================================================= */
 
 :root[data-theme="noel"]{
+  /* 🌌 fond nuit hivernale */
   --bg:#061611;
   --bg2:#0a2018;
 
+  /* ❄️ texte neige */
   --fg:#f4fff9;
   --muted:#c7e6d6;
 
+  /* 🎄 vert sapin */
   --primary:#1faa59;
+
+  /* 🎅 rouge BIEN visible */
   --accent:#ff3b3b;
 
   --border:#1f5a43;
 
+  /* cartes plus neutres */
   --card:#0f1c17;
   --btn:#163a2c;
 
   --title: var(--fg);
 
+  /* 🔥 Topbar avec reflet rouge */
   --topbar-bg: linear-gradient(
     90deg,
     rgba(6,22,17,.95),
@@ -297,8 +285,8 @@ html, body { min-height: 100%; }
   --scrollbar-track:#030a07;
   --scrollbar-thumb-webkit-hover:#3fb07c;
 
+  /* hover Noël */
   --card-hover-border: #ff3b3b;
-  --card-hover-glow: rgba(255,59,59,.20);
   --card-hover-shadow:
     0 0 0 1px rgba(255,59,59,.65),
     0 0 26px rgba(255,59,59,.22),
@@ -308,6 +296,7 @@ html, body { min-height: 100%; }
 
   color-scheme: dark;
 
+  /* ✅ FOND FIXE SUR HTML (évite la coupure bas) */
   background:
     radial-gradient(circle at 10% 20%, rgba(255,255,255,0.22) 0 1px, transparent 2px),
     radial-gradient(circle at 30% 80%, rgba(255,255,255,0.18) 0 1px, transparent 2px),
@@ -323,6 +312,7 @@ html, body { min-height: 100%; }
   background-attachment: fixed;
 }
 
+/* ✅ BODY TRANSPARENT (sinon trait/coupure bas) */
 :root[data-theme="noel"] body{
   background: transparent !important;
   position: relative;
@@ -330,16 +320,23 @@ html, body { min-height: 100%; }
   isolation: isolate;
 }
 
+/* =========================================================
+   FX ANIMÉS SUR HTML (derrière UI, safe pour menu)
+   - ::before = aurore + scintillement
+   - ::after  = neige (multi-couches)
+   ========================================================= */
+
 :root[data-theme="noel"]::before,
 :root[data-theme="noel"]::after{
   content:"";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: -1;
+  z-index: -1; /* 🔥 derrière le contenu => menu OK */
   will-change: background-position, transform, opacity;
 }
 
+/* ✅ Aurore + scintillement */
 :root[data-theme="noel"]::before{
   background-repeat: no-repeat;
   background-position: center;
@@ -356,6 +353,7 @@ html, body { min-height: 100%; }
   animation: noelAurora 14s ease-in-out infinite alternate, noelTwinkle 3.8s steps(2,end) infinite;
 }
 
+/* ✅ Neige qui tombe (2 couches dans le même overlay) */
 :root[data-theme="noel"]::after{
   background-repeat: repeat;
   opacity: .55;
@@ -377,6 +375,8 @@ html, body { min-height: 100%; }
   filter: blur(.20px);
   animation: noelSnowAll 15.5s linear infinite;
 }
+
+/* Animations */
 
 @keyframes noelSnowAll{
   0%{
@@ -448,6 +448,7 @@ html, body { min-height: 100%; }
 :root[data-theme="halloween"]{
   position: relative;
 
+  /* couleurs UI */
   --bg:#08050c;
   --bg2:#110916;
 
@@ -481,7 +482,6 @@ html, body { min-height: 100%; }
   --scrollbar-thumb-webkit-hover:#8446c8;
 
   --card-hover-border: #ff7a00;
-  --card-hover-glow: rgba(255,122,0,.22);
   --card-hover-shadow:
     0 0 0 1px rgba(255,122,0,.70),
     0 0 30px rgba(255,122,0,.22),
@@ -491,6 +491,7 @@ html, body { min-height: 100%; }
 
   color-scheme: dark;
 
+  /* 🎃 FX fond DIRECTEMENT sur html */
   background:
     radial-gradient(circle at 12% 18%, rgba(255,140,0,0.20) 0 1px, transparent 2px),
     radial-gradient(circle at 30% 82%, rgba(255,120,0,0.16) 0 1px, transparent 2px),
@@ -506,6 +507,7 @@ html, body { min-height: 100%; }
   background-attachment: fixed;
 }
 
+/* body transparent → évite la coupure bas de page */
 :root[data-theme="halloween"] body{
   background: transparent !important;
   position: relative;
@@ -513,6 +515,13 @@ html, body { min-height: 100%; }
   isolation: isolate;
 }
 
+
+/* =========================================================
+   HALLOWEEN — FX ANIMÉS SUR HTML (brume + flicker bougie)
+   - NE CASSE PAS le menu (popover fixed)
+   ========================================================= */
+
+/* ✅ FX derrière tout le contenu (les 2 pseudo-éléments existent) */
 :root[data-theme="halloween"]::before,
 :root[data-theme="halloween"]::after{
   content:"";
@@ -523,6 +532,7 @@ html, body { min-height: 100%; }
   background-repeat: no-repeat;
 }
 
+/* 🌫️ brume */
 :root[data-theme="halloween"]::before{
   opacity: .70;
   background:
@@ -534,6 +544,7 @@ html, body { min-height: 100%; }
   animation: halloweenFog 14s ease-in-out infinite alternate;
 }
 
+/* 🔥 flicker “bougie” */
 :root[data-theme="halloween"]::after{
   opacity: .12;
   background:
@@ -543,6 +554,7 @@ html, body { min-height: 100%; }
   animation: halloweenFlicker 3.6s steps(2, end) infinite;
 }
 
+/* ✅ animation brume SANS transform */
 @keyframes halloweenFog{
   0%   { opacity:.62; background-position: 0% 0%; }
   50%  { opacity:.78; background-position: 3% 0%; }
@@ -561,6 +573,7 @@ html, body { min-height: 100%; }
 
 /* =====================================================
    THEME HOVER ENGINE (1 seule fois)
+   - Rend les thèmes VRAIMENT visibles
    ===================================================== */
 .card{
   transition:
