@@ -440,87 +440,160 @@ body.mode-game .topbar{
 }
 
 /* =========================================================
-   ✅ FIX THEME CLAIR / AUTO (ne change PAS le layout)
-   But : éviter le blanc sur blanc (tags/boutons/titres/modal/info)
+   ✅ FIX LISIBILITÉ EN CLAIR (white/clair/light + AUTO système)
+   - Ne change PAS le layout
+   - Corrige : title / tags / boutons / hamburger / menu popover / modal / rating cancel / infoBlock
    ========================================================= */
 
-/* Sélecteurs de thèmes possibles */
-:root[data-theme="clair"],
-:root[data-theme="light"],
-:root[data-theme="white"]{
-  /* rien ici : on cible plutôt les éléments */
+/* Thèmes clairs explicites (selon où est le data-theme) */
+html[data-theme="white"], html[data-theme="clair"], html[data-theme="light"],
+:root[data-theme="white"], :root[data-theme="clair"], :root[data-theme="light"]{
+  /* rien : on cible les éléments ci-dessous */
 }
 
-/* Quand le thème est clair, remplacer les #fff par les variables */
+html[data-theme="white"] .title,
+html[data-theme="clair"] .title,
+html[data-theme="light"] .title,
+:root[data-theme="white"] .title,
 :root[data-theme="clair"] .title,
-:root[data-theme="light"] .title,
-:root[data-theme="white"] .title{
-  color: var(--title, var(--fg));
+:root[data-theme="light"] .title{
+  color: var(--title, var(--fg)) !important;
 }
 
+html[data-theme="white"] .tagPill,
+html[data-theme="clair"] .tagPill,
+html[data-theme="light"] .tagPill,
+:root[data-theme="white"] .tagPill,
 :root[data-theme="clair"] .tagPill,
-:root[data-theme="light"] .tagPill,
-:root[data-theme="white"] .tagPill{
-  color: var(--fg);
-  background: var(--thumb-bg, rgba(0,0,0,0.06));
-  border-color: var(--border);
+:root[data-theme="light"] .tagPill{
+  color: var(--fg) !important;
+  background: var(--thumb-bg, rgba(0,0,0,0.06)) !important;
+  border-color: var(--border) !important;
 }
 
-/* Boutons neutres (on laisse F95 / MEGA / Discord comme avant) */
+/* Boutons neutres (laisser F95/MEGA/Discord) */
+html[data-theme="white"] .btnLike:not(.btn-f95):not(.btnMega):not(.btn-discord),
+html[data-theme="clair"] .btnLike:not(.btn-f95):not(.btnMega):not(.btn-discord),
+html[data-theme="light"] .btnLike:not(.btn-f95):not(.btnMega):not(.btn-discord),
+:root[data-theme="white"] .btnLike:not(.btn-f95):not(.btnMega):not(.btn-discord),
 :root[data-theme="clair"] .btnLike:not(.btn-f95):not(.btnMega):not(.btn-discord),
-:root[data-theme="light"] .btnLike:not(.btn-f95):not(.btnMega):not(.btn-discord),
-:root[data-theme="white"] .btnLike:not(.btn-f95):not(.btnMega):not(.btn-discord){
-  color: var(--fg);
-  background: var(--btn, rgba(0,0,0,0.06));
-  border-color: var(--border);
+:root[data-theme="light"] .btnLike:not(.btn-f95):not(.btnMega):not(.btn-discord){
+  color: var(--fg) !important;
+  background: var(--btn, rgba(0,0,0,0.06)) !important;
+  border-color: var(--border) !important;
 }
 
-/* Hamburger : traits visibles en clair */
+/* Hamburger visible */
+html[data-theme="white"] .ham-lines span,
+html[data-theme="clair"] .ham-lines span,
+html[data-theme="light"] .ham-lines span,
+:root[data-theme="white"] .ham-lines span,
 :root[data-theme="clair"] .ham-lines span,
-:root[data-theme="light"] .ham-lines span,
-:root[data-theme="white"] .ham-lines span{
-  background: var(--fg);
+:root[data-theme="light"] .ham-lines span{
+  background: var(--fg) !important;
 }
 
-/* Popover menu : fond clair + hover visible */
+/* Popover lisible en clair */
+html[data-theme="white"] .menu-popover,
+html[data-theme="clair"] .menu-popover,
+html[data-theme="light"] .menu-popover,
+:root[data-theme="white"] .menu-popover,
 :root[data-theme="clair"] .menu-popover,
-:root[data-theme="light"] .menu-popover,
-:root[data-theme="white"] .menu-popover{
-  background: var(--popover-bg, rgba(255,255,255,0.92));
-  border-color: var(--border);
+:root[data-theme="light"] .menu-popover{
+  background: var(--popover-bg, rgba(255,255,255,0.92)) !important;
+  border-color: var(--border) !important;
 }
+
+html[data-theme="white"] .menu-item:hover,
+html[data-theme="clair"] .menu-item:hover,
+html[data-theme="light"] .menu-item:hover,
+:root[data-theme="white"] .menu-item:hover,
 :root[data-theme="clair"] .menu-item:hover,
-:root[data-theme="light"] .menu-item:hover,
-:root[data-theme="white"] .menu-item:hover{
-  background: var(--hover-bg, rgba(0,0,0,0.06));
-  border-color: var(--border-soft, rgba(0,0,0,0.10));
+:root[data-theme="light"] .menu-item:hover{
+  background: var(--hover-bg, rgba(0,0,0,0.06)) !important;
+  border-color: var(--border-soft, rgba(0,0,0,0.10)) !important;
 }
 
-/* Modal : titre + boutons lisibles en clair */
+/* Modal lisible */
+html[data-theme="white"] .modal-title,
+html[data-theme="clair"] .modal-title,
+html[data-theme="light"] .modal-title,
+:root[data-theme="white"] .modal-title,
 :root[data-theme="clair"] .modal-title,
-:root[data-theme="light"] .modal-title,
-:root[data-theme="white"] .modal-title{
-  color: var(--title, var(--fg));
+:root[data-theme="light"] .modal-title{
+  color: var(--title, var(--fg)) !important;
 }
+
+html[data-theme="white"] .modal-btn,
+html[data-theme="clair"] .modal-btn,
+html[data-theme="light"] .modal-btn,
+:root[data-theme="white"] .modal-btn,
 :root[data-theme="clair"] .modal-btn,
-:root[data-theme="light"] .modal-btn,
-:root[data-theme="white"] .modal-btn{
-  color: var(--fg);
-  background: var(--btn, rgba(0,0,0,0.06));
-  border-color: var(--border);
+:root[data-theme="light"] .modal-btn{
+  color: var(--fg) !important;
+  background: var(--btn, rgba(0,0,0,0.06)) !important;
+  border-color: var(--border) !important;
 }
 
-/* Rating : bouton "annuler" visible */
+/* Rating cancel visible */
+html[data-theme="white"] .ratingCancel,
+html[data-theme="clair"] .ratingCancel,
+html[data-theme="light"] .ratingCancel,
+:root[data-theme="white"] .ratingCancel,
 :root[data-theme="clair"] .ratingCancel,
-:root[data-theme="light"] .ratingCancel,
-:root[data-theme="white"] .ratingCancel{
-  color: var(--muted, var(--fg));
+:root[data-theme="light"] .ratingCancel{
+  color: var(--muted, var(--fg)) !important;
 }
 
-/* Bloc info : éviter “invisible” en clair */
+/* Info block lisible */
+html[data-theme="white"] .infoBlock,
+html[data-theme="clair"] .infoBlock,
+html[data-theme="light"] .infoBlock,
+:root[data-theme="white"] .infoBlock,
 :root[data-theme="clair"] .infoBlock,
-:root[data-theme="light"] .infoBlock,
-:root[data-theme="white"] .infoBlock{
-  border-color: var(--border);
-  background: var(--panel, rgba(0,0,0,0.04));
+:root[data-theme="light"] .infoBlock{
+  border-color: var(--border) !important;
+  background: var(--panel, rgba(0,0,0,0.04)) !important;
+}
+
+/* ===== AUTO système (pas de data-theme) ===== */
+@media (prefers-color-scheme: light){
+  html:not([data-theme]) .title{ color: var(--title, var(--fg)) !important; }
+
+  html:not([data-theme]) .tagPill{
+    color: var(--fg) !important;
+    background: var(--thumb-bg, rgba(0,0,0,0.06)) !important;
+    border-color: var(--border) !important;
+  }
+
+  html:not([data-theme]) .btnLike:not(.btn-f95):not(.btnMega):not(.btn-discord){
+    color: var(--fg) !important;
+    background: var(--btn, rgba(0,0,0,0.06)) !important;
+    border-color: var(--border) !important;
+  }
+
+  html:not([data-theme]) .ham-lines span{ background: var(--fg) !important; }
+
+  html:not([data-theme]) .menu-popover{
+    background: var(--popover-bg, rgba(255,255,255,0.92)) !important;
+    border-color: var(--border) !important;
+  }
+  html:not([data-theme]) .menu-item:hover{
+    background: var(--hover-bg, rgba(0,0,0,0.06)) !important;
+    border-color: var(--border-soft, rgba(0,0,0,0.10)) !important;
+  }
+
+  html:not([data-theme]) .modal-title{ color: var(--title, var(--fg)) !important; }
+  html:not([data-theme]) .modal-btn{
+    color: var(--fg) !important;
+    background: var(--btn, rgba(0,0,0,0.06)) !important;
+    border-color: var(--border) !important;
+  }
+
+  html:not([data-theme]) .ratingCancel{ color: var(--muted, var(--fg)) !important; }
+
+  html:not([data-theme]) .infoBlock{
+    border-color: var(--border) !important;
+    background: var(--panel, rgba(0,0,0,0.04)) !important;
+  }
 }
