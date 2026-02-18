@@ -241,7 +241,7 @@
         <div class="cardInner">
   
           <div class="headRow">
-            <!-- ✅ IMPORTANT : id hamburgerBtn (pas hamburgerBtnGame) -->
+            <!-- ✅ IMPORTANT : id hamburgerBtn -->
             <button type="button" class="hamburger-btn" id="hamburgerBtn"
                     aria-label="Ouvrir le menu" aria-haspopup="menu" aria-expanded="false">
               <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
@@ -257,7 +257,7 @@
   
           <img id="cover" class="cover is-placeholder" alt="" referrerpolicy="no-referrer">
   
-          <!-- ✅ Conteneur principal UNIQUE (comme andric31) : tags -> related -> description -->
+          <!-- ✅ Conteneur principal UNIQUE : tags -> related -> description -->
           <div id="mainInfoBox" class="infoBlock" style="display:none;">
   
             <!-- Tags -->
@@ -267,11 +267,14 @@
             <div id="relatedOut" style="display:none; margin-top:12px;"></div>
   
             <!-- Description -->
-            <div id="descInnerBox" style="display:none; margin-top:12px;">
+            <div id="descInnerBox" class="descInnerBox" style="display:none; margin-top:12px;">
               <div id="descriptionText" class="infoText"></div>
             </div>
   
           </div>
+  
+          <!-- ✅ Vidéo (JS va remplir #videoHost si videoUrl) -->
+          <div id="videoHost" style="display:none; margin-top:12px;"></div>
   
           <!-- ✅ BOUTONS -->
           <div class="btnRow">
