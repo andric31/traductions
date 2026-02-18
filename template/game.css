@@ -640,12 +640,6 @@ html[data-theme="light"] .infoBlock .infoTextMuted{
   html:not([data-theme]) .infoBlock .infoTextMuted{ color:#555 !important; opacity:1 !important; }
 }
 
-#ratingBox{
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  transition: border-color 0.2s ease;
-}
-
 #ratingBox:hover{
   border-color: #6b7280; /* gris propre */
 }
