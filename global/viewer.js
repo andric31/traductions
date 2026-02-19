@@ -28,34 +28,27 @@
   const $ = (sel) => document.querySelector(sel);
 
   // =========================
-  // ☰ Hamburger menu (Viewer)
-  // - Ajoute un bouton "Accueil" -> https://traductions.pages.dev/
-  // - Ne touche pas au chargement des listes / bases
+  // ☰ Menu (ViewerMenu) — commun (comme template)
   // =========================
-  function initHamburgerMenu() {
-    const btn = document.getElementById("hamburgerBtnViewer") || document.getElementById("hamburgerBtn");
-    if (!btn) return;
+  function registerMenuItems(){
+    try{
+      const p = new URLSearchParams(location.search);
+      const hasGame = (p.get("id")||"").trim() || (p.get("uid")||"").trim();
+      const niceName = String((window.__SITE_NAME__ || (SLUG ? (SLUG.charAt(0).toUpperCase() + SLUG.slice(1)) : ""))).trim();
 
-    // crée le popover une seule fois
-    let pop = document.getElementById("viewerMenuPopover");
-    if (!pop) {
-      pop = document.createElement("div");
-      pop.id = "viewerMenuPopover";
-      pop.className = "menu-popover hidden";
-      pop.setAttribute("role", "menu");
+      // Toujours : Accueil général
+      window.ViewerMenu?.addItem?.("🌍 Accueil", () => { location.href = "https://traductions.pages.dev/"; });
 
-      const home = document.createElement("button");
-      home.type = "button";
-      home.className = "menu-item";
-      home.textContent = "🌍 Accueil";
-      home.addEventListener("click", () => {
-        // navigation simple (même onglet)
-        location.href = "https://traductions.pages.dev/";
-      });
+      // En mode jeu : retour à la liste (du slug)
+      if (hasGame) {
+        window.ViewerMenu?.addItem?.(
+          niceName ? `📚 Retour à la liste · ${niceName}` : "📚 Retour à la liste",
+          () => { location.href = APP_PATH; }
+        );
+      }
+    }catch{}
+  }
 
-      pop.appendChild(home);
-      document.body.appendChild(pop);
-    }
 
     const close = () => {
       pop.classList.add("hidden");
@@ -1078,8 +1071,8 @@
     }
   }
 
-  // ✅ Menu hamburger (viewer)
-  initHamburgerMenu();
+  // ✅ Menu ☰ (ViewerMenu) — init + items (comme template)
+  try { window.ViewerMenu?.init?.(); registerMenuItems(); } catch {}
 
   init();
 })();
