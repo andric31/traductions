@@ -3,14 +3,8 @@
   "use strict";
 
   const ABOUT_TEXT = `
-Pour tout renseignement, aide ou autre, rejoignez mon serveur Discord :
+Pour tout renseignement, aide ou autre, rejoignez le serveur Discord :
 https://discord.gg/Jr8Ykf8yMd
-
-Contact Discord :
-https://discord.com/users/@andric31
-
-Vous pouvez aussi me contacter sur F95zone :
-Profil https://f95zone.to/members/andric31.247797/
 `.trim();
 
   function escapeHtml(s) {
