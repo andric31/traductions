@@ -6,118 +6,65 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>f95list_viewer</title>
 
+  <!-- ✅ Thème instant (comme le viewer) : localStorage.viewerTheme -> <html data-theme="..."> -->
+  <script>
+  (function(){
+    try{
+      const t = (localStorage.getItem("viewerTheme") || "auto").trim() || "auto";
+      const root = document.documentElement; // <html>
+      root.removeAttribute("data-theme");
+      if (t !== "auto") root.setAttribute("data-theme", t);
+    }catch{}
+  })();
+  </script>
+
   <link id="dynamic-favicon" rel="icon" type="image/png" href="./avatar.png">
   <script>
   (function(){
     const fav = document.getElementById("dynamic-favicon");
-    const testUrl = "./avatar.png?v=" + Date.now(); // anti-cache
-  
+    const testUrl = "./avatar.png?v=" + Date.now();
     const img = new Image();
     img.onload  = () => fav.href = testUrl;
-    img.onerror = () => fav.href = "/favicon.png?v=" + Date.now(); // fallback
+    img.onerror = () => fav.href = "/favicon.png?v=" + Date.now();
     img.src = testUrl;
   })();
   </script>
 
   <link rel="stylesheet" href="./viewer.css" />
-  <link rel="stylesheet" href="/themes.css" />
+  <link rel="stylesheet" href="./themes.css" />
+  <link rel="stylesheet" href="./game.css" />
 
-  <!-- ✅ Styles page jeu (rendu comme sur andric31-traductions, sans dossier /game) -->
   <style>
+    html{ height:auto; overflow-y: scroll; }
+
     body.mode-game{
-      min-height: 100vh;
-      margin: 0;
+      margin:0;
+      min-height:100dvh;
+      overflow-y: visible;
       display:flex;
       align-items:flex-start;
       justify-content:center;
-      overflow: visible;
       padding: 18px 0;
     }
 
+    /* ✅ En mode jeu : cache le viewer */
     body.mode-game #page-viewer{ display:none !important; }
+    body.mode-game #page-game{ display:block !important; }
 
-    body.mode-game #page-game .wrap{
-      width: 820px;
-      max-width: 92vw;
-      padding: 18px;
-    }
-
-    body.mode-game #page-game .cardPreview{
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      overflow:hidden;
-      box-shadow: 0 10px 40px rgba(0,0,0,.35);
-    }
-
-    body.mode-game #page-game .cardInner{
-      padding: 16px 16px 18px 16px;
-    }
-
-    /* Ligne du haut : bouton ☰ + like + badges */
-    body.mode-game #page-game .headRow{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      margin-bottom:10px;
-      flex-wrap:wrap;
-    }
-    body.mode-game #page-game .badgesRow{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      align-items:center;
-      margin:0;
-    }
-
-    /* Bouton hamburger */
-    body.mode-game #page-game .hamburger-btn{
-      width:34px;
-      height:34px;
-      border-radius:10px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,0.05);
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      cursor:pointer;
-      user-select:none;
-      flex:0 0 auto;
-    }
-    body.mode-game #page-game .hamburger-btn:hover{ filter: brightness(1.10); }
-    body.mode-game #page-game .hamburger-btn:active{ transform: translateY(1px); }
-    body.mode-game #page-game .ham-lines{ width:16px; height:12px; display:flex; flex-direction:column; justify-content:space-between; }
-    body.mode-game #page-game .ham-lines span{ display:block; height:2px; border-radius:999px; background:#ffffff; opacity:0.92; }
-
-    /* Cover */
-    body.mode-game #page-game .cover{
-      width:100%;
-      height:auto;
-      display:block;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.03);
-      margin: 10px 0 12px;
-      object-fit: cover;
-    }
-
-    /* Encadrés info */
-    body.mode-game #page-game .infoBlock{
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 14px;
-      padding: 12px;
-      margin-top: 12px;
-    }
-    body.mode-game #page-game .infoBlock h3{ margin:0 0 8px 0; font-size:14px; }
+    /* ✅ En mode viewer : cache la page jeu (évite un flash si le JS switch arrive après) */
+    body:not(.mode-game) #page-game{ display:none !important; }
+    body:not(.mode-game) #page-viewer{ display:block !important; }
   </style>
 </head>
 <body>
 
+  <!-- ✅ Popover unique pour le menu ☰ (doit être hors #page-viewer/#page-game)
+       Sinon, en mode viewer, il reste dans un parent display:none et ne peut pas s'afficher. -->
+  <div id="topMenuPopover" class="menu-popover hidden"></div>
+
   <!-- ✅ Nom affiché via manifest (casse exacte), fallback slug — SANS BOUCLE -->
   <script>
   (async function(){
-  
     function detectSlug(){
       try{
         const forced = (window.__SITE_SLUG__ || "").toString().trim();
@@ -126,12 +73,12 @@
       const segs = (location.pathname || "/").split("/").filter(Boolean);
       return String(segs[0] || "").trim().toLowerCase();
     }
-  
+
     const slug = detectSlug();
     window.__SITE_SLUG__ = slug;
-  
+
     let nice = slug ? (slug[0].toUpperCase() + slug.slice(1)) : "";
-  
+
     try{
       const r = await fetch("/traducteurs_manifest.json", { cache:"no-store" });
       if (r.ok){
@@ -142,33 +89,29 @@
         if (found && found.name) nice = String(found.name);
       }
     }catch(e){}
-  
+
     window.__SITE_NAME__ = nice;
-  
+
     const txt = nice || slug || "";
     document.title = txt;
-  
+
     function applyH1(){
       const h1 = document.getElementById("viewerTitle");
       if (h1) h1.textContent = txt;
       return !!h1;
     }
-  
-    // ✅ 1) si déjà là
+
     if (applyH1()) return;
-  
-    // ✅ 2) au DOM ready
+
     window.addEventListener("DOMContentLoaded", () => {
       if (applyH1()) return;
-  
-      // ✅ 3) retry léger (max ~2s), au cas où un script recrée le header après
+
       let tries = 0;
       const timer = setInterval(() => {
         tries++;
-        if (applyH1() || tries >= 20) clearInterval(timer); // 20 * 100ms = 2s
+        if (applyH1() || tries >= 20) clearInterval(timer);
       }, 100);
     });
-  
   })();
   </script>
 
@@ -191,7 +134,6 @@
 
     <header class="topbar" role="banner">
       <div class="top-title-row top-title-flex">
-        <!-- ✅ id unique (viewer) -->
         <button id="hamburgerBtnViewer" class="hamburger-btn" type="button"
                 aria-label="Menu" title="Menu" aria-expanded="false">
           <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
@@ -199,7 +141,6 @@
 
         <h1 id="viewerTitle">f95list_viewer</h1>
 
-        <!-- ✅ Outils en haut à droite (comme le site principal) -->
         <div id="topTitleTools" class="top-title-tools">
           <span class="total-inline">Total : <strong id="countTotal">0</strong></span>
 
@@ -224,7 +165,11 @@
           </select>
 
           <select id="theme" title="Thème">
+            <option value="auto">Thème : Auto (Windows)</option>
             <option value="dark">Thème : Sombre</option>
+            <option value="white">Thème : Clair</option>
+            <option value="noel">Thème : Noël</option>
+            <option value="halloween">Thème : Halloween</option>
           </select>
         </div>
       </div>
@@ -271,7 +216,6 @@
           🏷️ Tags <span id="tagsCount" class="tags-count hidden">0</span>
         </button>
 
-        <!-- ✅ Rafraîchir remis en bas -->
         <button id="refresh" type="button">Rafraîchir</button>
       </div>
     </header>
@@ -288,106 +232,120 @@
         👁️ Vues de la page : <strong id="mainViews">—</strong>
       </footer>
     </main>
-
   </div>
 
   <!-- PAGE JEU (même page, via ?id= / ?uid=) -->
   <div id="page-game" style="display:none;">
-
     <div class="wrap">
       <div class="cardPreview" id="card" aria-live="polite">
+  
         <div class="cardInner">
-
+  
           <div class="headRow">
-            <!-- ✅ id unique (game) -->
-            <button type="button" class="hamburger-btn" id="hamburgerBtnGame"
+            <!-- ✅ IMPORTANT : id hamburgerBtn (pas hamburgerBtnGame) -->
+            <button type="button" class="hamburger-btn" id="hamburgerBtn"
                     aria-label="Ouvrir le menu" aria-haspopup="menu" aria-expanded="false">
               <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
             </button>
-
+  
             <button class="btnLike like-btn" id="btnLike" type="button" aria-label="J’aime">🤍</button>
             <div class="badgesRow" id="badges"></div>
           </div>
-
+  
           <div class="majState" id="majState" style="display:none;"></div>
-
+  
           <h1 class="title" id="title">Chargement…</h1>
-
+  
           <img id="cover" class="cover is-placeholder" alt="" referrerpolicy="no-referrer">
-
-          <div class="infoBlock tagsBox" id="tagsBox"><div class="tagsRow" id="tags"></div></div>
-
+  
+          <div class="infoBlock tagsBox" id="tagsBox">
+            <div class="tagsRow" id="tags"></div>
+          </div>
+          
           <!-- 📝 Description -->
-          <div id="descriptionBox" class="infoBlock" style="display:none;">
+          <div id="descriptionBox" class="descInnerBox" style="display:none;">
             <div id="descriptionText" class="infoText"></div>
           </div>
 
+          <!-- ✅ BOUTONS -->
           <div class="btnRow">
             <a class="btnLike btn-discord" id="btnDiscord" target="_blank" rel="noopener" style="display:none;">💬 Discord</a>
             <a class="btnLike btn-f95" id="btnF95" target="_blank" rel="noopener" style="display:none;">
               <span class="f95-white">F95</span><span class="f95-red">Zone</span>
             </a>
           </div>
-
+  
           <div class="btnMainRow">
-            <a class="btnLike btnMega" id="btnMega" target="_blank" rel="noopener" style="display:none;">📥 Télécharger la traduction · MEGA</a>
+            <a class="btnLike btnMega" id="btnMega" target="_blank" rel="noopener" style="display:none;">
+              📥 Télécharger la traduction · MEGA
+            </a>
           </div>
-
+  
           <div id="archiveBox" style="display:none; margin-top:12px; justify-content:center;">
             <a id="archiveLink" class="btnLike" target="_blank" rel="noopener" style="justify-content:center;">
               📦 Archives de la traduction
             </a>
           </div>
-
-          <!-- ⭐ Notation -->
-          <div id="ratingBox" class="infoBlock" style="text-align:center;">
-            <div class="ratingTitle">Note de la traduction : <strong id="ratingAvg">—</strong> (<span id="ratingCount">0</span> votes)</div>
-            <div id="ratingChoices" style="display:flex; justify-content:center; gap:8px;"></div>
-            <div id="ratingMsg" style="margin-top:6px; color:var(--muted); font-size:12px;"></div>
-          </div>
-
-          <!-- ✅ NOTES -->
+  
+          <!-- ✅ ℹ️ Informations -->
           <div id="notesBox" class="infoBlock" style="display:none;">
             <h3>ℹ️ Informations</h3>
             <div id="notesText" class="infoTextMuted"></div>
           </div>
-
+  
+          <!-- ⭐ Notation -->
+          <div id="ratingBox" class="infoBlock" style="text-align:center;">
+            <div style="color:var(--muted); font-size:12px; margin-bottom:6px;">
+              Note de la traduction :
+              <strong id="ratingAvg">—</strong>
+              (<span id="ratingCount">0</span> votes)
+            </div>
+  
+            <div id="ratingChoices" style="display:flex; justify-content:center; gap:8px;"></div>
+            <div id="ratingMsg" style="margin-top:6px; color:var(--muted); font-size:12px;"></div>
+          </div>
+  
         </div>
       </div>
-
-      <div class="statsOut infoBlock" id="statsOut" style="display:none; text-align:center; margin-top:14px;">
+  
+      <div class="statsOut infoBlock" id="statsOut" style="display:none;">
         👁️ Vues : <strong id="statViews">0</strong>
         ·
         ❤️ J’aime : <strong id="statLikes">0</strong>
         ·
         📥 Téléchargements : <strong id="statMegaClicks">0</strong>
       </div>
-
+  
       <div class="err" id="errBox"></div>
     </div>
-
+  
     <!-- ✅ Observer : mini fade sur #ratingMsg à chaque changement -->
     <script>
       (function(){
         const msg = document.getElementById("ratingMsg");
         if (!msg) return;
-
+  
         const flash = () => {
           msg.classList.remove("msgFade");
           void msg.offsetWidth;
           msg.classList.add("msgFade");
         };
-
+  
         const obs = new MutationObserver(() => flash());
         obs.observe(msg, { childList: true, characterData: true, subtree: true });
-
+  
         if ((msg.textContent || "").trim()) flash();
       })();
     </script>
+  </div>
 
-  </div> <!-- ✅ FIN #page-game -->
+<!-- ✅ JS externes en defer -->
+  <script src="./viewer.menu.js" defer></script>
+  <script src="./viewer.menu.about.js" defer></script>
+  <script src="/viewer.menu.extension.js" defer></script>
+  <script src="/viewer.agegate.js" defer></script>
+  <script src="/viewer.annonce.js" defer></script>
 
-  <!-- ✅ JS externes en defer (plus stable en accès direct ?id= / ?uid=) -->
   <script src="./viewer.js" defer></script>
   <script src="./game.js" defer></script>
 
@@ -410,28 +368,19 @@
     })();
   </script>
 
-  <!-- ✅ pont hamburger : si tes JS attendent #hamburgerBtn -->
+  <!-- ✅ Sync thème si changé dans un autre onglet -->
   <script>
-    (function(){
-      function ensureAlias(){
-        const hasAlias = document.getElementById("hamburgerBtn");
-        if (hasAlias) return;
-
-        const p = new URLSearchParams(location.search);
-        const hasGame = (p.get("id")||"").trim() || (p.get("uid")||"").trim();
-
-        const src = document.getElementById(hasGame ? "hamburgerBtnGame" : "hamburgerBtnViewer");
-        if (!src) return;
-
-        const alias = src.cloneNode(true);
-        alias.id = "hamburgerBtn";
-        alias.style.display = "none";
-        alias.addEventListener("click", (e)=>{ e.preventDefault(); e.stopPropagation(); src.click(); });
-        document.body.appendChild(alias);
-      }
-      window.addEventListener("DOMContentLoaded", ensureAlias);
-    })();
+  window.addEventListener("storage", (e) => {
+    if (e.key !== "viewerTheme") return;
+    try{
+      const t = (localStorage.getItem("viewerTheme") || "auto").trim() || "auto";
+      const root = document.documentElement;
+      root.removeAttribute("data-theme");
+      if (t !== "auto") root.setAttribute("data-theme", t);
+    }catch{}
+  });
   </script>
 
 </body>
 </html>
+
