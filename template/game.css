@@ -647,27 +647,20 @@ html[data-theme="light"] .infoBlock .infoTextMuted{
 }
 
 
-/* ===== Effet de surélévation (tags + résumé) ===== */
+#mainInfoBox,
 .tagsBox,
-.game-block{
-  transition: transform .14s ease, box-shadow .14s ease;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.35);
-}
-
-.tagsBox:hover,
-.game-block:hover{
-  transform: translateY(-2px);
-  box-shadow: 0 10px 26px rgba(0,0,0,0.45);
-}
-
-/* ===== Effet de surélévation (Informations) ===== */
+.game-block,
 #notesBox{
-  box-shadow: 0 6px 16px rgba(0,0,0,0.35);
   transition: transform .14s ease, box-shadow .14s ease;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.35);
 }
 
+#mainInfoBox:hover,
+.tagsBox:hover,
+.game-block:hover,
 #notesBox:hover{
   transform: translateY(-2px);
   box-shadow: 0 10px 26px rgba(0,0,0,0.45);
 }
+
 
