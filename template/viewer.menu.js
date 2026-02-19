@@ -71,6 +71,10 @@
     ensureDom();
     renderMenuItems();
 
+    // ✅ Hook optionnel : permet de reconstruire les items à chaque ouverture
+    // (utile quand on est en mode jeu et qu'on veut "Retour à la liste" dynamique)
+    try { window.__onViewerMenuInit?.(); } catch {}
+
     if (BOUND) return;
     BOUND = true;
 
