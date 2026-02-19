@@ -6,98 +6,48 @@
   "use strict";
 
   // =========================
-  // Thèmes (dark forcé)
+  // Thèmes (themes.css)
   // =========================
-  
   function getViewerTheme() {
-    return "dark";
+    try { return (localStorage.getItem("viewerTheme") || "auto").trim() || "auto"; }
+    catch { return "auto"; }
   }
   
-  function setViewerTheme() {
-    // on verrouille la valeur (et on évite que l'UI réécrive autre chose)
-    try { localStorage.setItem("viewerTheme", "dark"); } catch {}
+  function setViewerTheme(v) {
+    try { localStorage.setItem("viewerTheme", String(v || "auto")); } catch {}
   }
   
-  function applyViewerTheme() {
-    // 🔒 force themes.css à appliquer UNIQUEMENT le sombre
-    document.documentElement.setAttribute("data-theme", "dark");
+  function applyViewerTheme(v) {
+    const t = (v || "auto").toString().trim() || "auto";
+    const root = document.documentElement;
+    root.removeAttribute("data-theme");
+    if (t !== "auto") root.setAttribute("data-theme", t);
+  }
+  
+  // ✅ Auto = suit Windows (clair/sombre) en live
+  let THEME_MQ_BOUND = false;
+  
+  function bindAutoThemeWatcher() {
+    if (THEME_MQ_BOUND) return;
+    THEME_MQ_BOUND = true;
+  
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    mq.addEventListener("change", () => {
+      try {
+        const t = getViewerTheme();
+        if ((t || "auto") === "auto") {
+          applyViewerTheme("auto"); // laisse le CSS suivre Windows
+          const sel = document.getElementById("theme");
+          if (sel) sel.value = "auto";
+        }
+      } catch {}
+    });
   }
 
   // =========================
   // ☰ Menu (popover) — lien vers l’accueil général
   // (utilisé par game.js via window.ViewerMenu.init())
-  // =========================
-  (function ensureTopMenu(){
-    if (window.ViewerMenu && typeof window.ViewerMenu.init === "function") return;
-
-    function prettyNameFromSlug(slug){
-      const s = String(slug || "").trim().toLowerCase();
-      if (!s) return "";
-      return s.charAt(0).toUpperCase() + s.slice(1);
-    }
-
-    function buildPopover(){
-      let pop = document.getElementById("topMenuPopover");
-      if (!pop) {
-        pop = document.createElement("div");
-        pop.id = "topMenuPopover";
-        pop.className = "menu-popover hidden";
-        pop.setAttribute("role", "menu");
-        document.body.appendChild(pop);
-      }
-
-      pop.dataset.built = "1";
-      pop.innerHTML = "";
-
-      let isGame = false;
-      try {
-        const p = new URLSearchParams(location.search);
-        isGame = !!(p.get("id") || p.get("uid"));
-      } catch {}
-
-      const slug = String(window.__SITE_SLUG__ || "").trim().toLowerCase();
-      const appPath = slug ? `/${slug}/` : `/`;
-      const niceName = String(window.__SITE_NAME__ || prettyNameFromSlug(slug) || "");
-
-      if (isGame) {
-        const aBack = document.createElement("a");
-        aBack.className = "menu-item";
-        aBack.href = appPath;
-        aBack.target = "_self";
-        aBack.rel = "noopener";
-        aBack.textContent = niceName ? `📚 Retour à la liste · ${niceName}` : "📚 Retour à la liste";
-        aBack.style.display = "block";
-        aBack.style.textDecoration = "none";
-        pop.appendChild(aBack);
-
-        const sep = document.createElement("div");
-        sep.style.height = "1px";
-        sep.style.margin = "6px 8px";
-        sep.style.background = "rgba(255,255,255,0.08)";
-        pop.appendChild(sep);
-      }
-
-      const aHome = document.createElement("a");
-      aHome.className = "menu-item";
-      aHome.href = "https://traductions.pages.dev/";
-      aHome.target = "_self";
-      aHome.rel = "noopener";
-      aHome.textContent = "🌍 Accueil";
-      aHome.style.display = "block";
-      aHome.style.textDecoration = "none";
-      pop.appendChild(aHome);
-
-      return pop;
-    }
-
-    window.ViewerMenu = {
-      init(){ buildPopover(); },
-      closeMenu(){
-        const pop = document.getElementById("topMenuPopover");
-        if (pop) pop.classList.add("hidden");
-      }
-    };
-  })();
+  
 
   // =========================
   // ✅ Détection universelle SLUG + chemins
@@ -114,6 +64,31 @@
   const SLUG = detectSlug();
   const APP_PATH = SLUG ? `/${SLUG}/` : `/`;
   const DEFAULT_URL = SLUG ? `/f95list_${SLUG}.json` : `/f95list.json`;
+
+
+  // =========================
+  // ☰ Menu : items communs (le noyau est dans viewer.menu.js)
+  // =========================
+  function registerMenuItems() {
+    try {
+      const p = new URLSearchParams(location.search);
+      const hasGame = (p.get("id") || "").trim() || (p.get("uid") || "").trim();
+      const niceName = String(
+        (window.__SITE_NAME__ || (SLUG ? (SLUG.charAt(0).toUpperCase() + SLUG.slice(1)) : ""))
+      ).trim();
+
+      // Toujours : Accueil général
+      window.ViewerMenu?.addItem?.("🌍 Accueil", () => { location.href = "https://traductions.pages.dev/"; });
+
+      // En mode jeu : retour liste du traducteur
+      if (hasGame) {
+        window.ViewerMenu?.addItem?.(
+          niceName ? `📚 Retour à la liste · ${niceName}` : "📚 Retour à la liste",
+          () => { location.href = APP_PATH; }
+        );
+      }
+    } catch {}
+  }
 
   const $ = (sel) => document.querySelector(sel);
 
@@ -150,31 +125,7 @@
 
   // =========================
   // 🔞 Age gate (intégré ici)
-  // =========================
-  (function initAgeGate(){
-    const KEY = "ageVerified";
-    const gate = document.getElementById("age-gate");
-    if (!gate) return;
-
-    try{
-      if (!localStorage.getItem(KEY)) {
-        gate.style.display = "flex";
-        document.body.classList.add("age-gate-active");
-        document.body.style.overflow = "hidden";
-      }
-    }catch{}
-
-    document.getElementById("age-yes")?.addEventListener("click", () => {
-      try{ localStorage.setItem(KEY, "1"); }catch{}
-      gate.style.display = "none";
-      document.body.classList.remove("age-gate-active");
-      document.body.style.overflow = "";
-    });
-
-    document.getElementById("age-no")?.addEventListener("click", () => {
-      location.href = "https://www.google.com";
-    });
-  })();
+  
 
   // =========================
   // ✅ URL page jeu (id central + support collection child)
@@ -1007,12 +958,16 @@
   async function init() {
     $("#grid") && ($("#grid").innerHTML = "");
     $("#gridEmpty")?.classList.add("hidden");
-
+  
     try {
       // ✅ thème (persistant)
       const themeSel = document.getElementById("theme");
       const themeVal = getViewerTheme();
       applyViewerTheme(themeVal);
+  
+      // ✅ Auto suit Windows en live (clair/sombre)
+      bindAutoThemeWatcher();
+  
       if (themeSel) {
         themeSel.value = themeVal;
         if (themeSel.dataset.bound !== "1") {
@@ -1021,36 +976,42 @@
             const v = (e.target?.value || "auto").trim() || "auto";
             setViewerTheme(v);
             applyViewerTheme(v);
+  
+            // ✅ si l’utilisateur revient sur auto, on suit Windows en live
+            if (v === "auto") bindAutoThemeWatcher();
           });
         }
       }
-
+  
       // ✅ top-right tools (comme ton site) + refresh en bas
       relocateTopRightTools();
-
+  
+      try { window.ViewerMenu?.init?.(); registerMenuItems(); } catch {}
+      try { window.viewerAnnonce?.refresh?.(); } catch {}
+  
       state.cols = getViewerCols();
       const colsSel = $("#cols");
       if (colsSel) colsSel.value = state.cols;
-
+  
       const raw = await loadList();
       state.all = Array.isArray(raw) ? raw.map(normalizeGame) : [];
-
+  
       if (!state.filterTags || !state.filterTags.length) {
         state.filterTags = getSavedTags();
       }
       updateTagsCountBadge();
-
+  
       buildDynamicFilters();
-
+  
       if (state.sort.startsWith("views") || state.sort.startsWith("mega") || state.sort.startsWith("likes")) {
         await ensureGameStatsLoaded();
       }
-
+  
       applyFilters();
       initMainPageCounter();
     } catch (e) {
       console.error("[viewer] load error:", e);
-
+  
       $("#grid") && ($("#grid").innerHTML = "");
       const ge = $("#gridEmpty");
       if (ge) {

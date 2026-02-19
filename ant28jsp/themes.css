@@ -1,0 +1,578 @@
+/* themes.css — Thèmes via variables (viewer.css reste propre)
+   Auto (par défaut) suit le thème Windows via prefers-color-scheme.
+
+   ✅ IMPORTANT :
+   - Les variables utilisées par html{ background: var(--bg) } doivent être sur :root (= html)
+   - Donc on force les thèmes sur :root[data-theme="..."] (et non body)
+*/
+
+html, body { min-height: 100%; }
+
+/* =========================================================
+   GLOBAL : étoiles (fallback)
+   ========================================================= */
+:root{
+  --game-rating-color: #f6c945;   /* ⭐ jaune */
+  --game-rating-opacity: .85;
+}
+
+/* =========================================================
+   BASE : petits overrides communs (tous thèmes)
+   ========================================================= */
+:root{
+  /* valeurs fallback si un thème ne définit pas tout */
+  --overlay-bg: rgba(0,0,0,0.55);
+  --thumb-bg: rgba(255,255,255,0.06);
+  --thumb-fallback-bg: rgba(0,0,0,0.15);
+
+  --border-soft: rgba(255,255,255,0.06);
+  --top-actions-border: rgba(255,255,255,0.03);
+
+  --soft-04: rgba(255,255,255,0.04);
+  --soft-05: rgba(255,255,255,0.05);
+
+  /* ✅ hover glow fallback (évite bleus “fantômes” si viewer.css l’utilise) */
+  --card-hover-glow: rgba(0,0,0,0.10);
+}
+
+
+/* =========================================================
+   AUTO (par défaut) = TON THÈME CLAIR
+   - s'applique quand aucun data-theme n'est forcé
+   ========================================================= */
+:root:not([data-theme]){
+  --bg:#f6f7fb;
+  --bg2:#ffffff;
+  --fg:#141824;
+  --muted:#525b71;
+
+  --primary:#2d6cdf;
+  --accent:#0f7b50;
+
+  --border:#d9deeb;
+  --border-soft: rgba(20,24,36,0.10);
+
+  --card:#ffffff;
+  --btn:#eef2fb;
+
+  --title:#0f1320;
+  --topbar-bg: rgba(246,247,251,.88);
+
+  --body-grad-1:#f6f7fb;
+  --body-grad-2:#f3f6ff;
+  --body-grad-3:#f7f7fa;
+
+  --popover-bg: rgba(255,255,255,0.94);
+  --hover-bg: rgba(20,24,36,0.06);
+
+  --overlay-bg: rgba(12,14,18,0.45);
+
+  --thumb-bg: rgba(45,108,223,0.08);
+  --thumb-fallback-bg: rgba(20,24,36,0.06);
+
+  --scrollbar-thumb:#c4cadb;
+  --scrollbar-track:#eef1f8;
+  --scrollbar-track-webkit: var(--scrollbar-track);
+  --scrollbar-thumb-webkit: var(--scrollbar-thumb);
+  --scrollbar-thumb-webkit-hover:#b0b7cc;
+
+  --top-actions-border: rgba(20,24,36,0.05);
+  --soft-04: rgba(20,24,36,0.04);
+  --soft-05: rgba(20,24,36,0.06);
+
+  /* ✅ hover tuiles : gris/blanc (pas bleu) */
+  --card-hover-border: rgba(0,0,0,0.12);
+  --card-hover-glow: rgba(0,0,0,0.08);
+  --card-hover-shadow:
+    0 1px 2px rgba(0,0,0,0.05),
+    0 8px 24px rgba(0,0,0,0.10);
+  --card-hover-bg: var(--card);
+
+  color-scheme: light;
+}
+
+/* gradient uniquement quand c'est clair (auto clair, clair, white) */
+:root:not([data-theme]) body,
+:root[data-theme="clair"] body,
+:root[data-theme="white"] body{
+  background:
+    radial-gradient(1200px 600px at 18% 0%, rgba(45,108,223,0.10), transparent 60%),
+    radial-gradient(900px 500px at 90% 10%, rgba(15,123,80,0.08), transparent 55%),
+    linear-gradient(180deg, var(--body-grad-1), var(--body-grad-2) 30%, var(--body-grad-3));
+  background-attachment: fixed;
+}
+
+/* auto + Windows sombre => pas de gradient clair */
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme]) body{
+    background: none;
+  }
+}
+
+
+/* =========================================================
+   AUTO + Windows sombre = TON THÈME SOMBRE
+   (uniquement si aucun data-theme n'est forcé)
+   ========================================================= */
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme]){
+    --bg:#0f1117;
+    --bg2:#141826;
+    --fg:#e8eaf0;
+    --muted:#aab2c8;
+    --primary:#5aa2ff;
+    --accent:#6ce0b0;
+    --border:#23283b;
+    --card:#171b29;
+    --btn:#1e2437;
+
+    --title: var(--fg);
+    --topbar-bg: rgba(16,20,37,.9);
+
+    --body-grad-1:#0d1018;
+    --body-grad-2:#101425;
+    --body-grad-3:#0f1117;
+
+    --popover-bg: rgba(20,24,38,0.98);
+    --hover-bg: rgba(255,255,255,0.06);
+
+    --scrollbar-thumb:#303a57;
+    --scrollbar-track:#0b0e14;
+    --scrollbar-track-webkit: var(--scrollbar-track);
+    --scrollbar-thumb-webkit: var(--scrollbar-thumb);
+    --scrollbar-thumb-webkit-hover:#3f4b6b;
+
+    --card-hover-border: rgba(255,255,255,0.22);
+    --card-hover-glow: rgba(255,255,255,0.14);
+    --card-hover-shadow:
+      0 0 0 1px rgba(255,255,255,0.18),
+      0 0 22px -6px rgba(255,255,255,0.18),
+      0 14px 38px rgba(0,0,0,0.45);
+    --card-hover-bg: var(--card);
+
+    color-scheme: dark;
+  }
+}
+
+
+/* =========================================================
+   FORCÉ : sombre (identique à ton style actuel)
+   ========================================================= */
+:root[data-theme="dark"]{
+  --bg:#0f1117;
+  --bg2:#141826;
+  --fg:#e8eaf0;
+  --muted:#aab2c8;
+  --primary:#5aa2ff;
+  --accent:#6ce0b0;
+  --border:#23283b;
+  --card:#171b29;
+  --btn:#1e2437;
+
+  --title: var(--fg);
+  --topbar-bg: rgba(16,20,37,.9);
+
+  --body-grad-1:#0d1018;
+  --body-grad-2:#101425;
+  --body-grad-3:#0f1117;
+
+  --popover-bg: rgba(20,24,38,0.98);
+  --hover-bg: rgba(255,255,255,0.06);
+
+  --scrollbar-thumb:#303a57;
+  --scrollbar-track:#0b0e14;
+  --scrollbar-track-webkit: var(--scrollbar-track);
+  --scrollbar-thumb-webkit: var(--scrollbar-thumb);
+  --scrollbar-thumb-webkit-hover:#3f4b6b;
+
+  /* ✅ hover “theme engine” (dark) */
+  --card-hover-border: rgba(255,255,255,0.22);
+  --card-hover-glow: rgba(255,255,255,0.14);
+  --card-hover-shadow:
+    0 0 0 1px rgba(255,255,255,0.18),
+    0 0 22px -6px rgba(255,255,255,0.18),
+    0 14px 38px rgba(0,0,0,0.45);
+  --card-hover-bg: var(--card);
+
+  color-scheme: dark;
+}
+
+
+/* =========================================================
+   FORCÉ : clair (alias : white) — clair premium, pas “blanc pur”
+   ========================================================= */
+:root[data-theme="clair"],
+:root[data-theme="white"]{
+  --bg:#f6f7fb;
+  --bg2:#ffffff;
+  --fg:#141824;
+  --muted:#525b71;
+
+  --primary:#2d6cdf;
+  --accent:#0f7b50;
+
+  --border:#d9deeb;
+  --border-soft: rgba(20,24,36,0.10);
+
+  --card:#ffffff;
+  --btn:#eef2fb;
+
+  --title:#0f1320;
+  --topbar-bg: rgba(246,247,251,.88);
+
+  --body-grad-1:#f6f7fb;
+  --body-grad-2:#f3f6ff;
+  --body-grad-3:#f7f7fa;
+
+  --popover-bg: rgba(255,255,255,0.94);
+  --hover-bg: rgba(20,24,36,0.06);
+
+  --overlay-bg: rgba(12,14,18,0.45);
+
+  --thumb-bg: rgba(45,108,223,0.08);
+  --thumb-fallback-bg: rgba(20,24,36,0.06);
+
+  --scrollbar-thumb:#c4cadb;
+  --scrollbar-track:#eef1f8;
+  --scrollbar-track-webkit: var(--scrollbar-track);
+  --scrollbar-thumb-webkit: var(--scrollbar-thumb);
+  --scrollbar-thumb-webkit-hover:#b0b7cc;
+
+  --top-actions-border: rgba(20,24,36,0.05);
+  --soft-04: rgba(20,24,36,0.04);
+  --soft-05: rgba(20,24,36,0.06);
+
+  /* ✅ hover tuiles : gris/blanc premium (pas bleu) */
+  --card-hover-border: rgba(0,0,0,0.12);
+  --card-hover-glow: rgba(0,0,0,0.08);
+  --card-hover-shadow:
+    0 1px 2px rgba(0,0,0,0.05),
+    0 8px 24px rgba(0,0,0,0.10);
+  --card-hover-bg: var(--card);
+
+  /* ⭐ couleur des étoiles */
+  --game-rating-color: #f1b90b;
+  --game-rating-opacity: .95;
+
+  color-scheme: light;
+}
+
+/* =========================================================
+   NOËL (sapin + rouge) + FOND FIXE + FX ANIMÉS SUR HTML
+   - Body transparent (pas de coupure bas)
+   - NE CASSE PAS le hamburger / popover
+   ========================================================= */
+
+:root[data-theme="noel"]{
+  --bg:#061611;
+  --bg2:#0a2018;
+
+  --fg:#f4fff9;
+  --muted:#c7e6d6;
+
+  --primary:#1faa59;
+  --accent:#ff3b3b;
+
+  --border:#1f5a43;
+
+  --card:#0f1c17;
+  --btn:#163a2c;
+
+  --title: var(--fg);
+
+  --topbar-bg: linear-gradient(
+    90deg,
+    rgba(6,22,17,.95),
+    rgba(255,59,59,.22)
+  );
+
+  --body-grad-1:#040d0a;
+  --body-grad-2:#061611;
+  --body-grad-3:#0b2219;
+
+  --popover-bg: rgba(15,28,23,.98);
+  --hover-bg: rgba(255,255,255,0.08);
+
+  --scrollbar-thumb:#2f8f68;
+  --scrollbar-track:#030a07;
+  --scrollbar-thumb-webkit-hover:#3fb07c;
+
+  --card-hover-border: #ff3b3b;
+  --card-hover-glow: rgba(255,59,59,.20);
+  --card-hover-shadow:
+    0 0 0 1px rgba(255,59,59,.65),
+    0 0 26px rgba(255,59,59,.22),
+    0 18px 44px rgba(0,0,0,.55);
+  --card-hover-bg:
+    linear-gradient(145deg, rgba(255,59,59,.10), rgba(31,170,89,.08));
+
+  color-scheme: dark;
+
+  background:
+    radial-gradient(circle at 10% 20%, rgba(255,255,255,0.22) 0 1px, transparent 2px),
+    radial-gradient(circle at 30% 80%, rgba(255,255,255,0.18) 0 1px, transparent 2px),
+    radial-gradient(circle at 70% 35%, rgba(255,255,255,0.20) 0 1px, transparent 2px),
+    radial-gradient(circle at 85% 70%, rgba(255,255,255,0.16) 0 1px, transparent 2px),
+
+    radial-gradient(1200px 700px at 15% 0%, rgba(24,195,122,0.18), transparent 60%),
+    radial-gradient(1100px 650px at 85% 10%, rgba(255,47,67,0.12), transparent 55%),
+    radial-gradient(900px 600px at 60% 0%, rgba(72,155,255,0.12), transparent 60%),
+
+    linear-gradient(180deg, #04080c 0%, #050d12 35%, #07151f 100%);
+
+  background-attachment: fixed;
+}
+
+:root[data-theme="noel"] body{
+  background: transparent !important;
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
+}
+
+:root[data-theme="noel"]::before,
+:root[data-theme="noel"]::after{
+  content:"";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  will-change: background-position, transform, opacity;
+}
+
+:root[data-theme="noel"]::before{
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: .22;
+  mix-blend-mode: screen;
+  background:
+    radial-gradient(1200px 700px at 15% 0%, rgba(24,195,122,0.22), transparent 60%),
+    radial-gradient(1100px 650px at 85% 10%, rgba(255,47,67,0.16), transparent 55%),
+    radial-gradient(900px 600px at 60% 0%, rgba(72,155,255,0.16), transparent 60%),
+    radial-gradient(circle at 12% 18%, rgba(255,255,255,.10) 0 1px, transparent 2px),
+    radial-gradient(circle at 72% 28%, rgba(255,255,255,.08) 0 1px, transparent 2px),
+    radial-gradient(circle at 34% 74%, rgba(255,255,255,.06) 0 1px, transparent 2px);
+  filter: blur(14px);
+  animation: noelAurora 14s ease-in-out infinite alternate, noelTwinkle 3.8s steps(2,end) infinite;
+}
+
+:root[data-theme="noel"]::after{
+  background-repeat: repeat;
+  opacity: .55;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.95) 0 1.25px, transparent 1.8px),
+    radial-gradient(circle, rgba(255,255,255,.70) 0 1.05px, transparent 1.7px),
+    radial-gradient(circle, rgba(255,255,255,.75) 0 0.85px, transparent 1.35px),
+    radial-gradient(circle, rgba(255,255,255,.45) 0 0.70px, transparent 1.25px);
+  background-size:
+    120px 160px,
+    210px 140px,
+    220px 260px,
+    340px 280px;
+  background-position:
+    0   -220px,
+    80px -140px,
+    40px -320px,
+    160px -240px;
+  filter: blur(.20px);
+  animation: noelSnowAll 15.5s linear infinite;
+}
+
+@keyframes noelSnowAll{
+  0%{
+    background-position:
+      0   -220px,
+      80px -140px,
+      40px -320px,
+      160px -240px;
+    transform: translateX(0);
+  }
+  25%{
+    background-position:
+      18px -40px,
+      60px  60px,
+      56px -140px,
+      140px -10px;
+    transform: translateX(6px);
+  }
+  55%{
+    background-position:
+      -10px 180px,
+      95px  280px,
+      28px  140px,
+      190px 240px;
+    transform: translateX(-5px);
+  }
+  80%{
+    background-position:
+      22px 360px,
+      70px  420px,
+      50px  360px,
+      150px 420px;
+    transform: translateX(4px);
+  }
+  100%{
+    background-position:
+      8px 560px,
+      78px  520px,
+      44px  560px,
+      168px 520px;
+    transform: translateX(0);
+  }
+}
+
+@keyframes noelAurora{
+  from{ transform: translate3d(-2%, -1%, 0) scale(1.02); opacity: .18; }
+  to  { transform: translate3d( 2%,  1%, 0) scale(1.05); opacity: .26; }
+}
+
+@keyframes noelTwinkle{
+  0%{ opacity:.18; }
+  20%{ opacity:.26; }
+  35%{ opacity:.16; }
+  55%{ opacity:.28; }
+  70%{ opacity:.20; }
+  100%{ opacity:.22; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  :root[data-theme="noel"]::before,
+  :root[data-theme="noel"]::after{
+    animation: none !important;
+  }
+}
+
+/* =========================================================
+   HALLOWEEN (cinematic pumpkin + FX fond)
+   ========================================================= */
+:root[data-theme="halloween"]{
+  position: relative;
+
+  --bg:#08050c;
+  --bg2:#110916;
+
+  --fg:#fff3e6;
+  --muted:#e4c9a6;
+
+  --primary:#ff7a00;
+  --accent:#9c6bff;
+
+  --border:#3a1f4d;
+  --card:#140a1a;
+  --btn:#1c0f25;
+
+  --title: var(--fg);
+
+  --topbar-bg: linear-gradient(
+      90deg,
+      rgba(8,5,12,.95),
+      rgba(255,122,0,.22)
+  );
+
+  --body-grad-1:#050308;
+  --body-grad-2:#08050c;
+  --body-grad-3:#120816;
+
+  --popover-bg: rgba(20,10,26,.98);
+  --hover-bg: rgba(255,255,255,0.06);
+
+  --scrollbar-thumb:#6a35a0;
+  --scrollbar-track:#030205;
+  --scrollbar-thumb-webkit-hover:#8446c8;
+
+  --card-hover-border: #ff7a00;
+  --card-hover-glow: rgba(255,122,0,.22);
+  --card-hover-shadow:
+    0 0 0 1px rgba(255,122,0,.70),
+    0 0 30px rgba(255,122,0,.22),
+    0 18px 44px rgba(0,0,0,.60);
+  --card-hover-bg:
+    linear-gradient(145deg, rgba(255,122,0,.10), rgba(156,107,255,.07));
+
+  color-scheme: dark;
+
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255,140,0,0.20) 0 1px, transparent 2px),
+    radial-gradient(circle at 30% 82%, rgba(255,120,0,0.16) 0 1px, transparent 2px),
+    radial-gradient(circle at 70% 35%, rgba(180,120,255,0.18) 0 1px, transparent 2px),
+    radial-gradient(circle at 85% 70%, rgba(255,90,0,0.14) 0 1px, transparent 2px),
+
+    radial-gradient(1200px 700px at 20% 10%, rgba(156,107,255,0.16), transparent 60%),
+    radial-gradient(900px 500px at 85% 15%, rgba(255,122,0,0.18), transparent 55%),
+    radial-gradient(1100px 800px at 50% 90%, rgba(120,0,255,0.10), transparent 60%),
+
+    linear-gradient(180deg, #050308 0%, #07040d 35%, #120816 100%);
+
+  background-attachment: fixed;
+}
+
+:root[data-theme="halloween"] body{
+  background: transparent !important;
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
+}
+
+:root[data-theme="halloween"]::before,
+:root[data-theme="halloween"]::after{
+  content:"";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background-repeat: no-repeat;
+}
+
+:root[data-theme="halloween"]::before{
+  opacity: .70;
+  background:
+    radial-gradient(520px 520px at 88% 12%, rgba(255,170,60,.22), transparent 62%),
+    radial-gradient(260px 260px at 88% 12%, rgba(255,170,60,.10), transparent 64%),
+    radial-gradient(900px 520px at 18% 22%, rgba(156,107,255,.14), transparent 62%),
+    radial-gradient(1200px 700px at 40% 90%, rgba(255,122,0,.10), transparent 62%);
+  filter: blur(12px);
+  animation: halloweenFog 14s ease-in-out infinite alternate;
+}
+
+:root[data-theme="halloween"]::after{
+  opacity: .12;
+  background:
+    radial-gradient(900px 520px at 55% 20%, rgba(255,122,0,.70), transparent 68%),
+    radial-gradient(700px 420px at 25% 70%, rgba(255,122,0,.35), transparent 72%);
+  mix-blend-mode: screen;
+  animation: halloweenFlicker 3.6s steps(2, end) infinite;
+}
+
+@keyframes halloweenFog{
+  0%   { opacity:.62; background-position: 0% 0%; }
+  50%  { opacity:.78; background-position: 3% 0%; }
+  100% { opacity:.62; background-position:-3% 0%; }
+}
+
+@keyframes halloweenFlicker{
+  0%{ opacity:.08; }
+  18%{ opacity:.14; }
+  26%{ opacity:.06; }
+  52%{ opacity:.16; }
+  68%{ opacity:.10; }
+  100%{ opacity:.12; }
+}
+
+
+/* =====================================================
+   THEME HOVER ENGINE (1 seule fois)
+   ===================================================== */
+.card{
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease,
+    border-color .18s ease,
+    background .18s ease;
+}
+
+.card:hover{
+  transform: translateY(-4px);
+  border-color: var(--card-hover-border, var(--border));
+  box-shadow: var(--card-hover-shadow, 0 12px 34px rgba(0,0,0,.25));
+  background: var(--card-hover-bg, var(--card));
+}

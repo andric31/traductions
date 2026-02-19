@@ -1,6 +1,36 @@
 "use strict";
 
 // ============================================================================
+// ✅ Harmonisation DOM (IDs/classes) avec game.andric31.js
+// Objectif : pouvoir réutiliser exactement le même CSS de thème.
+// - Ne change pas les liens / la logique métier
+// - Renomme uniquement (ou crée des alias) côté DOM quand nécessaire
+// ============================================================================
+function normalizeDomIdsForSharedTheme() {
+  const aliasId = (fromId, toId) => {
+    const to = document.getElementById(toId);
+    if (to) return to;
+    const from = document.getElementById(fromId);
+    if (!from) return null;
+    try { from.id = toId; } catch {}
+    return from;
+  };
+
+  // Hamburger: on force l'ID "hamburgerBtn" (game.andric31)
+  aliasId("hamburgerBtnGame", "hamburgerBtn");
+  aliasId("hamburgerBtnViewer", "hamburgerBtn");
+
+  // Boutons principaux : si un ancien id existe, on le renomme vers l'id standard
+  aliasId("discordBtn", "btnDiscord");
+  aliasId("f95Btn", "btnF95");
+  aliasId("megaBtn", "btnMega");
+  aliasId("archivesBtn", "archiveLink");
+
+  // Like
+  aliasId("likeBtn", "btnLike");
+}
+
+// ============================================================================
 // ✅ Détection universelle SLUG + chemins
 // ============================================================================
 function detectSlug() {
@@ -588,6 +618,7 @@ async function renderTranslationStatus(game) {
   if (!game?.url) return;
 
   const maj = document.getElementById("majState");
+  const badgesWrap = document.getElementById("badges");
   const clean = (s) => String(s || "").replace(/\s+/g, " ").trim();
 
   // ✅ storedTitle = titre complet (source de vérité)
@@ -637,9 +668,31 @@ async function renderTranslationStatus(game) {
     if (!maj) return;
     maj.classList.remove("maj-ok", "maj-ko");
 
+    // ✅ Badge (même logique que game.andric31.js) — pour un CSS partagé
+    if (badgesWrap) {
+      // évite les doublons
+      const prev = badgesWrap.querySelector(".badge[data-f95status='1']");
+      if (prev) prev.remove();
+
+      const badge = document.createElement("span");
+      badge.classList.add("badge");
+      badge.setAttribute("data-f95status", "1");
+
+      if (j.isUpToDate) {
+        badge.textContent = "✅ Traduction à jour";
+        badge.classList.add("status-updated");
+      } else {
+        badge.textContent = "🔄 Traduction non à jour";
+        badge.classList.add("status-outdated");
+      }
+      badgesWrap.appendChild(badge);
+    }
+
     if (j.isUpToDate) {
-      maj.textContent = "✅ Traduction à jour";
-      maj.classList.add("maj-ok");
+      if (maj) {
+        maj.textContent = "✅ Traduction à jour";
+        maj.classList.add("maj-ok");
+      }
       return;
     }
 
@@ -1147,6 +1200,10 @@ function renderVideoBlock({ id, videoUrl }) {
 // ============================================================================
 (async function main() {
   try {
+    // ✅ Assure que les IDs/structures DOM correspondent à game.andric31.js
+    // (permet d'utiliser un seul CSS de thème)
+    try { normalizeDomIdsForSharedTheme(); } catch {}
+
     initHamburgerMenu();
 
     const { id: idParam, uid: uidParam } = getParamsFromUrl();
@@ -1276,58 +1333,67 @@ function renderVideoBlock({ id, videoUrl }) {
     const ab = $("archiveBox");
     if (ab) ab.style.display = archiveHref ? "flex" : "none";
 
-    // 6b) Extra links — entre MEGA et Archives (format BOUTONS, pas encadré)
+    // 6b) Extra links — même DOM/classes que game.andric31.js (pour CSS partagé)
     const extra = Array.isArray(entry.translationsExtra) ? entry.translationsExtra : [];
+    const extraValid = extra.filter((x) => x && (x.link || "").trim());
 
-    // ligne de boutons (même placement que MEGA)
-    let extraRow = document.getElementById("extraLinksRow");
-    if (!extraRow) {
-      extraRow = document.createElement("div");
-      extraRow.id = "extraLinksRow";
-      extraRow.className = "btnMainRow";
+    // wrapper colonne (sous MEGA, dans la même ligne)
+    let extraWrap = document.querySelector(".extraLinksCol");
+    if (!extraWrap) {
+      extraWrap = document.createElement("div");
+      extraWrap.className = "extraLinksCol";
+      extraWrap.style.display = "flex";
+      extraWrap.style.flexDirection = "column";
+      extraWrap.style.gap = "10px";
+      extraWrap.style.alignItems = "center";
+      extraWrap.style.width = "auto";
 
-      // ✅ insérer JUSTE AVANT archiveBox (donc après MEGA)
-      const archiveBox = document.getElementById("archiveBox");
-      if (archiveBox && archiveBox.parentNode) {
-        archiveBox.parentNode.insertBefore(extraRow, archiveBox);
+      // insère juste après le bouton MEGA si possible
+      const megaBtn = document.getElementById("btnMega");
+      if (megaRow && megaBtn && megaBtn.parentNode === megaRow) {
+        megaRow.insertBefore(extraWrap, megaBtn.nextSibling);
+      } else if (megaRow) {
+        megaRow.appendChild(extraWrap);
       }
     }
 
-    // rendu (boutons)
-    if (extraRow) {
-      const valid = extra.filter(x => x && (x.link || "").trim());
-      if (valid.length) {
-        extraRow.innerHTML = valid.map((x) => {
-          const name = (x.name || "Lien").trim();
-          const link = (x.link || "").trim();
-          const hostCls = getHostClass(link);
+    if (extraWrap) {
+      extraWrap.innerHTML = "";
 
-          // ✅ libellé : 1 seul enfant dans le <a> (évite le gap flex entre texte et logo)
-          let labelHtml = `<span class="btnLabel">📥 Télécharger la traduction · ${escapeHtml(name)}</span>`;
-          
-          // ✅ F95Zone : bicolore (même rendu que le bouton principal)
+      extraValid.forEach((x) => {
+        const name = String(x.name || "Lien").trim();
+        const link = String(x.link || "").trim();
+        const hostCls = getHostClass(link);
+
+        const a = document.createElement("a");
+        a.className = `btnLike ${hostCls} extraLinkBtn`;
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.href = link;
+        a.style.width = "auto";
+        a.style.margin = "0 auto";
+        a.style.justifyContent = "center";
+
+        // Patch : si name == Patch
+        if (name.toLowerCase() === "patch") {
+          a.textContent = "📥 Télécharger · Patch";
+        } else {
           if (hostCls === "btn-f95" && /f95\s*zone/i.test(name)) {
-            labelHtml = `<span class="btnLabel">📥 Télécharger la traduction · <span class="f95-logo"><span class="f95-white">F95</span><span class="f95-red">Zone</span></span></span>`;
+            a.innerHTML = `📥 Télécharger la traduction · <span class="f95-logo"><span class="f95-white">F95</span><span class="f95-red">Zone</span></span>`;
+          } else {
+            a.textContent = `📥 Télécharger la traduction · ${name}`;
           }
+        }
 
-          return `
-            <a class="btnLike ${hostCls}"
-               target="_blank" rel="noopener"
-               href="${escapeHtml(link)}">
-              ${labelHtml}
-            </a>
-          `;
-        }).join("");
+        extraWrap.appendChild(a);
+      });
+    }
 
-        extraRow.style.display = "flex";
-        extraRow.style.flexWrap = "wrap";
-        extraRow.style.gap = "10px";
-        extraRow.style.justifyContent = "center";
-        extraRow.style.marginTop = "12px";
-      } else {
-        extraRow.style.display = "none";
-        extraRow.innerHTML = "";
-      }
+    // ✅ Cache/affiche la ligne MEGA selon (MEGA OU extras)
+    if (megaRow) {
+      const hasMega = !!megaHref;
+      const hasExtra = extraValid.length > 0;
+      megaRow.style.display = (hasMega || hasExtra) ? "flex" : "none";
     }
 
     // 7) Notes
