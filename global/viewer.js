@@ -6,31 +6,35 @@
   "use strict";
 
   // =========================
+  // (Thèmes supprimés sur demande)
+  // =========================
+
+  // =========================
+  // ☰ Menu (popover) — lien vers l’accueil général
+  // (utilisé par game.js via window.ViewerMenu.init())
+  
+
+  // =========================
   // ✅ Détection universelle SLUG + chemins
   // =========================
   function detectSlug() {
-    // 1) override possible depuis index.html : window.__SITE_SLUG__ = "ikaros";
     try {
       const forced = (window.__SITE_SLUG__ || "").toString().trim();
       if (forced) return forced;
     } catch {}
-
-    // 2) sinon, 1er segment du pathname
-    // ex: /ikaros/ -> ikaros ; /ikaros/index.html -> ikaros
     const segs = (location.pathname || "/").split("/").filter(Boolean);
     return (segs[0] || "").trim();
   }
 
-  const SLUG = detectSlug();                 // "liste" / "ikaros" / "ant28jsp" / ...
-  const APP_PATH = SLUG ? `/${SLUG}/` : `/`; // base pour les liens internes
-  const DEFAULT_URL = SLUG ? `/f95list_${SLUG}.json` : `/f95list.json`;
+  const SLUG = (detectSlug() || "").toLowerCase();
+  const IS_GLOBAL = SLUG === "global";
+  const APP_PATH = SLUG ? `/${SLUG}/` : `/`;
+  // ✅ En mode GLOBAL : on merge les listes des traducteurs (via manifest)
+  const DEFAULT_URL = (!IS_GLOBAL && SLUG) ? `/f95list_${SLUG}.json` : `/f95list.json`;
 
-  const $ = (sel) => document.querySelector(sel);
 
   // =========================
-  // ☰ Menu hamburger (aligné template)
-  // - items gérés par viewer.menu.js (+ about)
-  // - ce fichier gère l'ouverture + positionnement + fermeture
+  // ☰ Menu : items communs (le noyau est dans viewer.menu.js)
   // =========================
   function registerMenuItems() {
     try {
@@ -40,195 +44,70 @@
         (window.__SITE_NAME__ || (SLUG ? (SLUG.charAt(0).toUpperCase() + SLUG.slice(1)) : ""))
       ).trim();
 
-      // IMPORTANT : on reconstruit le menu à chaque ouverture
-      // -> garantit l'ordre : Accueil (1er) / Extension / À propos (+ éventuellement Retour liste)
-      try { window.ViewerMenu?.clearItems?.(); } catch {}
-
       // Toujours : Accueil général
-      window.ViewerMenu?.addItem?.("🌍 Accueil", () => { location.href = "https://traductions.pages.dev/"; });
+      window.ViewerMenu?.addItem?.("🌍 Accueil", () => { location.href = "/"; });
 
-      // Toujours : Extension
-      window.ViewerMenu?.addItem?.("🧩 Extension", () => { location.href = "https://traductions.pages.dev/extension/"; });
-
-      // En mode jeu : retour vers la liste
+      // En mode jeu : retour liste du traducteur
       if (hasGame) {
         window.ViewerMenu?.addItem?.(
           niceName ? `📚 Retour à la liste · ${niceName}` : "📚 Retour à la liste",
           () => { location.href = APP_PATH; }
         );
       }
-
-      // À propos (modale)
-      if (window.ViewerMenuAbout?.open) {
-        window.ViewerMenu?.addItem?.("ℹ️ À propos", () => window.ViewerMenuAbout.open());
-      } else {
-        // fallback : si le script about n'est pas encore chargé, on retente dans 1 tick
-        setTimeout(() => {
-          if (window.ViewerMenuAbout?.open) {
-            try {
-              window.ViewerMenu?.clearItems?.();
-              window.ViewerMenu?.addItem?.("🌍 Accueil", () => { location.href = "https://traductions.pages.dev/"; });
-              window.ViewerMenu?.addItem?.("🧩 Extension", () => { location.href = "https://traductions.pages.dev/extension/"; });
-              if (hasGame) {
-                window.ViewerMenu?.addItem?.(
-                  niceName ? `📚 Retour à la liste · ${niceName}` : "📚 Retour à la liste",
-                  () => { location.href = APP_PATH; }
-                );
-              }
-              window.ViewerMenu?.addItem?.("ℹ️ À propos", () => window.ViewerMenuAbout.open());
-            } catch {}
-          }
-        }, 0);
-      }
     } catch {}
   }
 
-  function positionPopover(pop, anchorBtn) {
-    const r = anchorBtn.getBoundingClientRect();
-    const margin = 8;
+  const $ = (sel) => document.querySelector(sel);
 
-    let left = Math.round(r.left);
-    let top = Math.round(r.bottom + margin);
+  // =========================
+  // ✅ TOP RIGHT TOOLS (comme ton site principal)
+  // - monte Total + Cols + Theme + PageSize dans #topTitleTools
+  // - NE MONTE PAS #refresh
+  // - remet #refresh en bas (top-actions)
+  // =========================
+  function relocateTopRightTools() {
+    const host = document.getElementById("topTitleTools");
+    const mini = document.querySelector(".top-mini");
+    const actions = document.querySelector(".top-actions");
+    const refreshBtn = document.getElementById("refresh");
+    if (!host || !mini) return;
 
-    const widthGuess = pop.getBoundingClientRect().width || 260;
-    const maxLeft = window.innerWidth - widthGuess - 10;
+    // évite de refaire 50 fois si init() relance
+    if (host.dataset.moved === "1") {
+      // mais on sécurise quand même refresh
+      if (refreshBtn && actions && refreshBtn.parentElement !== actions) actions.appendChild(refreshBtn);
+      return;
+    }
+    host.dataset.moved = "1";
 
-    if (left > maxLeft) left = Math.max(10, maxLeft);
-    if (left < 10) left = 10;
+    // on déplace tout ce que contient .top-mini sauf #refresh
+    const toMove = [...mini.children].filter(el => el && el.id !== "refresh");
+    toMove.forEach(el => host.appendChild(el));
 
-    pop.style.left = left + "px";
-    pop.style.top = top + "px";
-  }
-
-  function initHamburgerMenu() {
-    const btns = [];
-    const seen = new Set();
-    ["hamburgerBtn", "hamburgerBtnViewer"].forEach((id) => {
-      const b = document.getElementById(id);
-      if (b && !seen.has(b)) { btns.push(b); seen.add(b); }
-    });
-    if (!btns.length) return;
-
-    try { window.ViewerMenu?.init?.(); } catch {}
-
-    const bindOne = (btn) => {
-      if (btn.dataset.boundHamburger === "1") return;
-      btn.dataset.boundHamburger = "1";
-
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        try { window.ViewerMenu?.init?.(); } catch {}
-        try { registerMenuItems(); } catch {}
-
-        const pop = document.getElementById("topMenuPopover");
-        if (!pop) return;
-
-        const isOpen = !pop.classList.contains("hidden");
-        if (isOpen) {
-          try { window.ViewerMenu?.closeMenu?.(); } catch { pop.classList.add("hidden"); }
-          btn.setAttribute("aria-expanded", "false");
-          return;
-        }
-
-        pop.classList.remove("hidden");
-        btn.setAttribute("aria-expanded", "true");
-        positionPopover(pop, btn);
-      });
-    };
-
-    btns.forEach(bindOne);
-
-    if (document.body.dataset.boundHamburgerGlobal === "1") return;
-    document.body.dataset.boundHamburgerGlobal = "1";
-
-    document.addEventListener("click", (e) => {
-      const pop = document.getElementById("topMenuPopover");
-      if (!pop) return;
-
-      const target = e.target;
-      const clickedBtn = btns.some((b) => b.contains(target));
-      if (!pop.contains(target) && !clickedBtn) {
-        try { window.ViewerMenu?.closeMenu?.(); } catch { pop.classList.add("hidden"); }
-        btns.forEach((b) => b.setAttribute("aria-expanded", "false"));
-      }
-    });
-
-    window.addEventListener("resize", () => {
-      const pop = document.getElementById("topMenuPopover");
-      if (pop && !pop.classList.contains("hidden")) {
-        const btn = btns.find((b) => b.offsetParent !== null) || btns[0];
-        positionPopover(pop, btn);
-      }
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key !== "Escape") return;
-      try { window.ViewerMenu?.closeMenu?.(); } catch {}
-      try { window.ViewerMenuAbout?.close?.(); } catch {}
-    });
+    // si refresh se trouvait dans .top-mini ou ailleurs, on le remet en bas
+    if (refreshBtn && actions && refreshBtn.parentElement !== actions) {
+      actions.appendChild(refreshBtn);
+    }
   }
 
   // =========================
   // 🔞 Age gate (intégré ici)
-  // =========================
-  (function initAgeGate() {
-    const KEY = "ageVerified";
-    const gate = document.getElementById("age-gate");
-    if (!gate) return;
-
-    try {
-      if (!localStorage.getItem(KEY)) {
-        gate.style.display = "flex";
-        document.body.classList.add("age-gate-active");
-        document.body.style.overflow = "hidden";
-      }
-    } catch {}
-
-    document.getElementById("age-yes")?.addEventListener("click", () => {
-      try { localStorage.setItem(KEY, "1"); } catch {}
-      gate.style.display = "none";
-      document.body.classList.remove("age-gate-active");
-      document.body.style.overflow = "";
-    });
-
-    document.getElementById("age-no")?.addEventListener("click", () => {
-      location.href = "https://www.google.com";
-    });
-  })();
+  
 
   // =========================
-  // ✅ URL page jeu (règle EXACTE de tes viewers)
+  // ✅ URL page jeu (id central + support collection child)
   // =========================
-  // - Sous-jeu de collection : ?id=<collection>&uid=<uid>
-  // - Jeu normal / parent      : ?id=<id>   (⚠️ PAS de uid)
-  // - Fallback                 : ?uid=<uid>
   function buildGameUrl(g) {
-    const base = (g && g._openBase) ? String(g._openBase).trim() : APP_PATH;
+    const coll = (g.collection || "").toString().trim();
+    const id = (g.id || "").toString().trim();
+    const uid = (g.uid ?? "").toString().trim();
 
-    const coll = (g && g.collection != null) ? String(g.collection).trim() : "";
-    const id   = (g && g.id != null)         ? String(g.id).trim() : "";
-    const uid  = (g && g.uid != null)        ? String(g.uid).trim() : "";
+    // ✅ GLOBAL : on renvoie vers la page du traducteur concerné
+    const base = IS_GLOBAL && g.__translatorKey ? `/${String(g.__translatorKey).trim()}/` : APP_PATH;
 
-    const params = new URLSearchParams();
-
-    if (coll && uid) {
-      // ✅ sous-jeu de collection : thread parent + uid
-      params.set("id", coll);
-      params.set("uid", uid);
-    } else if (id) {
-      // ✅ jeu normal : id seulement (comme tes viewers)
-      params.set("id", id);
-    } else if (uid) {
-      // fallback uid only
-      params.set("uid", uid);
-    }
-
-    const qs = params.toString();
-    if (!qs) return base;
-
-    return base.includes("?") ? (base + "&" + qs) : (base + "?" + qs);
+    if (coll) return `${base}?id=${encodeURIComponent(coll)}&uid=${encodeURIComponent(uid)}`;
+    if (id) return `${base}?id=${encodeURIComponent(id)}`;
+    return `${base}?uid=${encodeURIComponent(uid)}`;
   }
 
   function getDisplayTitle(g) {
@@ -277,7 +156,7 @@
   // Stats jeux (vues + likes + téléchargements)
   // =========================
   const GAME_STATS = {
-    views: new Map(), // key(uid:xxx) -> number
+    views: new Map(),
     mega: new Map(),
     likes: new Map(),
     loaded: false,
@@ -368,56 +247,63 @@
     catch {}
   }
 
-  // =========================
-  // ✅ Mode "ALL" : fusion de toutes les listes via traducteurs_manifest.json
-  // =========================
-  async function loadAllLists() {
-    const manifestUrl = "/traducteurs_manifest.json";
-    const mr = await fetch(manifestUrl, { cache: "no-store" });
-    if (!mr.ok) throw new Error("HTTP " + mr.status + " sur " + manifestUrl);
+  async function loadList() {
+    const url = getListUrl();
+
+    // ✅ Si src/localStorage pointe vers un JSON custom, on le charge tel quel.
+    // (utile même en /global/ si tu as une liste déjà mergée)
+    if (url && url !== DEFAULT_URL) {
+      const r = await fetch(url, { cache: "no-store" });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    }
+
+    if (!IS_GLOBAL) {
+      const r = await fetch(DEFAULT_URL, { cache: "no-store" });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    }
+
+    // =========================
+    // ✅ GLOBAL : merge toutes les listes traducteurs
+    // =========================
+    const mr = await fetch("/traducteurs_manifest.json", { cache: "no-store" });
+    if (!mr.ok) throw new Error("HTTP " + mr.status);
     const manifest = await mr.json();
-    const list = Array.isArray(manifest)
-      ? manifest
-      : (manifest && Array.isArray(manifest.traducteurs))
-      ? manifest.traducteurs
-      : [];
+    const list = Array.isArray(manifest) ? manifest : [];
 
-    const combined = [];
-    for (const t of list) {
-      const name = (t && (t.name || t.key || t.slug) || "").toString().trim() || "Traducteur";
-      const listUrl = (t && t.listUrl ? String(t.listUrl) : "").trim();
-      if (!listUrl) continue;
+    const entries = list
+      .map(x => ({
+        key: String(x?.key || "").trim(),
+        name: String(x?.name || x?.label || x?.key || "").trim()
+      }))
+      .filter(x => x.key && x.key.toLowerCase() !== "global");
 
-      try {
-        const r = await fetch(listUrl, { cache: "no-store" });
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        const raw = await r.json();
+    const results = await Promise.allSettled(
+      entries.map(async (t) => {
+        const jr = await fetch(`/f95list_${t.key}.json`, { cache: "no-store" });
+        if (!jr.ok) throw new Error(`HTTP ${jr.status} (${t.key})`);
+        const j = await jr.json();
+        const arr = Array.isArray(j) ? j : (Array.isArray(j?.games) ? j.games : (Array.isArray(j?.items) ? j.items : []));
+        return { t, arr };
+      })
+    );
 
-        const games = Array.isArray(raw) ? raw
-          : (raw && Array.isArray(raw.games)) ? raw.games
-          : (raw && Array.isArray(raw.items)) ? raw.items
-          : [];
-
-        for (const g of games) {
-          if (!g || typeof g !== "object") continue;
-          if (!g._translator) g._translator = name;
-          if (!g._translatorKey && t && t.key) g._translatorKey = String(t.key);
-          if (!g._openBase && t && t.openBase) g._openBase = String(t.openBase);
-          combined.push(g);
+    const merged = [];
+    for (const r of results) {
+      if (r.status !== "fulfilled") continue;
+      const { t, arr } = r.value;
+      for (const g of arr) {
+        const obj = (g && typeof g === "object") ? { ...g } : g;
+        if (obj && typeof obj === "object") {
+          obj.__translatorKey = t.key;
+          obj.__translatorName = t.name;
         }
-      } catch (e) {
-        console.warn("[ALL] échec chargement", name, listUrl, e);
+        merged.push(obj);
       }
     }
-    return combined;
-  }
 
-  // Promesse globale partagée avec game.js (chargée après viewer.js)
-  if (!window.__ALL_DATA_PROMISE__) {
-    window.__ALL_DATA_PROMISE__ = loadAllLists().then(arr => {
-      window.__ALL_GAMES__ = arr;
-      return arr;
-    });
+    return merged;
   }
 
   // =========================
@@ -569,12 +455,8 @@
     const coll = String(game.collection || "");
     const uid = game.uid ?? "";
 
-    const displayTitleRaw = String(
-      game.gameData && game.gameData.title ? game.gameData.title : game.title || ""
-    );
-    const displayImageRaw = String(
-      game.gameData && game.gameData.imageUrl ? game.gameData.imageUrl : game.imageUrl || ""
-    );
+    const displayTitleRaw = String(game.gameData?.title ? game.gameData.title : game.title || "");
+    const displayImageRaw = String(game.gameData?.imageUrl ? game.gameData.imageUrl : game.imageUrl || "");
 
     const displayTags = Array.isArray(game.gameData?.tags)
       ? game.gameData.tags.slice()
@@ -597,7 +479,6 @@
 
     const ckey = counterKeyOfUid(uid);
 
-    // moteur : priorité gameData.engine si présent
     let engines = Array.isArray(c.engines) ? c.engines : [];
     if (game.gameData?.engine) {
       const engNorm = ENGINE_RAW[slugify(game.gameData.engine)] || game.gameData.engine;
@@ -820,6 +701,11 @@
     const cats = Array.isArray(g.categories) ? g.categories : [];
     const engs = Array.isArray(g.engines) ? g.engines : [];
 
+    // ✅ GLOBAL : badge traducteur (avant le reste)
+    if (IS_GLOBAL && g.__translatorName) {
+      out.push(`<span class="badge translator">${escapeHtml(String(g.__translatorName))}</span>`);
+    }
+
     for (const cat of cats) {
       if (CAT_ALLOWED.includes(cat)) out.push(`<span class="badge cat cat-${slugify(cat)}">${escapeHtml(cat)}</span>`);
     }
@@ -855,24 +741,24 @@
     }
 
     if (k === "views") {
-      state.filtered.sort((a, b) => ((GAME_STATS.views.get(a.ckey) || 0) - (GAME_STATS.views.get(b.ckey) || 0)) * mul
-        || ((a.updatedAtLocalTs || 0) - (b.updatedAtLocalTs || 0)) * mul
+      state.filtered.sort((a, b) => ( (GAME_STATS.views.get(a.ckey)||0) - (GAME_STATS.views.get(b.ckey)||0) ) * mul
+        || ( (a.updatedAtLocalTs||0) - (b.updatedAtLocalTs||0) ) * mul
         || a.title.localeCompare(b.title)
       );
       return;
     }
 
     if (k === "mega") {
-      state.filtered.sort((a, b) => ((GAME_STATS.mega.get(a.ckey) || 0) - (GAME_STATS.mega.get(b.ckey) || 0)) * mul
-        || ((a.updatedAtLocalTs || 0) - (b.updatedAtLocalTs || 0)) * mul
+      state.filtered.sort((a, b) => ( (GAME_STATS.mega.get(a.ckey)||0) - (GAME_STATS.mega.get(b.ckey)||0) ) * mul
+        || ( (a.updatedAtLocalTs||0) - (b.updatedAtLocalTs||0) ) * mul
         || a.title.localeCompare(b.title)
       );
       return;
     }
 
     if (k === "likes") {
-      state.filtered.sort((a, b) => ((GAME_STATS.likes.get(a.ckey) || 0) - (GAME_STATS.likes.get(b.ckey) || 0)) * mul
-        || ((a.updatedAtLocalTs || 0) - (b.updatedAtLocalTs || 0)) * mul
+      state.filtered.sort((a, b) => ( (GAME_STATS.likes.get(a.ckey)||0) - (GAME_STATS.likes.get(b.ckey)||0) ) * mul
+        || ( (a.updatedAtLocalTs||0) - (b.updatedAtLocalTs||0) ) * mul
         || a.title.localeCompare(b.title)
       );
       return;
@@ -887,10 +773,7 @@
     const ft = state.filterTags;
 
     state.filtered = state.all.filter((g) => {
-      const mq = !q
-        || g.title.toLowerCase().includes(q)
-        || String(g.id || "").includes(q)
-        || String(g.uid || "").includes(q);
+      const mq = !q || g.title.toLowerCase().includes(q) || String(g.id || "").includes(q) || String(g.uid || "").includes(q);
 
       const mc = fc === "all" || (Array.isArray(g.categories) ? g.categories.includes(fc) : false);
       const me = fe === "all" || (Array.isArray(g.engines) ? g.engines.includes(fe) : false);
@@ -960,22 +843,17 @@
 
     for (let i = 0; i < limit; i++) {
       const g = state.filtered[i];
-      // ✅ Toute la tuile est cliquable (plus de bouton "Ouvrir la page")
-      const pageHref = buildGameUrl(g.__raw || g);
       const card = document.createElement("a");
       card.className = "card card-link";
+
+      const imgSrc = (g.image || "").trim() || "/favicon.png";
+      const pageHref = buildGameUrl(g.__raw || g);
+
+      // ✅ Tuile entièrement cliquable (comme le site principal)
       card.href = pageHref;
       card.target = "_blank";
       card.rel = "noopener";
-
-      const trKey =
-        (g.__raw && (g.__raw._translatorKey || g.__raw._translator)) ? String(g.__raw._translatorKey || g.__raw._translator) :
-        (g.__raw && g.__raw._translator) ? String(g.__raw._translator) :
-        "";
-      
-      card.dataset.tr = trKey.toLowerCase();
-
-      const imgSrc = (g.image || "").trim() || "/favicon.png";
+      card.setAttribute("aria-label", `Ouvrir : ${getDisplayTitle(g.__raw || g)}`);
 
       card.innerHTML = `
         <img src="${imgSrc}" class="thumb" alt=""
@@ -1107,31 +985,37 @@
   async function init() {
     $("#grid") && ($("#grid").innerHTML = "");
     $("#gridEmpty")?.classList.add("hidden");
-
+  
     try {
+      // ✅ top-right tools (comme ton site) + refresh en bas
+      relocateTopRightTools();
+  
+      try { window.ViewerMenu?.init?.(); registerMenuItems(); } catch {}
+      try { window.viewerAnnonce?.refresh?.(); } catch {}
+  
       state.cols = getViewerCols();
       const colsSel = $("#cols");
       if (colsSel) colsSel.value = state.cols;
-
-      const raw = await (window.__ALL_DATA_PROMISE__ || loadAllLists());
+  
+      const raw = await loadList();
       state.all = Array.isArray(raw) ? raw.map(normalizeGame) : [];
-
+  
       if (!state.filterTags || !state.filterTags.length) {
         state.filterTags = getSavedTags();
       }
       updateTagsCountBadge();
-
+  
       buildDynamicFilters();
-
+  
       if (state.sort.startsWith("views") || state.sort.startsWith("mega") || state.sort.startsWith("likes")) {
         await ensureGameStatsLoaded();
       }
-
+  
       applyFilters();
       initMainPageCounter();
     } catch (e) {
       console.error("[viewer] load error:", e);
-
+  
       $("#grid") && ($("#grid").innerHTML = "");
       const ge = $("#gridEmpty");
       if (ge) {
@@ -1140,9 +1024,6 @@
       }
     }
   }
-
-  // ✅ Menu hamburger (viewer)
-  initHamburgerMenu();
 
   init();
 })();
