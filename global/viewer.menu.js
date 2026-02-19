@@ -1,115 +1,88 @@
-"use strict";
+// viewer.menu.js — NOYAU : gère UNIQUEMENT la liste du menu ☰ (items + popover)
+(() => {
+  "use strict";
 
-(function(){
-  const state = {
-    items: [],
-    pop: null,
-    btns: [],
-    open: false
-  };
+  const ITEMS = [];
+  let BOUND = false;
 
-  function setAria(expanded){
-    for(const b of state.btns){
-      b.setAttribute("aria-expanded", expanded ? "true" : "false");
+  function escapeHtml(s) {
+    return String(s || "").replace(/[&<>"']/g, (m) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[m]));
+  }
+
+  function ensureDom() {
+    // Popover du menu (le bouton ☰ est injecté dans viewer.js)
+    let pop = document.getElementById("topMenuPopover");
+    if (!pop) {
+      pop = document.createElement("div");
+      pop.id = "topMenuPopover";
+      pop.className = "menu-popover hidden";
+      document.body.appendChild(pop);
     }
-    if (state.pop){
-      state.pop.setAttribute("aria-hidden", expanded ? "false" : "true");
+    return pop;
+  }
+
+  function renderMenuItems() {
+    const pop = ensureDom();
+
+    if (!ITEMS.length) {
+      pop.innerHTML = `<div class="menu-empty" style="opacity:.7;padding:10px 12px;">Menu vide</div>`;
+      return;
     }
-  }
 
-  function closeMenu(){
-    if(!state.pop) return;
-    state.open = false;
-    state.pop.classList.add("hidden");
-    setAria(false);
-  }
+    pop.innerHTML = ITEMS.map((it, i) => {
+      const label = escapeHtml(it.label || "");
+      return `<button type="button" class="menu-item" data-menu-idx="${i}">${label}</button>`;
+    }).join("");
 
-  function buildMenu(){
-    const pop = state.pop;
-    if(!pop) return;
-    pop.innerHTML = "";
-
-    const items = [...state.items].sort((a,b)=>(a.order??999)-(b.order??999));
-
-    for(const it of items){
-      if(!it) continue;
-
-      if(it.type === "sep"){
-        const d = document.createElement("div");
-        d.className = "menu-sep";
-        pop.appendChild(d);
-        continue;
-      }
-
-      const a = document.createElement("a");
-      a.className = "menu-item";
-      a.href = it.href || "#";
-      a.textContent = it.label || "Lien";
-      if(it.title) a.title = it.title;
-
-      a.addEventListener("click", ()=> closeMenu());
-      pop.appendChild(a);
-    }
-  }
-
-  function openMenu(){
-    if(!state.pop) return;
-    buildMenu();
-    state.open = true;
-    state.pop.classList.remove("hidden");
-    setAria(true);
-  }
-
-  function toggleMenu(){
-    state.open ? closeMenu() : openMenu();
-  }
-
-  function init(){
-    state.pop = document.getElementById("topMenuPopover");
-    if(!state.pop) return;
-
-    // ✅ 2 boutons possibles
-    const b1 = document.getElementById("hamburgerBtn");
-    const b2 = document.getElementById("hamburgerBtnGame");
-    state.btns = [b1, b2].filter(Boolean);
-
-    for(const b of state.btns){
-      b.addEventListener("click", (e)=>{
-        e.preventDefault();
-        e.stopPropagation();
-        toggleMenu();
+    pop.querySelectorAll("[data-menu-idx]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const idx = parseInt(btn.getAttribute("data-menu-idx"), 10);
+        const it = ITEMS[idx];
+        closeMenu();
+        if (it && typeof it.onClick === "function") it.onClick();
       });
-    }
-
-    // click dehors
-    document.addEventListener("click", (e)=>{
-      if(!state.open) return;
-      const t = e.target;
-      if(state.pop.contains(t)) return;
-      for(const b of state.btns){
-        if(b.contains(t)) return;
-      }
-      closeMenu();
     });
-
-    // ESC
-    document.addEventListener("keydown", (e)=>{
-      if(!state.open) return;
-      if(e.key === "Escape") closeMenu();
-    });
-
-    // état initial
-    closeMenu();
   }
 
-  // API (modules)
+  function addItem(label, onClick) {
+    ITEMS.push({ label: String(label || ""), onClick });
+    renderMenuItems();
+  }
+
+  function clearItems() {
+    ITEMS.length = 0;
+    renderMenuItems();
+  }
+
+  function closeMenu() {
+    const pop = document.getElementById("topMenuPopover");
+    if (pop) pop.classList.add("hidden");
+    const b = document.getElementById("hamburgerBtn");
+    if (b) b.setAttribute("aria-expanded", "false");
+  }
+
+  function init() {
+    ensureDom();
+    renderMenuItems();
+
+    if (BOUND) return;
+    BOUND = true;
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeMenu();
+    });
+  }
+
   window.ViewerMenu = {
-    register(item){ state.items.push(item); }
+    init,
+    addItem,
+    clearItems,
+    closeMenu
   };
-
-  // ✅ items de base : Accueil en 1er
-  // /global/ => accueil du site = "/"
-  window.ViewerMenu.register({ label:"🏠 Accueil", href:"/", order:10, title:"Accueil" });
-
-  document.addEventListener("DOMContentLoaded", init);
 })();
