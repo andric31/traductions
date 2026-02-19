@@ -1,12 +1,15 @@
 // viewer.annonce.js — Bandeau annonce au-dessus des tuiles (minimisable)
-// Dépend uniquement de annonce.html (contenu)
+// ✅ Supporte une annonce GÉNÉRALE (racine) + une annonce LOCALE (dossier traducteur)
+// - Générale : /annonce.html
+// - Locale   : ./annonce.html
 // Fonctionne même si f95list.json échoue.
 
 (() => {
   const SS_KEY = "viewer_annonce_minimized";
-  const ANNOUNCE_URL = "./annonce.html";
 
-  function $(sel) { return document.querySelector(sel); }
+  // ✅ générale + locale
+  const GLOBAL_URL = "/annonce.html";
+  const LOCAL_URL  = "./annonce.html";
 
   function ensureHost() {
     // Host placé dans index.html: <div id="viewerAnnonceHost"></div>
@@ -36,9 +39,40 @@
     try { return sessionStorage.getItem(SS_KEY) === "1"; }
     catch { return false; }
   }
-  
+
   function setMinimized(v) {
     try { sessionStorage.setItem(SS_KEY, v ? "1" : "0"); } catch {}
+  }
+
+  function buildMergedHtml(globalHtml, localHtml) {
+    const g = String(globalHtml || "");
+    const l = String(localHtml || "");
+
+    const gEmpty = isEmptyHtml(g);
+    const lEmpty = isEmptyHtml(l);
+
+    if (gEmpty && lEmpty) return "";
+
+    // ✅ Si identiques (cas racine /annonce.html == ./annonce.html), on n'affiche qu'une fois
+    const gNorm = g.replace(/\s+/g, " ").trim();
+    const lNorm = l.replace(/\s+/g, " ").trim();
+    if (!gEmpty && !lEmpty && gNorm && lNorm && gNorm === lNorm) return g;
+
+    if (!gEmpty && lEmpty) return g;
+    if (gEmpty && !lEmpty) return l;
+
+    // Les deux : on empile avec de petits titres
+    return `
+      <div style="margin-bottom:10px">
+        <div style="opacity:.8;font-size:12px;font-weight:700;margin-bottom:6px">🌍 Annonce générale</div>
+        <div>${g}</div>
+      </div>
+      <div style="height:1px;background:rgba(255,255,255,.12);margin:10px 0"></div>
+      <div>
+        <div style="opacity:.8;font-size:12px;font-weight:700;margin-bottom:6px">👤 Annonce traducteur</div>
+        <div>${l}</div>
+      </div>
+    `;
   }
 
   function render(html, opts = {}) {
@@ -73,10 +107,23 @@
     }
   }
 
-  async function loadAnnonce() {
-    const r = await fetch(ANNOUNCE_URL, { cache: "no-store" });
-    if (!r.ok) throw new Error("annonce.html introuvable (HTTP " + r.status + ")");
-    return await r.text();
+  async function safeFetchText(url) {
+    try {
+      const r = await fetch(url, { cache: "no-store" });
+      if (!r.ok) return "";
+      return await r.text();
+    } catch {
+      return "";
+    }
+  }
+
+  async function loadMergedAnnonce() {
+    // On charge les deux en parallèle
+    const [g, l] = await Promise.all([
+      safeFetchText(GLOBAL_URL),
+      safeFetchText(LOCAL_URL),
+    ]);
+    return buildMergedHtml(g, l);
   }
 
   // API publique pour maintenance (appelable depuis viewer.js)
@@ -89,12 +136,9 @@
       render(`<b>🚧 Maintenance</b><br>${msg}`, { forceShow: true, forceOpen: true });
     },
     refresh() {
-      loadAnnonce()
+      loadMergedAnnonce()
         .then(html => render(html))
-        .catch(() => {
-          // si annonce.html ne charge pas -> on n’affiche rien (ou tu peux mettre un fallback)
-          render("", { forceShow: false });
-        });
+        .catch(() => render("", { forceShow: false }));
     }
   };
 
