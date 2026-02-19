@@ -34,18 +34,21 @@
   // =========================
   function registerMenuItems() {
     try {
-      // évite les doublons (on garde les entrées ajoutées par d'autres scripts, ex: À propos)
-      if (window.__LISTE_MENU_COMMON_DONE__ === true) return;
-      window.__LISTE_MENU_COMMON_DONE__ = true;
-
       const p = new URLSearchParams(location.search);
       const hasGame = (p.get("id") || "").trim() || (p.get("uid") || "").trim();
       const niceName = String(
         (window.__SITE_NAME__ || (SLUG ? (SLUG.charAt(0).toUpperCase() + SLUG.slice(1)) : ""))
       ).trim();
 
+      // IMPORTANT : on reconstruit le menu à chaque ouverture
+      // -> garantit l'ordre : Accueil (1er) / Extension / À propos (+ éventuellement Retour liste)
+      try { window.ViewerMenu?.clearItems?.(); } catch {}
+
       // Toujours : Accueil général
       window.ViewerMenu?.addItem?.("🌍 Accueil", () => { location.href = "https://traductions.pages.dev/"; });
+
+      // Toujours : Extension
+      window.ViewerMenu?.addItem?.("🧩 Extension", () => { location.href = "https://traductions.pages.dev/extension/"; });
 
       // En mode jeu : retour vers la liste
       if (hasGame) {
@@ -53,6 +56,29 @@
           niceName ? `📚 Retour à la liste · ${niceName}` : "📚 Retour à la liste",
           () => { location.href = APP_PATH; }
         );
+      }
+
+      // À propos (modale)
+      if (window.ViewerMenuAbout?.open) {
+        window.ViewerMenu?.addItem?.("ℹ️ À propos", () => window.ViewerMenuAbout.open());
+      } else {
+        // fallback : si le script about n'est pas encore chargé, on retente dans 1 tick
+        setTimeout(() => {
+          if (window.ViewerMenuAbout?.open) {
+            try {
+              window.ViewerMenu?.clearItems?.();
+              window.ViewerMenu?.addItem?.("🌍 Accueil", () => { location.href = "https://traductions.pages.dev/"; });
+              window.ViewerMenu?.addItem?.("🧩 Extension", () => { location.href = "https://traductions.pages.dev/extension/"; });
+              if (hasGame) {
+                window.ViewerMenu?.addItem?.(
+                  niceName ? `📚 Retour à la liste · ${niceName}` : "📚 Retour à la liste",
+                  () => { location.href = APP_PATH; }
+                );
+              }
+              window.ViewerMenu?.addItem?.("ℹ️ À propos", () => window.ViewerMenuAbout.open());
+            } catch {}
+          }
+        }, 0);
       }
     } catch {}
   }

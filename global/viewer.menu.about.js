@@ -1,4 +1,4 @@
-// viewer.menu.about.js — Entrée menu : À propos
+// viewer.menu.about.js — Modale "À propos" (l'entrée menu est gérée par viewer.js)
 (() => {
   "use strict";
 
@@ -64,18 +64,6 @@ https://discord.gg/Jr8Ykf8yMd
     document.getElementById("aboutOverlay")?.classList.add("hidden");
   }
 
-  // Register menu item
-  function register() {
-    if (!window.ViewerMenu?.addItem) return false;
-    window.ViewerMenu.addItem("ℹ️ À propos", open);
-    window.ViewerMenuAbout = { open, close };
-    return true;
-  }
-
-  // wait for ViewerMenu
-  let tries = 0;
-  const t = setInterval(() => {
-    tries++;
-    if (register() || tries > 80) clearInterval(t);
-  }, 50);
+  // Expose API (viewer.js ajoute l'item dans l'ordre voulu)
+  window.ViewerMenuAbout = { open, close };
 })();
