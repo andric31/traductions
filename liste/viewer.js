@@ -5,66 +5,7 @@
 (() => {
   "use strict";
 
-  
   // =========================
-  // Thèmes (themes.css) — ✅ DEFAULT = dark (multi-émulateur)
-  // =========================
-  function getViewerTheme() {
-    try { return (localStorage.getItem("viewerTheme") || "dark").trim() || "dark"; }
-    catch { return "dark"; }
-  }
-
-  function setViewerTheme(v) {
-    try { localStorage.setItem("viewerTheme", String(v || "dark")); } catch {}
-  }
-
-  function applyViewerTheme(v) {
-    const t = (v || "dark").toString().trim() || "dark";
-    const root = document.documentElement;
-    root.removeAttribute("data-theme");
-    if (t !== "auto") root.setAttribute("data-theme", t);
-  }
-
-  // ✅ Auto = suit Windows (clair/sombre) en live
-  let THEME_MQ_BOUND = false;
-  function bindAutoThemeWatcher() {
-    if (THEME_MQ_BOUND) return;
-    THEME_MQ_BOUND = true;
-
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    mq.addEventListener("change", () => {
-      try {
-        const t = getViewerTheme();
-        if ((t || "auto") === "auto") {
-          applyViewerTheme("auto"); // laisse le CSS suivre Windows
-          const sel = document.getElementById("theme");
-          if (sel) sel.value = "auto";
-        }
-      } catch {}
-    });
-  }
-
-  function initThemeSelect() {
-    const sel = document.getElementById("theme");
-    if (!sel) return;
-
-    // init valeur UI
-    const t = getViewerTheme();
-    sel.value = t;
-
-    // applique (au cas où l’instant-theme n’existe pas)
-    applyViewerTheme(t);
-
-    sel.addEventListener("change", () => {
-      const v = (sel.value || "dark").trim() || "dark";
-      setViewerTheme(v);
-      applyViewerTheme(v);
-      if (v === "auto") bindAutoThemeWatcher();
-    });
-
-    if (t === "auto") bindAutoThemeWatcher();
-  }
-// =========================
   // ✅ Détection universelle SLUG + chemins
   // =========================
   function detectSlug() {
@@ -91,57 +32,80 @@
   // - Ajoute un bouton "Accueil" -> https://traductions.pages.dev/
   // - Ne touche pas au chargement des listes / bases
   // =========================
-  
-  // =========================
-  // ☰ Menu (popover) — identique aux autres viewers
-  // =========================
   function initHamburgerMenu() {
     const btn = document.getElementById("hamburgerBtnViewer") || document.getElementById("hamburgerBtn");
     if (!btn) return;
 
-    // Initialise le noyau du menu + items communs
-    try { window.ViewerMenu?.init?.(); } catch {}
+    // crée le popover une seule fois
+    let pop = document.getElementById("viewerMenuPopover");
+    if (!pop) {
+      pop = document.createElement("div");
+      pop.id = "viewerMenuPopover";
+      pop.className = "menu-popover hidden";
+      pop.setAttribute("role", "menu");
 
-    // Items communs (sans toucher aux items ajoutés par viewer.menu.about.js / viewer.menu.extension.js)
-    try {
-      window.ViewerMenu?.addItem?.("🌍 Accueil", () => { location.href = "https://traductions.pages.dev/"; });
-    } catch {}
+      const home = document.createElement("button");
+      home.type = "button";
+      home.className = "menu-item";
+      home.textContent = "🌍 Accueil";
+      home.addEventListener("click", () => {
+        // navigation simple (même onglet)
+        location.href = "https://traductions.pages.dev/";
+      });
 
-    const pop = document.getElementById("topMenuPopover");
+      pop.appendChild(home);
+      document.body.appendChild(pop);
+    }
+
+    const close = () => {
+      pop.classList.add("hidden");
+      btn.setAttribute("aria-expanded", "false");
+    };
+
+    const open = () => {
+      const r = btn.getBoundingClientRect();
+      const pad = 8;
+      const w = pop.offsetWidth || 220;
+      const h = pop.offsetHeight || 80;
+      const maxL = Math.max(pad, window.innerWidth - w - pad);
+      const maxT = Math.max(pad, window.innerHeight - h - pad);
+
+      const left = Math.min(maxL, Math.max(pad, r.left));
+      const top = Math.min(maxT, Math.max(pad, r.bottom + 8));
+
+      pop.style.left = left + "px";
+      pop.style.top = top + "px";
+
+      pop.classList.remove("hidden");
+      btn.setAttribute("aria-expanded", "true");
+    };
 
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-
-      if (!pop) return;
       const isOpen = !pop.classList.contains("hidden");
-
-      if (isOpen) {
-        pop.classList.add("hidden");
-        btn.setAttribute("aria-expanded", "false");
-      } else {
-        // position sous le bouton
-        const r = btn.getBoundingClientRect();
-        pop.style.top = (r.bottom + 10 + window.scrollY) + "px";
-        pop.style.left = (Math.max(12, r.left + window.scrollX) ) + "px";
-
-        pop.classList.remove("hidden");
-        btn.setAttribute("aria-expanded", "true");
-      }
+      if (isOpen) close();
+      else open();
     });
 
-    // click dehors => fermer
+    // click dehors => ferme
     document.addEventListener("click", (e) => {
-      if (!pop) return;
-      if (pop.classList.contains("hidden")) return;
       const t = e.target;
+      if (!t) return;
       if (t === btn || btn.contains(t)) return;
-      if (pop.contains(t)) return;
-      pop.classList.add("hidden");
-      btn.setAttribute("aria-expanded", "false");
+      if (t === pop || pop.contains(t)) return;
+      close();
+    });
+
+    // resize/scroll => reposition ou ferme
+    window.addEventListener("resize", () => {
+      if (!pop.classList.contains("hidden")) close();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") close();
     });
   }
-
 
   // =========================
   // 🔞 Age gate (intégré ici)
@@ -1114,9 +1078,8 @@
     }
   }
 
-  // ✅ Menu hamburger + thème
+  // ✅ Menu hamburger (viewer)
   initHamburgerMenu();
-  initThemeSelect();
 
   init();
 })();
