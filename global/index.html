@@ -8,10 +8,8 @@
 
   <link rel="icon" href="/favicon.png" />
   <link rel="stylesheet" href="./viewer.css" />
-  <!-- ✅ Thèmes traducteurs (couleurs vignettes) -->
   <link rel="stylesheet" href="./themes.css" />
 
-  <!-- ✅ Styles page jeu -->
   <style>
     body.mode-game{
       min-height: 100vh;
@@ -57,9 +55,8 @@
       margin:0;
     }
 
-    /* Bouton hamburger */
-    body.mode-game #page-game .hamburger-btn,
-    #page-viewer .hamburger-btn{
+    /* hamburger (viewer + game) */
+    .hamburger-btn{
       width:34px;
       height:34px;
       border-radius:10px;
@@ -72,27 +69,11 @@
       user-select:none;
       flex:0 0 auto;
     }
-    body.mode-game #page-game .hamburger-btn:hover,
-    #page-viewer .hamburger-btn:hover{ filter: brightness(1.10); }
-    body.mode-game #page-game .hamburger-btn:active,
-    #page-viewer .hamburger-btn:active{ transform: translateY(1px); }
+    .hamburger-btn:hover{ filter: brightness(1.10); }
+    .hamburger-btn:active{ transform: translateY(1px); }
+    .ham-lines{ width:16px; height:12px; display:flex; flex-direction:column; justify-content:space-between; }
+    .ham-lines span{ display:block; height:2px; border-radius:999px; background:#ffffff; opacity:0.92; }
 
-    body.mode-game #page-game .ham-lines,
-    #page-viewer .ham-lines{
-      width:16px; height:12px;
-      display:flex; flex-direction:column;
-      justify-content:space-between;
-    }
-    body.mode-game #page-game .ham-lines span,
-    #page-viewer .ham-lines span{
-      display:block;
-      height:2px;
-      border-radius:999px;
-      background:#ffffff;
-      opacity:0.92;
-    }
-
-    /* Cover */
     body.mode-game #page-game .cover{
       width:100%;
       height:auto;
@@ -104,7 +85,6 @@
       object-fit: cover;
     }
 
-    /* Encadrés info */
     body.mode-game #page-game .infoBlock{
       background: rgba(255,255,255,0.03);
       border: 1px solid rgba(255,255,255,0.08);
@@ -115,11 +95,10 @@
     body.mode-game #page-game .infoBlock h3{ margin:0 0 8px 0; font-size:14px; }
   </style>
 </head>
-
 <body>
 
-  <!-- ✅ Popover unique menu ☰ (hors pages) -->
-  <div id="topMenuPopover" class="menu-popover" aria-hidden="true"></div>
+  <!-- ✅ 1 seul popover global -->
+  <div id="topMenuPopover" class="menu-popover hidden" aria-hidden="true"></div>
 
   <!-- ✅ SLUG universel -->
   <script>
@@ -140,22 +119,17 @@
 
       window.addEventListener("DOMContentLoaded", () => {
         const h1 = document.getElementById("viewerTitle");
-        if(h1){
-          h1.textContent = slug ? `f95list_${nice}_viewer` : `f95list_viewer`;
-        }
+        if(h1) h1.textContent = slug ? `f95list_${nice}_viewer` : `f95list_viewer`;
+
         const back = document.getElementById("backToList");
-        if(back){
-          // depuis /global/?id=... => retour /global/
-          back.href = slug ? `/${slug}/` : `/`;
-        }
+        if(back) back.href = slug ? `/${slug}/` : `/`;
       });
     })();
   </script>
 
-  <!-- ========================= PAGE VIEWER ========================= -->
+  <!-- ===================== PAGE VIEWER ===================== -->
   <div id="page-viewer">
 
-    <!-- 🔞 AGE GATE -->
     <div id="age-gate" style="display:none;">
       <div class="age-box">
         <h2>🔞 Contenu réservé aux adultes</h2>
@@ -163,7 +137,6 @@
           Ce site contient des images et contenus destinés à un public majeur.<br>
           En continuant, vous confirmez avoir <strong>18 ans ou plus</strong>.
         </p>
-
         <button id="age-yes">J’ai 18 ans</button>
         <button id="age-no">Quitter</button>
       </div>
@@ -171,11 +144,10 @@
 
     <header class="topbar" role="banner">
       <div class="top-title-row top-title-flex">
-
-        <!-- ✅ IMPORTANT : id standard template -->
+        <!-- ✅ bouton viewer = hamburgerBtn -->
         <button id="hamburgerBtn" class="hamburger-btn" type="button"
-                aria-label="Menu" title="Menu" aria-haspopup="menu" aria-expanded="false"
-                aria-controls="topMenuPopover">
+                aria-label="Menu" title="Menu" aria-haspopup="menu"
+                aria-expanded="false" aria-controls="topMenuPopover">
           <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
         </button>
 
@@ -244,8 +216,7 @@
           <option value="En cours">En cours</option>
         </select>
 
-        <button id="tagsBtn" type="button" class="tags-btn"
-                aria-haspopup="menu" aria-expanded="false">
+        <button id="tagsBtn" type="button" class="tags-btn" aria-haspopup="menu" aria-expanded="false">
           🏷️ Tags <span id="tagsCount" class="tags-count hidden">0</span>
         </button>
 
@@ -256,7 +227,6 @@
     <main role="main">
       <section id="gridMode" class="grid-wrap" aria-label="Vignettes des jeux">
         <div id="viewerAnnonceHost"></div>
-
         <div id="grid" class="grid"></div>
         <div id="gridEmpty" class="empty hidden">Aucun résultat.</div>
       </section>
@@ -265,20 +235,18 @@
         👁️ Vues de la page : <strong id="mainViews">—</strong>
       </footer>
     </main>
-
   </div>
 
-  <!-- ========================= PAGE JEU ========================= -->
+  <!-- ===================== PAGE GAME ===================== -->
   <div id="page-game" style="display:none;">
-
     <div class="wrap">
       <div class="cardPreview" id="card" aria-live="polite">
         <div class="cardInner">
 
           <div class="headRow">
-            <!-- ✅ id différent pour éviter double ID -->
+            <!-- ✅ bouton game = hamburgerBtnGame -->
             <button type="button" class="hamburger-btn" id="hamburgerBtnGame"
-                    aria-label="Ouvrir le menu" aria-haspopup="menu" aria-expanded="false"
+                    aria-label="Menu" aria-haspopup="menu" aria-expanded="false"
                     aria-controls="topMenuPopover">
               <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
             </button>
@@ -288,7 +256,6 @@
           </div>
 
           <div class="majState" id="majState" style="display:none;"></div>
-
           <h1 class="title" id="title">Chargement…</h1>
 
           <img id="cover" class="cover is-placeholder" alt="" referrerpolicy="no-referrer">
@@ -340,25 +307,6 @@
 
       <div class="err" id="errBox"></div>
     </div>
-
-    <!-- ✅ mini fade sur #ratingMsg -->
-    <script>
-      (function(){
-        const msg = document.getElementById("ratingMsg");
-        if (!msg) return;
-
-        const flash = () => {
-          msg.classList.remove("msgFade");
-          void msg.offsetWidth;
-          msg.classList.add("msgFade");
-        };
-
-        const obs = new MutationObserver(() => flash());
-        obs.observe(msg, { childList: true, characterData: true, subtree: true });
-
-        if ((msg.textContent || "").trim()) flash();
-      })();
-    </script>
 
     <div style="text-align:center; margin: 14px 0;">
       <a id="backToList" class="btn" href="./" style="display:inline-block; text-decoration:none;">← Retour à la liste</a>
