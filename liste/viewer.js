@@ -1,6 +1,8 @@
 // viewer.js — Vignettes + filtres + tri + affichage progressif + stats
 // Universel multi-traducteurs : détecte automatiquement le dossier (slug) dans l'URL.
 // ✅ UID ONLY pour les stats (aligné sur game.js)
+// ✅ Menu hamburger compatible extensions (window.ViewerMenu.addItem)
+// ✅ Annonce compatible template (window.viewerAnnonce.* + host auto si absent)
 
 (() => {
   "use strict";
@@ -28,12 +30,57 @@
   const $ = (sel) => document.querySelector(sel);
 
   // =========================
-  // ☰ Hamburger menu (Viewer)
-  // - Ajoute un bouton "Accueil" -> https://traductions.pages.dev/
-  // - Ne touche pas au chargement des listes / bases
+  // 📢 Annonce (template)
+  // - utilise viewer.annonce.js si présent (window.viewerAnnonce)
+  // - assure #viewerAnnonceHost (fallback) si absent
+  // =========================
+  function ensureAnnonceHost() {
+    let host = document.getElementById("viewerAnnonceHost");
+    if (host) return host;
+
+    host = document.createElement("div");
+    host.id = "viewerAnnonceHost";
+
+    // priorité : avant la grille / conteneur
+    const grid = document.getElementById("grid");
+    if (grid && grid.parentNode) {
+      grid.parentNode.insertBefore(host, grid);
+      return host;
+    }
+
+    const gridWrap = document.getElementById("gridMode") || document.querySelector(".grid-wrap");
+    if (gridWrap) {
+      gridWrap.insertBefore(host, gridWrap.firstChild);
+      return host;
+    }
+
+    document.body.insertBefore(host, document.body.firstChild);
+    return host;
+  }
+
+  function initAnnonceTemplate() {
+    ensureAnnonceHost();
+
+    // si viewer.annonce.js est chargé, il s’init tout seul au DOMContentLoaded
+    // mais on peut forcer un refresh ici pour être sûr (et utile après "refresh")
+    try {
+      if (window.viewerAnnonce && typeof window.viewerAnnonce.refresh === "function") {
+        window.viewerAnnonce.refresh();
+      }
+    } catch {}
+  }
+
+  // =========================
+  // ☰ Hamburger menu (Viewer) — compatible extensions
+  // - expose window.ViewerMenu.addItem(label, onClick)
+  // - ajoute "🌍 Accueil"
+  // - les scripts externes (ex: viewer.menu.extension.js) peuvent enregistrer leurs entrées
   // =========================
   function initHamburgerMenu() {
-    const btn = document.getElementById("hamburgerBtnViewer") || document.getElementById("hamburgerBtn");
+    const btn =
+      document.getElementById("hamburgerBtnViewer") ||
+      document.getElementById("hamburgerBtn");
+
     if (!btn) return;
 
     // crée le popover une seule fois
@@ -43,19 +90,51 @@
       pop.id = "viewerMenuPopover";
       pop.className = "menu-popover hidden";
       pop.setAttribute("role", "menu");
-
-      const home = document.createElement("button");
-      home.type = "button";
-      home.className = "menu-item";
-      home.textContent = "🌍 Accueil";
-      home.addEventListener("click", () => {
-        // navigation simple (même onglet)
-        location.href = "https://traductions.pages.dev/";
-      });
-
-      pop.appendChild(home);
       document.body.appendChild(pop);
     }
+
+    const items = [];
+
+    function render() {
+      pop.innerHTML = "";
+
+      for (const it of items) {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "menu-item";
+        b.textContent = it.label;
+
+        b.addEventListener("click", () => {
+          close();
+          try { it.onClick && it.onClick(); } catch (e) { console.warn("[menu] onClick error", e); }
+        });
+
+        pop.appendChild(b);
+      }
+    }
+
+    // API publique (pour tes extensions)
+    if (!window.ViewerMenu) {
+      window.ViewerMenu = {
+        addItem(label, onClick) {
+          const l = String(label || "").trim();
+          if (!l) return;
+
+          // évite doublons exacts
+          if (items.some(x => x.label === l)) return;
+
+          items.push({ label: l, onClick });
+          render();
+        }
+      };
+    }
+
+    // ✅ entrée par défaut
+    try {
+      window.ViewerMenu.addItem("🌍 Accueil", () => {
+        location.href = "https://traductions.pages.dev/";
+      });
+    } catch {}
 
     const close = () => {
       pop.classList.add("hidden");
@@ -63,10 +142,16 @@
     };
 
     const open = () => {
+      // calc position après avoir rendu (au cas où la largeur change)
+      pop.classList.remove("hidden");
+
       const r = btn.getBoundingClientRect();
       const pad = 8;
-      const w = pop.offsetWidth || 220;
-      const h = pop.offsetHeight || 80;
+
+      const rect = pop.getBoundingClientRect();
+      const w = rect.width || 240;
+      const h = rect.height || 120;
+
       const maxL = Math.max(pad, window.innerWidth - w - pad);
       const maxT = Math.max(pad, window.innerHeight - h - pad);
 
@@ -76,7 +161,6 @@
       pop.style.left = left + "px";
       pop.style.top = top + "px";
 
-      pop.classList.remove("hidden");
       btn.setAttribute("aria-expanded", "true");
     };
 
@@ -97,7 +181,7 @@
       close();
     });
 
-    // resize/scroll => reposition ou ferme
+    // resize => ferme
     window.addEventListener("resize", () => {
       if (!pop.classList.contains("hidden")) close();
     });
@@ -897,7 +981,7 @@
 
     for (let i = 0; i < limit; i++) {
       const g = state.filtered[i];
-      // ✅ Toute la tuile est cliquable (plus de bouton "Ouvrir la page")
+      // ✅ Toute la tuile est cliquable
       const pageHref = buildGameUrl(g.__raw || g);
       const card = document.createElement("a");
       card.className = "card card-link";
@@ -909,7 +993,7 @@
         (g.__raw && (g.__raw._translatorKey || g.__raw._translator)) ? String(g.__raw._translatorKey || g.__raw._translator) :
         (g.__raw && g.__raw._translator) ? String(g.__raw._translator) :
         "";
-      
+
       card.dataset.tr = trKey.toLowerCase();
 
       const imgSrc = (g.image || "").trim() || "/favicon.png";
@@ -1035,6 +1119,13 @@
     GAME_STATS.mega.clear();
     GAME_STATS.likes.clear();
 
+    // ✅ refresh annonce (template)
+    try {
+      if (window.viewerAnnonce && typeof window.viewerAnnonce.refresh === "function") {
+        window.viewerAnnonce.refresh();
+      }
+    } catch {}
+
     init();
   });
 
@@ -1075,10 +1166,20 @@
         ge.textContent = "Erreur de chargement";
         ge.classList.remove("hidden");
       }
+
+      // ✅ si annonce dispo, tu peux afficher une maintenance si tu veux
+      try {
+        if (window.viewerAnnonce && typeof window.viewerAnnonce.setMaintenance === "function") {
+          window.viewerAnnonce.setMaintenance("Impossible de charger la liste pour le moment.");
+        }
+      } catch {}
     }
   }
 
-  // ✅ Menu hamburger (viewer)
+  // ✅ Annonce template
+  initAnnonceTemplate();
+
+  // ✅ Menu hamburger (compatible extensions)
   initHamburgerMenu();
 
   init();
