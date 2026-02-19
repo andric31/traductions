@@ -14,17 +14,74 @@
   --name-lines: 2;
   --badges-h: 28px;
 
-  /* ✅ un peu plus compact qu’avant */
   --topbar-h: 78px;
+
+  --topbar-bg: rgba(16,20,37,.9);
+
+  /* scrollbar (évite le hardcode dark) */
+  --scrollbar-thumb: #303a57;
+  --scrollbar-track: #0b0e14;
+
+  /* ✅ variables "thémables" */
+  --body-grad-1: #0d1018;
+  --body-grad-2: #101425;
+  --body-grad-3: #0f1117;
+
+  --title: var(--fg);
+
+  --popover-bg: rgba(20,24,38,0.98);
+  --hover-bg: rgba(255,255,255,0.06);
+
+  --scrollbar-track-webkit: var(--scrollbar-track);
+  --scrollbar-thumb-webkit: var(--scrollbar-thumb);
+  --scrollbar-thumb-webkit-hover: #3f4b6b;
+
+  --overlay-bg: rgba(0,0,0,0.55);
+
+  --thumb-bg: #1c1f2e;
+  --thumb-fallback-bg: #0f0f10;
+
+  /* éléments avec transparence */
+  --border-soft: rgba(255,255,255,0.06);
+  --top-actions-border: rgba(255,255,255,0.03);
+  --card-hover-border: rgba(255,255,255,0.22);
+  --card-hover-glow: rgba(255,255,255,0.18);
+
+  /* UI "soft" */
+  --soft-04: rgba(255,255,255,0.04);
+  --soft-05: rgba(255,255,255,0.05);
+
+  /* ✅ dit aux navigateurs que ton site est dark */
+  color-scheme: dark;
 }
 
-*{box-sizing:border-box}
-html,body{height:100%}
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+
+/* ✅ empêche le "zoom" quand la scrollbar apparaît */
+html{
+  background: var(--bg);
+  overflow-y: scroll;
+
+  /* 🔥 Firefox scrollbar */
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  scrollbar-width: auto;
+}
+
+/* Firefox peut parfois utiliser body */
 body{
   margin:0;
+  min-height:100%;
   font-family:system-ui,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;
   color:var(--fg);
-  background:linear-gradient(180deg,#0d1018,#101425 30%,#0f1117);
+  background: linear-gradient(
+    180deg,
+    var(--body-grad-1),
+    var(--body-grad-2) 30%,
+    var(--body-grad-3)
+  );
+
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
 /* ---------- TOPBAR FIXE ---------- */
@@ -612,66 +669,47 @@ a.card.card-link:focus-visible{
 }
 
 /* =========================
-   Scrollbar sombre (modales & page)
+   Scrollbar PREMIUM
    ========================= */
 
-/* Chrome / Edge / Brave */
-::-webkit-scrollbar{
-  width: 16px;   /* ⬅ rail légèrement plus large */
-  height: 16px;
-}
+::-webkit-scrollbar{ width: 14px; }
+::-webkit-scrollbar:horizontal{ height: 10px; }
 
 ::-webkit-scrollbar-track{
-  background: #0f1117;
+  background: var(--scrollbar-track-webkit);
 }
 
 ::-webkit-scrollbar-thumb{
-  background: #2a314b;
+  background: var(--scrollbar-thumb-webkit);
   border-radius: 999px;
-
-  /* ⬅ crée l’effet “thumb plus petit que le rail” */
-  border: 4px solid #0f1117;
+  border: 3px solid var(--scrollbar-track-webkit);
 }
 
 ::-webkit-scrollbar-thumb:hover{
-  background: #3b4568;
-}
-
-/* Scrollbar spécifique aux modales */
-.modal-body{
-  scrollbar-width: thin;                 /* Firefox */
-  scrollbar-color: #2a314b #0f1117;       /* Firefox */
+  background: var(--scrollbar-thumb-webkit-hover);
 }
 
 /* =========================
    Scrollbar LARGE pour la modale Extension
    ========================= */
 
-/* Chrome / Edge / Brave */
-.modal-body::-webkit-scrollbar{
-  width: 16px;
-}
-
-.modal-body::-webkit-scrollbar-track{
-  background: #0f1117;
-}
+.modal-body::-webkit-scrollbar{ width: 16px; }
+.modal-body::-webkit-scrollbar-track{ background: var(--bg); }
 
 .modal-body::-webkit-scrollbar-thumb{
-  background: #2a314b;
+  background: var(--scrollbar-thumb-webkit);
   border-radius: 999px;
-
-  /* thumb plus fin que le rail */
-  border: 4px solid #0f1117;
+  border: 4px solid var(--bg);
 }
 
 .modal-body::-webkit-scrollbar-thumb:hover{
-  background: #3b4568;
+  background: var(--scrollbar-thumb-webkit-hover);
 }
 
 /* Firefox */
 .modal-body{
-  scrollbar-width: auto;               /* ⬅ plus large que thin */
-  scrollbar-color: #2a314b #0f1117;
+  scrollbar-width: auto;
+  scrollbar-color: var(--scrollbar-thumb) var(--bg);
 }
 
 /* =========================
