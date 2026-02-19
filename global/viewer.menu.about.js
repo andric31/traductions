@@ -89,8 +89,7 @@ Infos / support : Discord (voir “À propos”).
             <button type="button" class="about-close" aria-label="Fermer">✖</button>
           </div>
           <div class="about-body">
-            <div class="about-text">${linkify(EXT_TEXT).replace(/
-/g, "<br>")}</div>
+            <div class="about-text">${linkify(EXT_TEXT).replace(/\n/g, "<br>")}</div>
           </div>
         </div>
       `;
