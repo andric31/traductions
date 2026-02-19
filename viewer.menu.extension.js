@@ -3,7 +3,7 @@
   "use strict";
 
   const EXT_TEXT_BOTTOM = `
-C’est simple, rapide, et super pratique pour suivre mes trads sans te perdre !
+C’est simple, rapide, et super pratique pour suivre les trads sans te perdre !
 `.trim();
 
   const DOWNLOAD_URL = "https://mega.nz/folder/zFsCQJbJ#PkeQbqOCla9RCwoy9sK4tw";
@@ -88,11 +88,11 @@ C’est simple, rapide, et super pratique pour suivre mes trads sans te perdre !
       <div class="aboutText">
 
         <div style="font-weight:900;font-size:16px;text-align:center;margin-bottom:8px;">
-          ✨ Mes traductions à portée de clic ! ✨
+          ✨ Les traductions à portée de clic ! ✨
         </div>
 
         <div style="text-align:center;opacity:.95;margin-bottom:12px;">
-          ${escapeHtml("Voici mon extension qui ajoute une icône directement sur les threads et les vignettes de F95Zone.")}
+          ${escapeHtml("Voici l'extension qui ajoute une icône directement sur les threads et les vignettes de F95Zone.")}
         </div>
 
         ${imageBlock(IMAGES[0])}
