@@ -60,12 +60,51 @@
     renderMenuItems();
   }
 
-  function closeMenu() {
-    const pop = document.getElementById("topMenuPopover");
-    if (pop) pop.classList.add("hidden");
-    const b = document.getElementById("hamburgerBtn");
-    if (b) b.setAttribute("aria-expanded", "false");
-  }
+  function getHamburgerBtn(){
+  return document.getElementById("hamburgerBtn")
+      || document.getElementById("hamburgerBtnViewer")
+      || document.getElementById("hamburgerBtnGame")
+      || null;
+}
+
+function closeMenu() {
+  const pop = document.getElementById("topMenuPopover");
+  if (pop) pop.classList.add("hidden");
+  const b = getHamburgerBtn();
+  if (b) b.setAttribute("aria-expanded", "false");
+}
+
+function positionPopover(btn, pop){
+  try{
+    const r = btn.getBoundingClientRect();
+    const pad = 8;
+    // ensure visible to measure
+    pop.classList.remove("hidden");
+    const w = pop.offsetWidth || 240;
+    const h = pop.offsetHeight || 80;
+    const maxL = Math.max(pad, window.innerWidth - w - pad);
+    const maxT = Math.max(pad, window.innerHeight - h - pad);
+    const left = Math.min(maxL, Math.max(pad, r.left));
+    const top  = Math.min(maxT, Math.max(pad, r.bottom + 8));
+    pop.style.left = left + "px";
+    pop.style.top  = top + "px";
+  }catch{}
+}
+
+function toggleMenu(){
+  const btn = getHamburgerBtn();
+  const pop = ensureDom();
+  if (!btn || !pop) return;
+
+  const isOpen = !pop.classList.contains("hidden");
+  if (isOpen) { closeMenu(); return; }
+
+  // re-render (au cas où des items ont été ajoutés après)
+  renderMenuItems();
+  positionPopover(btn, pop);
+  pop.classList.remove("hidden");
+  btn.setAttribute("aria-expanded", "true");
+}
 
   function init() {
     ensureDom();
@@ -73,6 +112,32 @@
 
     if (BOUND) return;
     BOUND = true;
+
+    const btn = getHamburgerBtn();
+    if (btn) {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleMenu();
+      });
+    }
+
+    document.addEventListener("click", (e) => {
+      const pop = document.getElementById("topMenuPopover");
+      const b = getHamburgerBtn();
+      if (!pop || pop.classList.contains("hidden")) return;
+      const t = e.target;
+      if (pop.contains(t)) return;
+      if (b && (t === b || b.contains(t))) return;
+      closeMenu();
+    });
+
+    window.addEventListener("resize", () => {
+      const pop = document.getElementById("topMenuPopover");
+      const b = getHamburgerBtn();
+      if (pop && b && !pop.classList.contains("hidden")) positionPopover(b, pop);
+    });
+
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") closeMenu();
