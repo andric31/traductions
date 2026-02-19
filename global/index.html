@@ -4,35 +4,22 @@
   <meta charset="utf-8" />
   <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>f95list_viewer</title>
+  <title>Traductions — Multi-traducteurs</title>
 
-  <!-- ✅ Thème instant (comme le viewer) : localStorage.viewerTheme -> <html data-theme="..."> -->
+  <!-- ✅ Un seul thème (fixe) -->
   <script>
   (function(){
     try{
-      const t = (localStorage.getItem("viewerTheme") || "auto").trim() || "auto";
-      const root = document.documentElement; // <html>
-      root.removeAttribute("data-theme");
-      if (t !== "auto") root.setAttribute("data-theme", t);
+      // thème unique : sombre (sans sélecteur)
+      document.documentElement.setAttribute('data-theme','dark');
     }catch{}
   })();
   </script>
 
-  <link id="dynamic-favicon" rel="icon" type="image/png" href="./avatar.png">
-  <script>
-  (function(){
-    const fav = document.getElementById("dynamic-favicon");
-    const testUrl = "./avatar.png?v=" + Date.now();
-    const img = new Image();
-    img.onload  = () => fav.href = testUrl;
-    img.onerror = () => fav.href = "/favicon.png?v=" + Date.now();
-    img.src = testUrl;
-  })();
-  </script>
-
-  <link rel="stylesheet" href="./viewer.css" />
-  <link rel="stylesheet" href="./themes.css" />
-  <link rel="stylesheet" href="./game.css" />
+  <link rel="icon" href="/favicon.png" />
+  <link rel="stylesheet" href="./viewer.css?v=20260219-1" />
+  <link rel="stylesheet" href="./themes.css?v=20260219-1" />
+  <link rel="stylesheet" href="./game.css?v=20260219-1" />
 
   <style>
     html{ height:auto; overflow-y: scroll; }
@@ -51,69 +38,36 @@
     body.mode-game #page-viewer{ display:none !important; }
     body.mode-game #page-game{ display:block !important; }
 
-    /* ✅ En mode viewer : cache la page jeu (évite un flash si le JS switch arrive après) */
+    /* ✅ En mode viewer : cache la page jeu */
     body:not(.mode-game) #page-game{ display:none !important; }
     body:not(.mode-game) #page-viewer{ display:block !important; }
+
+    /* === Game-mode (sélecteur traducteurs) === */
+    #page-game .wrap{ width: 920px; max-width: 94vw; padding: 18px; }
+    #page-game .cardPreview{ background: var(--card); border:1px solid var(--border); border-radius: 18px; overflow:hidden; box-shadow: 0 10px 40px rgba(0,0,0,.35); }
+    #page-game .cardInner{ padding: 16px; }
+
+    .tgrid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 12px; }
+    .tcard{ display:flex; gap: 12px; align-items:center; padding: 12px; border-radius: 14px; border:1px solid var(--border); background: rgba(255,255,255,0.04); }
+    .tavatar{ width:48px; height:48px; border-radius: 12px; object-fit: cover; border:1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); }
+    .tmeta{ flex:1; min-width: 0; }
+    .tname{ font-weight: 700; overflow:hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .tline{ font-size: 12px; opacity: 0.85; margin-top: 2px; overflow:hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .tactions{ display:flex; gap: 8px; align-items:center; }
+    .btn-mini{ border:1px solid var(--border); background: rgba(255,255,255,0.05); color: var(--text); padding: 8px 10px; border-radius: 12px; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap: 6px; }
+    .btn-mini:hover{ filter: brightness(1.08); }
+
+    .chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top: 8px; }
+    .chip{ border:1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.05); border-radius: 999px; padding: 4px 8px; font-size: 12px; }
+
+    .subtle{ opacity:0.8; font-size: 13px; }
   </style>
 </head>
 <body>
 
-  <!-- ✅ Popover unique pour le menu ☰ (doit être hors #page-viewer/#page-game)
-       Sinon, en mode viewer, il reste dans un parent display:none et ne peut pas s'afficher. -->
+  <!-- Popover menu (réutilisé par viewer.menu.js si tu veux) -->
   <div id="topMenuPopover" class="menu-popover hidden"></div>
-
-  <!-- ✅ Nom affiché via manifest (casse exacte), fallback slug — SANS BOUCLE -->
-  <script>
-  (async function(){
-    function detectSlug(){
-      try{
-        const forced = (window.__SITE_SLUG__ || "").toString().trim();
-        if(forced) return forced.toLowerCase();
-      }catch{}
-      const segs = (location.pathname || "/").split("/").filter(Boolean);
-      return String(segs[0] || "").trim().toLowerCase();
-    }
-
-    const slug = detectSlug();
-    window.__SITE_SLUG__ = slug;
-
-    let nice = slug ? (slug[0].toUpperCase() + slug.slice(1)) : "";
-
-    try{
-      const r = await fetch("/traducteurs_manifest.json", { cache:"no-store" });
-      if (r.ok){
-        const list = await r.json();
-        const found = Array.isArray(list)
-          ? list.find(x => String(x?.key||"").toLowerCase() === slug)
-          : null;
-        if (found && found.name) nice = String(found.name);
-      }
-    }catch(e){}
-
-    window.__SITE_NAME__ = nice;
-
-    const txt = nice || slug || "";
-    document.title = txt;
-
-    function applyH1(){
-      const h1 = document.getElementById("viewerTitle");
-      if (h1) h1.textContent = txt;
-      return !!h1;
-    }
-
-    if (applyH1()) return;
-
-    window.addEventListener("DOMContentLoaded", () => {
-      if (applyH1()) return;
-
-      let tries = 0;
-      const timer = setInterval(() => {
-        tries++;
-        if (applyH1() || tries >= 20) clearInterval(timer);
-      }, 100);
-    });
-  })();
-  </script>
 
   <!-- PAGE VIEWER -->
   <div id="page-viewer">
@@ -126,7 +80,6 @@
           Ce site contient des images et contenus destinés à un public majeur.<br>
           En continuant, vous confirmez avoir <strong>18 ans ou plus</strong>.
         </p>
-
         <button id="age-yes">J’ai 18 ans</button>
         <button id="age-no">Quitter</button>
       </div>
@@ -139,37 +92,24 @@
           <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
         </button>
 
-        <h1 id="viewerTitle">f95list_viewer</h1>
+        <h1 id="viewerTitle">Traductions — Multi-traducteurs</h1>
 
         <div id="topTitleTools" class="top-title-tools">
           <span class="total-inline">Total : <strong id="countTotal">0</strong></span>
 
           <select id="cols" title="Vignettes par ligne">
             <option value="auto">Vignettes/ligne : Auto</option>
-            <option value="1">1 par ligne</option>
             <option value="2">2 par ligne</option>
             <option value="3">3 par ligne</option>
             <option value="4">4 par ligne</option>
             <option value="5">5 par ligne</option>
             <option value="6">6 par ligne</option>
-            <option value="7">7 par ligne</option>
-            <option value="8">8 par ligne</option>
-            <option value="9">9 par ligne</option>
-            <option value="10">10 par ligne</option>
           </select>
 
           <select id="pageSize" title="Affichage progressif">
             <option value="50">Afficher par 50</option>
             <option value="100">Afficher par 100</option>
             <option value="all">Tout afficher</option>
-          </select>
-
-          <select id="theme" title="Thème">
-            <option value="auto">Thème : Auto (Windows)</option>
-            <option value="dark">Thème : Sombre</option>
-            <option value="white">Thème : Clair</option>
-            <option value="noel">Thème : Noël</option>
-            <option value="halloween">Thème : Halloween</option>
           </select>
         </div>
       </div>
@@ -180,207 +120,55 @@
         </div>
 
         <select id="sort" title="Trier">
-          <option value="updatedAtLocal-desc">Date de la traduction</option>
-          <option value="mega-desc">📥 Téléchargements</option>
-          <option value="views-desc">👁️ Vues</option>
-          <option value="likes-desc">❤️ J'aime</option>
+          <option value="updatedAtLocal-desc">Date de traduction (max)</option>
           <option value="title-asc">Titre A→Z</option>
           <option value="title-desc">Titre Z→A</option>
-          <option value="updatedAt-desc">Date Thread F95 (Maj)</option>
         </select>
 
-        <select id="filterCat" title="Catégorie">
-          <option value="all">Catégorie : Toutes</option>
-          <option value="VN">VN</option>
-          <option value="Collection">Collection</option>
-        </select>
-
-        <select id="filterEngine" title="Moteur">
-          <option value="all">Moteur : Tous</option>
-          <option value="Ren'Py">Ren'Py</option>
-          <option value="RPGM">RPGM</option>
-          <option value="Unity">Unity</option>
-          <option value="Others">Others</option>
-          <option value="Wolf RPG">Wolf RPG</option>
-        </select>
-
-        <select id="filterStatus" title="Statut">
-          <option value="all">Statut : Tous</option>
-          <option value="Completed">Completed</option>
-          <option value="Abandoned">Abandoned</option>
-          <option value="Onhold">Onhold</option>
-          <option value="En cours">En cours</option>
-        </select>
-
-        <button id="tagsBtn" type="button" class="tags-btn" aria-haspopup="menu" aria-expanded="false">
-          🏷️ Tags <span id="tagsCount" class="tags-count hidden">0</span>
-        </button>
-
-        <button id="refresh" type="button">Rafraîchir</button>
+        <button id="refresh" class="btn" type="button" title="Recharger">↻</button>
       </div>
     </header>
 
-    <main role="main">
-      <section id="gridMode" class="grid-wrap" aria-label="Vignettes des jeux">
-        <div id="viewerAnnonceHost"></div>
-
-        <div id="grid" class="grid"></div>
-        <div id="gridEmpty" class="empty hidden">Aucun résultat.</div>
-      </section>
-
-      <footer class="viewer-footer">
-        👁️ Vues de la page : <strong id="mainViews">—</strong>
-      </footer>
+    <main class="wrap">
+      <div id="grid" class="grid"></div>
+      <div id="moreWrap" class="more-wrap" style="display:none;">
+        <button id="more" class="btn" type="button">Afficher plus</button>
+      </div>
+      <div id="empty" class="empty" style="display:none;">Aucun résultat.</div>
     </main>
   </div>
 
-  <!-- PAGE JEU (même page, via ?id= / ?uid=) -->
-  <div id="page-game" style="display:none;">
+
+  <!-- PAGE GAME (choix traducteur) -->
+  <div id="page-game">
     <div class="wrap">
-      <div class="cardPreview" id="card" aria-live="polite">
-  
+      <div class="cardPreview">
         <div class="cardInner">
-  
-          <div class="headRow">
-            <!-- ✅ IMPORTANT : id hamburgerBtn (pas hamburgerBtnGame) -->
-            <button type="button" class="hamburger-btn" id="hamburgerBtn"
-                    aria-label="Ouvrir le menu" aria-haspopup="menu" aria-expanded="false">
-              <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
-            </button>
-  
-            <button class="btnLike like-btn" id="btnLike" type="button" aria-label="J’aime">🤍</button>
-            <div class="badgesRow" id="badges"></div>
-          </div>
-  
-          <div class="majState" id="majState" style="display:none;"></div>
-  
-          <h1 class="title" id="title">Chargement…</h1>
-  
-          <img id="cover" class="cover is-placeholder" alt="" referrerpolicy="no-referrer">
-  
-          <div class="infoBlock tagsBox" id="tagsBox">
-            <div class="tagsRow" id="tags"></div>
-          </div>
-          
-          <!-- 📝 Description -->
-          <div id="descriptionBox" class="descInnerBox" style="display:none;">
-            <div id="descriptionText" class="infoText"></div>
+          <div class="headRow" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <a id="backToList" class="btn-mini" href="/liste/" title="Retour">← Retour</a>
+            <div style="flex:1;min-width:220px;">
+              <div id="gTitle" class="game-title" style="font-size:18px;font-weight:800;">Jeu</div>
+              <div id="gSub" class="subtle">Choisis un traducteur pour ouvrir sa page.</div>
+            </div>
+            <a id="openF95" class="btn-mini" href="#" target="_blank" rel="noopener">🌐 F95Zone</a>
           </div>
 
-          <!-- ✅ BOUTONS -->
-          <div class="btnRow">
-            <a class="btnLike btn-discord" id="btnDiscord" target="_blank" rel="noopener" style="display:none;">💬 Discord</a>
-            <a class="btnLike btn-f95" id="btnF95" target="_blank" rel="noopener" style="display:none;">
-              <span class="f95-white">F95</span><span class="f95-red">Zone</span>
-            </a>
+          <div class="chips" id="gChips"></div>
+
+          <div class="tgrid" id="tgrid"></div>
+
+          <div class="infoBlock" style="margin-top:14px;">
+            <h3>💡 Astuce</h3>
+            <div class="subtle">Le détail complet (MEGA, notes, vérif F95, likes, etc.) reste dans la page du traducteur — ici c’est juste un sélecteur rapide.</div>
           </div>
-  
-          <div class="btnMainRow">
-            <a class="btnLike btnMega" id="btnMega" target="_blank" rel="noopener" style="display:none;">
-              📥 Télécharger la traduction · MEGA
-            </a>
-          </div>
-  
-          <div id="archiveBox" style="display:none; margin-top:12px; justify-content:center;">
-            <a id="archiveLink" class="btnLike" target="_blank" rel="noopener" style="justify-content:center;">
-              📦 Archives de la traduction
-            </a>
-          </div>
-  
-          <!-- ✅ ℹ️ Informations -->
-          <div id="notesBox" class="infoBlock" style="display:none;">
-            <h3>ℹ️ Informations</h3>
-            <div id="notesText" class="infoTextMuted"></div>
-          </div>
-  
-          <!-- ⭐ Notation -->
-          <div id="ratingBox" class="infoBlock" style="text-align:center;">
-            <div style="color:var(--muted); font-size:12px; margin-bottom:6px;">
-              Note de la traduction :
-              <strong id="ratingAvg">—</strong>
-              (<span id="ratingCount">0</span> votes)
-            </div>
-  
-            <div id="ratingChoices" style="display:flex; justify-content:center; gap:8px;"></div>
-            <div id="ratingMsg" style="margin-top:6px; color:var(--muted); font-size:12px;"></div>
-          </div>
-  
         </div>
       </div>
-  
-      <div class="statsOut infoBlock" id="statsOut" style="display:none;">
-        👁️ Vues : <strong id="statViews">0</strong>
-        ·
-        ❤️ J’aime : <strong id="statLikes">0</strong>
-        ·
-        📥 Téléchargements : <strong id="statMegaClicks">0</strong>
-      </div>
-  
-      <div class="err" id="errBox"></div>
     </div>
-  
-    <!-- ✅ Observer : mini fade sur #ratingMsg à chaque changement -->
-    <script>
-      (function(){
-        const msg = document.getElementById("ratingMsg");
-        if (!msg) return;
-  
-        const flash = () => {
-          msg.classList.remove("msgFade");
-          void msg.offsetWidth;
-          msg.classList.add("msgFade");
-        };
-  
-        const obs = new MutationObserver(() => flash());
-        obs.observe(msg, { childList: true, characterData: true, subtree: true });
-  
-        if ((msg.textContent || "").trim()) flash();
-      })();
-    </script>
   </div>
 
-<!-- ✅ JS externes en defer -->
-  <script src="./viewer.menu.js" defer></script>
-  <script src="./viewer.menu.about.js" defer></script>
-  <script src="/viewer.menu.extension.js" defer></script>
-  <script src="/viewer.agegate.js" defer></script>
-  <script src="/viewer.annonce.js" defer></script>
 
-  <script src="./viewer.js" defer></script>
-  <script src="./game.js" defer></script>
-
-  <!-- ✅ switch viewer/game -->
-  <script>
-    (function(){
-      const p = new URLSearchParams(location.search);
-      const hasGame = (p.get("id")||"").trim() || (p.get("uid")||"").trim();
-      const v = document.getElementById("page-viewer");
-      const g = document.getElementById("page-game");
-      if (hasGame) {
-        document.body.classList.add("mode-game");
-        if (v) v.style.display = "none";
-        if (g) g.style.display = "";
-      } else {
-        document.body.classList.remove("mode-game");
-        if (g) g.style.display = "none";
-        if (v) v.style.display = "";
-      }
-    })();
-  </script>
-
-  <!-- ✅ Sync thème si changé dans un autre onglet -->
-  <script>
-  window.addEventListener("storage", (e) => {
-    if (e.key !== "viewerTheme") return;
-    try{
-      const t = (localStorage.getItem("viewerTheme") || "auto").trim() || "auto";
-      const root = document.documentElement;
-      root.removeAttribute("data-theme");
-      if (t !== "auto") root.setAttribute("data-theme", t);
-    }catch{}
-  });
-  </script>
-
+  <script src="/viewer.agegate.js"></script>
+  <script src="/viewer.menu.extension.js"></script>
+  <script src="./app.js?v=20260219-1"></script>
 </body>
 </html>
-
