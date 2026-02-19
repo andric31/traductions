@@ -11,7 +11,7 @@
   <!-- ✅ Thèmes traducteurs (couleurs vignettes) -->
   <link rel="stylesheet" href="./themes.css" />
 
-  <!-- ✅ Styles page jeu (rendu comme sur andric31-traductions, sans dossier /game) -->
+  <!-- ✅ Styles page jeu -->
   <style>
     body.mode-game{
       min-height: 100vh;
@@ -42,7 +42,6 @@
       padding: 16px 16px 18px 16px;
     }
 
-    /* Ligne du haut : bouton ☰ + like + badges */
     body.mode-game #page-game .headRow{
       display:flex;
       align-items:center;
@@ -59,7 +58,8 @@
     }
 
     /* Bouton hamburger */
-    body.mode-game #page-game .hamburger-btn{
+    body.mode-game #page-game .hamburger-btn,
+    #page-viewer .hamburger-btn{
       width:34px;
       height:34px;
       border-radius:10px;
@@ -72,10 +72,25 @@
       user-select:none;
       flex:0 0 auto;
     }
-    body.mode-game #page-game .hamburger-btn:hover{ filter: brightness(1.10); }
-    body.mode-game #page-game .hamburger-btn:active{ transform: translateY(1px); }
-    body.mode-game #page-game .ham-lines{ width:16px; height:12px; display:flex; flex-direction:column; justify-content:space-between; }
-    body.mode-game #page-game .ham-lines span{ display:block; height:2px; border-radius:999px; background:#ffffff; opacity:0.92; }
+    body.mode-game #page-game .hamburger-btn:hover,
+    #page-viewer .hamburger-btn:hover{ filter: brightness(1.10); }
+    body.mode-game #page-game .hamburger-btn:active,
+    #page-viewer .hamburger-btn:active{ transform: translateY(1px); }
+
+    body.mode-game #page-game .ham-lines,
+    #page-viewer .ham-lines{
+      width:16px; height:12px;
+      display:flex; flex-direction:column;
+      justify-content:space-between;
+    }
+    body.mode-game #page-game .ham-lines span,
+    #page-viewer .ham-lines span{
+      display:block;
+      height:2px;
+      border-radius:999px;
+      background:#ffffff;
+      opacity:0.92;
+    }
 
     /* Cover */
     body.mode-game #page-game .cover{
@@ -100,13 +115,13 @@
     body.mode-game #page-game .infoBlock h3{ margin:0 0 8px 0; font-size:14px; }
   </style>
 </head>
+
 <body>
 
-  <!-- ✅ Popover unique pour le menu ☰ (hors #page-viewer/#page-game)
-       Sinon, il peut rester coincé dans un parent display:none. -->
-  <div id="topMenuPopover" class="menu-popover hidden"></div>
+  <!-- ✅ Popover unique menu ☰ (hors pages) -->
+  <div id="topMenuPopover" class="menu-popover" aria-hidden="true"></div>
 
-  <!-- ✅ SLUG universel (détecté via /<slug>/) -->
+  <!-- ✅ SLUG universel -->
   <script>
     (function(){
       function detectSlug(){
@@ -120,11 +135,9 @@
       const slug = detectSlug();
       window.__SITE_SLUG__ = slug;
 
-      // Titre + H1 universels (si on est sur viewer)
       const nice = slug ? (slug[0].toUpperCase() + slug.slice(1)) : "";
       document.title = slug ? `f95list_${nice}_viewer` : `f95list_viewer`;
 
-      // Met à jour le H1 plus tard (quand le DOM existe)
       window.addEventListener("DOMContentLoaded", () => {
         const h1 = document.getElementById("viewerTitle");
         if(h1){
@@ -132,13 +145,14 @@
         }
         const back = document.getElementById("backToList");
         if(back){
+          // depuis /global/?id=... => retour /global/
           back.href = slug ? `/${slug}/` : `/`;
         }
       });
     })();
   </script>
 
-  <!-- PAGE VIEWER -->
+  <!-- ========================= PAGE VIEWER ========================= -->
   <div id="page-viewer">
 
     <!-- 🔞 AGE GATE -->
@@ -157,41 +171,45 @@
 
     <header class="topbar" role="banner">
       <div class="top-title-row top-title-flex">
-        <!-- ✅ id unique (viewer) -->
-        <button id="hamburgerBtnViewer" class="hamburger-btn" type="button"
-                aria-label="Menu" title="Menu" aria-expanded="false">
+
+        <!-- ✅ IMPORTANT : id standard template -->
+        <button id="hamburgerBtn" class="hamburger-btn" type="button"
+                aria-label="Menu" title="Menu" aria-haspopup="menu" aria-expanded="false"
+                aria-controls="topMenuPopover">
           <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
         </button>
 
         <h1 id="viewerTitle">f95list_viewer</h1>
 
-<div id="topTitleTools" class="top-title-tools">
-  <span class="total-inline">Total : <strong id="countTotal">0</strong></span>
-  <select id="cols" title="Vignettes par ligne">
-  <option value="auto">Vignettes/ligne : Auto</option>
-  <option value="1">1 par ligne</option>
-  <option value="2">2 par ligne</option>
-  <option value="3">3 par ligne</option>
-  <option value="4">4 par ligne</option>
-  <option value="5">5 par ligne</option>
-  <option value="6">6 par ligne</option>
-  <option value="7">7 par ligne</option>
-  <option value="8">8 par ligne</option>
-  <option value="9">9 par ligne</option>
-  <option value="10">10 par ligne</option>
-</select>
-  <select id="pageSize" title="Affichage progressif">
-  <option value="50">Afficher par 50</option>
-  <option value="100">Afficher par 100</option>
-  <option value="all">Tout afficher</option>
-</select>
-</div>
+        <div id="topTitleTools" class="top-title-tools">
+          <span class="total-inline">Total : <strong id="countTotal">0</strong></span>
+
+          <select id="cols" title="Vignettes par ligne">
+            <option value="auto">Vignettes/ligne : Auto</option>
+            <option value="1">1 par ligne</option>
+            <option value="2">2 par ligne</option>
+            <option value="3">3 par ligne</option>
+            <option value="4">4 par ligne</option>
+            <option value="5">5 par ligne</option>
+            <option value="6">6 par ligne</option>
+            <option value="7">7 par ligne</option>
+            <option value="8">8 par ligne</option>
+            <option value="9">9 par ligne</option>
+            <option value="10">10 par ligne</option>
+          </select>
+
+          <select id="pageSize" title="Affichage progressif">
+            <option value="50">Afficher par 50</option>
+            <option value="100">Afficher par 100</option>
+            <option value="all">Tout afficher</option>
+          </select>
+        </div>
       </div>
 
       <div class="top-actions">
         <div class="search-wrap">
           <input id="search" type="search" placeholder="Rechercher un jeu." autocomplete="off" />
-</div>
+        </div>
 
         <select id="sort" title="Trier">
           <option value="updatedAtLocal-desc">Date de la traduction</option>
@@ -226,13 +244,10 @@
           <option value="En cours">En cours</option>
         </select>
 
-        <button id="tagsBtn" type="button" class="tags-btn" aria-haspopup="menu" aria-expanded="false">
+        <button id="tagsBtn" type="button" class="tags-btn"
+                aria-haspopup="menu" aria-expanded="false">
           🏷️ Tags <span id="tagsCount" class="tags-count hidden">0</span>
         </button>
-
-        
-
-        
 
         <button id="refresh" type="button">Rafraîchir</button>
       </div>
@@ -253,7 +268,7 @@
 
   </div>
 
-  <!-- PAGE JEU (même page, via ?id= / ?uid=) -->
+  <!-- ========================= PAGE JEU ========================= -->
   <div id="page-game" style="display:none;">
 
     <div class="wrap">
@@ -261,9 +276,10 @@
         <div class="cardInner">
 
           <div class="headRow">
-            <!-- ✅ IMPORTANT : id hamburgerBtn (même convention que le template) -->
-            <button type="button" class="hamburger-btn" id="hamburgerBtn"
-                    aria-label="Ouvrir le menu" aria-haspopup="menu" aria-expanded="false">
+            <!-- ✅ id différent pour éviter double ID -->
+            <button type="button" class="hamburger-btn" id="hamburgerBtnGame"
+                    aria-label="Ouvrir le menu" aria-haspopup="menu" aria-expanded="false"
+                    aria-controls="topMenuPopover">
               <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
             </button>
 
@@ -279,7 +295,6 @@
 
           <div class="infoBlock tagsBox" id="tagsBox"><div class="tagsRow" id="tags"></div></div>
 
-          <!-- 📝 Description -->
           <div id="descriptionBox" class="infoBlock" style="display:none;">
             <div id="descriptionText" class="infoText"></div>
           </div>
@@ -301,14 +316,12 @@
             </a>
           </div>
 
-          <!-- ⭐ Notation -->
           <div id="ratingBox" class="infoBlock" style="text-align:center;">
             <div class="ratingTitle">Note de la traduction : <strong id="ratingAvg">—</strong> (<span id="ratingCount">0</span> votes)</div>
             <div id="ratingChoices" style="display:flex; justify-content:center; gap:8px;"></div>
             <div id="ratingMsg" style="margin-top:6px; color:var(--muted); font-size:12px;"></div>
           </div>
 
-          <!-- ✅ NOTES -->
           <div id="notesBox" class="infoBlock" style="display:none;">
             <h3>ℹ️ Informations</h3>
             <div id="notesText" class="infoTextMuted"></div>
@@ -328,7 +341,7 @@
       <div class="err" id="errBox"></div>
     </div>
 
-    <!-- ✅ Observer : mini fade sur #ratingMsg à chaque changement -->
+    <!-- ✅ mini fade sur #ratingMsg -->
     <script>
       (function(){
         const msg = document.getElementById("ratingMsg");
@@ -352,9 +365,13 @@
     </div>
   </div>
 
-<!-- ✅ JS externes en defer -->
+  <!-- ✅ JS externes en defer -->
   <script src="./viewer.menu.js" defer></script>
   <script src="./viewer.menu.about.js" defer></script>
+  <script src="./viewer.menu.extension.js" defer></script>
+  <script src="./viewer.agegate.js" defer></script>
+  <script src="./viewer.annonce.js" defer></script>
+
   <script src="./viewer.js" defer></script>
 
   <!-- ✅ switch viewer/game -->
@@ -376,8 +393,5 @@
     })();
   </script>
 
-  <!-- (pont hamburger supprimé : désormais aligné template) -->
-
 </body>
 </html>
-
