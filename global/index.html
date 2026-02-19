@@ -116,9 +116,11 @@
       const slug = detectSlug();
       window.__SITE_SLUG__ = slug;
 
+      // Titre + H1 universels (si on est sur viewer)
       const nice = slug ? (slug[0].toUpperCase() + slug.slice(1)) : "";
       document.title = slug ? `f95list_${nice}_viewer` : `f95list_viewer`;
 
+      // Met à jour le H1 plus tard (quand le DOM existe)
       window.addEventListener("DOMContentLoaded", () => {
         const h1 = document.getElementById("viewerTitle");
         if(h1){
@@ -151,10 +153,9 @@
 
     <header class="topbar" role="banner">
       <div class="top-title-row top-title-flex">
-        <!-- ✅ Hamburger COMME TEMPLATE : id=hamburgerBtn + props -->
-        <button id="hamburgerBtn" class="hamburger-btn" type="button"
-                aria-label="Menu" title="Menu" aria-expanded="false"
-                data-role="hamburger" data-scope="viewer" data-source="template">
+        <!-- ✅ id unique (viewer) -->
+        <button id="hamburgerBtnViewer" class="hamburger-btn" type="button"
+                aria-label="Menu" title="Menu" aria-expanded="false">
           <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
         </button>
 
@@ -184,7 +185,7 @@
             <option value="all">Tout afficher</option>
           </select>
 
-          <!-- ❌ IMPORTANT : Rafraîchir NE DOIT PAS être ici -->
+          <button id="refresh" type="button">Rafraîchir</button>
         </div>
       </div>
 
@@ -229,9 +230,6 @@
         <button id="tagsBtn" type="button" class="tags-btn" aria-haspopup="menu" aria-expanded="false">
           🏷️ Tags <span id="tagsCount" class="tags-count hidden">0</span>
         </button>
-
-        <!-- ✅ Rafraîchir : COMME À L’ORIGINE (barre du bas) -->
-        <button id="refresh" type="button">Rafraîchir</button>
       </div>
     </header>
 
@@ -258,10 +256,9 @@
         <div class="cardInner">
 
           <div class="headRow">
-            <!-- ✅ hamburger game (garde son id) + props -->
+            <!-- ✅ id unique (game) -->
             <button type="button" class="hamburger-btn" id="hamburgerBtnGame"
-                    aria-label="Ouvrir le menu" aria-haspopup="menu" aria-expanded="false"
-                    data-role="hamburger" data-scope="game" data-source="template">
+                    aria-label="Ouvrir le menu" aria-haspopup="menu" aria-expanded="false">
               <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
             </button>
 
@@ -350,6 +347,7 @@
     </div>
   </div>
 
+  <script src="./viewer.js"></script>
   <!-- ✅ switch viewer/game -->
   <script>
     (function(){
@@ -369,44 +367,32 @@
     })();
   </script>
 
-  <!-- ✅ Pont hamburger "template" :
-       - Les scripts menu utilisent #hamburgerBtn
-       - En mode game, on forward le click vers #hamburgerBtnGame -->
+  <!-- ✅ pont hamburger : si tes JS attendent #hamburgerBtn -->
   <script>
     (function(){
-      function bindHamburgerBridge(){
-        const hb = document.getElementById("hamburgerBtn");
-        const hg = document.getElementById("hamburgerBtnGame");
-        if(!hb || !hg) return;
+      // Certains scripts (viewer.js / game.js) utilisent encore getElementById("hamburgerBtn")
+      // On crée un alias sûr vers le bon bouton selon le mode.
+      function ensureAlias(){
+        const hasAlias = document.getElementById("hamburgerBtn");
+        if (hasAlias) return;
 
-        // évite double bind
-        if (hb.dataset.bridgeBound === "1") return;
-        hb.dataset.bridgeBound = "1";
+        const p = new URLSearchParams(location.search);
+        const hasGame = (p.get("id")||"").trim() || (p.get("uid")||"").trim();
 
-        hb.addEventListener("click", (e) => {
-          const p = new URLSearchParams(location.search);
-          const hasGame = (p.get("id")||"").trim() || (p.get("uid")||"").trim();
-          if (hasGame) {
-            // on utilise le bouton game (celui visible)
-            e.preventDefault();
-            e.stopPropagation();
-            hg.click();
-          }
-        }, true);
+        const src = document.getElementById(hasGame ? "hamburgerBtnGame" : "hamburgerBtnViewer");
+        if (!src) return;
+
+        // clone invisible avec id attendu, qui forward le click vers le vrai bouton
+        const alias = src.cloneNode(true);
+        alias.id = "hamburgerBtn";
+        alias.style.display = "none";
+        alias.addEventListener("click", (e)=>{ e.preventDefault(); e.stopPropagation(); src.click(); });
+        document.body.appendChild(alias);
       }
-      window.addEventListener("DOMContentLoaded", bindHamburgerBridge);
+      window.addEventListener("DOMContentLoaded", ensureAlias);
     })();
   </script>
 
-  <!-- ✅ Scripts COMME TEMPLATE (defer) -->
-  <script src="./viewer.menu.js" defer></script>
-  <script src="./viewer.menu.about.js" defer></script>
-  <script src="/viewer.menu.extension.js" defer></script>
-  <script src="/viewer.agegate.js" defer></script>
-  <script src="/viewer.annonce.js" defer></script>
-
-  <script src="./viewer.js" defer></script>
-  <script src="./game.js" defer></script>
-
 </body>
 </html>
+
