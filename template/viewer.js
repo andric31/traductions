@@ -73,7 +73,9 @@
     try {
       const p = new URLSearchParams(location.search);
       const hasGame = (p.get("id") || "").trim() || (p.get("uid") || "").trim();
-      const niceName = String(window.__SITE_NAME__ || "").trim();
+      const niceName = String(
+        (window.__SITE_NAME__ || (SLUG ? (SLUG.charAt(0).toUpperCase() + SLUG.slice(1)) : ""))
+      ).trim();
 
       // Toujours : Accueil général
       window.ViewerMenu?.addItem?.("🌍 Accueil", () => { location.href = "https://traductions.pages.dev/"; });
