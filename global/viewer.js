@@ -28,38 +28,65 @@
   const $ = (sel) => document.querySelector(sel);
 
   // =========================
-  // ☰ Menu (ViewerMenu) — commun (comme template)
+  // ☰ Hamburger menu (Viewer)
+  // - Ajoute un bouton "Accueil" -> https://traductions.pages.dev/
+  // - Ne touche pas au chargement des listes / bases
   // =========================
-  function registerMenuItems(){
-    try{
+  function initHamburgerMenu() {
+    // ✅ Menu ☰ basé sur ViewerMenu + popover #topMenuPopover (comme template)
+    const btnViewer = document.getElementById("hamburgerBtnViewer");
+    const btnGame = document.getElementById("hamburgerBtn");
+    const btn = btnViewer || btnGame;
+    if (!btn) return;
+
+    // init noyau (items + ESC)
+    try { window.ViewerMenu?.init?.(); } catch {}
+
+    // items communs : Accueil + Retour liste (si page jeu)
+    try {
       const p = new URLSearchParams(location.search);
-      const hasGame = (p.get("id")||"").trim() || (p.get("uid")||"").trim();
-      const niceName = String((window.__SITE_NAME__ || (SLUG ? (SLUG.charAt(0).toUpperCase() + SLUG.slice(1)) : ""))).trim();
+      const hasGame = (p.get("id") || "").trim() || (p.get("uid") || "").trim();
 
-      // Toujours : Accueil général
-      window.ViewerMenu?.addItem?.("🌍 Accueil", () => { location.href = "https://traductions.pages.dev/"; });
+      const niceName = String(
+        (window.__SITE_NAME__ || (SLUG ? (SLUG.charAt(0).toUpperCase() + SLUG.slice(1)) : ""))
+      ).trim();
 
-      // En mode jeu : retour à la liste (du slug)
-      if (hasGame) {
-        window.ViewerMenu?.addItem?.(
-          niceName ? `📚 Retour à la liste · ${niceName}` : "📚 Retour à la liste",
-          () => { location.href = APP_PATH; }
-        );
+      // évite les doublons si init() est relancé
+      if (!window.__MENU_ITEMS_REGISTERED__) {
+        window.__MENU_ITEMS_REGISTERED__ = true;
+
+        window.ViewerMenu?.addItem?.("🌍 Accueil", () => {
+          location.href = "https://traductions.pages.dev/";
+        });
+
+        if (hasGame) {
+          window.ViewerMenu?.addItem?.(
+            niceName ? `📚 Retour à la liste · ${niceName}` : "📚 Retour à la liste",
+            () => { location.href = APP_PATH; }
+          );
+        }
       }
-    }catch{}
-  }
+    } catch {}
 
+    const pop = document.getElementById("topMenuPopover");
+    if (!pop) return;
 
     const close = () => {
       pop.classList.add("hidden");
       btn.setAttribute("aria-expanded", "false");
+      try { window.ViewerMenu?.closeMenu?.(); } catch {}
     };
 
     const open = () => {
+      // render déjà fait par ViewerMenu.addItem()
       const r = btn.getBoundingClientRect();
       const pad = 8;
-      const w = pop.offsetWidth || 220;
-      const h = pop.offsetHeight || 80;
+
+      // mesure après visible : on fait un "preview" sans animation
+      pop.classList.remove("hidden");
+      const w = pop.offsetWidth || 240;
+      const h = pop.offsetHeight || 120;
+
       const maxL = Math.max(pad, window.innerWidth - w - pad);
       const maxT = Math.max(pad, window.innerHeight - h - pad);
 
@@ -69,7 +96,6 @@
       pop.style.left = left + "px";
       pop.style.top = top + "px";
 
-      pop.classList.remove("hidden");
       btn.setAttribute("aria-expanded", "true");
     };
 
@@ -81,7 +107,7 @@
       else open();
     });
 
-    // click dehors => ferme
+    // clic dehors => ferme
     document.addEventListener("click", (e) => {
       const t = e.target;
       if (!t) return;
@@ -90,7 +116,7 @@
       close();
     });
 
-    // resize/scroll => reposition ou ferme
+    // resize => ferme
     window.addEventListener("resize", () => {
       if (!pop.classList.contains("hidden")) close();
     });
@@ -99,6 +125,7 @@
       if (e.key === "Escape") close();
     });
   }
+
 
   // =========================
   // 🔞 Age gate (intégré ici)
@@ -1071,8 +1098,8 @@
     }
   }
 
-  // ✅ Menu ☰ (ViewerMenu) — init + items (comme template)
-  try { window.ViewerMenu?.init?.(); registerMenuItems(); } catch {}
+  // ✅ Menu hamburger (viewer)
+  initHamburgerMenu();
 
   init();
 })();
