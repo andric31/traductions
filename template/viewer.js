@@ -71,54 +71,22 @@
   // =========================
   function registerMenuItems() {
     try {
-      // ✅ robust : certains environnements mettent les params dans le hash
-      // ex: /xxx/#?id=123  ou /xxx/#id=123
-      const readParams = () => {
-        try {
-          const p = new URLSearchParams(location.search);
-          const id = (p.get("id") || "").trim();
-          const uid = (p.get("uid") || "").trim();
-          if (id || uid) return { id, uid };
-        } catch {}
-        try {
-          const h = String(location.hash || "").replace(/^#/, "");
-          const q = h.startsWith("?") ? h.slice(1) : (h.includes("?") ? h.split("?").slice(1).join("?") : h);
-          const p2 = new URLSearchParams(q);
-          const id2 = (p2.get("id") || "").trim();
-          const uid2 = (p2.get("uid") || "").trim();
-          return { id: id2, uid: uid2 };
-        } catch {}
-        return { id: "", uid: "" };
-      };
-
-      const { id, uid } = readParams();
-      const hasGame = !!(id || uid);
+      const p = new URLSearchParams(location.search);
+      const hasGame = (p.get("id") || "").trim() || (p.get("uid") || "").trim();
       const niceName = String(window.__SITE_NAME__ || "").trim();
 
-      // ✅ évite les doublons (ViewerMenu.init() peut être appelé plusieurs fois)
-      // On ne clear PAS tout le menu, sinon on perd les items ajoutés par d'autres scripts.
-      const flags = (window.__viewerMenuFlags ||= { common:false, back:false });
-
       // Toujours : Accueil général
-      if (!flags.common) {
-        window.ViewerMenu?.addItem?.("🌍 Accueil", () => { location.href = "https://traductions.pages.dev/"; });
-        flags.common = true;
-      }
+      window.ViewerMenu?.addItem?.("🌍 Accueil", () => { location.href = "https://traductions.pages.dev/"; });
 
       // En mode jeu : retour liste du traducteur
-      if (hasGame && !flags.back) {
+      if (hasGame) {
         window.ViewerMenu?.addItem?.(
           niceName ? `📚 Retour à la liste · ${niceName}` : "📚 Retour à la liste",
           () => { location.href = APP_PATH; }
         );
-        flags.back = true;
       }
     } catch {}
   }
-
-  // ✅ permet de reconstruire le menu à chaque ViewerMenu.init()
-  // (game.js appelle ViewerMenu.init() à chaque ouverture du ☰)
-  try { window.__onViewerMenuInit = registerMenuItems; } catch {}
 
   const $ = (sel) => document.querySelector(sel);
 
