@@ -6,46 +6,6 @@
   "use strict";
 
   // =========================
-  // Thèmes (themes.css)
-  // =========================
-  function getViewerTheme() {
-    try { return (localStorage.getItem("viewerTheme") || "auto").trim() || "auto"; }
-    catch { return "auto"; }
-  }
-
-  function setViewerTheme(v) {
-    try { localStorage.setItem("viewerTheme", String(v || "auto")); } catch {}
-  }
-
-  function applyViewerTheme(v) {
-    const t = (v || "auto").toString().trim() || "auto";
-    const root = document.documentElement;
-    root.removeAttribute("data-theme");
-    if (t !== "auto") root.setAttribute("data-theme", t);
-  }
-
-  // ✅ Auto = suit Windows (clair/sombre) en live
-  let THEME_MQ_BOUND = false;
-
-  function bindAutoThemeWatcher() {
-    if (THEME_MQ_BOUND) return;
-    THEME_MQ_BOUND = true;
-
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    mq.addEventListener("change", () => {
-      try {
-        const t = getViewerTheme();
-        if ((t || "auto") === "auto") {
-          applyViewerTheme("auto"); // laisse le CSS suivre Windows
-          const sel = document.getElementById("theme");
-          if (sel) sel.value = "auto";
-        }
-      } catch {}
-    });
-  }
-
-
-  // =========================
   // ✅ Détection universelle SLUG + chemins
   // =========================
   function detectSlug() {
