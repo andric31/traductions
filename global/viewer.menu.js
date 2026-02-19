@@ -63,9 +63,7 @@
   function closeMenu() {
     const pop = document.getElementById("topMenuPopover");
     if (pop) pop.classList.add("hidden");
-    const b1 = document.getElementById("hamburgerBtn");
-    const b2 = document.getElementById("hamburgerBtnViewer");
-    const b = b1 || b2;
+    const b = document.getElementById("hamburgerBtn");
     if (b) b.setAttribute("aria-expanded", "false");
   }
 

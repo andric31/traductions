@@ -28,104 +28,121 @@
   const $ = (sel) => document.querySelector(sel);
 
   // =========================
-  // ☰ Hamburger menu (Viewer)
-  // - Ajoute un bouton "Accueil" -> https://traductions.pages.dev/
-  // - Ne touche pas au chargement des listes / bases
+  // ☰ Menu hamburger (aligné template)
+  // - items gérés par viewer.menu.js (+ about)
+  // - ce fichier gère l'ouverture + positionnement + fermeture
   // =========================
-  function initHamburgerMenu() {
-    // ✅ Menu ☰ basé sur ViewerMenu + popover #topMenuPopover (comme template)
-    const btnViewer = document.getElementById("hamburgerBtnViewer");
-    const btnGame = document.getElementById("hamburgerBtn");
-    const btn = btnViewer || btnGame;
-    if (!btn) return;
-
-    // init noyau (items + ESC)
-    try { window.ViewerMenu?.init?.(); } catch {}
-
-    // items communs : Accueil + Retour liste (si page jeu)
+  function registerMenuItems() {
     try {
+      // évite les doublons (on garde les entrées ajoutées par d'autres scripts, ex: À propos)
+      if (window.__LISTE_MENU_COMMON_DONE__ === true) return;
+      window.__LISTE_MENU_COMMON_DONE__ = true;
+
       const p = new URLSearchParams(location.search);
       const hasGame = (p.get("id") || "").trim() || (p.get("uid") || "").trim();
-
       const niceName = String(
         (window.__SITE_NAME__ || (SLUG ? (SLUG.charAt(0).toUpperCase() + SLUG.slice(1)) : ""))
       ).trim();
 
-      // évite les doublons si init() est relancé
-      if (!window.__MENU_ITEMS_REGISTERED__) {
-        window.__MENU_ITEMS_REGISTERED__ = true;
+      // Toujours : Accueil général
+      window.ViewerMenu?.addItem?.("🌍 Accueil", () => { location.href = "https://traductions.pages.dev/"; });
 
-        window.ViewerMenu?.addItem?.("🌍 Accueil", () => {
-          location.href = "https://traductions.pages.dev/";
-        });
-
-        if (hasGame) {
-          window.ViewerMenu?.addItem?.(
-            niceName ? `📚 Retour à la liste · ${niceName}` : "📚 Retour à la liste",
-            () => { location.href = APP_PATH; }
-          );
-        }
+      // En mode jeu : retour vers la liste
+      if (hasGame) {
+        window.ViewerMenu?.addItem?.(
+          niceName ? `📚 Retour à la liste · ${niceName}` : "📚 Retour à la liste",
+          () => { location.href = APP_PATH; }
+        );
       }
     } catch {}
+  }
 
-    const pop = document.getElementById("topMenuPopover");
-    if (!pop) return;
+  function positionPopover(pop, anchorBtn) {
+    const r = anchorBtn.getBoundingClientRect();
+    const margin = 8;
 
-    const close = () => {
-      pop.classList.add("hidden");
-      btn.setAttribute("aria-expanded", "false");
-      try { window.ViewerMenu?.closeMenu?.(); } catch {}
-    };
+    let left = Math.round(r.left);
+    let top = Math.round(r.bottom + margin);
 
-    const open = () => {
-      // render déjà fait par ViewerMenu.addItem()
-      const r = btn.getBoundingClientRect();
-      const pad = 8;
+    const widthGuess = pop.getBoundingClientRect().width || 260;
+    const maxLeft = window.innerWidth - widthGuess - 10;
 
-      // mesure après visible : on fait un "preview" sans animation
-      pop.classList.remove("hidden");
-      const w = pop.offsetWidth || 240;
-      const h = pop.offsetHeight || 120;
+    if (left > maxLeft) left = Math.max(10, maxLeft);
+    if (left < 10) left = 10;
 
-      const maxL = Math.max(pad, window.innerWidth - w - pad);
-      const maxT = Math.max(pad, window.innerHeight - h - pad);
+    pop.style.left = left + "px";
+    pop.style.top = top + "px";
+  }
 
-      const left = Math.min(maxL, Math.max(pad, r.left));
-      const top = Math.min(maxT, Math.max(pad, r.bottom + 8));
-
-      pop.style.left = left + "px";
-      pop.style.top = top + "px";
-
-      btn.setAttribute("aria-expanded", "true");
-    };
-
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const isOpen = !pop.classList.contains("hidden");
-      if (isOpen) close();
-      else open();
+  function initHamburgerMenu() {
+    const btns = [];
+    const seen = new Set();
+    ["hamburgerBtn", "hamburgerBtnViewer"].forEach((id) => {
+      const b = document.getElementById(id);
+      if (b && !seen.has(b)) { btns.push(b); seen.add(b); }
     });
+    if (!btns.length) return;
 
-    // clic dehors => ferme
+    try { window.ViewerMenu?.init?.(); } catch {}
+
+    const bindOne = (btn) => {
+      if (btn.dataset.boundHamburger === "1") return;
+      btn.dataset.boundHamburger = "1";
+
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        try { window.ViewerMenu?.init?.(); } catch {}
+        try { registerMenuItems(); } catch {}
+
+        const pop = document.getElementById("topMenuPopover");
+        if (!pop) return;
+
+        const isOpen = !pop.classList.contains("hidden");
+        if (isOpen) {
+          try { window.ViewerMenu?.closeMenu?.(); } catch { pop.classList.add("hidden"); }
+          btn.setAttribute("aria-expanded", "false");
+          return;
+        }
+
+        pop.classList.remove("hidden");
+        btn.setAttribute("aria-expanded", "true");
+        positionPopover(pop, btn);
+      });
+    };
+
+    btns.forEach(bindOne);
+
+    if (document.body.dataset.boundHamburgerGlobal === "1") return;
+    document.body.dataset.boundHamburgerGlobal = "1";
+
     document.addEventListener("click", (e) => {
-      const t = e.target;
-      if (!t) return;
-      if (t === btn || btn.contains(t)) return;
-      if (t === pop || pop.contains(t)) return;
-      close();
+      const pop = document.getElementById("topMenuPopover");
+      if (!pop) return;
+
+      const target = e.target;
+      const clickedBtn = btns.some((b) => b.contains(target));
+      if (!pop.contains(target) && !clickedBtn) {
+        try { window.ViewerMenu?.closeMenu?.(); } catch { pop.classList.add("hidden"); }
+        btns.forEach((b) => b.setAttribute("aria-expanded", "false"));
+      }
     });
 
-    // resize => ferme
     window.addEventListener("resize", () => {
-      if (!pop.classList.contains("hidden")) close();
+      const pop = document.getElementById("topMenuPopover");
+      if (pop && !pop.classList.contains("hidden")) {
+        const btn = btns.find((b) => b.offsetParent !== null) || btns[0];
+        positionPopover(pop, btn);
+      }
     });
 
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") close();
+      if (e.key !== "Escape") return;
+      try { window.ViewerMenu?.closeMenu?.(); } catch {}
+      try { window.ViewerMenuAbout?.close?.(); } catch {}
     });
   }
-
 
   // =========================
   // 🔞 Age gate (intégré ici)

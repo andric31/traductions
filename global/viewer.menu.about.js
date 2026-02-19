@@ -64,62 +64,10 @@ https://discord.gg/Jr8Ykf8yMd
     document.getElementById("aboutOverlay")?.classList.add("hidden");
   }
 
-  
-  const EXT_TEXT = `
-🧩 Extension Chrome — f95list_andric31
-
-Cette page (viewer) peut être utilisée seule, mais l’extension permet surtout :
-- d’ajouter un jeu à ta liste directement depuis F95Zone
-- d’afficher les badges ✅ / 🔄 sur les threads + vignettes
-- de gérer f95list.json plus facilement
-
-Infos / support : Discord (voir “À propos”).
-`.trim();
-
-  function ensureExtDom() {
-    let overlay = document.getElementById("extOverlay");
-    if (!overlay) {
-      overlay = document.createElement("div");
-      overlay.id = "extOverlay";
-      overlay.className = "about-overlay hidden";
-      overlay.innerHTML = `
-        <div class="about-card" role="dialog" aria-modal="true" aria-label="Extension">
-          <div class="about-head">
-            <div class="about-title">🧩 Extension</div>
-            <button type="button" class="about-close" aria-label="Fermer">✖</button>
-          </div>
-          <div class="about-body">
-            <div class="about-text">${linkify(EXT_TEXT).replace(/\n/g, "<br>")}</div>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(overlay);
-
-      overlay.addEventListener("click", (e) => {
-        if (e.target === overlay) closeExt();
-      });
-      overlay.querySelector(".about-close").addEventListener("click", closeExt);
-    }
-    return overlay;
-  }
-
-  function openExt() {
-    const overlay = ensureExtDom();
-    overlay.classList.remove("hidden");
-  }
-
-  function closeExt() {
-    const overlay = document.getElementById("extOverlay");
-    if (overlay) overlay.classList.add("hidden");
-  }
-
-
   // Register menu item
   function register() {
     if (!window.ViewerMenu?.addItem) return false;
     window.ViewerMenu.addItem("ℹ️ À propos", open);
-    window.ViewerMenu.addItem("🧩 Extension", openExt);
-    window.ViewerMenuExt = { open: openExt, close: closeExt };
     window.ViewerMenuAbout = { open, close };
     return true;
   }
