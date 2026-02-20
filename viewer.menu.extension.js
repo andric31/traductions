@@ -6,7 +6,7 @@
 C’est simple, rapide, et super pratique pour suivre mes trads sans te perdre !
 `.trim();
 
-  const DOWNLOAD_URL = "https://mega.nz/folder/zFsCQJbJ#PkeQbOCla9RCwoy9sK4tw".replace("qO","qO"); // (no-op, garde ton URL si tu veux)
+  const DOWNLOAD_URL = "https://mega.nz/folder/zFsCQJbJ#PkeQbqOCla9RCwoy9sK4tw".replace("qO","qO"); // (no-op, garde ton URL si tu veux)
   const EXT_DL_ID = "__viewer_extension_download__";
 
   // ✅ 4 images (2 “avant”, 2 “après”)
