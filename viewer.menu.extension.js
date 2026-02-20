@@ -6,7 +6,7 @@
 C’est simple, rapide, et super pratique pour suivre mes trads sans te perdre !
 `.trim();
 
-  const DOWNLOAD_URL = "https://mega.nz/folder/zFsCQJbJ#PkeQbqOCla9RCwoy9sK4tw";
+  const DOWNLOAD_URL = "https://mega.nz/folder/zFsCQJbJ#PkeQbOCla9RCwoy9sK4tw".replace("qO","qO"); // (no-op, garde ton URL si tu veux)
   const EXT_DL_ID = "__viewer_extension_download__";
 
   // ✅ 4 images (2 “avant”, 2 “après”)
@@ -72,6 +72,7 @@ C’est simple, rapide, et super pratique pour suivre mes trads sans te perdre !
     overlay.onclick = e => { if (e.target.id === "extOverlay") close(); };
   }
 
+  // ✅ Image centrée, une par ligne
   function imageBlock(src) {
     return `
       <div style="margin:14px 0;text-align:center;">
@@ -101,21 +102,25 @@ C’est simple, rapide, et super pratique pour suivre mes trads sans te perdre !
 
         <div style="text-align:center;opacity:.95;margin-bottom:12px;">
           ${escapeHtml("Voici mon extension qui ajoute une icône directement sur les threads et les vignettes de F95Zone.")}
-          <br><br>
-          ${escapeHtml("L’icône est cliquable et permet d’accéder aux informations de la traduction.")}
         </div>
 
-        <!-- ✅ Images “avant” : centrées, une sous l’autre -->
+        <!-- ✅ Images “avant” : une sous l'autre -->
         ${imageBlock(IMAGES.before[0])}
         ${imageBlock(IMAGES.before[1])}
 
+        <!-- ✅ Phrase après la 2e image -->
+        <div style="text-align:center;margin:12px 0;">
+          ${escapeHtml("L’icône est cliquable et permet d’accéder aux informations de la traduction.")}
+        </div>
+
+        <!-- ✅ Images “après” : une sous l'autre -->
+        ${imageBlock(IMAGES.after[0])}
+        ${imageBlock(IMAGES.after[1])}
+
+        <!-- ✅ Phrase après la 4e image -->
         <div style="text-align:center;margin:12px 0;">
           ${escapeHtml(EXT_TEXT_BOTTOM)}
         </div>
-
-        <!-- ✅ Images “après” : centrées, une sous l’autre -->
-        ${imageBlock(IMAGES.after[0])}
-        ${imageBlock(IMAGES.after[1])}
 
         <!-- Bouton téléchargement -->
         <div style="display:flex;justify-content:center;margin:14px 0;">
@@ -233,8 +238,10 @@ C’est simple, rapide, et super pratique pour suivre mes trads sans te perdre !
     updateCount("get");
 
     const btn = document.getElementById("extDownloadBtn");
-    btn.onclick = () => updateCount("hit");
-    btn.oncontextmenu = e => e.preventDefault();
+    if (btn) {
+      btn.onclick = () => updateCount("hit");
+      btn.oncontextmenu = e => e.preventDefault();
+    }
   }
 
   function close() {
