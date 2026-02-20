@@ -94,7 +94,7 @@ C’est simple, rapide, et super pratique pour suivre mes trads sans te perdre !
         <div style="text-align:center;opacity:.95;margin-bottom:12px;">
           ${escapeHtml("Voici mon extension qui ajoute une icône directement sur les threads et les vignettes de F95Zone.")}
           <br><br>
-          ${escapeHtml("L’icône est cliquable et permet d’accéder directement aux informations de la traduction (Discord, version, mise à jour, etc.).")}
+          ${escapeHtml("L’icône est cliquable et permet d’accéder directement aux informations de la traduction.")}
         </div>
 
         ${imageBlock(IMAGES[0])}
