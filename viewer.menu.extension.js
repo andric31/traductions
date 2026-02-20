@@ -3,7 +3,7 @@
   "use strict";
 
   const EXT_TEXT_BOTTOM = `
-C’est simple, rapide, et super pratique pour suivre les trads sans te perdre !
+C’est simple, rapide, et super pratique pour suivre mes trads sans te perdre !
 `.trim();
 
   const DOWNLOAD_URL = "https://mega.nz/folder/zFsCQJbJ#PkeQbqOCla9RCwoy9sK4tw";
@@ -88,11 +88,11 @@ C’est simple, rapide, et super pratique pour suivre les trads sans te perdre !
       <div class="aboutText">
 
         <div style="font-weight:900;font-size:16px;text-align:center;margin-bottom:8px;">
-          ✨ Les traductions à portée de clic ! ✨
+          ✨ Mes traductions à portée de clic ! ✨
         </div>
 
         <div style="text-align:center;opacity:.95;margin-bottom:12px;">
-          ${escapeHtml("Voici l'extension qui ajoute une icône directement sur les threads et les vignettes de F95Zone.")}
+          ${escapeHtml("Voici mon extension qui ajoute une icône directement sur les threads et les vignettes de F95Zone.")}
         </div>
 
         ${imageBlock(IMAGES[0])}
@@ -137,11 +137,10 @@ C’est simple, rapide, et super pratique pour suivre les trads sans te perdre !
 
         <!-- Réglages -->
         <div style="font-weight:900;margin-bottom:6px;">
-          🛠️ Réglages de l’icône sur les vignettes et du clic sur les icones
+          🛠️ Réglages de l’icône sur les vignettes
         </div>
         <div style="opacity:.95;margin-bottom:8px;">
           Vous pouvez modifier la taille de l’icône affichée sur les vignettes.<br>
-          Vous pouvez également définir le comportement du clic sur l’icône.
         </div>
         <ol style="padding-left:18px;line-height:1.6;margin:0;">
           <li>Épinglez l’extension : Icône puzzle 🧩 → épingle 📌</li>
@@ -149,6 +148,28 @@ C’est simple, rapide, et super pratique pour suivre les trads sans te perdre !
         </ol>
 
         ${imageBlock(IMAGES[1])}
+
+        <div style="height:22px;"></div>
+
+        <!-- ✅ Installation Firefox -->
+        <div style="font-weight:900;margin-bottom:6px;">
+          ✅ Installation dans Firefox
+        </div>
+        
+        <ol style="padding-left:18px;line-height:1.6;margin:0;">
+          <li>
+            Glissez-déposez le fichier <b>.xpi</b> dans la fenêtre Firefox.<br>
+            <i>Fichier signé par Mozilla.</i>
+          </li>
+          <li>
+            Confirmez l’installation :<br>
+            Cliquez sur <b>Ajouter</b>, puis sur <b>OK</b>.
+          </li>
+        </ol>
+        
+        <div style="opacity:.95;margin-top:8px;">
+          <i>Pensez à cocher <b>Épingler l’extension</b> afin d’accéder facilement aux réglages.</i>
+        </div>
 
         <div style="height:22px;"></div>
 
