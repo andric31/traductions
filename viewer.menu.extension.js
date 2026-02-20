@@ -78,28 +78,15 @@ C’est simple, rapide, et super pratique pour suivre mes trads sans te perdre !
         <img src="${escapeHtml(src)}"
           draggable="false"
           style="
+            display:block;
             max-width:100%;
+            margin:0 auto;
             border-radius:14px;
             border:1px solid rgba(255,255,255,.08);
             pointer-events:none;
             user-select:none;
           "
           onerror="this.style.display='none'">
-      </div>
-    `;
-  }
-
-  function twoImagesRow(srcA, srcB) {
-    return `
-      <div style="
-        display:grid;
-        grid-template-columns: 1fr 1fr;
-        gap:12px;
-        margin:14px 0;
-        align-items:start;
-      ">
-        <div>${imageBlock(srcA)}</div>
-        <div>${imageBlock(srcB)}</div>
       </div>
     `;
   }
@@ -118,15 +105,17 @@ C’est simple, rapide, et super pratique pour suivre mes trads sans te perdre !
           ${escapeHtml("L’icône est cliquable et permet d’accéder aux informations de la traduction.")}
         </div>
 
-        <!-- ✅ Images “avant” : icône vignette + icône thread -->
-        ${twoImagesRow(IMAGES.before[0], IMAGES.before[1])}
+        <!-- ✅ Images “avant” : centrées, une sous l’autre -->
+        ${imageBlock(IMAGES.before[0])}
+        ${imageBlock(IMAGES.before[1])}
 
         <div style="text-align:center;margin:12px 0;">
           ${escapeHtml(EXT_TEXT_BOTTOM)}
         </div>
 
-        <!-- ✅ Images “après” : exemple affichage infos (vignette + thread) -->
-        ${twoImagesRow(IMAGES.after[0], IMAGES.after[1])}
+        <!-- ✅ Images “après” : centrées, une sous l’autre -->
+        ${imageBlock(IMAGES.after[0])}
+        ${imageBlock(IMAGES.after[1])}
 
         <!-- Bouton téléchargement -->
         <div style="display:flex;justify-content:center;margin:14px 0;">
