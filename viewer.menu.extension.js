@@ -1,4 +1,4 @@
-// viewer.menu.extension.js — Entrée menu : Extension (image + bouton Mega + compteur + install + réglages)
+// viewer.menu.extension.js — Entrée menu : Extension (images + bouton Mega + compteur + install + réglages)
 (() => {
   "use strict";
 
@@ -9,14 +9,22 @@ C’est simple, rapide, et super pratique pour suivre mes trads sans te perdre !
   const DOWNLOAD_URL = "https://mega.nz/folder/zFsCQJbJ#PkeQbqOCla9RCwoy9sK4tw";
   const EXT_DL_ID = "__viewer_extension_download__";
 
-  const IMAGES = [
-    "/img/f95list_extension.png",
-    "/img/f95list_extension_param.png"
-  ];
+  // ✅ 4 images (2 “avant”, 2 “après”)
+  const IMAGES = {
+    before: [
+      "/img/f95list_extension_vignette_icon_multi.png",
+      "/img/f95list_extension_thread_icon_multi.png"
+    ],
+    after: [
+      "/img/f95list_extension_vignette_multi.png",
+      "/img/f95list_extension_thread_multi.png"
+    ],
+    settings: "/img/f95list_extension_param.png"
+  };
 
   function escapeHtml(s) {
     return String(s || "").replace(/[&<>"']/g, m => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
     }[m]));
   }
 
@@ -31,13 +39,11 @@ C’est simple, rapide, et super pratique pour suivre mes trads sans te perdre !
     try {
       const r = await fetch(
         `/api/counter?op=${op}&kind=mega&id=${EXT_DL_ID}`,
-        { cache:"no-store" }
+        { cache: "no-store" }
       );
       if (!r.ok) return null;
       const j = await r.json();
-      return Number(
-        j.megaClicks ?? j.downloads ?? j.count ?? j.value ?? j.mega ?? 0
-      );
+      return Number(j.megaClicks ?? j.downloads ?? j.count ?? j.value ?? j.mega ?? 0);
     } catch { return null; }
   }
 
@@ -83,6 +89,21 @@ C’est simple, rapide, et super pratique pour suivre mes trads sans te perdre !
     `;
   }
 
+  function twoImagesRow(srcA, srcB) {
+    return `
+      <div style="
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap:12px;
+        margin:14px 0;
+        align-items:start;
+      ">
+        <div>${imageBlock(srcA)}</div>
+        <div>${imageBlock(srcB)}</div>
+      </div>
+    `;
+  }
+
   function renderHtml() {
     return `
       <div class="aboutText">
@@ -97,11 +118,15 @@ C’est simple, rapide, et super pratique pour suivre mes trads sans te perdre !
           ${escapeHtml("L’icône est cliquable et permet d’accéder aux informations de la traduction.")}
         </div>
 
-        ${imageBlock(IMAGES[0])}
+        <!-- ✅ Images “avant” : icône vignette + icône thread -->
+        ${twoImagesRow(IMAGES.before[0], IMAGES.before[1])}
 
         <div style="text-align:center;margin:12px 0;">
           ${escapeHtml(EXT_TEXT_BOTTOM)}
         </div>
+
+        <!-- ✅ Images “après” : exemple affichage infos (vignette + thread) -->
+        ${twoImagesRow(IMAGES.after[0], IMAGES.after[1])}
 
         <!-- Bouton téléchargement -->
         <div style="display:flex;justify-content:center;margin:14px 0;">
@@ -149,7 +174,7 @@ C’est simple, rapide, et super pratique pour suivre mes trads sans te perdre !
           <li>Cliquez sur l’icône <b>f95list_andric31_viewer</b> dans la barre du navigateur.</li>
         </ol>
 
-        ${imageBlock(IMAGES[1])}
+        ${imageBlock(IMAGES.settings)}
 
         <div style="height:22px;"></div>
 
@@ -157,7 +182,7 @@ C’est simple, rapide, et super pratique pour suivre mes trads sans te perdre !
         <div style="font-weight:900;margin-bottom:6px;">
           ✅ Installation dans Firefox
         </div>
-        
+
         <ol style="padding-left:18px;line-height:1.6;margin:0;">
           <li>
             Glissez-déposez le fichier <b>.xpi</b> dans la fenêtre Firefox.<br>
@@ -168,7 +193,7 @@ C’est simple, rapide, et super pratique pour suivre mes trads sans te perdre !
             Cliquez sur <b>Ajouter</b>, puis sur <b>OK</b>.
           </li>
         </ol>
-        
+
         <div style="opacity:.95;margin-top:8px;">
           <i>Pensez à cocher <b>Épingler l’extension</b> afin d’accéder facilement aux réglages.</i>
         </div>
