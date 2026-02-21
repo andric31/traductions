@@ -1,6 +1,4 @@
 // /api/counters_history (POST)
-// Body: { ids: string[], days?: number }
-// Returns: { ok:true, days, history: { [id]: [{day,views,mega,likes}, ...] } }
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -33,12 +31,7 @@ export async function onRequest(context) {
     return json({ ok: true, days, history: {} });
   }
 
-  if (ids.length > 3000) {
-    return json({ ok: false, error: "too_many_ids" }, 413);
-  }
-
   try {
-    // Assure que la table existe
     await env.DB.prepare(`
       CREATE TABLE IF NOT EXISTS counter_days (
         day TEXT NOT NULL,
@@ -51,42 +44,30 @@ export async function onRequest(context) {
       );
     `).run();
 
-    const result = {};
-    for (const id of ids) result[id] = [];
+    const history = {};
+    const offset = `-${Math.max(0, days - 1)} days`;
 
-    const CHUNK = 200;
-
-    for (let i = 0; i < ids.length; i += CHUNK) {
-      const chunk = ids.slice(i, i + CHUNK);
-      const placeholders = chunk.map(() => "?").join(",");
-
-      const offset = `-${Math.max(0, days - 1)} days`;
+    for (const id of ids) {
 
       const q = await env.DB.prepare(`
-        SELECT id, day, views, mega, likes
+        SELECT day, views, mega, likes
         FROM counter_days
-        WHERE id IN (${placeholders})
+        WHERE id = ?
           AND day >= date('now', ?)
-        ORDER BY id ASC, day ASC;
+        ORDER BY day ASC;
       `)
-      .bind(...chunk, offset)
+      .bind(id, offset)
       .all();
 
-      const rows = Array.isArray(q?.results) ? q.results : [];
-
-      for (const r of rows) {
-        const key = String(r.id || "");
-        if (!result[key]) result[key] = [];
-        result[key].push({
-          day: r.day,
-          views: Number(r.views || 0),
-          mega: Number(r.mega || 0),
-          likes: Number(r.likes || 0),
-        });
-      }
+      history[id] = (q.results || []).map(r => ({
+        day: r.day,
+        views: Number(r.views || 0),
+        mega: Number(r.mega || 0),
+        likes: Number(r.likes || 0),
+      }));
     }
 
-    return json({ ok: true, days, history: result });
+    return json({ ok: true, days, history });
 
   } catch (e) {
     return json({
