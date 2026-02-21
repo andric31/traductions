@@ -999,7 +999,8 @@ async function initCounters(gameId, megaHref, archiveHref) {
 // ✅ UID ONLY
 function buildCounterKeyFromEntry(entry) {
   const uid = String(entry?.uid ?? "").trim();
-  return uid ? `uid:${uid}` : "";
+  const slug = String(SLUG || "root").trim();
+  return uid ? `t:${slug}:uid:${uid}` : "";
 }
 
 // ============================================================================

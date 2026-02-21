@@ -179,7 +179,8 @@
   // =========================
   function counterKeyOfUid(uid) {
     const u = String(uid ?? "").trim();
-    return u ? `uid:${u}` : "";
+    const slug = String(SLUG || "root").trim();
+    return u ? `t:${slug}:uid:${u}` : "";
   }
 
   // =========================
