@@ -54,6 +54,50 @@ async function fetchGameStatsBulk(ids) {
   }
 }
 
+async function fetchGameHistoryBulk(ids, days) {
+  try {
+    const r = await fetch("/api/counters_history", {
+      method: "POST",
+      cache: "no-store",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ids, days }),
+    });
+    if (!r.ok) return {};
+    const j = await r.json();
+    if (!j?.ok || !j.history) return {};
+    return j.history;
+  } catch {
+    return {};
+  }
+}
+
+function sumSeries(series, field) {
+  if (!Array.isArray(series) || !series.length) return 0;
+  let s = 0;
+  for (const row of series) s += Number(row?.[field] || 0);
+  return s;
+}
+
+async function loadRangeStats(days) {
+  state.rangeByKey.clear();
+  const d = Number(days || 0);
+  if (!Number.isFinite(d) || d <= 0) return;
+
+  const keys = Array.isArray(state.allKeys) ? state.allKeys : [];
+  if (!keys.length) return;
+
+  const hist = await fetchGameHistoryBulk(keys, d);
+
+  for (const k of keys) {
+    const series = hist[k] || [];
+    state.rangeByKey.set(k, {
+      views: sumSeries(series, "views"),
+      mega: sumSeries(series, "mega"),
+      likes: sumSeries(series, "likes"),
+    });
+  }
+}
+
 // ✅ ratings bulk (doit exister côté backend)
 async function fetchRatingsBulk(ids) {
   try {
@@ -76,6 +120,7 @@ async function fetchRatingsBulk(ids) {
 const els = {
   q: document.getElementById("q"),
   metric: document.getElementById("metric"),
+  range: document.getElementById("range"),
   top: document.getElementById("top"),
 
   // pages traducteurs
@@ -103,7 +148,12 @@ const state = {
   manifest: [], // [{key,name,listUrl,openBase,statsDisabled?}]
 
   statsByKey: new Map(),   // key -> {views,likes,mega}
+  rangeByKey: new Map(),   // key -> {views,likes,mega} (période)
   ratingByKey: new Map(),  // key -> {avg,count,sum}
+
+  rangeDays: 0,            // 0=Total, sinon 1/7/30
+
+  allKeys: [],             // gameKeys + pageKeys (pour l'historique)
 
   sortKey: "views",
   sortDir: "desc",
@@ -139,7 +189,7 @@ function renderPagesTable() {
     const slug = String(t?.key || "root").trim() || "root";
     const name = String(t?.name || slug).trim() || slug;
     const key = pageKeyOfSlug(slug);
-    const views = (state.statsByKey.get(key)?.views ?? 0) | 0;
+    const views = (getCounterStats(key)?.views ?? 0) | 0;
     const gamesCount = (t?._gamesCount ?? 0) | 0;
     const disabled = !!t?.statsDisabled;
     return { slug, name, key, views, gamesCount, disabled };
@@ -203,6 +253,13 @@ function counterKeyOf(g) {
   return uid ? `t:${slug}:uid:${uid}` : "";
 }
 
+// ✅ Renvoie les stats à afficher (Total ou Période)
+function getCounterStats(key) {
+  const total = state.statsByKey.get(key) || { views: 0, likes: 0, mega: 0 };
+  if (!state.rangeDays || state.rangeDays <= 0) return total;
+  return state.rangeByKey.get(key) || { views: 0, likes: 0, mega: 0 };
+}
+
 // URL de la page jeu correspondante (uid only)
 function getGameUrlForEntry(g) {
   const base = String(g?._openBase || "/game/").trim() || "/game/";
@@ -264,10 +321,10 @@ function getFiltered() {
   for (const g of list) {
     const key = counterKeyOf(g);
 
-    const s = state.statsByKey.get(key) || { views: 0, likes: 0, mega: 0 };
-    g._views = s.views | 0;
-    g._likes = s.likes | 0;
-    g._mega  = s.mega  | 0;
+    const s = getCounterStats(key);
+    g._views = (s.views | 0);
+    g._likes = (s.likes | 0);
+    g._mega  = (s.mega  | 0);
 
     const r = state.ratingByKey.get(key) || { avg: 0, count: 0, sum: 0 };
     g._ratingAvg = Number(r.avg || 0);
@@ -619,6 +676,16 @@ function wireEvents() {
     });
   }
 
+  if (els.range) {
+    els.range.addEventListener("change", async () => {
+      const v = String(els.range.value || "total");
+      state.rangeDays = (v === "total") ? 0 : (parseInt(v, 10) || 0);
+      await loadRangeStats(state.rangeDays);
+      renderPagesTable();
+      rerender({ chart: true });
+    });
+  }
+
   if (els.top) {
     els.top.addEventListener("change", () => {
       if (els.chartWrap) els.chartWrap.scrollTop = 0;
@@ -779,6 +846,8 @@ async function init() {
   const pageKeys = state.manifest.map(t => pageKeyOfSlug(t.key)).filter(Boolean);
   const keys = Array.from(new Set([...gameKeys, ...pageKeys]));
 
+  state.allKeys = keys;
+
   // 1) counters
   const statsObj = await fetchGameStatsBulk(keys);
   for (const k of keys) {
@@ -806,6 +875,11 @@ async function init() {
 
   // ✅ pages traducteurs
   renderPagesTable();
+
+  // ✅ Historique (si une période est sélectionnée)
+  if (state.rangeDays > 0) {
+    await loadRangeStats(state.rangeDays);
+  }
 
   // ✅ filtre traducteur (remplace les résidus renderAll/bindUi)
   if (selTrad) {
