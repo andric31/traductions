@@ -165,7 +165,7 @@ C’est simple, rapide, et super pratique pour suivre mes trads sans te perdre !
         </div>
         <ol style="padding-left:18px;line-height:1.6;margin:0;">
           <li>Épinglez l’extension : Icône puzzle 🧩 → épingle 📌</li>
-          <li>Cliquez sur l’icône <b>f95list_andric31_viewer</b> dans la barre du navigateur.</li>
+          <li>Cliquez sur l’icône <b>f95list_andric31</b> dans la barre du navigateur.</li>
         </ol>
 
         ${imageBlock(IMAGES.settings)}
