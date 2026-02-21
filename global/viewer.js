@@ -276,7 +276,7 @@
   // =========================
   // ✅ Compteur vues page principale (Viewer)
   // =========================
-  const MAIN_PAGE_ID = `__viewer_main__:${SLUG || "root"}`;
+  const MAIN_PAGE_ID = `t:${String(SLUG || "root").trim()}:page:index`;
   let MAIN_VIEW_HIT_DONE = false;
 
   function formatInt(n) {
@@ -347,9 +347,6 @@
   }
 
   async function initMainPageCounter() {
-    const el = document.getElementById("mainViews");
-    if (!el) return;
-
     try {
       const op = MAIN_VIEW_HIT_DONE ? "get" : "hit";
       const r = await fetch(
@@ -359,8 +356,11 @@
       if (!r.ok) return;
       const j = await r.json();
       if (!j?.ok) return;
+  
       MAIN_VIEW_HIT_DONE = true;
-      el.textContent = formatInt(j.views);
+  
+      const el = document.getElementById("mainViews");
+      if (el) el.textContent = formatInt(j.views);
     } catch {}
   }
 
