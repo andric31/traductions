@@ -163,8 +163,9 @@
 
   // =========================
   // ✅ Compteur vues page principale (Viewer)
+  // ✅ Clé cohérente avec le reste : t:<slug>:page:index
   // =========================
-  const MAIN_PAGE_ID = `__viewer_main__:${SLUG || "root"}`;
+  const MAIN_PAGE_ID = `t:${String(SLUG || "root").trim()}:page:index`;
   let MAIN_VIEW_HIT_DONE = false;
 
   function formatInt(n) {
@@ -234,10 +235,9 @@
     await ensureGameStatsLoaded();
   }
 
+  // ✅ HIT + affichage compteur page principale
   async function initMainPageCounter() {
-    const el = document.getElementById("mainViews");
-    if (!el) return;
-
+    // On HIT même si l’élément n’existe pas, pour avoir la stat en D1
     try {
       const op = MAIN_VIEW_HIT_DONE ? "get" : "hit";
       const r = await fetch(
@@ -248,7 +248,9 @@
       const j = await r.json();
       if (!j?.ok) return;
       MAIN_VIEW_HIT_DONE = true;
-      el.textContent = formatInt(j.views);
+
+      const el = document.getElementById("mainViews");
+      if (el) el.textContent = formatInt(j.views);
     } catch {}
   }
 
@@ -1009,6 +1011,8 @@
       }
   
       applyFilters();
+
+      // ✅ compteur vues page principale (HIT + affichage)
       initMainPageCounter();
     } catch (e) {
       console.error("[viewer] load error:", e);
