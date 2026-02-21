@@ -1,6 +1,6 @@
 "use strict";
 
-const DEFAULT_URL = "https://raw.githubusercontent.com/andric31/f95list/main/f95list.json";
+const DEFAULT_URL = ""; // et on bloque toute tentative de fallback
 
 // -------- URL helpers (comme viewer) --------
 function getListUrl() {
@@ -132,7 +132,9 @@ function getGameUrlForEntry(g) {
   // on garde src si page andric31 (compat), sinon inutile
   const p = new URLSearchParams(location.search);
   const src = (p.get("src") || "").trim();
-  if (src && u.origin === location.origin && u.pathname.startsWith("/game/")) u.searchParams.set("src", src);
+  if (src && u.origin === location.origin && u.pathname.startsWith("/game/")) {
+    u.searchParams.set("src", src);
+  }
 
   return u.toString();
 }
@@ -161,13 +163,13 @@ function getFiltered() {
     });
   }
 
-    // ✅ filtre traducteur (select #translator)
+  // ✅ filtre traducteur (select #translator)
   const tf = (document.body?.dataset?.tradFilter || "all").trim();
   if (tf && tf !== "all") {
     list = list.filter(g => String(g?._slug || "").trim() === tf);
   }
 
-for (const g of list) {
+  for (const g of list) {
     const key = counterKeyOf(g);
 
     const s = state.statsByKey.get(key) || { views: 0, likes: 0, mega: 0 };
@@ -248,12 +250,12 @@ function renderTable(list) {
     img.loading = "lazy";
     img.decoding = "async";
     img.alt = "";
-    
+
     // ✅ comme viewer : évite certains refus d’affichage
     img.referrerPolicy = "no-referrer";
-    
+
     img.src = (g.imageUrl || "").trim() || "/favicon.png";
-    
+
     // ✅ fallback si hotlink/bad url
     img.onerror = () => {
       img.onerror = null;
@@ -265,6 +267,7 @@ function renderTable(list) {
     const titleTd = document.createElement("td");
     const tl = document.createElement("div");
     tl.className = "title-line";
+
     const badge = document.createElement("span");
     badge.className = "pill";
     badge.textContent = String(g._tradName || g._slug || "");
@@ -278,33 +281,28 @@ function renderTable(list) {
 
     const sub = document.createElement("div");
     sub.className = "small";
-    
+
     const uid = String(g.uid ?? "").trim();
     const id  = String(g.id  ?? "").trim();
-    
-    if (uid && id) {
-      sub.textContent = `uid:${uid} | id:${id}`;
-    } else if (uid) {
-      sub.textContent = `uid:${uid}`;
-    } else if (id) {
-      sub.textContent = `id:${id}`;
-    } else {
-      sub.textContent = "(no id)";
-    }
-    
+
+    if (uid && id) sub.textContent = `uid:${uid} | id:${id}`;
+    else if (uid) sub.textContent = `uid:${uid}`;
+    else if (id) sub.textContent = `id:${id}`;
+    else sub.textContent = "(no id)";
+
     titleTd.appendChild(sub);
 
     const vTd = document.createElement("td");
     vTd.className = "num";
     vTd.textContent = (g._views | 0).toLocaleString("fr-FR");
 
-    const lTd = document.createElement("td");
-    lTd.className = "num";
-    lTd.textContent = (g._likes | 0).toLocaleString("fr-FR");
-
     const mTd = document.createElement("td");
     mTd.className = "num";
     mTd.textContent = (g._mega | 0).toLocaleString("fr-FR");
+
+    const lTd = document.createElement("td");
+    lTd.className = "num";
+    lTd.textContent = (g._likes | 0).toLocaleString("fr-FR");
 
     const rcTd = document.createElement("td");
     rcTd.className = "num";
@@ -372,7 +370,7 @@ function drawChart(sorted) {
 
   const rowPx = 26;
   const padT = 8;
-  const padB = 32; // ✅ place pour chiffres en bas
+  const padB = 32; // place pour chiffres en bas
   const desiredCssH = padT + padB + items.length * rowPx;
 
   canvas.style.height = desiredCssH + "px";
@@ -387,7 +385,7 @@ function drawChart(sorted) {
 
   ctx.clearRect(0, 0, cssW, cssH);
 
-  const padL = 260, padR = 80; // ✅ marge droite pour gros chiffres
+  const padL = 260, padR = 80;
   const innerW = Math.max(50, cssW - padL - padR);
   const innerH = Math.max(50, cssH - padT - padB);
 
@@ -461,7 +459,6 @@ function drawChart(sorted) {
     if (item) location.href = getGameUrlForEntry(item);
   };
 
-  // ✅ status chart cohérent (Top sélectionné)
   if (els.statusChart) {
     const labelTop = (Number(els.top?.value || 20) <= 0) ? "Tout" : `Top ${take}`;
     els.statusChart.textContent = `${labelTop} — ${take}/${sorted.length} jeux`;
@@ -477,8 +474,8 @@ function applyChartExpandUI() {
     els.chartWrap.style.overflow = "visible";
     if (els.btnChartExpand) els.btnChartExpand.textContent = "➖";
   } else {
-    els.chartWrap.style.maxHeight = ""; // revient au CSS
-    els.chartWrap.style.overflow = "";  // revient au CSS
+    els.chartWrap.style.maxHeight = "";
+    els.chartWrap.style.overflow = "";
     if (els.btnChartExpand) els.btnChartExpand.textContent = "➕";
   }
 }
@@ -486,8 +483,6 @@ function applyChartExpandUI() {
 function toggleChartExpand() {
   state.chartExpanded = !state.chartExpanded;
   applyChartExpandUI();
-
-  // ✅ recalcul du canvas (hauteur/largeur)
   rerender({ chart: true });
 }
 
@@ -506,14 +501,11 @@ function rerender(opts = { chart: true }) {
 
   if (opts.chart) drawChart(sorted);
 
-  // ✅ status tableau (cohérent avec le tableau)
   if (els.statusTable) {
     const total = state.games.length;
     els.statusTable.textContent =
       `${visible.length}/${sorted.length} affichés (filtrés) — total liste: ${total}`;
   }
-
-  // si drawChart n'a pas été appelé, on garde le status chart déjà affiché
 }
 
 // -------- events --------
@@ -531,7 +523,6 @@ function wireEvents() {
 
   if (els.metric) {
     els.metric.addEventListener("change", () => {
-      // metric ne touche que le chart
       rerender({ chart: true });
     });
   }
@@ -569,12 +560,9 @@ function wireEvents() {
     });
   }
 
-  // ✅ Resize (chart doit se recalculer)
   window.addEventListener("resize", () => rerender({ chart: true }));
 
-  // ==========================
-  // ✅ Scroll intelligent (table)
-  // ==========================
+  // Scroll intelligent (table)
   const tryLoadMore = () => {
     const sorted = sortList(getFiltered());
     if (state.renderLimit >= sorted.length) return;
@@ -599,7 +587,7 @@ function wireEvents() {
     }
 
     state.renderLimit = Math.min(state.renderLimit + state.renderStep, sorted.length);
-    rerender({ chart: false }); // ✅ fluide : pas de redraw chart
+    rerender({ chart: false });
   };
 
   let raf = 0;
@@ -633,14 +621,15 @@ async function init() {
     return;
   }
 
-  // ✅ injecter le select traducteur si présent
   const selTrad = document.getElementById("translator");
   if (selTrad) {
-    selTrad.innerHTML = `<option value="all">Tous traducteurs</option>`
-      + manifest.map(t => `<option value="${String(t.key || "").trim()}">${String(t.name || t.key || "").trim()}</option>`).join("");
+    selTrad.innerHTML =
+      `<option value="all">Tous traducteurs</option>` +
+      manifest.map(t =>
+        `<option value="${String(t.key || "").trim()}">${String(t.name || t.key || "").trim()}</option>`
+      ).join("");
   }
 
-  // ✅ charger toutes les listes
   const games = [];
   for (const t of manifest) {
     const slug = String(t?.key || "").trim() || "root";
@@ -655,7 +644,6 @@ async function init() {
       const list = extractGames(raw).map((g) => ({ ...g }));
 
       for (const g of list) {
-        // UID only (comme tes pages jeux)
         const uid = String(g?.uid ?? "").trim();
         if (!uid) continue;
 
@@ -701,23 +689,22 @@ async function init() {
   if (els.statusChart) els.statusChart.textContent = `OK · ${state.games.length} jeux`;
   if (els.statusTable) els.statusTable.textContent = `OK · ${state.games.length} jeux`;
 
-  // ✅ filtre traducteur
+  // ✅ filtre traducteur (remplace les résidus renderAll/bindUi)
   if (selTrad) {
     selTrad.addEventListener("change", () => {
-      // on réutilise la search box: on garde un filtre séparé via dataset dans getFiltered()
-      // Stocké via un attribut sur body pour rester simple
       document.body.dataset.tradFilter = selTrad.value || "all";
-      state.renderLimit = Number(els.top?.value || 50) || 50;
-      renderAll(true);
+      resetLimit();
+      rerender();
     });
     document.body.dataset.tradFilter = selTrad.value || "all";
   } else {
     document.body.dataset.tradFilter = "all";
   }
 
-  // UI events
-  bindUi();
-
-  renderAll(true);
+  // ✅ events + rendu initial (remplace bindUi/renderAll)
+  wireEvents();
+  resetLimit();
+  rerender({ chart: true });
 }
+
 init();
