@@ -54,7 +54,7 @@ export async function onRequest(context) {
         `SELECT id, day, views, mega, likes
          FROM counter_days
          WHERE id IN (${ph})
-           AND day >= date('now', '-' || (?${chunk.length + 1}) || ' days')
+           AND day >= date('now', '-' || ? || ' days')
          ORDER BY id ASC, day ASC;`
       )
       .bind(...chunk, String(days - 1))
