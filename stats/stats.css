@@ -147,6 +147,18 @@ html,body{
   cursor:pointer;
 }
 
+/* tableau pages traducteurs : clic sur ligne */
+#tblPages tbody tr:hover{ cursor:pointer; }
+
+.pill-muted{
+  opacity:.78;
+}
+
+.pill-warn{
+  background:rgba(255,193,7,.12);
+  border-color:rgba(255,193,7,.25);
+}
+
 /* ✅ Covers : hauteur inchangée, largeur x4 */
 .c-cover{ width: 220px; }   /* colonne plus large */
 

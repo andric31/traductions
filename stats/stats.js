@@ -78,6 +78,11 @@ const els = {
   metric: document.getElementById("metric"),
   top: document.getElementById("top"),
 
+  // pages traducteurs
+  statusPages: document.getElementById("statusPages"),
+  pagesTbody: document.getElementById("pagesTbody"),
+  tblPages: document.getElementById("tblPages"),
+
   statusChart: document.getElementById("statusChart"),
   statusTable: document.getElementById("statusTable"),
 
@@ -95,6 +100,8 @@ const state = {
   srcUrl: getListUrl(),
   games: [],
 
+  manifest: [], // [{key,name,listUrl,openBase,statsDisabled?}]
+
   statsByKey: new Map(),   // key -> {views,likes,mega}
   ratingByKey: new Map(),  // key -> {avg,count,sum}
 
@@ -106,6 +113,85 @@ const state = {
 
   chartExpanded: false,
 };
+
+// ============================================================================
+// ✅ Pages traducteurs (vues page d'accueil de chaque dossier)
+//   Clé : t:<slug>:page:index
+// ============================================================================
+function pageKeyOfSlug(slug) {
+  const s = String(slug || "root").trim() || "root";
+  return `t:${s}:page:index`;
+}
+
+function translatorHomeUrl(slug) {
+  const s = String(slug || "").trim();
+  if (!s) return "/";
+  return `/${encodeURIComponent(s)}/`;
+}
+
+function renderPagesTable() {
+  if (!els.pagesTbody) return;
+
+  const frag = document.createDocumentFragment();
+  els.pagesTbody.innerHTML = "";
+
+  const rows = (state.manifest || []).map((t) => {
+    const slug = String(t?.key || "root").trim() || "root";
+    const name = String(t?.name || slug).trim() || slug;
+    const key = pageKeyOfSlug(slug);
+    const views = (state.statsByKey.get(key)?.views ?? 0) | 0;
+    const gamesCount = (t?._gamesCount ?? 0) | 0;
+    const disabled = !!t?.statsDisabled;
+    return { slug, name, key, views, gamesCount, disabled };
+  });
+
+  // tri par vues desc
+  rows.sort((a, b) => (b.views - a.views) || a.name.localeCompare(b.name, "fr"));
+
+  for (const r of rows) {
+    const tr = document.createElement("tr");
+
+    // clic => ouvre la page traducteur
+    tr.addEventListener("click", () => {
+      location.href = translatorHomeUrl(r.slug);
+    });
+
+    const tdName = document.createElement("td");
+    const badge = document.createElement("span");
+    badge.className = "pill" + (r.disabled ? " pill-warn" : "");
+    badge.textContent = r.slug;
+    const label = document.createElement("span");
+    label.textContent = r.name;
+    tdName.appendChild(badge);
+    tdName.appendChild(label);
+
+    const tdViews = document.createElement("td");
+    tdViews.className = "num";
+    tdViews.textContent = (r.views | 0).toLocaleString("fr-FR");
+
+    const tdGames = document.createElement("td");
+    tdGames.className = "num";
+    tdGames.textContent = (r.gamesCount | 0).toLocaleString("fr-FR");
+
+    const tdDisabled = document.createElement("td");
+    tdDisabled.className = "num";
+    tdDisabled.textContent = r.disabled ? "⏸️" : "✅";
+
+    tr.appendChild(tdName);
+    tr.appendChild(tdViews);
+    tr.appendChild(tdGames);
+    tr.appendChild(tdDisabled);
+    frag.appendChild(tr);
+  }
+
+  els.pagesTbody.appendChild(frag);
+
+  if (els.statusPages) {
+    const n = rows.length;
+    const totalViews = rows.reduce((a, r) => a + (r.views | 0), 0);
+    els.statusPages.textContent = `${n} pages · ${totalViews.toLocaleString("fr-FR")} vues`;
+  }
+}
 
 // ============================================================================
 // ✅ UID ONLY — clé unique
@@ -166,7 +252,12 @@ function getFiltered() {
   // ✅ filtre traducteur (select #translator)
   const tf = (document.body?.dataset?.tradFilter || "all").trim();
   if (tf && tf !== "all") {
-    list = list.filter(g => String(g?._slug || "").trim() === tf);
+    // ✅ andric31 : stats jeux désactivées temporairement
+    if (tf === "andric31") {
+      list = [];
+    } else {
+      list = list.filter(g => String(g?._slug || "").trim() === tf);
+    }
   }
 
   for (const g of list) {
@@ -609,6 +700,7 @@ function wireEvents() {
 async function init() {
   if (els.statusChart) els.statusChart.textContent = "Chargement manifest…";
   if (els.statusTable) els.statusTable.textContent = "Chargement…";
+  if (els.statusPages) els.statusPages.textContent = "Chargement…";
 
   let manifest = [];
   try {
@@ -625,23 +717,42 @@ async function init() {
   if (selTrad) {
     selTrad.innerHTML =
       `<option value="all">Tous traducteurs</option>` +
-      manifest.map(t =>
-        `<option value="${String(t.key || "").trim()}">${String(t.name || t.key || "").trim()}</option>`
-      ).join("");
+      manifest.map(t => {
+        const k = String(t.key || "").trim();
+        const n = String(t.name || t.key || "").trim();
+        const disabled = (k === "andric31");
+        const label = disabled ? `${n} (stats jeux désactivées)` : n;
+        return `<option value="${k}">${label}</option>`;
+      }).join("");
   }
 
   const games = [];
+  const manifestOut = [];
   for (const t of manifest) {
     const slug = String(t?.key || "").trim() || "root";
     const name = String(t?.name || t?.key || slug).trim();
     const listUrl = String(t?.listUrl || "").trim();
     const openBase = String(t?.openBase || "/game/").trim() || "/game/";
 
+    // ⚠️ andric31 : stats jeux désactivées temporairement (les jeux sont sur un autre site)
+    const statsDisabled = (slug === "andric31");
+
     if (!listUrl) continue;
+
+    const mEntry = { key: slug, name, listUrl, openBase, statsDisabled, _gamesCount: 0 };
+    manifestOut.push(mEntry);
 
     try {
       const raw = await fetchJson(listUrl);
       const list = extractGames(raw).map((g) => ({ ...g }));
+
+      // nb de jeux (uid only)
+      mEntry._gamesCount = list.filter(x => String(x?.uid ?? "").trim()).length;
+
+      if (statsDisabled) {
+        // on n'affiche pas les stats jeux pour ce traducteur
+        continue;
+      }
 
       for (const g of list) {
         const uid = String(g?.uid ?? "").trim();
@@ -658,11 +769,14 @@ async function init() {
   }
 
   state.games = games;
+  state.manifest = manifestOut;
 
   if (els.statusChart) els.statusChart.textContent = "Chargement stats…";
   if (els.statusTable) els.statusTable.textContent = "Chargement stats…";
 
-  const keys = state.games.map(counterKeyOf).filter(Boolean);
+  const gameKeys = state.games.map(counterKeyOf).filter(Boolean);
+  const pageKeys = state.manifest.map(t => pageKeyOfSlug(t.key)).filter(Boolean);
+  const keys = Array.from(new Set([...gameKeys, ...pageKeys]));
 
   // 1) counters
   const statsObj = await fetchGameStatsBulk(keys);
@@ -689,12 +803,23 @@ async function init() {
   if (els.statusChart) els.statusChart.textContent = `OK · ${state.games.length} jeux`;
   if (els.statusTable) els.statusTable.textContent = `OK · ${state.games.length} jeux`;
 
+  // ✅ pages traducteurs
+  renderPagesTable();
+
   // ✅ filtre traducteur (remplace les résidus renderAll/bindUi)
   if (selTrad) {
     selTrad.addEventListener("change", () => {
       document.body.dataset.tradFilter = selTrad.value || "all";
       resetLimit();
-      rerender();
+
+      if ((selTrad.value || "").trim() === "andric31") {
+        if (els.statusTable) els.statusTable.textContent = "⏸️ Stats jeux désactivées temporairement pour andric31";
+        if (els.statusChart) els.statusChart.textContent = "⏸️ Stats jeux désactivées temporairement pour andric31";
+        rerender({ chart: true });
+        return;
+      }
+
+      rerender({ chart: true });
     });
     document.body.dataset.tradFilter = selTrad.value || "all";
   } else {
