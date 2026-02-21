@@ -35,6 +35,19 @@ export async function onRequest(context) {
     );
   `).run();
 
+  // ✅ Historique par jour (UTC) — pour 24h / 7j / 30j
+  await env.DB.prepare(`
+    CREATE TABLE IF NOT EXISTS counter_days (
+      day TEXT NOT NULL,
+      id  TEXT NOT NULL,
+      views INTEGER NOT NULL DEFAULT 0,
+      mega  INTEGER NOT NULL DEFAULT 0,
+      likes INTEGER NOT NULL DEFAULT 0,
+      updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      PRIMARY KEY(day, id)
+    );
+  `).run();
+
   // ✅ Migration douce: si ancienne table sans likes, on tente 1 fois et on ignore si déjà OK
   // (D1: ALTER TABLE échoue si la colonne existe)
   try {
@@ -71,6 +84,14 @@ export async function onRequest(context) {
           updated_at = unixepoch()
       `).bind(id).run();
 
+      await env.DB.prepare(`
+        INSERT INTO counter_days (day, id, views, mega, likes, updated_at)
+        VALUES (date('now'), ?1, 1, 0, 0, unixepoch())
+        ON CONFLICT(day, id) DO UPDATE SET
+          views = views + 1,
+          updated_at = unixepoch()
+      `).bind(id).run();
+
     } else if (kind === "mega") {
       await env.DB.prepare(`
         INSERT INTO counters (id, views, mega, likes, updated_at)
@@ -80,11 +101,27 @@ export async function onRequest(context) {
           updated_at = unixepoch()
       `).bind(id).run();
 
+      await env.DB.prepare(`
+        INSERT INTO counter_days (day, id, views, mega, likes, updated_at)
+        VALUES (date('now'), ?1, 0, 1, 0, unixepoch())
+        ON CONFLICT(day, id) DO UPDATE SET
+          mega = mega + 1,
+          updated_at = unixepoch()
+      `).bind(id).run();
+
     } else if (kind === "like") {
       await env.DB.prepare(`
         INSERT INTO counters (id, views, mega, likes, updated_at)
         VALUES (?1, 0, 0, 1, unixepoch())
         ON CONFLICT(id) DO UPDATE SET
+          likes = likes + 1,
+          updated_at = unixepoch()
+      `).bind(id).run();
+
+      await env.DB.prepare(`
+        INSERT INTO counter_days (day, id, views, mega, likes, updated_at)
+        VALUES (date('now'), ?1, 0, 0, 1, unixepoch())
+        ON CONFLICT(day, id) DO UPDATE SET
           likes = likes + 1,
           updated_at = unixepoch()
       `).bind(id).run();
@@ -108,6 +145,14 @@ export async function onRequest(context) {
       ON CONFLICT(id) DO UPDATE SET
         likes = CASE WHEN likes > 0 THEN likes - 1 ELSE 0 END,
         updated_at = unixepoch()
+    `).bind(id).run();
+
+    // ✅ On décrémente aussi le jour courant (si la ligne existe)
+    await env.DB.prepare(`
+      UPDATE counter_days
+      SET likes = CASE WHEN likes > 0 THEN likes - 1 ELSE 0 END,
+          updated_at = unixepoch()
+      WHERE day = date('now') AND id = ?1
     `).bind(id).run();
 
     const row = await getRow();
