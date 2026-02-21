@@ -146,7 +146,11 @@ function renderPagesTable() {
   });
 
   // tri par vues desc
-  rows.sort((a, b) => (b.views - a.views) || a.name.localeCompare(b.name, "fr"));
+  rows.sort((a, b) => {
+    // ✅ pages désactivées en bas
+    if (!!a.disabled !== !!b.disabled) return a.disabled ? 1 : -1;
+    return (b.views - a.views) || a.name.localeCompare(b.name, "fr");
+  });
 
   for (const r of rows) {
     const tr = document.createElement("tr");
@@ -160,14 +164,11 @@ function renderPagesTable() {
     const badge = document.createElement("span");
     badge.className = "pill" + (r.disabled ? " pill-warn" : "");
     badge.textContent = r.slug;
-    const label = document.createElement("span");
-    label.textContent = r.name;
     tdName.appendChild(badge);
-    tdName.appendChild(label);
 
     const tdViews = document.createElement("td");
     tdViews.className = "num";
-    tdViews.textContent = (r.views | 0).toLocaleString("fr-FR");
+    tdViews.textContent = r.disabled ? "-" : (r.views | 0).toLocaleString("fr-FR");
 
     const tdGames = document.createElement("td");
     tdGames.className = "num";
@@ -188,7 +189,7 @@ function renderPagesTable() {
 
   if (els.statusPages) {
     const n = rows.length;
-    const totalViews = rows.reduce((a, r) => a + (r.views | 0), 0);
+    const totalViews = rows.reduce((a, r) => a + (r.disabled ? 0 : (r.views | 0)), 0);
     els.statusPages.textContent = `${n} pages · ${totalViews.toLocaleString("fr-FR")} vues`;
   }
 }
