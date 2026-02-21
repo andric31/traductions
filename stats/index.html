@@ -1,1 +1,112 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Stats — Traductions</title>
 
+  <link rel="icon" href="/favicon.png" />
+  <!-- ✅ plus de viewer.css -->
+  <link rel="stylesheet" href="/stats/stats.css" />
+</head>
+
+<body class="stats-page">
+  <div class="stats-wrap">
+    <main class="stats-main">
+
+      <!-- 1) STATS -->
+      <section class="card">
+        <div class="card-h">
+          <div class="stats-title">
+            <div class="h1">📊 Stats</div>
+            <div class="sub">https://andric31-traductions.pages.dev/</div>
+          </div>
+
+          <div class="stats-controls">
+            <input id="q" class="inp" placeholder="Rechercher (titre, tags, id…)" autocomplete="off" />
+
+            <select id="translator" class="sel" title="Traducteur">
+              <option value="all">Tous traducteurs</option>
+            </select>
+
+            <select id="metric" class="sel" title="Métrique du graphique">
+              <option value="views">👁️ Vues</option>
+              <option value="mega">📥 Téléchargements</option>
+              <option value="likes">❤️ Likes</option>
+              <option value="ratingCount">⭐🗳️ Votes</option>
+              <option value="ratingAvg">⭐ Note (moy.)</option>
+            </select>
+
+            <select id="top" class="sel" title="Top">
+              <option value="20" selected>Top 20</option>
+              <option value="30">Top 30</option>
+              <option value="40">Top 40</option>
+              <option value="50">Top 50</option>
+              <option value="100">Top 100</option>
+            
+              <option value="200">Top 200</option>
+              <option value="300">Top 300</option>
+              <option value="400">Top 400</option>
+              <option value="500">Top 500</option>
+              <option value="600">Top 600</option>
+              <option value="700">Top 700</option>
+              <option value="800">Top 800</option>
+              <option value="900">Top 900</option>
+            
+              <option value="0">Tout</option>
+            </select>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- 2) GRAPHIQUE -->
+      <section class="card">
+        <div class="card-h">
+          <div class="card-title">Graphique (Top)</div>
+        
+          <div class="card-actions">
+            <div class="card-note" id="statusChart">Chargement…</div>
+            <button id="btnChartExpand" class="btn-chart" type="button" title="Étendre le graphique">
+              ⤢
+            </button>
+          </div>
+        </div>
+
+        <div class="chart-wrap">
+          <canvas id="chart" width="1400" height="560"></canvas>
+        </div>
+      </section>
+
+      <!-- 3) TABLEAU (sans MAJ) -->
+      <section class="card">
+        <div class="card-h">
+          <div class="card-title">Tableau</div>
+          <!-- ✅ status dédié au tableau -->
+          <div class="card-note" id="statusTable">—</div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="tbl" id="tbl">
+            <thead>
+              <tr>
+                <th class="c-cover">Cover</th>
+                <th data-sort="title">Titre</th>
+                <th class="num" data-sort="views">👁️</th>
+                <th class="num" data-sort="mega">📥</th>
+                <th class="num" data-sort="likes">❤️</th>
+                <th class="num" data-sort="ratingCount">⭐🗳️</th>
+                <th class="num" data-sort="ratingAvg">⭐</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="/stats/stats.js"></script>
+</body>
+</html>

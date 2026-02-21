@@ -1,0 +1,278 @@
+/* =========================================================
+   Stats — AUTONOME (sans viewer.css)
+   3 cadres distincts : Stats / Graphique / Tableau
+   Covers x4 (200px)
+   ========================================================= */
+
+:root{
+  --bg:#0f1117;
+  --fg:#e8eaf0;
+  --muted:rgba(232,234,240,.65);
+  --border:rgba(170,178,200,.18);
+  --card:rgba(20,24,38,.88);
+  --btn:rgba(30,36,55,.9);
+}
+
+*,
+*::before,
+*::after{ box-sizing:border-box; }
+
+html,body{
+  margin:0;
+  padding:0;
+  background:var(--bg);
+  color:var(--fg);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.stats-wrap{
+  max-width:1760px;
+  margin:0 auto;
+  padding:12px;
+}
+
+.stats-main{
+  display:flex;
+  flex-direction:column;
+  gap:12px; /* ✅ espace visible entre les 3 cadres */
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+}
+
+.card-h{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px 12px;
+  border-bottom:1px solid var(--border);
+}
+
+.card-title{
+  font-weight:800;
+}
+
+.card-note{
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* ----- Titre stats ----- */
+.stats-title .h1{
+  font-size:19px;
+  font-weight:800;
+  letter-spacing:.2px;
+}
+.stats-title .sub{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:2px;
+}
+
+/* ----- Controls ----- */
+.stats-controls{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+}
+
+.inp,.sel{
+  height:36px;
+  padding:0 10px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:var(--btn);
+  color:var(--fg);
+  outline:none;
+}
+.inp{ min-width:280px; }
+.sel{ min-width:130px; }
+
+.inp::placeholder{ color:var(--muted); }
+
+/* ----- Graphique ----- */
+.chart-wrap{
+  padding:10px 12px 10px;
+  overflow:auto;
+  max-height: 620px;
+}
+.chart-wrap canvas{
+  width:100%;
+  height:auto;
+  display:block;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:rgba(0,0,0,.15);
+}
+
+/* ----- Tableau ----- */
+.table-wrap{ overflow:auto; }
+
+.tbl{
+  width:100%;
+  border-collapse:collapse;
+}
+
+.tbl th,.tbl td{
+  padding:10px 12px;
+  border-bottom:1px solid var(--border);
+  vertical-align:middle;
+}
+
+.tbl thead th{
+  position:sticky;
+  top:0;
+  background:rgba(20,24,38,.96);
+  font-size:12px;
+  color:var(--muted);
+  text-align:left;
+  cursor:pointer;
+}
+
+.tbl thead th.num,
+.tbl td.num{
+  text-align:right;
+  font-variant-numeric: tabular-nums;
+}
+
+.tbl tbody tr:hover{
+  background:rgba(90,162,255,.08);
+  cursor:pointer;
+}
+
+/* ✅ Covers : hauteur inchangée, largeur x4 */
+.c-cover{ width: 220px; }   /* colonne plus large */
+
+.cover{
+  width: 200px;             /* ✅ largeur x4 (50 -> 200) */
+  height: 50px;             /* ✅ hauteur IDENTIQUE à avant */
+  border-radius: 10px;
+  object-fit: cover;        /* coupe proprement */
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,.2);
+  display: block;
+}
+
+/* ---- Petits textes sous titre ---- */
+.title-line{ display:flex; gap:8px; align-items:center; }
+.small{ font-size:12px; color:var(--muted); margin-top:4px; }
+
+/* Responsive */
+@media (max-width: 900px){
+  .stats-wrap{ padding:8px; }
+  .inp{ min-width:200px; }
+  .sel{ min-width:120px; }
+
+  /* sur mobile : covers un peu moins énormes */
+  .c-cover{ width:160px; }
+  .cover{ width:140px; height:140px; }
+}
+
+/* =========================
+   Bouton graphique (moderne)
+   ========================= */
+.btn-chart{
+  appearance:none;
+  border:none;
+  cursor:pointer;
+
+  width:28px;
+  height:28px;
+  border-radius:8px;
+
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.10);
+
+  color:rgba(210,220,255,0.85);
+  font-size:14px;
+  line-height:1;
+
+  transition:
+    background .15s ease,
+    border-color .15s ease,
+    transform .12s ease,
+    color .15s ease;
+}
+
+.btn-chart:hover{
+  background:rgba(90,162,255,0.14);
+  border-color:rgba(90,162,255,0.45);
+  color:#fff;
+}
+
+.btn-chart:active{
+  transform:translateY(1px);
+}
+
+/* état actif (graph étendu) */
+.btn-chart.is-active{
+  background:rgba(90,162,255,0.22);
+  border-color:rgba(90,162,255,0.6);
+  color:#fff;
+}
+
+/* =========================
+   Fix chevauchement header (Graph)
+   ========================= */
+
+/* le header peut wrap si besoin (mobile / petits écrans) */
+.card-h{
+  flex-wrap: wrap;
+}
+
+/* IMPORTANT : autorise aussi le bloc gauche à rétrécir */
+.card-title{
+  min-width: 0;
+}
+
+/* zone droite : bien à droite + ellipsis possible */
+.card-actions{
+  display:flex;
+  align-items:center;
+  gap:12px;
+
+  margin-left:auto;
+  min-width:0;            /* ellipsis */
+  flex: 1 1 auto;         /* prend la place dispo */
+  justify-content:flex-end;
+}
+
+/* le compteur ne doit pas pousser le bouton hors cadre */
+#statusChart{
+  min-width:0;
+  max-width:min(60vw, 520px);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* le bouton ne rétrécit jamais */
+.btn-chart{
+  flex:0 0 auto;
+}
+
+
+/* Traducteur badge */
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:3px 8px;
+  border:1px solid var(--border);
+  border-radius:999px;
+  font-size:12px;
+  color:var(--fg);
+  background:rgba(255,255,255,.06);
+  margin-right:10px;
+}
