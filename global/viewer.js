@@ -286,13 +286,87 @@
     catch { return String(Math.floor(x)); }
   }
 
+
+
+  // =========================
+  // Helpers temps
+  // =========================
+  function formatRelativeTranslationTime(ts) {
+    const t = Number(ts || 0);
+    if (!Number.isFinite(t) || t <= 0) return "—";
+
+    let delta = Date.now() - t;
+    if (!Number.isFinite(delta) || delta < 0) delta = 0;
+
+    const MIN = 60 * 1000;
+    const HOUR = 60 * MIN;
+    const DAY = 24 * HOUR;
+    const WEEK = 7 * DAY;
+    const MONTH = 30 * DAY;
+    const YEAR = 365 * DAY;
+
+    if (delta < MIN) return "à l’instant";
+    if (delta < HOUR) {
+      const n = Math.max(1, Math.floor(delta / MIN));
+      return `${n} min`;
+    }
+    if (delta < DAY) {
+      const n = Math.max(1, Math.floor(delta / HOUR));
+      return `${n} h`;
+    }
+    if (delta < WEEK) {
+      const n = Math.max(1, Math.floor(delta / DAY));
+      return `${n} j`;
+    }
+    if (delta < 5 * WEEK) {
+      const n = Math.max(1, Math.floor(delta / WEEK));
+      return `${n} sem`;
+    }
+    if (delta < YEAR) {
+      const n = Math.max(1, Math.floor(delta / MONTH));
+      return `${n} mois`;
+    }
+
+    const n = Math.max(1, Math.floor(delta / YEAR));
+    return `${n} an${n > 1 ? "s" : ""}`;
+  }
+
+  function formatAbsoluteDateTime(ts) {
+    const t = Number(ts || 0);
+    if (!Number.isFinite(t) || t <= 0) return "Date de traduction inconnue";
+    try {
+      return new Date(t).toLocaleString("fr-FR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch {
+      return new Date(t).toISOString();
+    }
+  }
+
+
+  function formatRatingForCard(avg, count) {
+    const a = Number(avg || 0);
+    const c = Number(count || 0);
+    if (c <= 0 || a <= 0) return "—";
+
+    const rounded = Math.round(a * 10) / 10;
+    const text = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+    return `${text}/4`;
+  }
+
   // =========================
   // ✅ UID ONLY — clés compteurs
   // =========================
-  function counterKeyOfUid(uid) {
+  function counterKeyOfUid(uid, slugOverride = "") {
     const u = String(uid ?? "").trim();
-    const slug = String(SLUG || "root").trim();
-    return u ? `t:${slug}:uid:${u}` : "";
+    const slug = String(slugOverride || SLUG || "root").trim().toLowerCase();
+    if (!u) return "";
+    if (slug === "andric31") return `uid:${u}`;
+    return `t:${slug}:uid:${u}`;
   }
 
   // =========================
@@ -305,11 +379,18 @@
     loaded: false,
   };
 
-  async function fetchGameStatsBulk(ids) {
+  const GAME_RATINGS = {
+    byKey: new Map(),
+    loaded: false,
+  };
+
+  async function postBulkJson(url, ids) {
     try {
-      const r = await fetch("/api/counters", {
+      if (!Array.isArray(ids) || !ids.length) return {};
+      const r = await fetch(url, {
         method: "POST",
         cache: "no-store",
+        mode: "cors",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ ids }),
       });
@@ -320,6 +401,60 @@
     } catch {
       return {};
     }
+  }
+
+  function splitCounterIdsBySource(ids) {
+    const local = [];
+    const andric = [];
+    for (const id of (Array.isArray(ids) ? ids : [])) {
+      const k = String(id || "").trim();
+      if (!k) continue;
+      if (k.startsWith("uid:")) andric.push(k);
+      else local.push(k);
+    }
+    return { local, andric };
+  }
+
+  async function fetchGameStatsBulk(ids) {
+    const { local, andric } = splitCounterIdsBySource(ids);
+    const [localStats, andricStats] = await Promise.all([
+      postBulkJson("/api/counters", local),
+      postBulkJson("https://andric31-traductions.pages.dev/api/counters", andric),
+    ]);
+    return { ...localStats, ...andricStats };
+  }
+
+  async function fetchRatingsBulk(ids) {
+    const { local, andric } = splitCounterIdsBySource(ids);
+    const [localStats, andricStats] = await Promise.all([
+      postBulkJson("/api/ratings4s", local),
+      postBulkJson("https://andric31-traductions.pages.dev/api/ratings4s", andric),
+    ]);
+    return { ...localStats, ...andricStats };
+  }
+
+  async function ensureGameRatingsLoaded() {
+    if (GAME_RATINGS.loaded) return;
+
+    const keys = state.all.map((g) => g.ckey).filter(Boolean);
+    const stats = await fetchRatingsBulk(keys);
+
+    for (const k of keys) {
+      const s = stats[k] || {};
+      GAME_RATINGS.byKey.set(k, {
+        avg: Number(s.avg || 0),
+        count: Number(s.count || 0),
+        sum: Number(s.sum || 0),
+      });
+    }
+
+    GAME_RATINGS.loaded = true;
+  }
+
+  async function forceReloadGameRatings() {
+    GAME_RATINGS.loaded = false;
+    GAME_RATINGS.byKey.clear();
+    await ensureGameRatingsLoaded();
   }
 
   async function ensureGameStatsLoaded() {
@@ -617,7 +752,8 @@
     const updatedAtLocalTs = !Number.isNaN(updatedAtLocalParsed) ? updatedAtLocalParsed : 0;
     const createdAtLocalTs = !Number.isNaN(createdAtLocalParsed) ? createdAtLocalParsed : 0;
 
-    const ckey = counterKeyOfUid(uid);
+    const translatorSlug = String(game._translatorKey || game._translator || "").trim().toLowerCase();
+    const ckey = counterKeyOfUid(uid, translatorSlug);
 
     // moteur : priorité gameData.engine si présent
     let engines = Array.isArray(c.engines) ? c.engines : [];
@@ -998,14 +1134,46 @@
       card.dataset.tr = trKey.toLowerCase();
 
       const imgSrc = (g.image || "").trim() || "/favicon.png";
+      const translationText = formatRelativeTranslationTime(g.updatedAtLocalTs || g.createdAtLocalTs || 0);
+      const translationTitle = formatAbsoluteDateTime(g.updatedAtLocalTs || g.createdAtLocalTs || 0);
+      const views = GAME_STATS.views.get(g.ckey) || 0;
+      const mega = GAME_STATS.mega.get(g.ckey) || 0;
+      const likes = GAME_STATS.likes.get(g.ckey) || 0;
+      const rating = GAME_RATINGS.byKey.get(g.ckey) || { avg: 0, count: 0, sum: 0 };
+      const ratingText = formatRatingForCard(rating.avg, rating.count);
 
       card.innerHTML = `
         <img src="${imgSrc}" class="thumb" alt=""
              referrerpolicy="no-referrer"
+             loading="lazy"
              onerror="this.onerror=null;this.src='/favicon.png';this.classList.add('is-fallback');">
         <div class="body">
           <h3 class="name clamp-2">${escapeHtml(getDisplayTitle(g.__raw || g))}</h3>
           <div class="badges-line one-line">${badgesLineHtml(g)}</div>
+          <div class="card-meta">
+            <div class="card-stats" aria-label="Statistiques de la vignette">
+              <span class="card-stat" title="${escapeHtml(translationTitle)}">
+                <span class="stat-icon stat-icon-time" aria-hidden="true"></span>
+                <span>${escapeHtml(translationText)}</span>
+              </span>
+              <span class="card-stat" title="Nombre de vues">
+                <span class="stat-icon stat-icon-views" aria-hidden="true"></span>
+                <span>${formatInt(views)}</span>
+              </span>
+              <span class="card-stat" title="Nombre de téléchargements">
+                <span class="stat-icon stat-icon-downloads" aria-hidden="true"></span>
+                <span>${formatInt(mega)}</span>
+              </span>
+              <span class="card-stat" title="Nombre de j'aime">
+                <span class="stat-icon stat-icon-likes" aria-hidden="true"></span>
+                <span>${formatInt(likes)}</span>
+              </span>
+              <span class="card-stat" title="Note étoile moyenne et nombre de votes">
+                <span class="stat-icon stat-icon-rating" aria-hidden="true"></span>
+                <span>${escapeHtml(ratingText)}</span>
+              </span>
+            </div>
+          </div>
         </div>
       `;
 
@@ -1135,7 +1303,11 @@
   // =========================
   async function init() {
     $("#grid") && ($("#grid").innerHTML = "");
-    $("#gridEmpty")?.classList.add("hidden");
+    const loadingEl = $("#gridEmpty");
+    if (loadingEl) {
+      loadingEl.textContent = "Chargement...";
+      loadingEl.classList.remove("hidden");
+    }
 
     try {
       state.cols = getViewerCols();
@@ -1152,9 +1324,10 @@
 
       buildDynamicFilters();
 
-      if (state.sort.startsWith("views") || state.sort.startsWith("mega") || state.sort.startsWith("likes")) {
-        await ensureGameStatsLoaded();
-      }
+      await Promise.all([
+        ensureGameStatsLoaded(),
+        ensureGameRatingsLoaded(),
+      ]);
 
       applyFilters();
       initMainPageCounter();
