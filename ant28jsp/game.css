@@ -392,11 +392,24 @@ body:not(.mode-game){
   background: rgba(255,255,255,0.03);
   color: var(--muted);
   font-size: 12px;
+  display:grid;
+  gap:6px;
+  justify-items:center;
+  user-select:none;
+}
+.statsLine{
   display:flex;
   gap:10px;
   justify-content:center;
   flex-wrap:wrap;
-  user-select:none;
+}
+.statsLineSub{
+  opacity: .96;
+}
+.statsItem{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
 }
 .statsOut strong{
   color: var(--fg);

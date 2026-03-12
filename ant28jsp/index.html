@@ -343,11 +343,16 @@
       </div>
   
       <div class="statsOut infoBlock" id="statsOut" style="display:none;">
-        👁️ Vues : <strong id="statViews">0</strong>
-        ·
-        ❤️ J’aime : <strong id="statLikes">0</strong>
-        ·
-        📥 Téléchargements : <strong id="statMegaClicks">0</strong>
+        <div class="statsLine">
+          <span class="statsItem" id="statTranslationWrap" title="Date de traduction inconnue">⏱️ Mise à jour : <strong id="statTranslationTime">—</strong></span>
+          <span class="statsItem">👁️ Vues : <strong id="statViews">0</strong></span>
+          <span class="statsItem">📥 Téléchargements : <strong id="statMegaClicks">0</strong></span>
+          <span class="statsItem">❤️ J’aime : <strong id="statLikes">0</strong></span>
+          <span class="statsItem" id="statRatingWrap" title="Note moyenne de la traduction">⭐ Note : <strong id="statRating">—</strong></span>
+        </div>
+        <div class="statsLine statsLineSub">
+          <span class="statsItem" id="statAddedWrap" title="Date d’ajout inconnue">📅 Ajouté le <strong id="statAddedDate">—</strong></span>
+        </div>
       </div>
   
       <div class="err" id="errBox"></div>
