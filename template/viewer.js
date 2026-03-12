@@ -175,10 +175,11 @@
     catch { return String(Math.floor(x)); }
   }
 
-// =========================
-  // Helpers temps / notes
-  // =========================
 
+
+  // =========================
+  // Helpers temps
+  // =========================
   function formatRelativeTranslationTime(ts) {
     const t = Number(ts || 0);
     if (!Number.isFinite(t) || t <= 0) return "—";
@@ -194,27 +195,22 @@
     const YEAR = 365 * DAY;
 
     if (delta < MIN) return "à l’instant";
-
     if (delta < HOUR) {
       const n = Math.max(1, Math.floor(delta / MIN));
       return `${n} min`;
     }
-
     if (delta < DAY) {
       const n = Math.max(1, Math.floor(delta / HOUR));
       return `${n} h`;
     }
-
     if (delta < WEEK) {
       const n = Math.max(1, Math.floor(delta / DAY));
       return `${n} j`;
     }
-
     if (delta < 5 * WEEK) {
       const n = Math.max(1, Math.floor(delta / WEEK));
       return `${n} sem`;
     }
-
     if (delta < YEAR) {
       const n = Math.max(1, Math.floor(delta / MONTH));
       return `${n} mois`;
@@ -240,21 +236,14 @@
     }
   }
 
-  function setViewerLoading(visible, text) {
-    const el = document.getElementById("viewerLoading");
-    if (!el) return;
-    if (text) el.textContent = text;
-    el.classList.toggle("is-visible", !!visible);
-  }
 
   function formatRatingForCard(avg, count) {
     const a = Number(avg || 0);
     const c = Number(count || 0);
     if (c <= 0 || a <= 0) return "—";
-  
+
     const rounded = Math.round(a * 10) / 10;
     const text = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
-  
     return `${text}/4`;
   }
 
@@ -277,10 +266,22 @@
     loaded: false,
   };
 
-  const GAME_RATINGS = {
-    byKey: new Map(),
-    loaded: false,
-  };
+  async function fetchGameStatsBulk(ids) {
+    try {
+      const r = await fetch("/api/counters", {
+        method: "POST",
+        cache: "no-store",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ ids }),
+      });
+      if (!r.ok) return {};
+      const j = await r.json();
+      if (!j?.ok || !j.stats) return {};
+      return j.stats;
+    } catch {
+      return {};
+    }
+  }
 
   async function fetchRatingsBulk(ids) {
     try {
@@ -317,21 +318,10 @@
     GAME_RATINGS.loaded = true;
   }
 
-  async function fetchGameStatsBulk(ids) {
-    try {
-      const r = await fetch("/api/counters", {
-        method: "POST",
-        cache: "no-store",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ ids }),
-      });
-      if (!r.ok) return {};
-      const j = await r.json();
-      if (!j?.ok || !j.stats) return {};
-      return j.stats;
-    } catch {
-      return {};
-    }
+  async function forceReloadGameRatings() {
+    GAME_RATINGS.loaded = false;
+    GAME_RATINGS.byKey.clear();
+    await ensureGameRatingsLoaded();
   }
 
   async function ensureGameStatsLoaded() {
@@ -355,8 +345,6 @@
     GAME_STATS.views.clear();
     GAME_STATS.mega.clear();
     GAME_STATS.likes.clear();
-    GAME_RATINGS.loaded = false;
-    GAME_RATINGS.byKey.clear();
     await ensureGameStatsLoaded();
   }
 
@@ -617,7 +605,6 @@
       updatedAtLocalTs,
       createdAtLocal: createdAtLocalRaw,
       createdAtLocalTs,
-      lastTranslationTs: updatedAtLocalTs || createdAtLocalTs || updatedAtTs || releaseDateTs || 0,
       __raw: game,
     };
   }
@@ -950,6 +937,13 @@
 
       const imgSrc = (g.image || "").trim() || "/favicon.png";
       const pageHref = buildGameUrl(g.__raw || g);
+      const translationText = formatRelativeTranslationTime(g.updatedAtLocalTs || g.createdAtLocalTs || 0);
+      const translationTitle = formatAbsoluteDateTime(g.updatedAtLocalTs || g.createdAtLocalTs || 0);
+      const views = GAME_STATS.views.get(g.ckey) || 0;
+      const mega = GAME_STATS.mega.get(g.ckey) || 0;
+      const likes = GAME_STATS.likes.get(g.ckey) || 0;
+      const rating = GAME_RATINGS.byKey.get(g.ckey) || { avg: 0, count: 0, sum: 0 };
+      const ratingText = formatRatingForCard(rating.avg, rating.count);
 
       // ✅ Tuile entièrement cliquable (comme le site principal)
       card.href = pageHref;
@@ -960,10 +954,35 @@
       card.innerHTML = `
         <img src="${imgSrc}" class="thumb" alt=""
              referrerpolicy="no-referrer"
+             loading="lazy"
              onerror="this.onerror=null;this.src='/favicon.png';this.classList.add('is-fallback');">
         <div class="body">
           <h3 class="name clamp-2">${escapeHtml(getDisplayTitle(g.__raw || g))}</h3>
           <div class="badges-line one-line">${badgesLineHtml(g)}</div>
+          <div class="card-meta">
+            <div class="card-stats" aria-label="Statistiques de la vignette">
+              <span class="card-stat" title="${escapeHtml(translationTitle)}">
+                <span class="stat-icon stat-icon-time" aria-hidden="true"></span>
+                <span>${escapeHtml(translationText)}</span>
+              </span>
+              <span class="card-stat" title="Nombre de vues">
+                <span class="stat-icon stat-icon-views" aria-hidden="true"></span>
+                <span>${formatInt(views)}</span>
+              </span>
+              <span class="card-stat" title="Nombre de téléchargements">
+                <span class="stat-icon stat-icon-downloads" aria-hidden="true"></span>
+                <span>${formatInt(mega)}</span>
+              </span>
+              <span class="card-stat" title="Nombre de j'aime">
+                <span class="stat-icon stat-icon-likes" aria-hidden="true"></span>
+                <span>${formatInt(likes)}</span>
+              </span>
+              <span class="card-stat" title="Note étoile moyenne et nombre de votes">
+                <span class="stat-icon stat-icon-rating" aria-hidden="true"></span>
+                <span>${escapeHtml(ratingText)}</span>
+              </span>
+            </div>
+          </div>
         </div>
       `;
 
@@ -1131,10 +1150,10 @@
       updateTagsCountBadge();
   
       buildDynamicFilters();
-      await Promise.all([
-        ensureGameStatsLoaded(),
-        ensureGameRatingsLoaded(),
-      ]);
+  
+      if (state.sort.startsWith("views") || state.sort.startsWith("mega") || state.sort.startsWith("likes")) {
+        await ensureGameStatsLoaded();
+      }
   
       applyFilters();
 
