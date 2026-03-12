@@ -1131,11 +1131,10 @@
       updateTagsCountBadge();
   
       buildDynamicFilters();
-  
-      if (state.sort.startsWith("views") || state.sort.startsWith("mega") || state.sort.startsWith("likes")) {
-        await ensureGameStatsLoaded();
-        await ensureGameRatingsLoaded();
-      }
+      await Promise.all([
+        ensureGameStatsLoaded(),
+        ensureGameRatingsLoaded(),
+      ]);
   
       applyFilters();
 
