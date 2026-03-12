@@ -130,32 +130,44 @@ function parseFrenchDateFR(s) {
 function formatRelativeTranslationTime(ts) {
   const t = Number(ts || 0);
   if (!Number.isFinite(t) || t <= 0) return "—";
-  const diff = Math.max(0, Date.now() - t);
-  const minute = 60 * 1000;
-  const hour = 60 * minute;
-  const day = 24 * hour;
-  const month = 30 * day;
-  const year = 365 * day;
 
-  if (diff < minute) return "à l’instant";
-  if (diff < hour) {
-    const n = Math.floor(diff / minute);
-    return `il y a ${n} min`;
+  const delta = Math.max(0, Date.now() - t);
+  const MIN = 60 * 1000;
+  const HOUR = 60 * MIN;
+  const DAY = 24 * HOUR;
+  const WEEK = 7 * DAY;
+  const MONTH = 30 * DAY;
+  const YEAR = 365 * DAY;
+
+  if (delta < MIN) return "à l’instant";
+
+  if (delta < HOUR) {
+    const n = Math.max(1, Math.floor(delta / MIN));
+    return `${n} min`;
   }
-  if (diff < day) {
-    const n = Math.floor(diff / hour);
-    return `il y a ${n} h`;
+
+  if (delta < DAY) {
+    const n = Math.max(1, Math.floor(delta / HOUR));
+    return `${n} heure${n > 1 ? "s" : ""}`;
   }
-  if (diff < month) {
-    const n = Math.floor(diff / day);
-    return `il y a ${n} jour${n > 1 ? "s" : ""}`;
+
+  if (delta < WEEK) {
+    const n = Math.max(1, Math.floor(delta / DAY));
+    return `${n} jour${n > 1 ? "s" : ""}`;
   }
-  if (diff < year) {
-    const n = Math.floor(diff / month);
-    return `il y a ${n} mois`;
+
+  if (delta < 5 * WEEK) {
+    const n = Math.max(1, Math.floor(delta / WEEK));
+    return `${n} semaine${n > 1 ? "s" : ""}`;
   }
-  const n = Math.floor(diff / year);
-  return `il y a ${n} an${n > 1 ? "s" : ""}`;
+
+  if (delta < YEAR) {
+    const n = Math.max(1, Math.floor(delta / MONTH));
+    return `${n} mois`;
+  }
+
+  const n = Math.max(1, Math.floor(delta / YEAR));
+  return `${n} an${n > 1 ? "s" : ""}`;
 }
 
 function formatAbsoluteDateTime(ts, fallback = "Date inconnue") {
