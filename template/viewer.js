@@ -1155,11 +1155,12 @@
       updateTagsCountBadge();
   
       buildDynamicFilters();
-  
-      if (state.sort.startsWith("views") || state.sort.startsWith("mega") || state.sort.startsWith("likes")) {
-        await ensureGameStatsLoaded();
-      }
-  
+
+      await Promise.all([
+        ensureGameStatsLoaded(),
+        ensureGameRatingsLoaded(),
+      ]);
+
       applyFilters();
 
       // ✅ compteur vues page principale (HIT + affichage)
