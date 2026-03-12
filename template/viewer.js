@@ -175,6 +175,67 @@
     catch { return String(Math.floor(x)); }
   }
 
+
+
+  // =========================
+  // Helpers temps
+  // =========================
+  function formatRelativeTranslationTime(ts) {
+    const t = Number(ts || 0);
+    if (!Number.isFinite(t) || t <= 0) return "—";
+
+    let delta = Date.now() - t;
+    if (!Number.isFinite(delta) || delta < 0) delta = 0;
+
+    const MIN = 60 * 1000;
+    const HOUR = 60 * MIN;
+    const DAY = 24 * HOUR;
+    const WEEK = 7 * DAY;
+    const MONTH = 30 * DAY;
+    const YEAR = 365 * DAY;
+
+    if (delta < MIN) return "à l’instant";
+    if (delta < HOUR) {
+      const n = Math.max(1, Math.floor(delta / MIN));
+      return `${n} min`;
+    }
+    if (delta < DAY) {
+      const n = Math.max(1, Math.floor(delta / HOUR));
+      return `${n} h`;
+    }
+    if (delta < WEEK) {
+      const n = Math.max(1, Math.floor(delta / DAY));
+      return `${n} j`;
+    }
+    if (delta < 5 * WEEK) {
+      const n = Math.max(1, Math.floor(delta / WEEK));
+      return `${n} sem`;
+    }
+    if (delta < YEAR) {
+      const n = Math.max(1, Math.floor(delta / MONTH));
+      return `${n} mois`;
+    }
+
+    const n = Math.max(1, Math.floor(delta / YEAR));
+    return `${n} an${n > 1 ? "s" : ""}`;
+  }
+
+  function formatAbsoluteDateTime(ts) {
+    const t = Number(ts || 0);
+    if (!Number.isFinite(t) || t <= 0) return "Date de traduction inconnue";
+    try {
+      return new Date(t).toLocaleString("fr-FR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch {
+      return new Date(t).toISOString();
+    }
+  }
+
   // =========================
   // ✅ UID ONLY — clés compteurs
   // =========================
@@ -824,6 +885,10 @@
 
       const imgSrc = (g.image || "").trim() || "/favicon.png";
       const pageHref = buildGameUrl(g.__raw || g);
+      const translationText = formatRelativeTranslationTime(g.updatedAtLocalTs || g.createdAtLocalTs || 0);
+      const translationTitle = formatAbsoluteDateTime(g.updatedAtLocalTs || g.createdAtLocalTs || 0);
+      const views = GAME_STATS.views.get(g.ckey) || 0;
+      const mega = GAME_STATS.mega.get(g.ckey) || 0;
 
       // ✅ Tuile entièrement cliquable (comme le site principal)
       card.href = pageHref;
@@ -834,10 +899,27 @@
       card.innerHTML = `
         <img src="${imgSrc}" class="thumb" alt=""
              referrerpolicy="no-referrer"
+             loading="lazy"
              onerror="this.onerror=null;this.src='/favicon.png';this.classList.add('is-fallback');">
         <div class="body">
           <h3 class="name clamp-2">${escapeHtml(getDisplayTitle(g.__raw || g))}</h3>
           <div class="badges-line one-line">${badgesLineHtml(g)}</div>
+          <div class="card-meta">
+            <div class="card-stats" aria-label="Statistiques de la vignette">
+              <span class="card-stat" title="${escapeHtml(translationTitle)}">
+                <span class="stat-icon stat-icon-time" aria-hidden="true"></span>
+                <span>${escapeHtml(translationText)}</span>
+              </span>
+              <span class="card-stat" title="Nombre de vues">
+                <span class="stat-icon stat-icon-views" aria-hidden="true"></span>
+                <span>${formatInt(views)}</span>
+              </span>
+              <span class="card-stat" title="Nombre de téléchargements">
+                <span class="stat-icon stat-icon-downloads" aria-hidden="true"></span>
+                <span>${formatInt(mega)}</span>
+              </span>
+            </div>
+          </div>
         </div>
       `;
 

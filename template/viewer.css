@@ -1092,3 +1092,60 @@ body.age-gate-active footer {
     inset 0 1px 0 rgba(255,255,255,0.06),
     0 8px 18px rgba(0,0,0,0.22);
 }
+
+
+.card-meta{
+  margin-top:auto;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  padding-top:2px;
+}
+
+.card-stats{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px 10px;
+  padding-top:0;
+  color:var(--muted);
+  font-size:11px;
+}
+
+.card-stat{
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  font-weight:600;
+  line-height:1.2;
+}
+
+.stat-icon{
+  width:14px;
+  height:14px;
+  display:inline-block;
+  flex:0 0 14px;
+  background-color:currentColor;
+  opacity:.8;
+  vertical-align:middle;
+  -webkit-mask-repeat:no-repeat;
+  -webkit-mask-position:center;
+  -webkit-mask-size:contain;
+  mask-repeat:no-repeat;
+  mask-position:center;
+  mask-size:contain;
+}
+
+.stat-icon-time{
+  -webkit-mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm1 10.59 3.3 3.3-1.42 1.42L11 13V7h2Z'/></svg>");
+  mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm1 10.59 3.3 3.3-1.42 1.42L11 13V7h2Z'/></svg>");
+}
+
+.stat-icon-views{
+  -webkit-mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7Zm0 11a4 4 0 1 1 4-4 4 4 0 0 1-4 4Zm0-6a2 2 0 1 0 2 2 2 2 0 0 0-2-2Z'/></svg>");
+  mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7Zm0 11a4 4 0 1 1 4-4 4 4 0 0 1-4 4Zm0-6a2 2 0 1 0 2 2 2 2 0 0 0-2-2Z'/></svg>");
+}
+
+.stat-icon-downloads{
+  -webkit-mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='M5 20h14v-2H5m14-9h-4V3H9v6H5l7 7 7-7Z'/></svg>");
+  mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='M5 20h14v-2H5m14-9h-4V3H9v6H5l7 7 7-7Z'/></svg>");
+}
