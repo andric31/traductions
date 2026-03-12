@@ -1110,7 +1110,11 @@
   // =========================
   async function init() {
     $("#grid") && ($("#grid").innerHTML = "");
-    $("#gridEmpty")?.classList.add("hidden");
+    const loadingEl = $("#gridEmpty");
+    if (loadingEl) {
+      loadingEl.textContent = "Chargement...";
+      loadingEl.classList.remove("hidden");
+    }
   
     try {
       // ✅ thème (persistant)
