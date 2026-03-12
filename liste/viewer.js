@@ -361,9 +361,9 @@
   // =========================
   // ✅ UID ONLY — clés compteurs
   // =========================
-  function counterKeyOfUid(uid) {
+  function counterKeyOfUid(uid, slugOverride = "") {
     const u = String(uid ?? "").trim();
-    const slug = String(SLUG || "root").trim();
+    const slug = String(slugOverride || SLUG || "root").trim();
     return u ? `t:${slug}:uid:${u}` : "";
   }
 
@@ -735,7 +735,8 @@
     const updatedAtLocalTs = !Number.isNaN(updatedAtLocalParsed) ? updatedAtLocalParsed : 0;
     const createdAtLocalTs = !Number.isNaN(createdAtLocalParsed) ? createdAtLocalParsed : 0;
 
-    const ckey = counterKeyOfUid(uid);
+    const translatorSlug = String(game._translatorKey || game._translator || "").trim().toLowerCase();
+    const ckey = counterKeyOfUid(uid, translatorSlug);
 
     // moteur : priorité gameData.engine si présent
     let engines = Array.isArray(c.engines) ? c.engines : [];
