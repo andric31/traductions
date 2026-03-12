@@ -363,8 +363,10 @@
   // =========================
   function counterKeyOfUid(uid, slugOverride = "") {
     const u = String(uid ?? "").trim();
-    const slug = String(slugOverride || SLUG || "root").trim();
-    return u ? `t:${slug}:uid:${u}` : "";
+    const slug = String(slugOverride || SLUG || "root").trim().toLowerCase();
+    if (!u) return "";
+    if (slug === "andric31") return `uid:${u}`;
+    return `t:${slug}:uid:${u}`;
   }
 
   // =========================
@@ -382,11 +384,13 @@
     loaded: false,
   };
 
-  async function fetchGameStatsBulk(ids) {
+  async function postBulkJson(url, ids) {
     try {
-      const r = await fetch("/api/counters", {
+      if (!Array.isArray(ids) || !ids.length) return {};
+      const r = await fetch(url, {
         method: "POST",
         cache: "no-store",
+        mode: "cors",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ ids }),
       });
@@ -399,21 +403,34 @@
     }
   }
 
-  async function fetchRatingsBulk(ids) {
-    try {
-      const r = await fetch("/api/ratings4s", {
-        method: "POST",
-        cache: "no-store",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ ids }),
-      });
-      if (!r.ok) return {};
-      const j = await r.json();
-      if (!j?.ok || !j.stats) return {};
-      return j.stats;
-    } catch {
-      return {};
+  function splitCounterIdsBySource(ids) {
+    const local = [];
+    const andric = [];
+    for (const id of (Array.isArray(ids) ? ids : [])) {
+      const k = String(id || "").trim();
+      if (!k) continue;
+      if (k.startsWith("uid:")) andric.push(k);
+      else local.push(k);
     }
+    return { local, andric };
+  }
+
+  async function fetchGameStatsBulk(ids) {
+    const { local, andric } = splitCounterIdsBySource(ids);
+    const [localStats, andricStats] = await Promise.all([
+      postBulkJson("/api/counters", local),
+      postBulkJson("https://andric31-traductions.pages.dev/api/counters", andric),
+    ]);
+    return { ...localStats, ...andricStats };
+  }
+
+  async function fetchRatingsBulk(ids) {
+    const { local, andric } = splitCounterIdsBySource(ids);
+    const [localStats, andricStats] = await Promise.all([
+      postBulkJson("/api/ratings4s", local),
+      postBulkJson("https://andric31-traductions.pages.dev/api/ratings4s", andric),
+    ]);
+    return { ...localStats, ...andricStats };
   }
 
   async function ensureGameRatingsLoaded() {
@@ -1286,7 +1303,11 @@
   // =========================
   async function init() {
     $("#grid") && ($("#grid").innerHTML = "");
-    $("#gridEmpty")?.classList.add("hidden");
+    const loadingEl = $("#gridEmpty");
+    if (loadingEl) {
+      loadingEl.textContent = "Chargement...";
+      loadingEl.classList.remove("hidden");
+    }
 
     try {
       state.cols = getViewerCols();
