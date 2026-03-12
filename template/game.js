@@ -127,6 +127,101 @@ function parseFrenchDateFR(s) {
 // ============================================================================
 // UI helpers
 // ============================================================================
+function formatRelativeTranslationTime(ts) {
+  const t = Number(ts || 0);
+  if (!Number.isFinite(t) || t <= 0) return "—";
+  const diff = Math.max(0, Date.now() - t);
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+  const month = 30 * day;
+  const year = 365 * day;
+
+  if (diff < minute) return "à l’instant";
+  if (diff < hour) {
+    const n = Math.floor(diff / minute);
+    return `il y a ${n} min`;
+  }
+  if (diff < day) {
+    const n = Math.floor(diff / hour);
+    return `il y a ${n} h`;
+  }
+  if (diff < month) {
+    const n = Math.floor(diff / day);
+    return `il y a ${n} jour${n > 1 ? "s" : ""}`;
+  }
+  if (diff < year) {
+    const n = Math.floor(diff / month);
+    return `il y a ${n} mois`;
+  }
+  const n = Math.floor(diff / year);
+  return `il y a ${n} an${n > 1 ? "s" : ""}`;
+}
+
+function formatAbsoluteDateTime(ts, fallback = "Date inconnue") {
+  const t = Number(ts || 0);
+  if (!Number.isFinite(t) || t <= 0) return fallback;
+  try {
+    return new Date(t).toLocaleString("fr-FR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return new Date(t).toISOString();
+  }
+}
+
+function formatAbsoluteDateOnly(ts, fallback = "Date inconnue") {
+  const t = Number(ts || 0);
+  if (!Number.isFinite(t) || t <= 0) return fallback;
+  try {
+    return new Date(t).toLocaleDateString("fr-FR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  } catch {
+    return new Date(t).toISOString().slice(0, 10);
+  }
+}
+
+function setStatMeta(entry) {
+  const updatedAtLocalRaw = entry?.updatedAtLocal || "";
+  const createdAtLocalRaw = entry?.createdAtLocal || "";
+  const updatedAtRaw = entry?.updatedAt || "";
+
+  const updatedAtLocalTs = updatedAtLocalRaw ? Date.parse(updatedAtLocalRaw) : NaN;
+  const createdAtLocalTs = createdAtLocalRaw ? Date.parse(createdAtLocalRaw) : NaN;
+  const lastTranslationTs = !Number.isNaN(updatedAtLocalTs)
+    ? updatedAtLocalTs
+    : (!Number.isNaN(createdAtLocalTs) ? createdAtLocalTs : 0);
+
+  setText("statTranslationTime", formatRelativeTranslationTime(lastTranslationTs));
+
+  const translationWrap = $("statTranslationWrap");
+  if (translationWrap) {
+    translationWrap.title = formatAbsoluteDateTime(lastTranslationTs, updatedAtRaw || "Date de traduction inconnue");
+  }
+
+  setText("statAddedDate", formatAbsoluteDateOnly(!Number.isNaN(createdAtLocalTs) ? createdAtLocalTs : 0, "—"));
+  const addedWrap = $("statAddedWrap");
+  if (addedWrap) {
+    addedWrap.title = formatAbsoluteDateTime(!Number.isNaN(createdAtLocalTs) ? createdAtLocalTs : 0, "Date d’ajout inconnue");
+  }
+}
+
+function setStatRating(avg, count) {
+  const a = Number(avg || 0);
+  const c = Number(count || 0);
+  const text = c > 0 && a > 0 ? `${a.toFixed(1)}/4` : "—";
+  setText("statRating", text);
+  const wrap = $("statRatingWrap");
+  if (wrap) wrap.title = c > 0 && a > 0 ? `${a.toFixed(1)}/4 · ${c} vote${c > 1 ? "s" : ""}` : "Aucune note pour le moment";
+}
+
 function $(id) { return document.getElementById(id); }
 
 function escapeHtml(s) {
@@ -1054,6 +1149,7 @@ function renderRating4UI(gameId, data, enabled = true) {
 
   avgEl.textContent = avg > 0 ? avg.toFixed(1) + "/4" : "—";
   countEl.textContent = String(count);
+  setStatRating(avg, count);
   choices.innerHTML = "";
 
   if (!enabled) {
@@ -1409,6 +1505,9 @@ function renderVideoBlock({ id, videoUrl }) {
     // ⛔ Bloquer clic droit MEGA/archives
     $("btnMega")?.addEventListener("contextmenu", (e) => { e.preventDefault(); return false; });
     $("archiveLink")?.addEventListener("contextmenu", (e) => { e.preventDefault(); return false; });
+
+    // Métadonnées de traduction
+    setStatMeta(entry);
 
     // Counters (UID only)
     await initCounters(counterKey, megaHref, archiveHref);
