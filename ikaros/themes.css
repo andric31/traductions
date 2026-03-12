@@ -33,6 +33,10 @@ html, body { min-height: 100%; }
 
   /* ✅ hover glow fallback (évite bleus “fantômes” si viewer.css l’utilise) */
   --card-hover-glow: rgba(0,0,0,0.10);
+
+  /* ✅ Menu: séparateur hamburger (fallback) */
+  --menu-divider-line: rgba(255,255,255,0.12);
+  --menu-divider-sweep: rgba(255,255,255,0.55);
 }
 
 
@@ -88,13 +92,23 @@ html, body { min-height: 100%; }
     0 8px 24px rgba(0,0,0,0.10);
   --card-hover-bg: var(--card);
 
+  /* ✅ Menu: séparateur hamburger (clair) */
+  --menu-divider-line: rgba(20,24,36,0.14);
+  --menu-divider-sweep: rgba(20,24,36,0.35);
+
+  /* ⭐ AJOUTE ÇA */
+  --game-rating-color: var(--muted);
+  --game-rating-opacity: .9;
+
   color-scheme: light;
 }
 
 /* gradient uniquement quand c'est clair (auto clair, clair, white) */
 :root:not([data-theme]) body,
 :root[data-theme="clair"] body,
-:root[data-theme="white"] body{
+:root[data-theme="white"] body,
+:root[data-theme="printemps"] body,
+:root[data-theme="ete"] body{
   background:
     radial-gradient(1200px 600px at 18% 0%, rgba(45,108,223,0.10), transparent 60%),
     radial-gradient(900px 500px at 90% 10%, rgba(15,123,80,0.08), transparent 55%),
@@ -150,6 +164,10 @@ html, body { min-height: 100%; }
       0 14px 38px rgba(0,0,0,0.45);
     --card-hover-bg: var(--card);
 
+    /* ✅ Menu: séparateur hamburger (sombre) */
+    --menu-divider-line: rgba(255,255,255,0.12);
+    --menu-divider-sweep: rgba(255,255,255,0.55);
+
     color-scheme: dark;
   }
 }
@@ -193,6 +211,10 @@ html, body { min-height: 100%; }
     0 0 22px -6px rgba(255,255,255,0.18),
     0 14px 38px rgba(0,0,0,0.45);
   --card-hover-bg: var(--card);
+
+  /* ✅ Menu: séparateur hamburger (sombre) */
+  --menu-divider-line: rgba(255,255,255,0.12);
+  --menu-divider-sweep: rgba(255,255,255,0.55);
 
   color-scheme: dark;
 }
@@ -253,6 +275,10 @@ html, body { min-height: 100%; }
   /* ⭐ couleur des étoiles */
   --game-rating-color: #f1b90b;
   --game-rating-opacity: .95;
+  /* ✅ Menu: séparateur hamburger (clair) */
+  --menu-divider-line: rgba(20,24,36,0.14);
+  --menu-divider-sweep: rgba(20,24,36,0.35);
+
 
   color-scheme: light;
 }
@@ -309,11 +335,6 @@ html, body { min-height: 100%; }
   color-scheme: dark;
 
   background:
-    radial-gradient(circle at 10% 20%, rgba(255,255,255,0.22) 0 1px, transparent 2px),
-    radial-gradient(circle at 30% 80%, rgba(255,255,255,0.18) 0 1px, transparent 2px),
-    radial-gradient(circle at 70% 35%, rgba(255,255,255,0.20) 0 1px, transparent 2px),
-    radial-gradient(circle at 85% 70%, rgba(255,255,255,0.16) 0 1px, transparent 2px),
-
     radial-gradient(1200px 700px at 15% 0%, rgba(24,195,122,0.18), transparent 60%),
     radial-gradient(1100px 650px at 85% 10%, rgba(255,47,67,0.12), transparent 55%),
     radial-gradient(900px 600px at 60% 0%, rgba(72,155,255,0.12), transparent 60%),
@@ -348,10 +369,7 @@ html, body { min-height: 100%; }
   background:
     radial-gradient(1200px 700px at 15% 0%, rgba(24,195,122,0.22), transparent 60%),
     radial-gradient(1100px 650px at 85% 10%, rgba(255,47,67,0.16), transparent 55%),
-    radial-gradient(900px 600px at 60% 0%, rgba(72,155,255,0.16), transparent 60%),
-    radial-gradient(circle at 12% 18%, rgba(255,255,255,.10) 0 1px, transparent 2px),
-    radial-gradient(circle at 72% 28%, rgba(255,255,255,.08) 0 1px, transparent 2px),
-    radial-gradient(circle at 34% 74%, rgba(255,255,255,.06) 0 1px, transparent 2px);
+    radial-gradient(900px 600px at 60% 0%, rgba(72,155,255,0.16), transparent 60%);
   filter: blur(14px);
   animation: noelAurora 14s ease-in-out infinite alternate, noelTwinkle 3.8s steps(2,end) infinite;
 }
@@ -492,11 +510,6 @@ html, body { min-height: 100%; }
   color-scheme: dark;
 
   background:
-    radial-gradient(circle at 12% 18%, rgba(255,140,0,0.20) 0 1px, transparent 2px),
-    radial-gradient(circle at 30% 82%, rgba(255,120,0,0.16) 0 1px, transparent 2px),
-    radial-gradient(circle at 70% 35%, rgba(180,120,255,0.18) 0 1px, transparent 2px),
-    radial-gradient(circle at 85% 70%, rgba(255,90,0,0.14) 0 1px, transparent 2px),
-
     radial-gradient(1200px 700px at 20% 10%, rgba(156,107,255,0.16), transparent 60%),
     radial-gradient(900px 500px at 85% 15%, rgba(255,122,0,0.18), transparent 55%),
     radial-gradient(1100px 800px at 50% 90%, rgba(120,0,255,0.10), transparent 60%),
@@ -559,6 +572,1716 @@ html, body { min-height: 100%; }
 }
 
 
+/* =========================================================
+   THÈME : Saint-Valentin 💘
+   ========================================================= */
+:root[data-theme="valentine"]{
+  --bg:#160012;
+  --bg2:#24001d;
+  --fg:#ffe9f3;
+  --muted:#f1b9d4;
+  --primary:#ff4da6;
+  --accent:#ff1a75;
+  --border:#3a0b2d;
+  --card:#1d0017;
+  --btn:#2a0021;
+  --title:var(--fg);
+  --topbar-bg:linear-gradient(90deg, rgba(22,0,18,.92), rgba(255,77,166,.22));
+  --body-grad-1:#11000d;
+  --body-grad-2:#160012;
+  --body-grad-3:#24001d;
+  --popover-bg:rgba(29,0,23,.98);
+  --hover-bg:rgba(255,255,255,0.08);
+  --scrollbar-thumb:#6b1b4c;
+  --scrollbar-track:#0b0008;
+  --scrollbar-thumb-webkit-hover:#8a2762;
+  --card-hover-border:#ff4da6;
+  --card-hover-glow:rgba(255,77,166,.22);
+  --menu-divider-line:rgba(255,255,255,0.12);
+  --menu-divider-sweep:rgba(255,77,166,0.55);
+
+  color-scheme: dark;
+
+  background:
+    radial-gradient(1200px 700px at 15% 0%, rgba(255,77,166,0.16), transparent 60%),
+    radial-gradient(1100px 650px at 85% 10%, rgba(255,26,117,0.12), transparent 55%),
+    linear-gradient(180deg, #0b0008 0%, #12000f 45%, #180013 100%);
+  background-attachment: fixed;
+}
+:root[data-theme="valentine"] body{
+  background: transparent !important;
+  position: relative;
+  isolation: isolate;
+}
+:root[data-theme="valentine"]::after{
+  content:"";
+  position: fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:-1;
+  opacity:0;
+  background:none;
+  animation:none;
+}
+@media (prefers-reduced-motion: reduce){
+  :root[data-theme="valentine"]::after{ animation:none; }
+}
+@keyframes valentineSparkle{
+  0%{ transform: translateY(0); opacity:.08; }
+  50%{ transform: translateY(-6px); opacity:.12; }
+  100%{ transform: translateY(0); opacity:.08; }
+}
+
+
+/* =========================================================
+   THÈME : Carnaval 🎭
+   ========================================================= */
+:root[data-theme="carnaval"]{
+  --bg:#0c0b14;
+  --bg2:#141028;
+  --fg:#f5f4ff;
+  --muted:#c9c7ff;
+  --primary:#6a00ff;
+  --accent:#ffcc00;
+  --border:#2c2356;
+  --card:#140f2b;
+  --btn:#1b1538;
+  --title:var(--fg);
+  --topbar-bg:linear-gradient(90deg, rgba(12,11,20,.92), rgba(255,204,0,.18), rgba(106,0,255,.18));
+  --body-grad-1:#070711;
+  --body-grad-2:#0c0b14;
+  --body-grad-3:#141028;
+  --popover-bg:rgba(20,16,40,.98);
+  --hover-bg:rgba(255,255,255,0.07);
+  --scrollbar-thumb:#3b2b8a;
+  --scrollbar-track:#07060f;
+  --scrollbar-thumb-webkit-hover:#5332c9;
+  --card-hover-border:#ffcc00;
+  --card-hover-glow:rgba(255,204,0,.22);
+  --menu-divider-line:rgba(255,255,255,0.12);
+  --menu-divider-sweep:rgba(255,204,0,0.55);
+
+  color-scheme: dark;
+
+  background:
+    radial-gradient(1200px 700px at 15% 0%, rgba(106,0,255,0.16), transparent 60%),
+    radial-gradient(1100px 650px at 85% 10%, rgba(0,204,102,0.12), transparent 55%),
+    radial-gradient(900px 600px at 60% 0%, rgba(255,204,0,0.10), transparent 60%),
+    linear-gradient(180deg, #060610 0%, #0c0b14 45%, #120f24 100%);
+  background-attachment: fixed;
+}
+:root[data-theme="carnaval"] body{ background: transparent !important; position: relative; isolation:isolate; }
+:root[data-theme="carnaval"]::after{
+  content:"";
+  position: fixed; inset:0;
+  pointer-events:none; z-index:-1;
+  opacity:.10;
+  background:
+    repeating-linear-gradient(135deg, rgba(255,204,0,.18) 0 2px, transparent 2px 24px),
+    repeating-linear-gradient(45deg, rgba(106,0,255,.14) 0 2px, transparent 2px 28px);
+  mix-blend-mode: screen;
+  animation: carnavalSweep 8s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce){
+  :root[data-theme="carnaval"]::after{ animation:none; }
+}
+@keyframes carnavalSweep{
+  0%{ transform: translateX(-1%); opacity:.08; }
+  50%{ transform: translateX(1%); opacity:.12; }
+  100%{ transform: translateX(-1%); opacity:.08; }
+}
+
+
+/* =========================================================
+   THÈME : Printemps 🌸
+   ========================================================= */
+:root[data-theme="printemps"]{
+  --bg:#f3fbf7;
+  --bg2:#ffffff;
+  --fg:#122018;
+  --muted:#3d5a4b;
+  --primary:#2aa86b;
+  --accent:#ff4da6;
+  --border:#d4e9dc;
+  --card:#ffffff;
+  --btn:#eef8f2;
+  --title:#0f1a13;
+  --topbar-bg:rgba(243,251,247,.90);
+  --body-grad-1:#f3fbf7;
+  --body-grad-2:#f6fff9;
+  --body-grad-3:#ffffff;
+  --popover-bg:rgba(255,255,255,0.94);
+  --hover-bg:rgba(18,32,24,0.06);
+  --scrollbar-thumb:#b9d7c6;
+  --scrollbar-track:#eef8f2;
+  --scrollbar-thumb-webkit-hover:#a2cdb6;
+  --card-hover-border:rgba(0,0,0,0.14);
+  --card-hover-glow:rgba(0,0,0,0.08);
+  --menu-divider-line:rgba(18,32,24,0.14);
+  --menu-divider-sweep:rgba(42,168,107,0.40);
+
+  color-scheme: light;
+}
+/* fond "pétales" ultra léger */
+:root[data-theme="printemps"] body{ position:relative; }
+:root[data-theme="printemps"]::after{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none; z-index:-1;
+  opacity:.08;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(255,77,166,.60) 0 1px, transparent 2px),
+    radial-gradient(circle at 62% 35%, rgba(42,168,107,.55) 0 1px, transparent 2px),
+    radial-gradient(circle at 78% 70%, rgba(255,77,166,.55) 0 1px, transparent 2px);
+  animation: printempsFloat 10s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce){
+  :root[data-theme="printemps"]::after{ animation:none; }
+}
+@keyframes printempsFloat{
+  0%{ transform: translateY(0); }
+  50%{ transform: translateY(-10px); }
+  100%{ transform: translateY(0); }
+}
+
+
+/* =========================================================
+   THÈME : Été 🌞
+   ========================================================= */
+:root[data-theme="ete"]{
+  --bg:#fff8ef;
+  --bg2:#ffffff;
+  --fg:#1f160d;
+  --muted:#5b4633;
+  --primary:#ff7a18;
+  --accent:#00a3ff;
+  --border:#f1dfc8;
+  --card:#ffffff;
+  --btn:#fff1e0;
+  --title:#1a120a;
+  --topbar-bg:rgba(255,248,239,.90);
+  --body-grad-1:#fff4e5;
+  --body-grad-2:#fff8ef;
+  --body-grad-3:#ffffff;
+  --popover-bg:rgba(255,255,255,0.94);
+  --hover-bg:rgba(31,22,13,0.06);
+  --scrollbar-thumb:#e7caa4;
+  --scrollbar-track:#fff1e0;
+  --scrollbar-thumb-webkit-hover:#dcb581;
+  --card-hover-border:rgba(0,0,0,0.14);
+  --card-hover-glow:rgba(0,0,0,0.08);
+  --menu-divider-line:rgba(31,22,13,0.14);
+  --menu-divider-sweep:rgba(255,122,24,0.35);
+
+  color-scheme: light;
+}
+:root[data-theme="ete"] body{ position:relative; }
+:root[data-theme="ete"]::after{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none; z-index:-1;
+  opacity:.10;
+  background:
+    radial-gradient(900px 520px at 18% 0%, rgba(255,122,24,0.16), transparent 60%),
+    radial-gradient(850px 480px at 92% 10%, rgba(0,163,255,0.10), transparent 55%),
+    radial-gradient(circle at 20% 25%, rgba(255,255,255,.70) 0 1px, transparent 2px),
+    radial-gradient(circle at 75% 35%, rgba(255,255,255,.65) 0 1px, transparent 2px);
+  animation: eteHeat 9s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce){
+  :root[data-theme="ete"]::after{ animation:none; }
+}
+@keyframes eteHeat{
+  0%{ transform: translateY(0); opacity:.08; }
+  50%{ transform: translateY(-8px); opacity:.12; }
+  100%{ transform: translateY(0); opacity:.08; }
+}
+
+
+/* =========================================================
+   THÈME : Automne 🍂
+   ========================================================= */
+:root[data-theme="automne"]{
+  --bg:#140e0a;
+  --bg2:#1c120c;
+  --fg:#fff1e2;
+  --muted:#e3c1a0;
+  --primary:#ff7a18;
+  --accent:#ffd166;
+  --border:#3a2416;
+  --card:#1b120c;
+  --btn:#27180f;
+  --title:var(--fg);
+  --topbar-bg:linear-gradient(90deg, rgba(20,14,10,.92), rgba(255,122,24,.18));
+  --body-grad-1:#0d0806;
+  --body-grad-2:#140e0a;
+  --body-grad-3:#1c120c;
+  --popover-bg:rgba(27,18,12,.98);
+  --hover-bg:rgba(255,255,255,0.08);
+  --scrollbar-thumb:#5a3a25;
+  --scrollbar-track:#0b0705;
+  --scrollbar-thumb-webkit-hover:#775036;
+  --card-hover-border:#ff7a18;
+  --card-hover-glow:rgba(255,122,24,.20);
+  --menu-divider-line:rgba(255,255,255,0.12);
+  --menu-divider-sweep:rgba(255,122,24,0.55);
+
+  color-scheme: dark;
+
+  background:
+    radial-gradient(1200px 700px at 15% 0%, rgba(255,122,24,0.16), transparent 60%),
+    radial-gradient(1100px 650px at 85% 10%, rgba(255,209,102,0.10), transparent 55%),
+    linear-gradient(180deg, #070504 0%, #120b08 45%, #1a120c 100%);
+  background-attachment: fixed;
+}
+:root[data-theme="automne"] body{ background: transparent !important; position:relative; isolation:isolate; }
+:root[data-theme="automne"]::after{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none; z-index:-1;
+  opacity:.10;
+  background: none;
+  animation: automneDrift 12s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce){
+  :root[data-theme="automne"]::after{ animation:none; }
+}
+@keyframes automneDrift{
+  0%{ transform: translateX(0); }
+  50%{ transform: translateX(10px); }
+  100%{ transform: translateX(0); }
+}
+
+
+/* =========================================================
+   THÈME : Hiver ❄️ (neige dense + vent + rafales)
+   ========================================================= */
+:root[data-theme="hiver"]{
+  --bg:#071019;
+  --bg2:#0b1a2b;
+  --fg:#e9f3ff;
+  --muted:#b5cbe6;
+  --primary:#5aa2ff;
+  --accent:#9be7ff;
+  --border:#16304b;
+  --card:#0b1624;
+  --btn:#10233a;
+  --title:var(--fg);
+  --topbar-bg:linear-gradient(90deg, rgba(7,16,25,.92), rgba(155,231,255,.14));
+  --body-grad-1:#050b12;
+  --body-grad-2:#071019;
+  --body-grad-3:#0b1a2b;
+  --popover-bg:rgba(11,22,36,.98);
+  --hover-bg:rgba(255,255,255,0.07);
+  --scrollbar-thumb:#2b547f;
+  --scrollbar-track:#050a10;
+  --scrollbar-thumb-webkit-hover:#3b74ae;
+  --card-hover-border:#9be7ff;
+  --card-hover-glow:rgba(155,231,255,.20);
+  --menu-divider-line:rgba(255,255,255,0.12);
+  --menu-divider-sweep:rgba(155,231,255,0.55);
+
+  color-scheme: dark;
+
+  /* fond froid (sans points fixes) */
+  background:
+    radial-gradient(1200px 700px at 15% 0%, rgba(90,162,255,0.16), transparent 60%),
+    radial-gradient(1100px 650px at 85% 10%, rgba(155,231,255,0.10), transparent 55%),
+    linear-gradient(180deg, #02060b 0%, #06111d 45%, #071019 100%);
+  background-attachment: fixed;
+
+  position: relative;
+}
+
+:root[data-theme="hiver"] body{
+  background: transparent !important;
+  position: relative;
+  isolation: isolate;
+}
+
+/* 2 couches : neige + rafales (plus “vrai hiver”) */
+:root[data-theme="hiver"]::before,
+:root[data-theme="hiver"]::after{
+  content:"";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  will-change: background-position, transform, opacity;
+}
+
+/* ❄️ Neige dense (flocons) */
+:root[data-theme="hiver"]::after{
+  opacity: .70;
+
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.92) 0 1.35px, transparent 2.0px),
+    radial-gradient(circle, rgba(255,255,255,.70) 0 1.10px, transparent 1.85px),
+    radial-gradient(circle, rgba(255,255,255,.50) 0 0.90px, transparent 1.55px),
+    radial-gradient(circle, rgba(255,255,255,.32) 0 0.70px, transparent 1.30px);
+
+  background-size:
+    90px 120px,
+    150px 120px,
+    220px 240px,
+    340px 280px;
+
+  background-position:
+    0   -260px,
+    80px -180px,
+    40px -360px,
+    160px -280px;
+
+  filter: blur(.12px);
+  animation: hiverSnowStorm 9s linear infinite;
+}
+
+/* 🌬️ Rafales / poudrerie (voile qui traverse) */
+:root[data-theme="hiver"]::before{
+  opacity: .18;
+  mix-blend-mode: screen;
+  background:
+    repeating-linear-gradient(115deg,
+      rgba(255,255,255,.18) 0 2px,
+      transparent 2px 18px);
+  filter: blur(1.4px);
+  animation: hiverGusts 5.5s ease-in-out infinite;
+}
+
+/* ❄️ Chute + vrai vent (latéral) + variations */
+@keyframes hiverSnowStorm{
+  0%{
+    background-position:
+      0   -260px,
+      80px -180px,
+      40px -360px,
+      160px -280px;
+    transform: translateX(0) translateY(0);
+  }
+  25%{
+    background-position:
+      40px  20px,
+      110px  80px,
+      80px -80px,
+      210px  60px;
+    transform: translateX(14px) translateY(0);
+  }
+  55%{
+    background-position:
+      -20px  360px,
+      140px  420px,
+      30px   240px,
+      260px  360px;
+    transform: translateX(-18px) translateY(0);
+  }
+  80%{
+    background-position:
+      35px  620px,
+      120px  680px,
+      70px   640px,
+      230px  680px;
+    transform: translateX(16px) translateY(0);
+  }
+  100%{
+    background-position:
+      15px  900px,
+      110px  860px,
+      60px   900px,
+      220px  860px;
+    transform: translateX(0) translateY(0);
+  }
+}
+
+/* 🌬️ Rafales : va-et-vient + un peu de rotation */
+@keyframes hiverGusts{
+  0%   { transform: translateX(-2%) translateY(-1%) rotate(-1deg); opacity: .10; }
+  35%  { transform: translateX( 3%) translateY( 0%) rotate( 1deg); opacity: .22; }
+  70%  { transform: translateX(-1%) translateY( 1%) rotate(-1deg); opacity: .16; }
+  100% { transform: translateX(-2%) translateY(-1%) rotate(-1deg); opacity: .10; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  :root[data-theme="hiver"]::before,
+  :root[data-theme="hiver"]::after{
+    animation: none !important;
+  }
+}
+
+/* =========================================================
+   THÈME : Vaporwave 🌴
+   ========================================================= */
+:root[data-theme="vaporwave"]{
+  --bg:#0b0620;
+  --bg2:#140a33;
+  --fg:#fff3ff;
+  --muted:#e3b9ff;
+  --primary:#ff4da6;
+  --accent:#00f5ff;
+  --border:#3a1c66;
+  --card:#140a33;
+  --btn:#1b0f45;
+  --title:var(--fg);
+  --topbar-bg:linear-gradient(90deg, rgba(11,6,32,.92), rgba(255,77,166,.22), rgba(0,245,255,.18));
+  --body-grad-1:#070414;
+  --body-grad-2:#0b0620;
+  --body-grad-3:#140a33;
+  --popover-bg:rgba(20,10,51,.98);
+  --hover-bg:rgba(255,255,255,0.07);
+  --scrollbar-thumb:#5c2aa8;
+  --scrollbar-track:#050211;
+  --scrollbar-thumb-webkit-hover:#7a36e0;
+  --card-hover-border:#00f5ff;
+  --card-hover-glow:rgba(0,245,255,.20);
+  --menu-divider-line:rgba(255,255,255,0.12);
+  --menu-divider-sweep:rgba(0,245,255,0.55);
+
+  color-scheme: dark;
+
+  background:
+    radial-gradient(1200px 700px at 15% 0%, rgba(255,77,166,0.18), transparent 60%),
+    radial-gradient(1100px 650px at 85% 10%, rgba(0,245,255,0.14), transparent 55%),
+    radial-gradient(900px 600px at 60% 0%, rgba(138,85,255,0.12), transparent 60%),
+    linear-gradient(180deg, #04020f 0%, #08041a 45%, #0b0620 100%);
+  background-attachment: fixed;
+}
+:root[data-theme="vaporwave"] body{ background: transparent !important; position:relative; isolation:isolate; }
+:root[data-theme="vaporwave"]::after{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none; z-index:-1;
+  opacity:.12;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.10) 0 1px, transparent 1px 6px),
+    radial-gradient(circle at 50% 30%, rgba(0,245,255,.18), transparent 60%);
+  mix-blend-mode: screen;
+  animation: vaporScan 7s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce){
+  :root[data-theme="vaporwave"]::after{ animation:none; }
+}
+@keyframes vaporScan{
+  0%{ transform: translateY(-1%); opacity:.10; }
+  50%{ transform: translateY(1%); opacity:.14; }
+  100%{ transform: translateY(-1%); opacity:.10; }
+}
+
+
+/* =========================================================
+   THÈME : Cyberpunk ⚡
+   ========================================================= */
+:root[data-theme="cyberpunk"]{
+  --bg:#07060a;
+  --bg2:#0f0b16;
+  --fg:#f5f7ff;
+  --muted:#c0c7ff;
+  --primary:#00f5ff;
+  --accent:#ffcc00;
+  --border:#2a233a;
+  --card:#0f0b16;
+  --btn:#171025;
+  --title:var(--fg);
+  --topbar-bg:linear-gradient(90deg, rgba(7,6,10,.92), rgba(0,245,255,.18), rgba(255,204,0,.14));
+  --body-grad-1:#040308;
+  --body-grad-2:#07060a;
+  --body-grad-3:#0f0b16;
+  --popover-bg:rgba(15,11,22,.98);
+  --hover-bg:rgba(255,255,255,0.07);
+  --scrollbar-thumb:#3a2d5a;
+  --scrollbar-track:#040308;
+  --scrollbar-thumb-webkit-hover:#57408a;
+  --card-hover-border:#00f5ff;
+  --card-hover-glow:rgba(0,245,255,.18);
+  --menu-divider-line:rgba(255,255,255,0.12);
+  --menu-divider-sweep:rgba(0,245,255,0.55);
+
+  color-scheme: dark;
+
+  background:
+    radial-gradient(1200px 700px at 15% 0%, rgba(0,245,255,0.16), transparent 60%),
+    radial-gradient(1100px 650px at 85% 10%, rgba(255,204,0,0.10), transparent 55%),
+    linear-gradient(180deg, #030207 0%, #06050a 45%, #07060a 100%);
+  background-attachment: fixed;
+}
+:root[data-theme="cyberpunk"] body{ background: transparent !important; position:relative; isolation:isolate; }
+:root[data-theme="cyberpunk"]::after{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none; z-index:-1;
+  opacity:.12;
+  background:
+    repeating-linear-gradient(90deg, rgba(0,245,255,.10) 0 1px, transparent 1px 18px),
+    repeating-linear-gradient(0deg, rgba(255,204,0,.08) 0 1px, transparent 1px 24px);
+  mix-blend-mode: screen;
+  animation: cyberGrid 10s linear infinite;
+}
+@media (prefers-reduced-motion: reduce){
+  :root[data-theme="cyberpunk"]::after{ animation:none; }
+}
+@keyframes cyberGrid{
+  from{ transform: translateX(-1%); }
+  to{ transform: translateX(1%); }
+}
+
+
+/* =========================================================
+   THÈME : Océan 🌊
+   ========================================================= */
+:root[data-theme="ocean"]{
+  --bg:#031018;
+  --bg2:#062233;
+  --fg:#eaf9ff;
+  --muted:#b6d7e6;
+  --primary:#00a3ff;
+  --accent:#00ffd5;
+  --border:#0b3447;
+  --card:#072030;
+  --btn:#0a2a3e;
+  --title:var(--fg);
+  --topbar-bg:linear-gradient(90deg, rgba(3,16,24,.92), rgba(0,163,255,.16));
+  --body-grad-1:#02080c;
+  --body-grad-2:#031018;
+  --body-grad-3:#062233;
+  --popover-bg:rgba(7,32,48,.98);
+  --hover-bg:rgba(255,255,255,0.07);
+  --scrollbar-thumb:#145a78;
+  --scrollbar-track:#010608;
+  --scrollbar-thumb-webkit-hover:#1a7aa1;
+  --card-hover-border:#00ffd5;
+  --card-hover-glow:rgba(0,255,213,.18);
+  --menu-divider-line:rgba(255,255,255,0.12);
+  --menu-divider-sweep:rgba(0,255,213,0.55);
+
+  color-scheme: dark;
+
+  background:
+    radial-gradient(1200px 700px at 15% 0%, rgba(0,163,255,0.16), transparent 60%),
+    radial-gradient(1100px 650px at 85% 10%, rgba(0,255,213,0.10), transparent 55%),
+    linear-gradient(180deg, #010608 0%, #021019 45%, #031018 100%);
+  background-attachment: fixed;
+}
+:root[data-theme="ocean"] body{ background: transparent !important; position:relative; isolation:isolate; }
+:root[data-theme="ocean"]::after{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none; z-index:-1;
+  opacity:.10;
+  background:
+    radial-gradient(800px 500px at 50% 70%, rgba(0,255,213,.10), transparent 60%);
+  animation: oceanWave 11s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce){
+  :root[data-theme="ocean"]::after{ animation:none; }
+}
+@keyframes oceanWave{
+  0%{ transform: translateY(0); }
+  50%{ transform: translateY(-8px); }
+  100%{ transform: translateY(0); }
+}
+
+
+/* =========================================================
+   THÈME : Forêt 🌲
+   ========================================================= */
+:root[data-theme="forest"]{
+  --bg:#06120b;
+  --bg2:#0a1f12;
+  --fg:#eefdf3;
+  --muted:#bde8c8;
+  --primary:#1faa59;
+  --accent:#6ce0b0;
+  --border:#18462c;
+  --card:#0a1b10;
+  --btn:#103020;
+  --title:var(--fg);
+  --topbar-bg:linear-gradient(90deg, rgba(6,18,11,.92), rgba(31,170,89,.18));
+  --body-grad-1:#030a06;
+  --body-grad-2:#06120b;
+  --body-grad-3:#0a1f12;
+  --popover-bg:rgba(10,27,16,.98);
+  --hover-bg:rgba(255,255,255,0.08);
+  --scrollbar-thumb:#2f8f68;
+  --scrollbar-track:#020705;
+  --scrollbar-thumb-webkit-hover:#3fb07c;
+  --card-hover-border:#6ce0b0;
+  --card-hover-glow:rgba(108,224,176,.18);
+  --menu-divider-line:rgba(255,255,255,0.12);
+  --menu-divider-sweep:rgba(108,224,176,0.55);
+
+  color-scheme: dark;
+
+  background:
+    radial-gradient(1200px 700px at 15% 0%, rgba(31,170,89,0.16), transparent 60%),
+    radial-gradient(1100px 650px at 85% 10%, rgba(108,224,176,0.10), transparent 55%),
+    linear-gradient(180deg, #010503 0%, #040d08 45%, #06120b 100%);
+  background-attachment: fixed;
+}
+:root[data-theme="forest"] body{ background: transparent !important; position:relative; isolation:isolate; }
+:root[data-theme="forest"]::after{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none; z-index:-1;
+  opacity:.10;
+  background:
+    radial-gradient(900px 540px at 40% 80%, rgba(31,170,89,0.10), transparent 60%);
+  animation: forestMist 13s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce){
+  :root[data-theme="forest"]::after{ animation:none; }
+}
+@keyframes forestMist{
+  0%{ transform: translateX(0); opacity:.08; }
+  50%{ transform: translateX(10px); opacity:.12; }
+  100%{ transform: translateX(0); opacity:.08; }
+}
+
+/* =========================================================
+   PACK THEMES (fix Andric31)
+   - Variables cohérentes avec viewer.css / themes.css (bg/fg/primary/accent/etc.)
+   - Background propre sur :root + body transparent (comme Noël/Halloween)
+   - Hover / popover / scrollbar / menu séparateur inclus
+   ========================================================= */
+
+/* ---------- GOTHIC ---------- */
+:root[data-theme="gothic"]{
+  --bg:#0a0a10;
+  --bg2:#12111a;
+
+  --fg:#f2eef6;
+  --muted:#bba9c8;
+
+  --primary:#a100ff;
+  --accent:#ff0055;
+
+  --border:#2a2136;
+  --card:#141221;
+  --btn:#1b172a;
+
+  --title: var(--fg);
+  --topbar-bg: linear-gradient(90deg, rgba(10,10,16,.92), rgba(161,0,255,.18), rgba(255,0,85,.10));
+
+  --body-grad-1:#07070c;
+  --body-grad-2:#0a0a10;
+  --body-grad-3:#12111a;
+
+  --popover-bg: rgba(20,18,33,.98);
+  --hover-bg: rgba(255,255,255,0.07);
+
+  --scrollbar-thumb:#3c2a57;
+  --scrollbar-track:#06060a;
+  --scrollbar-thumb-webkit-hover:#52357a;
+
+  --card-hover-border: rgba(161,0,255,.75);
+  --card-hover-glow: rgba(161,0,255,.18);
+  --card-hover-shadow:
+    0 0 0 1px rgba(161,0,255,.35),
+    0 0 30px rgba(255,0,85,.12),
+    0 18px 44px rgba(0,0,0,.60);
+  --card-hover-bg: linear-gradient(145deg, rgba(161,0,255,.08), rgba(255,0,85,.06));
+
+  --menu-divider-line: rgba(255,255,255,0.12);
+  --menu-divider-sweep: rgba(161,0,255,0.55);
+
+  color-scheme: dark;
+
+  background:
+    radial-gradient(1200px 700px at 12% 0%, rgba(161,0,255,0.18), transparent 60%),
+    radial-gradient(1100px 650px at 88% 10%, rgba(255,0,85,0.10), transparent 55%),
+    radial-gradient(900px 600px at 55% 95%, rgba(120,60,255,0.10), transparent 60%),
+    linear-gradient(180deg, #05050a 0%, #090910 45%, #0a0a10 100%);
+  background-attachment: fixed;
+}
+:root[data-theme="gothic"] body{ background: transparent !important; position:relative; isolation:isolate; }
+:root[data-theme="gothic"]::after{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none; z-index:-1;
+  opacity:.10;
+  background:
+    repeating-linear-gradient(135deg, rgba(255,255,255,.10) 0 1px, transparent 1px 10px),
+    radial-gradient(circle at 18% 25%, rgba(161,0,255,.18), transparent 60%);
+  mix-blend-mode: screen;
+  animation: gothicSweep 9s ease-in-out infinite;
+}
+@keyframes gothicSweep{ 0%{transform:translateX(-1%);opacity:.08;}50%{transform:translateX(1%);opacity:.12;}100%{transform:translateX(-1%);opacity:.08;} }
+@media (prefers-reduced-motion: reduce){ :root[data-theme="gothic"]::after{ animation:none; } }
+
+/* ---------- GALAXY ---------- */
+:root[data-theme="galaxy"]{
+  --bg:#040411;
+  --bg2:#0b0b22;
+
+  --fg:#f6f7ff;
+  --muted:#b6bbff;
+
+  --primary:#6a00ff;
+  --accent:#00e0ff;
+
+  --border:#23234a;
+  --card:#0f1026;
+  --btn:#15163a;
+
+  --title: var(--fg);
+  --topbar-bg: linear-gradient(90deg, rgba(4,4,17,.92), rgba(106,0,255,.16), rgba(0,224,255,.12));
+
+  --body-grad-1:#02020a;
+  --body-grad-2:#040411;
+  --body-grad-3:#0b0b22;
+
+  --popover-bg: rgba(15,16,38,.98);
+  --hover-bg: rgba(255,255,255,0.06);
+
+  --scrollbar-thumb:#2f2f78;
+  --scrollbar-track:#020208;
+  --scrollbar-thumb-webkit-hover:#3f43a6;
+
+  --card-hover-border: rgba(0,224,255,.70);
+  --card-hover-glow: rgba(0,224,255,.18);
+  --card-hover-shadow:
+    0 0 0 1px rgba(0,224,255,.22),
+    0 0 28px rgba(106,0,255,.14),
+    0 18px 44px rgba(0,0,0,.60);
+  --card-hover-bg: linear-gradient(145deg, rgba(0,224,255,.06), rgba(106,0,255,.06));
+
+  --menu-divider-line: rgba(255,255,255,0.12);
+  --menu-divider-sweep: rgba(0,224,255,0.55);
+
+  color-scheme: dark;
+
+  background:
+    radial-gradient(1200px 700px at 15% 0%, rgba(106,0,255,0.16), transparent 60%),
+    radial-gradient(1100px 650px at 85% 10%, rgba(0,224,255,0.12), transparent 55%),
+    radial-gradient(900px 600px at 55% 95%, rgba(180,120,255,0.10), transparent 60%),
+    linear-gradient(180deg, #02020a 0%, #03030d 40%, #040411 100%);
+  background-attachment: fixed;
+}
+:root[data-theme="galaxy"] body{ background: transparent !important; position:relative; isolation:isolate; }
+:root[data-theme="galaxy"]::after{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none; z-index:-1;
+  opacity:.18;
+  background:
+    radial-gradient(circle, rgba(255,255,255,.75) 0 1px, transparent 2px),
+    radial-gradient(circle, rgba(255,255,255,.55) 0 1px, transparent 2px),
+    radial-gradient(circle, rgba(255,255,255,.45) 0 1px, transparent 2px);
+  background-size: 220px 260px, 340px 280px, 160px 180px;
+  background-position: 0 -180px, 140px -220px, 60px -140px;
+  filter: blur(.15px);
+  animation: galaxyStars 14s linear infinite;
+}
+@keyframes galaxyStars{
+  from{ transform: translateY(-1.5%); }
+  to  { transform: translateY( 1.5%); }
+}
+@media (prefers-reduced-motion: reduce){ :root[data-theme="galaxy"]::after{ animation:none; } }
+
+/* ---------- LAVA ---------- */
+:root[data-theme="lava"]{
+  --bg:#120000;
+  --bg2:#1d0505;
+
+  --fg:#ffeaea;
+  --muted:#ffb3a8;
+
+  --primary:#ff3300;
+  --accent:#ffcc00;
+
+  --border:#3a1210;
+  --card:#1a0707;
+  --btn:#260d0d;
+
+  --title: var(--fg);
+  --topbar-bg: linear-gradient(90deg, rgba(18,0,0,.92), rgba(255,51,0,.18), rgba(255,204,0,.10));
+
+  --body-grad-1:#090000;
+  --body-grad-2:#120000;
+  --body-grad-3:#1d0505;
+
+  --popover-bg: rgba(26,7,7,.98);
+  --hover-bg: rgba(255,255,255,0.07);
+
+  --scrollbar-thumb:#7a1f10;
+  --scrollbar-track:#050000;
+  --scrollbar-thumb-webkit-hover:#a62a14;
+
+  --card-hover-border: rgba(255,51,0,.75);
+  --card-hover-glow: rgba(255,51,0,.18);
+  --card-hover-shadow:
+    0 0 0 1px rgba(255,51,0,.24),
+    0 0 34px rgba(255,204,0,.10),
+    0 18px 44px rgba(0,0,0,.62);
+  --card-hover-bg: linear-gradient(145deg, rgba(255,51,0,.08), rgba(255,204,0,.05));
+
+  --menu-divider-line: rgba(255,255,255,0.12);
+  --menu-divider-sweep: rgba(255,51,0,0.55);
+
+  color-scheme: dark;
+
+  background:
+    radial-gradient(1200px 700px at 15% 0%, rgba(255,51,0,0.18), transparent 60%),
+    radial-gradient(1100px 650px at 85% 12%, rgba(255,204,0,0.10), transparent 55%),
+    radial-gradient(900px 700px at 50% 95%, rgba(255,80,0,0.10), transparent 60%),
+    linear-gradient(180deg, #050000 0%, #0b0000 45%, #120000 100%);
+  background-attachment: fixed;
+}
+:root[data-theme="lava"] body{ background: transparent !important; position:relative; isolation:isolate; }
+:root[data-theme="lava"]::after{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none; z-index:-1;
+  opacity:.14;
+  background:
+    radial-gradient(800px 420px at 30% 70%, rgba(255,204,0,.10), transparent 60%),
+    radial-gradient(900px 520px at 70% 30%, rgba(255,51,0,.18), transparent 65%);
+  filter: blur(10px);
+  animation: lavaPulse 7.5s ease-in-out infinite;
+}
+@keyframes lavaPulse{ 0%{opacity:.10;transform:translateY(0);}50%{opacity:.18;transform:translateY(-6px);}100%{opacity:.10;transform:translateY(0);} }
+@media (prefers-reduced-motion: reduce){ :root[data-theme="lava"]::after{ animation:none; } }
+
+/* ---------- MATRIX ---------- */
+:root[data-theme="matrix"]{
+  --bg:#000000;
+  --bg2:#040704;
+
+  --fg:#00ff66;
+  --muted:#53ff9a;
+
+  --primary:#00ff00;
+  --accent:#66ff99;
+
+  --border:#0f2a16;
+  --card:#050a07;
+  --btn:#07110b;
+
+  --title: var(--fg);
+  --topbar-bg: linear-gradient(90deg, rgba(0,0,0,.92), rgba(0,255,0,.14));
+
+  --body-grad-1:#000000;
+  --body-grad-2:#000000;
+  --body-grad-3:#040704;
+
+  --popover-bg: rgba(5,10,7,.98);
+  --hover-bg: rgba(0,255,102,0.10);
+
+  --scrollbar-thumb:#0f5a2a;
+  --scrollbar-track:#000000;
+  --scrollbar-thumb-webkit-hover:#167a3a;
+
+  --card-hover-border: rgba(0,255,102,.75);
+  --card-hover-glow: rgba(0,255,102,.18);
+  --card-hover-shadow:
+    0 0 0 1px rgba(0,255,102,.22),
+    0 0 26px rgba(0,255,0,.10),
+    0 18px 44px rgba(0,0,0,.70);
+  --card-hover-bg: linear-gradient(145deg, rgba(0,255,102,.08), rgba(0,255,0,.04));
+
+  --menu-divider-line: rgba(0,255,102,0.25);
+  --menu-divider-sweep: rgba(0,255,102,0.55);
+
+  color-scheme: dark;
+
+  background:
+    radial-gradient(1100px 650px at 50% 0%, rgba(0,255,102,0.10), transparent 55%),
+    linear-gradient(180deg, #000000 0%, #000000 55%, #040704 100%);
+  background-attachment: fixed;
+}
+:root[data-theme="matrix"] body{ background: transparent !important; position:relative; isolation:isolate; }
+:root[data-theme="matrix"]::after{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none; z-index:-1;
+  opacity:.10;
+  background:
+    repeating-linear-gradient(90deg, rgba(0,255,102,.12) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(0deg, rgba(0,255,0,.08) 0 1px, transparent 1px 26px);
+  mix-blend-mode: screen;
+  animation: matrixGrid 12s linear infinite;
+}
+@keyframes matrixGrid{ from{transform:translateX(-1%);} to{transform:translateX(1%);} }
+@media (prefers-reduced-motion: reduce){ :root[data-theme="matrix"]::after{ animation:none; } }
+
+/* ---------- ICE ---------- */
+:root[data-theme="ice"]{
+  --bg:#07141f;
+  --bg2:#0b2436;
+
+  --fg:#e8fbff;
+  --muted:#b6e2ff;
+
+  --primary:#00ccff;
+  --accent:#66ffff;
+
+  --border:#163a52;
+  --card:#0d1f2f;
+  --btn:#102a40;
+
+  --title: var(--fg);
+  --topbar-bg: linear-gradient(90deg, rgba(7,20,31,.92), rgba(0,204,255,.14));
+
+  --body-grad-1:#030a10;
+  --body-grad-2:#07141f;
+  --body-grad-3:#0b2436;
+
+  --popover-bg: rgba(13,31,47,.98);
+  --hover-bg: rgba(255,255,255,0.07);
+
+  --scrollbar-thumb:#2b6e8f;
+  --scrollbar-track:#03080d;
+  --scrollbar-thumb-webkit-hover:#3b90b8;
+
+  --card-hover-border: rgba(102,255,255,.70);
+  --card-hover-glow: rgba(102,255,255,.18);
+  --card-hover-shadow:
+    0 0 0 1px rgba(102,255,255,.20),
+    0 0 26px rgba(0,204,255,.10),
+    0 18px 44px rgba(0,0,0,.60);
+  --card-hover-bg: linear-gradient(145deg, rgba(102,255,255,.06), rgba(0,204,255,.05));
+
+  --menu-divider-line: rgba(255,255,255,0.12);
+  --menu-divider-sweep: rgba(102,255,255,0.55);
+
+  color-scheme: dark;
+
+  background:
+    radial-gradient(1200px 700px at 15% 0%, rgba(0,204,255,0.16), transparent 60%),
+    radial-gradient(1100px 650px at 85% 10%, rgba(102,255,255,0.10), transparent 55%),
+    linear-gradient(180deg, #02060b 0%, #06111b 45%, #07141f 100%);
+  background-attachment: fixed;
+}
+:root[data-theme="ice"] body{ background: transparent !important; position:relative; isolation:isolate; }
+:root[data-theme="ice"]::after{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none; z-index:-1;
+  opacity:.18;
+  background:
+    radial-gradient(900px 600px at 20% 10%, rgba(102,255,255,.10), transparent 60%),
+    radial-gradient(1100px 700px at 80% 20%, rgba(0,204,255,.08), transparent 65%);
+  filter: blur(6px);
+}
+@keyframes iceSnow{ from{transform:translateY(-4%);} to{transform:translateY(4%);} }
+@media (prefers-reduced-motion: reduce){ :root[data-theme="ice"]::after{ animation:none; } }
+
+/* ---------- SUNSET ---------- */
+:root[data-theme="sunset"]{
+  --bg:#1a0d0d;
+  --bg2:#2a1010;
+
+  --fg:#fff2ea;
+  --muted:#ffc7b0;
+
+  --primary:#ff6600;
+  --accent:#ff1a75;
+
+  --border:#3a1b1b;
+  --card:#241212;
+  --btn:#2f1717;
+
+  --title: var(--fg);
+  --topbar-bg: linear-gradient(90deg, rgba(26,13,13,.92), rgba(255,102,0,.18), rgba(255,26,117,.10));
+
+  --body-grad-1:#100707;
+  --body-grad-2:#1a0d0d;
+  --body-grad-3:#2a1010;
+
+  --popover-bg: rgba(36,18,18,.98);
+  --hover-bg: rgba(255,255,255,0.07);
+
+  --scrollbar-thumb:#7a3a3a;
+  --scrollbar-track:#090404;
+  --scrollbar-thumb-webkit-hover:#a14a4a;
+
+  --card-hover-border: rgba(255,102,0,.75);
+  --card-hover-glow: rgba(255,102,0,.16);
+  --card-hover-shadow:
+    0 0 0 1px rgba(255,102,0,.20),
+    0 0 26px rgba(255,26,117,.10),
+    0 18px 44px rgba(0,0,0,.60);
+  --card-hover-bg: linear-gradient(145deg, rgba(255,102,0,.06), rgba(255,26,117,.05));
+
+  --menu-divider-line: rgba(255,255,255,0.12);
+  --menu-divider-sweep: rgba(255,102,0,0.55);
+
+  color-scheme: dark;
+
+  background:
+    radial-gradient(1200px 700px at 18% 0%, rgba(255,102,0,0.16), transparent 60%),
+    radial-gradient(1100px 650px at 88% 12%, rgba(255,26,117,0.10), transparent 55%),
+    linear-gradient(180deg, #090404 0%, #120707 45%, #1a0d0d 100%);
+  background-attachment: fixed;
+}
+:root[data-theme="sunset"] body{ background: transparent !important; position:relative; isolation:isolate; }
+:root[data-theme="sunset"]::after{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none; z-index:-1;
+  opacity:.10;
+  background:
+    radial-gradient(900px 520px at 20% 15%, rgba(255,102,0,.18), transparent 60%),
+    radial-gradient(900px 520px at 80% 20%, rgba(255,26,117,.14), transparent 65%);
+  filter: blur(12px);
+  animation: sunsetGlow 10s ease-in-out infinite;
+}
+@keyframes sunsetGlow{ 0%{transform:translateY(0);opacity:.08;}50%{transform:translateY(-8px);opacity:.12;}100%{transform:translateY(0);opacity:.08;} }
+@media (prefers-reduced-motion: reduce){ :root[data-theme="sunset"]::after{ animation:none; } }
+
+/* ---------- RETRO ---------- */
+:root[data-theme="retro"]{
+  --bg:#0d0d0d;
+  --bg2:#141414;
+
+  --fg:#ffffff;
+  --muted:#d0d0d0;
+
+  --primary:#ff00ff;
+  --accent:#00ffff;
+
+  --border:#303030;
+  --card:#161616;
+  --btn:#1d1d1d;
+
+  --title: var(--fg);
+  --topbar-bg: linear-gradient(90deg, rgba(13,13,13,.92), rgba(255,0,255,.14), rgba(0,255,255,.10));
+
+  --body-grad-1:#0a0a0a;
+  --body-grad-2:#0d0d0d;
+  --body-grad-3:#141414;
+
+  --popover-bg: rgba(22,22,22,.98);
+  --hover-bg: rgba(255,255,255,0.06);
+
+  --scrollbar-thumb:#4a4a4a;
+  --scrollbar-track:#080808;
+  --scrollbar-thumb-webkit-hover:#6a6a6a;
+
+  --card-hover-border: rgba(0,255,255,.70);
+  --card-hover-glow: rgba(0,255,255,.16);
+  --card-hover-shadow:
+    0 0 0 1px rgba(255,0,255,.18),
+    0 0 26px rgba(0,255,255,.12),
+    0 18px 44px rgba(0,0,0,.65);
+  --card-hover-bg: linear-gradient(145deg, rgba(255,0,255,.05), rgba(0,255,255,.05));
+
+  --menu-divider-line: rgba(255,255,255,0.12);
+  --menu-divider-sweep: rgba(0,255,255,0.55);
+
+  color-scheme: dark;
+
+  background:
+    radial-gradient(1200px 700px at 20% 10%, rgba(255,0,255,0.14), transparent 60%),
+    radial-gradient(1100px 650px at 85% 12%, rgba(0,255,255,0.10), transparent 55%),
+    linear-gradient(180deg, #080808 0%, #0b0b0b 45%, #0d0d0d 100%);
+  background-attachment: fixed;
+}
+:root[data-theme="retro"] body{ background: transparent !important; position:relative; isolation:isolate; }
+:root[data-theme="retro"]::after{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none; z-index:-1;
+  opacity:.10;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.10) 0 1px, transparent 1px 6px);
+  mix-blend-mode: screen;
+  animation: retroScan 7s ease-in-out infinite;
+}
+@keyframes retroScan{ 0%{transform:translateY(-1%);opacity:.08;}50%{transform:translateY(1%);opacity:.12;}100%{transform:translateY(-1%);opacity:.08;} }
+@media (prefers-reduced-motion: reduce){ :root[data-theme="retro"]::after{ animation:none; } }
+
+/* ---------- TROPICAL ---------- */
+:root[data-theme="tropical"]{
+  --bg:#001f1f;
+  --bg2:#003333;
+
+  --fg:#eaffff;
+  --muted:#b6ffff;
+
+  --primary:#00ffcc;
+  --accent:#ffcc00;
+
+  --border:#0b4a42;
+  --card:#062c2a;
+  --btn:#0a3a36;
+
+  --title: var(--fg);
+  --topbar-bg: linear-gradient(90deg, rgba(0,31,31,.92), rgba(0,255,204,.16), rgba(255,204,0,.10));
+
+  --body-grad-1:#001414;
+  --body-grad-2:#001f1f;
+  --body-grad-3:#003333;
+
+  --popover-bg: rgba(6,44,42,.98);
+  --hover-bg: rgba(255,255,255,0.07);
+
+  --scrollbar-thumb:#147a6a;
+  --scrollbar-track:#001010;
+  --scrollbar-thumb-webkit-hover:#1aa088;
+
+  --card-hover-border: rgba(0,255,204,.70);
+  --card-hover-glow: rgba(0,255,204,.18);
+  --card-hover-shadow:
+    0 0 0 1px rgba(0,255,204,.18),
+    0 0 26px rgba(255,204,0,.10),
+    0 18px 44px rgba(0,0,0,.60);
+  --card-hover-bg: linear-gradient(145deg, rgba(0,255,204,.06), rgba(255,204,0,.05));
+
+  --menu-divider-line: rgba(255,255,255,0.12);
+  --menu-divider-sweep: rgba(0,255,204,0.55);
+
+  color-scheme: dark;
+
+  background:
+    radial-gradient(1200px 700px at 15% 0%, rgba(0,255,204,0.16), transparent 60%),
+    radial-gradient(1100px 650px at 85% 10%, rgba(255,204,0,0.10), transparent 55%),
+    linear-gradient(180deg, #001010 0%, #001818 45%, #001f1f 100%);
+  background-attachment: fixed;
+}
+:root[data-theme="tropical"] body{ background: transparent !important; position:relative; isolation:isolate; }
+:root[data-theme="tropical"]::after{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none; z-index:-1;
+  opacity:.10;
+  background:
+    radial-gradient(800px 500px at 50% 70%, rgba(0,255,204,.10), transparent 60%),
+    radial-gradient(circle at 20% 25%, rgba(255,255,255,.60) 0 1px, transparent 2px),
+    radial-gradient(circle at 75% 35%, rgba(255,255,255,.50) 0 1px, transparent 2px);
+  animation: tropicalBreeze 11s ease-in-out infinite;
+}
+@keyframes tropicalBreeze{ 0%{transform:translateY(0);}50%{transform:translateY(-8px);}100%{transform:translateY(0);} }
+@media (prefers-reduced-motion: reduce){ :root[data-theme="tropical"]::after{ animation:none; } }
+
+/* ---------- CRIMSON ---------- */
+:root[data-theme="crimson"]{
+  --bg:#0e0000;
+  --bg2:#1a0000;
+
+  --fg:#ffeaea;
+  --muted:#ffbdbd;
+
+  --primary:#cc0000;
+  --accent:#990000;
+
+  --border:#3a0f0f;
+  --card:#160000;
+  --btn:#220000;
+
+  --title: var(--fg);
+  --topbar-bg: linear-gradient(90deg, rgba(14,0,0,.92), rgba(204,0,0,.18));
+
+  --body-grad-1:#070000;
+  --body-grad-2:#0e0000;
+  --body-grad-3:#1a0000;
+
+  --popover-bg: rgba(22,0,0,.98);
+  --hover-bg: rgba(255,255,255,0.07);
+
+  --scrollbar-thumb:#6a1414;
+  --scrollbar-track:#040000;
+  --scrollbar-thumb-webkit-hover:#8a1a1a;
+
+  --card-hover-border: rgba(204,0,0,.75);
+  --card-hover-glow: rgba(204,0,0,.16);
+  --card-hover-shadow:
+    0 0 0 1px rgba(204,0,0,.18),
+    0 0 26px rgba(153,0,0,.10),
+    0 18px 44px rgba(0,0,0,.65);
+  --card-hover-bg: linear-gradient(145deg, rgba(204,0,0,.06), rgba(153,0,0,.05));
+
+  --menu-divider-line: rgba(255,255,255,0.12);
+  --menu-divider-sweep: rgba(204,0,0,0.55);
+
+  color-scheme: dark;
+
+  background:
+    radial-gradient(1200px 700px at 15% 0%, rgba(204,0,0,0.14), transparent 60%),
+    radial-gradient(1100px 650px at 85% 10%, rgba(153,0,0,0.10), transparent 55%),
+    linear-gradient(180deg, #040000 0%, #090000 45%, #0e0000 100%);
+  background-attachment: fixed;
+}
+:root[data-theme="crimson"] body{ background: transparent !important; position:relative; isolation:isolate; }
+
+/* ---------- STEAM ---------- */
+:root[data-theme="steam"]{
+  --bg:#141414;
+  --bg2:#1b1b1b;
+
+  --fg:#f2f2f2;
+  --muted:#d1caa8;
+
+  --primary:#b8860b;
+  --accent:#ffcc00;
+
+  --border:#34302a;
+  --card:#1c1c1c;
+  --btn:#242424;
+
+  --title: var(--fg);
+  --topbar-bg: linear-gradient(90deg, rgba(20,20,20,.92), rgba(184,134,11,.16));
+
+  --body-grad-1:#0e0e0e;
+  --body-grad-2:#141414;
+  --body-grad-3:#1b1b1b;
+
+  --popover-bg: rgba(28,28,28,.98);
+  --hover-bg: rgba(255,255,255,0.06);
+
+  --scrollbar-thumb:#5a4a2a;
+  --scrollbar-track:#0a0a0a;
+  --scrollbar-thumb-webkit-hover:#7a6333;
+
+  --card-hover-border: rgba(255,204,0,.55);
+  --card-hover-glow: rgba(255,204,0,.12);
+  --card-hover-shadow:
+    0 0 0 1px rgba(255,204,0,.12),
+    0 0 22px rgba(184,134,11,.10),
+    0 18px 44px rgba(0,0,0,.65);
+  --card-hover-bg: linear-gradient(145deg, rgba(255,204,0,.05), rgba(184,134,11,.05));
+
+  --menu-divider-line: rgba(255,255,255,0.12);
+  --menu-divider-sweep: rgba(255,204,0,0.45);
+
+  color-scheme: dark;
+
+  background:
+    radial-gradient(1200px 700px at 15% 0%, rgba(184,134,11,0.14), transparent 60%),
+    radial-gradient(1100px 650px at 85% 10%, rgba(255,204,0,0.08), transparent 55%),
+    linear-gradient(180deg, #0a0a0a 0%, #101010 45%, #141414 100%);
+  background-attachment: fixed;
+}
+:root[data-theme="steam"] body{ background: transparent !important; position:relative; isolation:isolate; }
+
+/* =========================================================
+   THÈME : Sakura 🌸
+   ========================================================= */
+:root[data-theme="sakura"]{
+  --bg:#fff5fb;
+  --bg2:#ffffff;
+  --fg:#1c1520;
+  --muted:#6a4b63;
+  --primary:#ff4da6;
+  --accent:#7a4dff;
+  --border:#f0d7e7;
+  --card:#ffffff;
+  --btn:#fff0f8;
+  --title:#140f17;
+  --topbar-bg:rgba(255,245,251,.92);
+  --body-grad-1:#fff5fb;
+  --body-grad-2:#fff7fd;
+  --body-grad-3:#ffffff;
+  --popover-bg:rgba(255,255,255,0.94);
+  --hover-bg:rgba(28,21,32,0.06);
+  --scrollbar-thumb:#e9bfd7;
+  --scrollbar-track:#fff0f8;
+  --scrollbar-thumb-webkit-hover:#dba2c7;
+  --card-hover-border:rgba(0,0,0,0.14);
+  --card-hover-glow:rgba(0,0,0,0.08);
+  --menu-divider-line:rgba(28,21,32,0.14);
+  --menu-divider-sweep:rgba(255,77,166,0.35);
+  color-scheme: light;
+}
+:root[data-theme="sakura"]::after{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:-1; opacity:.10;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(255,77,166,.55) 0 1px, transparent 2px),
+    radial-gradient(circle at 62% 35%, rgba(122,77,255,.45) 0 1px, transparent 2px),
+    radial-gradient(circle at 78% 70%, rgba(255,77,166,.45) 0 1px, transparent 2px);
+}
+
+/* =========================================================
+   THÈME : Désert 🏜️
+   ========================================================= */
+:root[data-theme="desert"]{
+  --bg:#fff7ec;
+  --bg2:#ffffff;
+  --fg:#23170d;
+  --muted:#6a4d35;
+  --primary:#ff8a2a;
+  --accent:#c77d2a;
+  --border:#efd7bb;
+  --card:#ffffff;
+  --btn:#fff0dd;
+  --title:#1a120a;
+  --topbar-bg:rgba(255,247,236,.92);
+  --body-grad-1:#fff3e1;
+  --body-grad-2:#fff7ec;
+  --body-grad-3:#ffffff;
+  --popover-bg:rgba(255,255,255,0.94);
+  --hover-bg:rgba(35,23,13,0.06);
+  --scrollbar-thumb:#e3c19b;
+  --scrollbar-track:#fff0dd;
+  --scrollbar-thumb-webkit-hover:#d4a875;
+  --card-hover-border:rgba(0,0,0,0.14);
+  --card-hover-glow:rgba(0,0,0,0.08);
+  --menu-divider-line:rgba(35,23,13,0.14);
+  --menu-divider-sweep:rgba(255,138,42,0.35);
+  color-scheme: light;
+}
+:root[data-theme="desert"]::after{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:-1; opacity:.10;
+  background:
+    radial-gradient(900px 520px at 18% 0%, rgba(255,138,42,0.14), transparent 60%),
+    radial-gradient(850px 480px at 92% 10%, rgba(199,125,42,0.10), transparent 55%);
+}
+
+/* =========================================================
+   THÈME : Néon 🌈
+   ========================================================= */
+:root[data-theme="neon"]{
+  --bg:#05030a;
+  --bg2:#0b0614;
+  --fg:#f6f7ff;
+  --muted:#c7c9ff;
+  --primary:#00f5ff;
+  --accent:#ff4da6;
+  --border:#2a2340;
+  --card:#0f0b18;
+  --btn:#161026;
+  --title:var(--fg);
+  --topbar-bg:linear-gradient(90deg, rgba(5,3,10,.92), rgba(0,245,255,.16), rgba(255,77,166,.12));
+  --body-grad-1:#020108;
+  --body-grad-2:#05030a;
+  --body-grad-3:#0b0614;
+  --popover-bg:rgba(15,11,24,.98);
+  --hover-bg:rgba(255,255,255,0.07);
+  --scrollbar-thumb:#3a2d6a;
+  --scrollbar-track:#020108;
+  --scrollbar-thumb-webkit-hover:#5740a8;
+  --card-hover-border:#00f5ff;
+  --card-hover-glow:rgba(0,245,255,.18);
+  --menu-divider-line:rgba(255,255,255,0.12);
+  --menu-divider-sweep:rgba(0,245,255,0.55);
+  color-scheme: dark;
+  background:
+    radial-gradient(1200px 700px at 15% 0%, rgba(0,245,255,0.16), transparent 60%),
+    radial-gradient(1100px 650px at 85% 10%, rgba(255,77,166,0.12), transparent 55%),
+    linear-gradient(180deg, #020108 0%, #04020b 45%, #05030a 100%);
+  background-attachment: fixed;
+}
+:root[data-theme="neon"] body{ background: transparent !important; }
+:root[data-theme="neon"]::after{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:-1; opacity:.12;
+  background:
+    repeating-linear-gradient(90deg, rgba(0,245,255,.10) 0 1px, transparent 1px 18px),
+    repeating-linear-gradient(0deg, rgba(255,77,166,.08) 0 1px, transparent 1px 24px);
+  mix-blend-mode: screen;
+}
+
+/* =========================================================
+   THÈME : Midnight 🌑
+   ========================================================= */
+:root[data-theme="midnight"]{
+  --bg:#050712;
+  --bg2:#0b1030;
+  --fg:#eef2ff;
+  --muted:#b8c3ff;
+  --primary:#5aa2ff;
+  --accent:#9c6bff;
+  --border:#1f2a5a;
+  --card:#0d1433;
+  --btn:#121c45;
+  --title:var(--fg);
+  --topbar-bg:linear-gradient(90deg, rgba(5,7,18,.92), rgba(90,162,255,.14), rgba(156,107,255,.12));
+  --popover-bg:rgba(13,20,51,.98);
+  --hover-bg:rgba(255,255,255,0.06);
+  --scrollbar-thumb:#2d3e85;
+  --scrollbar-track:#02040b;
+  --scrollbar-thumb-webkit-hover:#3b53b8;
+  --card-hover-border:rgba(156,107,255,.75);
+  --card-hover-glow:rgba(156,107,255,.18);
+  --menu-divider-line:rgba(255,255,255,0.12);
+  --menu-divider-sweep:rgba(156,107,255,0.55);
+  color-scheme: dark;
+  background:
+    radial-gradient(1200px 700px at 15% 0%, rgba(156,107,255,0.16), transparent 60%),
+    radial-gradient(1100px 650px at 85% 10%, rgba(90,162,255,0.12), transparent 55%),
+    linear-gradient(180deg, #02040b 0%, #04081a 45%, #050712 100%);
+  background-attachment: fixed;
+}
+:root[data-theme="midnight"] body{ background: transparent !important; }
+:root[data-theme="midnight"]::after{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:-1; opacity:.18;
+  background:
+    radial-gradient(circle, rgba(255,255,255,.70) 0 1px, transparent 2px),
+    radial-gradient(circle, rgba(255,255,255,.55) 0 1px, transparent 2px);
+  background-size: 280px 300px, 180px 220px;
+  background-position: 0 -140px, 120px -220px;
+}
+
+/* =========================================================
+   THÈME : Coffee ☕
+   ========================================================= */
+:root[data-theme="coffee"]{
+  --bg:#120c0a;
+  --bg2:#1a120f;
+  --fg:#fff3ea;
+  --muted:#e2c7b6;
+  --primary:#c77d2a;
+  --accent:#ffcc66;
+  --border:#3a241a;
+  --card:#1b120e;
+  --btn:#271a14;
+  --title:var(--fg);
+  --topbar-bg:linear-gradient(90deg, rgba(18,12,10,.92), rgba(199,125,42,.18));
+  --popover-bg:rgba(27,18,14,.98);
+  --hover-bg:rgba(255,255,255,0.08);
+  --scrollbar-thumb:#5a3b2c;
+  --scrollbar-track:#0b0706;
+  --scrollbar-thumb-webkit-hover:#775045;
+  --card-hover-border:#ffcc66;
+  --card-hover-glow:rgba(255,204,102,.18);
+  --menu-divider-line:rgba(255,255,255,0.12);
+  --menu-divider-sweep:rgba(255,204,102,0.55);
+  color-scheme: dark;
+  background:
+    radial-gradient(1200px 700px at 15% 0%, rgba(199,125,42,0.16), transparent 60%),
+    radial-gradient(1100px 650px at 85% 10%, rgba(255,204,102,0.10), transparent 55%),
+    linear-gradient(180deg, #070504 0%, #0f0a08 45%, #120c0a 100%);
+  background-attachment: fixed;
+}
+:root[data-theme="coffee"] body{ background: transparent !important; }
+
+/* =========================================================
+   THÈME : 🐣 Pâques (v2 premium)
+   - pastel + confettis discrets
+   - hover engine complet + scrollbar
+   - body transparent + FX doux
+   ========================================================= */
+
+:root[data-theme="paques"]{
+  --bg:#fff8f2;
+  --bg2:#ffffff;
+
+  --fg:#1e1b20;
+  --muted:#6b5a6d;
+
+  --primary:#ffb347;  /* jaune poussin */
+  --accent:#a26bff;   /* violet pastel */
+
+  --border:#f0e2d9;
+  --border-soft: rgba(30,27,32,0.10);
+
+  --card:#ffffff;
+  --btn:#fff2e8;
+
+  --title:#1a151d;
+  --topbar-bg: rgba(255,248,242,.92);
+
+  --body-grad-1:#fff5ec;
+  --body-grad-2:#fff8f2;
+  --body-grad-3:#ffffff;
+
+  --popover-bg: rgba(255,255,255,.95);
+  --hover-bg: rgba(30,27,32,0.06);
+
+  --overlay-bg: rgba(12,14,18,0.35);
+
+  --thumb-bg: rgba(255,179,71,0.10);
+  --thumb-fallback-bg: rgba(30,27,32,0.06);
+
+  --scrollbar-thumb:#e9d2c6;
+  --scrollbar-track:#fff2e8;
+  --scrollbar-track-webkit: var(--scrollbar-track);
+  --scrollbar-thumb-webkit: var(--scrollbar-thumb);
+  --scrollbar-thumb-webkit-hover:#dcbfaf;
+
+  /* ✅ hover tuiles : premium clair */
+  --card-hover-border: rgba(0,0,0,0.14);
+  --card-hover-glow: rgba(0,0,0,0.08);
+  --card-hover-shadow:
+    0 1px 2px rgba(0,0,0,0.05),
+    0 10px 28px rgba(0,0,0,0.12);
+  --card-hover-bg:
+    linear-gradient(145deg, rgba(255,179,71,0.08), rgba(162,107,255,0.06));
+
+  /* ✅ Menu séparateur (clair) */
+  --menu-divider-line: rgba(30,27,32,0.14);
+  --menu-divider-sweep: rgba(255,179,71,0.30);
+
+  color-scheme: light;
+
+  background:
+    radial-gradient(1200px 650px at 18% 0%, rgba(255,179,71,0.16), transparent 60%),
+    radial-gradient(1000px 600px at 88% 10%, rgba(162,107,255,0.12), transparent 60%),
+    radial-gradient(900px 520px at 50% 95%, rgba(255,77,166,0.06), transparent 60%),
+    linear-gradient(180deg, var(--body-grad-1) 0%, var(--body-grad-2) 35%, var(--body-grad-3) 100%);
+  background-attachment: fixed;
+}
+
+/* Pas de coupure en bas + FX sur html */
+:root[data-theme="paques"] body{
+  background: transparent !important;
+  position: relative;
+  isolation: isolate;
+}
+
+/* Confettis/pastels (très léger) */
+:root[data-theme="paques"]::after{
+  content:"";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  opacity: .10;
+  background:
+    radial-gradient(circle at 12% 20%, rgba(255,179,71,.70) 0 2px, transparent 3px),
+    radial-gradient(circle at 22% 72%, rgba(162,107,255,.65) 0 2px, transparent 3px),
+    radial-gradient(circle at 48% 38%, rgba(255,77,166,.55) 0 2px, transparent 3px),
+    radial-gradient(circle at 70% 24%, rgba(45,180,120,.55) 0 2px, transparent 3px),
+    radial-gradient(circle at 84% 66%, rgba(0,163,255,.55) 0 2px, transparent 3px),
+    radial-gradient(circle at 62% 82%, rgba(255,209,102,.60) 0 2px, transparent 3px);
+  filter: blur(.15px);
+  animation: paquesFloat 10s ease-in-out infinite;
+}
+
+@keyframes paquesFloat{
+  0%{ transform: translateY(0); opacity:.08; }
+  50%{ transform: translateY(-10px); opacity:.12; }
+  100%{ transform: translateY(0); opacity:.08; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  :root[data-theme="paques"]::after{ animation:none !important; }
+}
+
+/* =========================================================
+   THÈME : Nouvel An 🎆  (FEU D’ARTIFICE RÉEL)
+   ========================================================= */
+:root[data-theme="nouvelan"]{
+  --bg:#050510;
+  --bg2:#0c0c1f;
+
+  --fg:#f6f7ff;
+  --muted:#c2c6ff;
+
+  --primary:#ffd700;
+  --accent:#ff4da6;
+
+  --border:#2a2a55;
+  --card:#0f1025;
+  --btn:#16173a;
+
+  --title:var(--fg);
+  --topbar-bg:linear-gradient(90deg, rgba(5,5,16,.95), rgba(255,215,0,.25));
+
+  --popover-bg:rgba(15,16,37,.98);
+  --hover-bg:rgba(255,255,255,0.06);
+
+  --scrollbar-thumb:#3b3b88;
+  --scrollbar-track:#020208;
+
+  --card-hover-border:#ffd700;
+  --card-hover-glow:rgba(255,215,0,.25);
+
+  color-scheme: dark;
+
+  background:
+    radial-gradient(1200px 700px at 15% 0%, rgba(255,215,0,0.18), transparent 60%),
+    radial-gradient(1100px 650px at 85% 10%, rgba(255,77,166,0.12), transparent 55%),
+    linear-gradient(180deg, #020208 0%, #050510 100%);
+  background-attachment: fixed;
+}
+
+:root[data-theme="nouvelan"] body{
+  background: transparent !important;
+  position: relative;
+  isolation: isolate;
+}
+
+:root[data-theme="nouvelan"]::before,
+:root[data-theme="nouvelan"]::after{
+  content:"";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background-repeat: no-repeat;
+  mix-blend-mode: screen;
+  filter: blur(.10px);
+  will-change: opacity, transform;
+}
+
+/* Couche A : explosion 1 + 2 */
+:root[data-theme="nouvelan"]::after{
+  opacity: 0;
+  transform: scale(.92);
+  background:
+    /* 🔥 Explosion 1 (or) */
+    radial-gradient(circle at 24% 62%, rgba(255,215,0,.55) 0 10px, rgba(255,215,0,.18) 10px 34px, transparent 36px),
+    radial-gradient(circle at 24% 62%, transparent 0 18px, rgba(255,215,0,.55) 18px 19px, transparent 19px 999px),
+    conic-gradient(from 10deg at 24% 62%,
+      transparent 0 6deg, rgba(255,215,0,.95) 6deg 6.8deg,
+      transparent 6.8deg 18deg, rgba(255,215,0,.65) 18deg 18.8deg,
+      transparent 18.8deg 30deg, rgba(255,215,0,.55) 30deg 30.7deg,
+      transparent 30.7deg 360deg),
+
+    /* 🔥 Explosion 2 (rose) */
+    radial-gradient(circle at 66% 34%, rgba(255,77,166,.48) 0 9px, rgba(255,77,166,.16) 9px 30px, transparent 32px),
+    radial-gradient(circle at 66% 34%, transparent 0 16px, rgba(255,77,166,.55) 16px 17px, transparent 17px 999px),
+    conic-gradient(from -35deg at 66% 34%,
+      transparent 0 5deg, rgba(255,77,166,.95) 5deg 5.8deg,
+      transparent 5.8deg 16deg, rgba(255,77,166,.60) 16deg 16.8deg,
+      transparent 16.8deg 28deg, rgba(255,77,166,.50) 28deg 28.7deg,
+      transparent 28.7deg 360deg);
+
+  background-size:
+    340px 340px, 340px 340px, 340px 340px,
+    300px 300px, 300px 300px, 300px 300px;
+
+  animation: fireworkPopA 4.2s ease-in-out infinite;
+}
+
+/* Couche B : explosion 3 + halo global doux */
+:root[data-theme="nouvelan"]::before{
+  opacity: 0;
+  transform: scale(.92);
+  background:
+    /* 🔥 Explosion 3 (cyan) */
+    radial-gradient(circle at 78% 70%, rgba(0,245,255,.44) 0 9px, rgba(0,245,255,.14) 9px 30px, transparent 32px),
+    radial-gradient(circle at 78% 70%, transparent 0 16px, rgba(0,245,255,.55) 16px 17px, transparent 17px 999px),
+    conic-gradient(from 18deg at 78% 70%,
+      transparent 0 6deg, rgba(0,245,255,.95) 6deg 6.8deg,
+      transparent 6.8deg 18deg, rgba(0,245,255,.60) 18deg 18.8deg,
+      transparent 18.8deg 30deg, rgba(0,245,255,.50) 30deg 30.7deg,
+      transparent 30.7deg 360deg),
+
+    /* halo très léger (pour donner du “cinema”) */
+    radial-gradient(1000px 700px at 55% 10%, rgba(255,215,0,.10), transparent 65%),
+    radial-gradient(900px 650px at 85% 30%, rgba(255,77,166,.08), transparent 65%);
+
+  background-size:
+    320px 320px, 320px 320px, 320px 320px,
+    100% 100%, 100% 100%;
+
+  animation: fireworkPopB 4.2s ease-in-out infinite;
+  animation-delay: 1.4s; /* décalage => alternance */
+}
+
+@keyframes fireworkPopA{
+  0%   { opacity: 0;   transform: scale(.88); }
+  10%  { opacity: 1; }
+  35%  { opacity: .95; transform: scale(1.05); }
+  60%  { opacity: .22; transform: scale(1.12); }
+  100% { opacity: 0;   transform: scale(.88); }
+}
+
+@keyframes fireworkPopB{
+  0%   { opacity: 0;   transform: scale(.88); }
+  10%  { opacity: 1; }
+  35%  { opacity: .95; transform: scale(1.06); }
+  60%  { opacity: .22; transform: scale(1.13); }
+  100% { opacity: 0;   transform: scale(.88); }
+}
+
+@media (prefers-reduced-motion: reduce){
+  :root[data-theme="nouvelan"]::before,
+  :root[data-theme="nouvelan"]::after{
+    animation: none !important;
+    opacity: .25 !important;
+    transform: none !important;
+  }
+}
+
 /* =====================================================
    THEME HOVER ENGINE (1 seule fois)
    ===================================================== */
@@ -575,4 +2298,270 @@ html, body { min-height: 100%; }
   border-color: var(--card-hover-border, var(--border));
   box-shadow: var(--card-hover-shadow, 0 12px 34px rgba(0,0,0,.25));
   background: var(--card-hover-bg, var(--card));
+}
+
+/* =========================================================
+   ✅ FIX MINIMAL : textes forcés en blanc -> lisibles en thèmes clairs
+   (NE TOUCHE PAS aux backgrounds / transparences)
+   ========================================================= */
+
+:root[data-theme="clair"],
+:root[data-theme="white"],
+:root[data-theme="printemps"],
+:root[data-theme="ete"],
+:root[data-theme="sakura"],
+:root[data-theme="desert"],
+:root[data-theme="paques"],
+:root[data-theme="soleil"]{ /* (si tu as/ajoutes ce thème) */
+  /* rien ici */
+}
+
+/* Titres / tags / modal / boutons neutres / hamburger / cancel rating */
+:root[data-theme="clair"] .title,
+:root[data-theme="white"] .title,
+:root[data-theme="printemps"] .title,
+:root[data-theme="ete"] .title,
+:root[data-theme="sakura"] .title,
+:root[data-theme="desert"] .title,
+:root[data-theme="paques"] .title,
+:root[data-theme="soleil"] .title{
+  color: var(--title, var(--fg)) !important;
+}
+
+:root[data-theme="clair"] .tagPill,
+:root[data-theme="white"] .tagPill,
+:root[data-theme="printemps"] .tagPill,
+:root[data-theme="ete"] .tagPill,
+:root[data-theme="sakura"] .tagPill,
+:root[data-theme="desert"] .tagPill,
+:root[data-theme="paques"] .tagPill,
+:root[data-theme="soleil"] .tagPill{
+  color: var(--fg) !important;
+}
+
+
+
+/* ✅ Tags (pills) : certains thèmes clairs "premium" ont un fond trop pâle
+   -> on garde AUTO/clair/white comme avant
+   -> on renforce uniquement printemps/ete/sakura/desert/paques/soleil */
+:root[data-theme="printemps"] .tagPill,
+:root[data-theme="ete"] .tagPill,
+:root[data-theme="sakura"] .tagPill,
+:root[data-theme="desert"] .tagPill,
+:root[data-theme="paques"] .tagPill,
+:root[data-theme="soleil"] .tagPill{
+  background: var(--btn, rgba(0,0,0,0.07)) !important;
+  border-color: var(--border) !important;
+  color: var(--fg) !important;
+}
+
+/* Boutons neutres uniquement (on laisse Discord/F95/MEGA comme avant) */
+:root[data-theme="clair"] .btnLike:not(.btn-f95):not(.btnMega):not(.btn-discord),
+:root[data-theme="white"] .btnLike:not(.btn-f95):not(.btnMega):not(.btn-discord),
+:root[data-theme="printemps"] .btnLike:not(.btn-f95):not(.btnMega):not(.btn-discord),
+:root[data-theme="ete"] .btnLike:not(.btn-f95):not(.btnMega):not(.btn-discord),
+:root[data-theme="sakura"] .btnLike:not(.btn-f95):not(.btnMega):not(.btn-discord),
+:root[data-theme="desert"] .btnLike:not(.btn-f95):not(.btnMega):not(.btn-discord),
+:root[data-theme="paques"] .btnLike:not(.btn-f95):not(.btnMega):not(.btn-discord),
+:root[data-theme="soleil"] .btnLike:not(.btn-f95):not(.btnMega):not(.btn-discord){
+  color: var(--fg) !important;
+}
+
+/* Hamburger (les 3 barres) */
+:root[data-theme="clair"] .ham-lines span,
+:root[data-theme="white"] .ham-lines span,
+:root[data-theme="printemps"] .ham-lines span,
+:root[data-theme="ete"] .ham-lines span,
+:root[data-theme="sakura"] .ham-lines span,
+:root[data-theme="desert"] .ham-lines span,
+:root[data-theme="paques"] .ham-lines span,
+:root[data-theme="soleil"] .ham-lines span{
+  background: var(--fg) !important;
+}
+
+/* Modal */
+:root[data-theme="clair"] .modal-title,
+:root[data-theme="white"] .modal-title,
+:root[data-theme="printemps"] .modal-title,
+:root[data-theme="ete"] .modal-title,
+:root[data-theme="sakura"] .modal-title,
+:root[data-theme="desert"] .modal-title,
+:root[data-theme="paques"] .modal-title,
+:root[data-theme="soleil"] .modal-title{
+  color: var(--title, var(--fg)) !important;
+}
+
+:root[data-theme="clair"] .modal-btn,
+:root[data-theme="white"] .modal-btn,
+:root[data-theme="printemps"] .modal-btn,
+:root[data-theme="ete"] .modal-btn,
+:root[data-theme="sakura"] .modal-btn,
+:root[data-theme="desert"] .modal-btn,
+:root[data-theme="paques"] .modal-btn,
+:root[data-theme="soleil"] .modal-btn{
+  color: var(--fg) !important;
+}
+
+/* Rating "Annuler" (croix) */
+:root[data-theme="clair"] .ratingCancel,
+:root[data-theme="white"] .ratingCancel,
+:root[data-theme="printemps"] .ratingCancel,
+:root[data-theme="ete"] .ratingCancel,
+:root[data-theme="sakura"] .ratingCancel,
+:root[data-theme="desert"] .ratingCancel,
+:root[data-theme="paques"] .ratingCancel,
+:root[data-theme="soleil"] .ratingCancel{
+  color: var(--fg) !important;
+}
+
+/* =========================================================
+   ✅ Bloc ℹ️ Informations : texte lisible en thèmes clairs
+   - force le contenu (même sans classes .infoText / .infoTextMuted)
+   - ne touche PAS aux backgrounds / transparences
+   ========================================================= */
+
+:root[data-theme="white"] .infoBlock,
+:root[data-theme="clair"] .infoBlock,
+:root[data-theme="printemps"] .infoBlock,
+:root[data-theme="ete"] .infoBlock,
+:root[data-theme="paques"] .infoBlock,
+:root[data-theme="desert"] .infoBlock,
+:root[data-theme="sakura"] .infoBlock,
+:root[data-theme="soleil"] .infoBlock{
+  color: #555 !important; /* gris foncé doux */
+}
+
+:root[data-theme="white"] .infoBlock *,
+:root[data-theme="clair"] .infoBlock *,
+:root[data-theme="printemps"] .infoBlock *,
+:root[data-theme="ete"] .infoBlock *,
+:root[data-theme="paques"] .infoBlock *,
+:root[data-theme="desert"] .infoBlock *,
+:root[data-theme="sakura"] .infoBlock *,
+:root[data-theme="soleil"] .infoBlock *{
+  color: #555 !important;
+}
+
+/* Titre du bloc un peu plus foncé */
+:root[data-theme="white"] .infoBlock h3,
+:root[data-theme="clair"] .infoBlock h3,
+:root[data-theme="printemps"] .infoBlock h3,
+:root[data-theme="ete"] .infoBlock h3,
+:root[data-theme="paques"] .infoBlock h3,
+:root[data-theme="desert"] .infoBlock h3,
+:root[data-theme="sakura"] .infoBlock h3,
+:root[data-theme="soleil"] .infoBlock h3{
+  color: var(--title, #111) !important;
+}
+
+/* Liens éventuels */
+:root[data-theme="white"] .infoBlock a,
+:root[data-theme="clair"] .infoBlock a,
+:root[data-theme="printemps"] .infoBlock a,
+:root[data-theme="ete"] .infoBlock a,
+:root[data-theme="paques"] .infoBlock a,
+:root[data-theme="desert"] .infoBlock a,
+:root[data-theme="sakura"] .infoBlock a,
+:root[data-theme="soleil"] .infoBlock a{
+  color: var(--primary, #2d6cdf) !important;
+}
+
+/* =========================================================
+   ✅ Texte contenu bloc Informations (gris en thème clair)
+   ========================================================= */
+
+:root[data-theme="white"] .infoBlock .infoText,
+:root[data-theme="clair"] .infoBlock .infoText,
+:root[data-theme="printemps"] .infoBlock .infoText,
+:root[data-theme="ete"] .infoBlock .infoText,
+:root[data-theme="paques"] .infoBlock .infoText,
+:root[data-theme="desert"] .infoBlock .infoText,
+:root[data-theme="sakura"] .infoBlock .infoText,
+:root[data-theme="soleil"] .infoBlock .infoText{
+  color: #555 !important;   /* gris foncé doux */
+}
+
+:root[data-theme="white"] .infoBlock .infoTextMuted,
+:root[data-theme="clair"] .infoBlock .infoTextMuted,
+:root[data-theme="printemps"] .infoBlock .infoTextMuted,
+:root[data-theme="ete"] .infoBlock .infoTextMuted,
+:root[data-theme="paques"] .infoBlock .infoTextMuted,
+:root[data-theme="desert"] .infoBlock .infoTextMuted,
+:root[data-theme="sakura"] .infoBlock .infoTextMuted,
+:root[data-theme="soleil"] .infoBlock .infoTextMuted{
+  color: #777 !important;   /* gris plus léger */
+}
+
+/* =========================================================
+   Résumé : même fond que .tagPill en thèmes clairs
+   (la pill = rgba(255,255,255,0.04) par défaut
+    et certains thèmes clairs forcent var(--btn, rgba(0,0,0,0.07)))
+   ========================================================= */
+
+:root[data-theme="white"]  #descInnerBox,
+:root[data-theme="clair"]  #descInnerBox,
+:root[data-theme="printemps"] #descInnerBox,
+:root[data-theme="ete"]    #descInnerBox,
+:root[data-theme="paques"] #descInnerBox,
+:root[data-theme="desert"] #descInnerBox,
+:root[data-theme="sakura"] #descInnerBox,
+:root[data-theme="soleil"] #descInnerBox{
+  /* même logique que .tagPill */
+  background: var(--btn, rgba(255,255,255,0.04)) !important;
+  border: 1px solid var(--border) !important;
+
+  /* tue le rendu “carte sombre” */
+  box-shadow: none !important;
+}
+
+@media (prefers-color-scheme: light){
+  :root:not([data-theme]) #descInnerBox{
+    background: var(--btn, rgba(255,255,255,0.04)) !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: none !important;
+  }
+}
+
+/* Si jamais un overlay/pseudo-element existe ailleurs */
+:root[data-theme="white"]  #descInnerBox::before,
+:root[data-theme="clair"]  #descInnerBox::before,
+:root[data-theme="printemps"] #descInnerBox::before,
+:root[data-theme="ete"]    #descInnerBox::before,
+:root[data-theme="paques"] #descInnerBox::before,
+:root[data-theme="desert"] #descInnerBox::before,
+:root[data-theme="sakura"] #descInnerBox::before,
+:root[data-theme="soleil"] #descInnerBox::before,
+:root[data-theme="white"]  #descInnerBox::after,
+:root[data-theme="clair"]  #descInnerBox::after,
+:root[data-theme="printemps"] #descInnerBox::after,
+:root[data-theme="ete"]    #descInnerBox::after,
+:root[data-theme="paques"] #descInnerBox::after,
+:root[data-theme="desert"] #descInnerBox::after,
+:root[data-theme="sakura"] #descInnerBox::after,
+:root[data-theme="soleil"] #descInnerBox::after{
+  content: none !important;
+  background: none !important;
+}
+
+/* ✅ Désactive le gradient / overlay du background UNIQUEMENT sur certains thèmes */
+html[data-theme="printemps"] body,
+html[data-theme="ete"] body,
+html[data-theme="paques"] body,
+html[data-theme="desert"] body,
+html[data-theme="sakura"] body {
+  background-color: var(--bg) !important;
+  background-image: none !important;
+  background: var(--bg) !important;
+}
+
+/* ✅ Si ton thème utilise des variables de gradient, on les neutralise aussi */
+html[data-theme="printemps"],
+html[data-theme="ete"],
+html[data-theme="paques"],
+html[data-theme="desert"],
+html[data-theme="sakura"]{
+  --body-grad-1: var(--bg) !important;
+  --body-grad-2: var(--bg) !important;
+  --body-grad-3: var(--bg) !important;
+  --body-gradient: var(--bg) !important;
 }
