@@ -266,6 +266,11 @@
     loaded: false,
   };
 
+  const GAME_RATINGS = {
+    byKey: new Map(),
+    loaded: false,
+  };
+
   async function fetchGameStatsBulk(ids) {
     try {
       const r = await fetch("/api/counters", {
