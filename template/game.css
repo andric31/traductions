@@ -676,4 +676,14 @@ html[data-theme="light"] .infoBlock .infoTextMuted{
   box-shadow: 0 10px 26px rgba(0,0,0,0.45);
 }
 
+.badge.status-updated{
+  background: rgba(34, 197, 94, 0.18);
+  border: 1px solid rgba(34, 197, 94, 0.45);
+  color: #b8f7c9;
+}
 
+.badge.status-outdated{
+  background: rgba(239, 68, 68, 0.18);
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  color: #ffb4b4;
+}
