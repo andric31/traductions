@@ -39,6 +39,15 @@ html, body { min-height: 100%; }
   --menu-divider-sweep: rgba(255,255,255,0.55);
 }
 
+/* =========================================================
+   ========================================================= */
+:root{
+  --lightbox-bg: var(--card);
+  --lightbox-border: var(--border);
+  --lightbox-btn-bg: var(--btn);
+  --lightbox-btn-hover: var(--hover-bg);
+  --lightbox-text: var(--fg);
+}
 
 /* =========================================================
    AUTO (par défaut) = TON THÈME CLAIR
