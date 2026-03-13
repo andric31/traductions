@@ -290,7 +290,36 @@
 
           <h1 class="title" id="title">Chargement…</h1>
   
-          <img id="cover" class="cover is-placeholder" alt="" referrerpolicy="no-referrer">
+          <div class="coverGallery" id="coverGallery">
+            <div class="coverStage" id="coverStage">
+              <img id="cover" class="cover is-placeholder" alt="" referrerpolicy="no-referrer">
+              <button type="button" class="coverCtrl coverExpand" id="coverExpandBtn" aria-label="Agrandir l’image" title="Agrandir l’image">
+                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M9 4H4v5M15 4h5v5M20 15v5h-5M4 15v5h5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button type="button" class="coverCtrl coverPrev" id="coverPrevBtn" aria-label="Image précédente" title="Image précédente" style="display:none;">
+                <svg class="galarr" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><path d="M16 5 L8 12 L16 19" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button type="button" class="coverCtrl coverNext" id="coverNextBtn" aria-label="Image suivante" title="Image suivante" style="display:none;">
+                <svg class="galarr" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><path d="M8 5 L16 12 L8 19" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="coverCount" id="coverCount" style="display:none;"></div>
+            </div>
+          </div>
+
+          <div class="coverLightbox hidden" id="coverLightbox" aria-hidden="true">
+            <div class="coverLightboxBackdrop" id="coverLightboxBackdrop"></div>
+            <div class="coverLightboxDialog" role="dialog" aria-modal="true" aria-label="Galerie d’images">
+              <button type="button" class="coverCtrl coverLightboxClose" id="coverLightboxClose" aria-label="Fermer" title="Fermer">✕</button>
+              <button type="button" class="coverCtrl coverPrev coverLightboxPrev" id="coverLightboxPrev" aria-label="Image précédente" title="Image précédente" style="display:none;">
+                <svg class="galarr" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><path d="M16 5 L8 12 L16 19" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button type="button" class="coverCtrl coverNext coverLightboxNext" id="coverLightboxNext" aria-label="Image suivante" title="Image suivante" style="display:none;">
+                <svg class="galarr" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><path d="M8 5 L16 12 L8 19" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <img id="coverLightboxImg" class="coverLightboxImg" alt="" referrerpolicy="no-referrer">
+              <div class="coverCount coverLightboxCount" id="coverLightboxCount" style="display:none;"></div>
+            </div>
+          </div>
   
           <div class="infoBlock tagsBox" id="tagsBox">
             <div class="tagsRow" id="tags"></div>
