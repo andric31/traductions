@@ -255,6 +255,175 @@ function show(id, cond) {
   if (el) el.style.display = cond ? "" : "none";
 }
 
+
+const galleryState = {
+  urls: [],
+  index: 0,
+  timer: null,
+  hover: false,
+  loadedForUrl: "",
+};
+
+function galleryUrlKey(raw) {
+  const u = String(raw || "").trim();
+  if (!u) return "";
+  try {
+    const x = new URL(u, location.origin);
+    const host = (x.hostname || "").toLowerCase();
+    const path = (x.pathname || "").replace(/\/+$/, "");
+    return `${host}${path}`;
+  } catch {
+    return u.replace(/[?#].*$/, "").replace(/\/+$/, "");
+  }
+}
+
+function dedupKeepOrder(list) {
+  const out = [];
+  const seen = new Set();
+  for (const raw of list || []) {
+    const u = String(raw || "").trim();
+    const k = galleryUrlKey(u);
+    if (!u || !k || seen.has(k)) continue;
+    seen.add(k);
+    out.push(u);
+  }
+  return out;
+}
+
+function getF95GalleryApiUrl(f95Url) {
+  const u = String(f95Url || "").trim();
+  if (!u) return "";
+  return `/api/f95gallery?url=${encodeURIComponent(u)}`;
+}
+
+function stopGalleryAuto() {
+  try { if (galleryState.timer) clearInterval(galleryState.timer); } catch {}
+  galleryState.timer = null;
+}
+
+function startGalleryAuto() {
+  stopGalleryAuto();
+  if (!galleryState.hover) return;
+  if (!Array.isArray(galleryState.urls) || galleryState.urls.length < 2) return;
+  galleryState.timer = setInterval(() => {
+    galleryGoTo(galleryState.index + 1);
+  }, 3000);
+}
+
+function updateGalleryControls() {
+  const many = Array.isArray(galleryState.urls) && galleryState.urls.length > 1;
+  const countText = many ? `${galleryState.index + 1} / ${galleryState.urls.length}` : "";
+  const ids = ["coverPrevBtn", "coverNextBtn", "coverLightboxPrev", "coverLightboxNext"];
+  ids.forEach((id) => show(id, many));
+  const count = $("coverCount");
+  const lcount = $("coverLightboxCount");
+  if (count) { count.textContent = countText; count.style.display = many ? "" : "none"; }
+  if (lcount) { lcount.textContent = countText; lcount.style.display = many ? "" : "none"; }
+}
+
+function setLightboxBackground(url) {
+  const lb = $("coverLightbox");
+  if (!lb) return;
+  const u = String(url || "").trim();
+  lb.style.setProperty("--lb-bg", u ? `url("${u.replace(/"/g, '\"')}")` : "none");
+}
+
+function galleryGoTo(index) {
+  if (!Array.isArray(galleryState.urls) || !galleryState.urls.length) return;
+  const len = galleryState.urls.length;
+  galleryState.index = ((index % len) + len) % len;
+  const u = galleryState.urls[galleryState.index] || "";
+  const img = $("cover");
+  const lb = $("coverLightboxImg");
+  if (img) {
+    img.classList.remove("is-placeholder");
+    img.src = u;
+    img.onerror = () => { img.onerror = null; };
+  }
+  if (lb) lb.src = u;
+  setLightboxBackground(u);
+  updateGalleryControls();
+}
+
+function setupGalleryEvents() {
+  const stage = $("coverStage");
+  const lightbox = $("coverLightbox");
+  if (!stage || stage.dataset.galleryBound === "1") return;
+  stage.dataset.galleryBound = "1";
+
+  $("coverPrevBtn")?.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); galleryGoTo(galleryState.index - 1); startGalleryAuto(); });
+  $("coverNextBtn")?.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); galleryGoTo(galleryState.index + 1); startGalleryAuto(); });
+  $("coverLightboxPrev")?.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); galleryGoTo(galleryState.index - 1); });
+  $("coverLightboxNext")?.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); galleryGoTo(galleryState.index + 1); });
+  $("coverExpandBtn")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    const lb = $("coverLightbox");
+    if (!lb) return;
+    const current = galleryState.urls[galleryState.index] || "";
+    setLightboxBackground(current);
+    lb.classList.remove("hidden");
+    lb.setAttribute("aria-hidden", "false");
+    const img = $("coverLightboxImg");
+    if (img) img.src = current;
+  });
+  const closeLb = () => {
+    const lb = $("coverLightbox");
+    if (!lb) return;
+    lb.classList.add("hidden");
+    lb.setAttribute("aria-hidden", "true");
+  };
+  $("coverLightboxClose")?.addEventListener("click", closeLb);
+  $("coverLightboxBackdrop")?.addEventListener("click", closeLb);
+  lightbox?.addEventListener("click", (e) => { if (e.target === lightbox) closeLb(); });
+  document.addEventListener("keydown", (e) => {
+    const lb = $("coverLightbox");
+    const isOpen = lb && !lb.classList.contains("hidden");
+    if (e.key === "Escape" && isOpen) closeLb();
+    if (!isOpen) return;
+    if (e.key === "ArrowLeft") galleryGoTo(galleryState.index - 1);
+    if (e.key === "ArrowRight") galleryGoTo(galleryState.index + 1);
+  });
+  stage.addEventListener("mouseenter", () => { galleryState.hover = true; startGalleryAuto(); });
+  stage.addEventListener("mouseleave", () => { galleryState.hover = false; stopGalleryAuto(); });
+}
+
+async function loadF95Gallery(f95Url, fallbackUrl) {
+  setupGalleryEvents();
+  const fallback = String(fallbackUrl || "").trim();
+  const baseUrl = String(f95Url || "").trim();
+  const fallbackKey = galleryUrlKey(fallback);
+
+  if (!baseUrl) {
+    galleryState.urls = fallback ? [fallback] : [];
+    galleryState.index = 0;
+    if (galleryState.urls.length) galleryGoTo(0);
+    else updateGalleryControls();
+    return;
+  }
+  if (galleryState.loadedForUrl === baseUrl) return;
+  galleryState.loadedForUrl = baseUrl;
+
+  let merged = fallback ? [fallback] : [];
+  try {
+    const resp = await fetch(getF95GalleryApiUrl(baseUrl));
+    const data = await resp.json();
+    if (data && data.ok) {
+      const remote = [];
+      if (data.cover) remote.push(data.cover);
+      if (Array.isArray(data.gallery)) remote.push(...data.gallery);
+      if (remote.length) {
+        const filteredRemote = remote.filter((u) => galleryUrlKey(u) !== fallbackKey);
+        merged = fallback ? [fallback, ...filteredRemote] : filteredRemote;
+      }
+    }
+  } catch {}
+
+  galleryState.urls = dedupKeepOrder(merged);
+  galleryState.index = 0;
+  if (galleryState.urls.length) galleryGoTo(0);
+  else updateGalleryControls();
+}
+
 function setText(id, text) {
   const el = $(id);
   if (el) el.textContent = text ?? "";
@@ -297,13 +466,22 @@ function setCover(url) {
   img.referrerPolicy = "no-referrer";
 
   if (!u) {
+    galleryState.urls = [];
+    galleryState.index = 0;
     img.removeAttribute("src");
     img.classList.add("is-placeholder");
+    updateGalleryControls();
     return;
   }
 
+  galleryState.urls = [u];
+  galleryState.index = 0;
   img.classList.remove("is-placeholder");
   img.src = u;
+  const lb = $("coverLightboxImg");
+  if (lb) lb.src = u;
+  setLightboxBackground(u);
+  updateGalleryControls();
 
   img.onerror = () => {
     img.onerror = null;
@@ -1344,7 +1522,9 @@ function renderVideoBlock({ id, videoUrl }) {
 
     // 1) Titre + cover + tags
     setText("title", title);
-    setCover(display.imageUrl || entry.imageUrl || "");
+    const coverUrl = display.imageUrl || entry.imageUrl || "";
+    setCover(coverUrl);
+    await loadF95Gallery(entry.url || display.url || "", coverUrl);
     renderTags(display.tags || entry.tags || []);
 
     // Badges + status
