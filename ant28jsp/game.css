@@ -209,15 +209,149 @@ body:not(.mode-game){
   color: #fff;
 }
 
+
+.coverGallery{ margin-bottom: 0; }
+.coverStage{
+  position:relative;
+  border-radius:14px;
+  overflow:hidden;
+  background:#0f121a;
+  border:1px solid var(--border);
+}
 .cover{
   width:100%;
-  height: 190px;
-  border-radius: 14px;
-  border: 1px solid var(--border);
+  height: 230px;
+  border-radius: 0;
+  border: 0;
   background: #0f121a;
   object-fit: cover;
+  object-position: center 30%;
   display:block;
 }
+.coverCtrl{
+  position:absolute;
+  width:42px;
+  height:42px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(0,0,0,.55);
+  color:#fff;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  z-index:5;
+  user-select:none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.coverCtrl:hover{ background:rgba(0,0,0,.72); }
+.coverCtrl .galarr{ width:14px; height:14px; display:block; }
+.coverExpand{ top:12px; right:12px; }
+.coverPrev{ left:12px; top:50%; transform:translateY(-50%); }
+.coverNext{ right:12px; top:50%; transform:translateY(-50%); }
+.coverCount{
+  position:absolute;
+  bottom:12px;
+  right:12px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:rgba(0,0,0,.55);
+  border:1px solid rgba(255,255,255,.18);
+  font-size:12px;
+  color:#fff;
+  line-height:1;
+  user-select:none;
+  z-index:4;
+}
+.coverLightbox.hidden{ display:none !important; }
+.coverLightbox{
+  --lb-bg:none;
+  position:fixed;
+  inset:0;
+  z-index:4000;
+  overflow:hidden;
+}
+.coverLightbox::before{
+  content:none;
+}
+.coverLightboxBackdrop{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(1200px 700px at 50% 50%, rgba(255,255,255,.05), rgba(0,0,0,0) 60%),
+    var(--overlay-bg, rgba(6,10,18,.80));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.coverLightboxDialog{
+  position:relative;
+  z-index:1;
+  width:min(96vw, 1500px);
+  height:min(92vh, 980px);
+  margin:4vh auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:28px;
+  border-radius:24px;
+  border:1px solid var(--border, rgba(255,255,255,.10));
+  background:color-mix(in srgb, var(--card, #171b29) 88%, transparent);
+  box-shadow:0 24px 80px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.05);
+}
+.coverLightboxImg{
+  display:block;
+  width:auto;
+  height:auto;
+  max-width:calc(100% - 120px);
+  max-height:calc(100% - 72px);
+  object-fit:contain;
+  object-position:center center;
+  border-radius:18px;
+  box-shadow:0 20px 60px rgba(0,0,0,.40);
+}
+.coverLightboxClose,
+.coverLightboxPrev,
+.coverLightboxNext{
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+  background:color-mix(in srgb, var(--btn, rgba(0,0,0,.55)) 86%, transparent);
+  border:1px solid var(--border, rgba(255,255,255,.22));
+  color:var(--fg, #fff);
+}
+.coverLightboxClose:hover,
+.coverLightboxPrev:hover,
+.coverLightboxNext:hover{
+  background:color-mix(in srgb, var(--hover-bg, rgba(255,255,255,.10)) 88%, var(--btn, rgba(0,0,0,.55)));
+  border-color:var(--border-soft, var(--border, rgba(255,255,255,.32)));
+}
+.coverLightboxClose{ top:12px; right:12px; }
+.coverLightboxPrev{ left:16px; }
+.coverLightboxNext{ right:16px; }
+.coverLightboxCount{
+  bottom:12px;
+  right:12px;
+  background:color-mix(in srgb, var(--btn, rgba(0,0,0,.55)) 88%, transparent);
+  border:1px solid var(--border, rgba(255,255,255,.18));
+  color:var(--fg, #fff);
+}
+@media (max-width: 640px){
+  .coverLightboxDialog{
+    width:min(98vw, 1500px);
+    height:min(94vh, 980px);
+    margin:3vh auto;
+    padding:16px;
+    border-radius:18px;
+  }
+  .coverLightboxImg{
+    max-width:calc(100% - 84px);
+    max-height:calc(100% - 64px);
+  }
+  .coverLightboxPrev,
+  .coverLightboxNext{ width:38px; height:38px; }
+}
+
 .cover.is-placeholder{
   background:
     radial-gradient(1200px 300px at 20% 0%, rgba(255,255,255,0.06), rgba(0,0,0,0)),
@@ -345,8 +479,10 @@ body:not(.mode-game){
   user-select: none;
   font-size: 26px;
   line-height: 1;
-  color: #ffd36b;
-  opacity: 0.7;
+
+  /* ✅ IMPORTANT : on suit le thème */
+  color: var(--game-rating-color, #ffd36b);
+  opacity: var(--game-rating-opacity, 0.7);
 }
 
 .ratingStar:hover,
@@ -687,3 +823,4 @@ html[data-theme="light"] .infoBlock .infoTextMuted{
   border: 1px solid rgba(239, 68, 68, 0.45);
   color: #ffb4b4;
 }
+
