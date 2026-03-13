@@ -1148,6 +1148,37 @@
     img.classList.toggle("is-fallback", !!isFallback);
   }
 
+  function normalizeF95MediaKey(url) {
+    const u = String(url || "").trim();
+    if (!u) return "";
+    try {
+      const x = new URL(u, location.origin);
+      const host = (x.hostname || "").toLowerCase();
+      let path = (x.pathname || "").replace(/\\/g, "/");
+
+      if (host === "preview.f95zone.to" || host === "attachments.f95zone.to") {
+        path = path.replace(/^\/(\d{4})\/(\d{2})\/(thumb\/)?/i, "/");
+        return path.toLowerCase();
+      }
+
+      return `${host}${path}`.toLowerCase();
+    } catch {
+      return u.replace(/[?#].*$/, "").toLowerCase();
+    }
+  }
+
+  function sameImageUrl(a, b) {
+    const aa = String(a || "").trim();
+    const bb = String(b || "").trim();
+    if (!aa || !bb) return false;
+
+    const ka = normalizeF95MediaKey(aa);
+    const kb = normalizeF95MediaKey(bb);
+    if (ka && kb) return ka === kb;
+
+    return aa === bb;
+  }
+
   function sameImageUrl(a, b) {
     const aa = String(a || "").trim();
     const bb = String(b || "").trim();
@@ -1174,18 +1205,24 @@
             const raw = Array.isArray(data?.gallery) ? data.gallery : [];
             const cleaned = [];
             const seen = new Set();
+            const baseKey = normalizeF95MediaKey(base);
 
             if (base) {
-              seen.add(base);
+              seen.add(baseKey || base);
               cleaned.push(base);
             }
 
             for (const item of raw) {
               const original = String(item || "").trim();
               if (!original) continue;
+
               const preview = toF95PreviewUrl(original) || original;
-              if (seen.has(preview)) continue;
-              seen.add(preview);
+              const key = normalizeF95MediaKey(preview) || preview;
+
+              if (base && sameImageUrl(preview, base)) continue;
+              if (seen.has(key)) continue;
+
+              seen.add(key);
               cleaned.push(preview);
             }
 
