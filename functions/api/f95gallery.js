@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'gallery-v5';
+const CACHE_VERSION = 'gallery-v6';
 
 export async function onRequest(context) {
   const { request } = context;
@@ -180,7 +180,8 @@ function extractAttachmentPreviewUrls(html) {
     .map(m => upgradeF95Url(decodeHtml(m[0] || '')))
     .filter(Boolean)
     .map(u => u.replace(/["'>].*$/, ''))
-    .filter(u => !/\/thumb\//i.test(u));
+    .filter(u => !/\/thumb\//i.test(u))
+    .filter(isAllowedImageUrl);
 }
 
 function dedupKeepOrder(list) {
@@ -195,12 +196,19 @@ function dedupKeepOrder(list) {
   return out;
 }
 
+function isAllowedImageUrl(u) {
+  const s = String(u || '').trim().toLowerCase();
+  if (!s) return false;
+  return /\.(jpg|jpeg|png|webp|gif|avif)(?:[?#].*)?$/.test(s);
+}
+
 function isPollutingUrl(u) {
   const s = String(u || '').trim().toLowerCase();
   if (!s) return true;
   if (/\/thumb\//i.test(s)) return true;
   if (/\/data\/avatars\//i.test(s)) return true;
   if (/smilie|emoji/i.test(s)) return true;
+  if (/\.(zip|rar|7z|pdf|txt)(?:[?#].*)?$/.test(s)) return true;
   return false;
 }
 
