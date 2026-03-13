@@ -910,6 +910,185 @@
     if (n >= 7) gridEl.dataset.density = "compact";
   }
 
+
+  // =========================
+  // Hover gallery (preview F95 sur les tuiles)
+  // =========================
+  const HOVER_GALLERY = {
+    cache: new Map(),      // f95 url -> Promise<string[]>
+    timers: new WeakMap(), // card -> interval id
+    baseSrc: new WeakMap(),
+    baseFallback: new WeakMap(),
+    activeToken: new WeakMap(),
+    preload: new Map(),    // image url -> Promise<void>
+  };
+
+  function getF95GalleryApiUrl(f95Url) {
+    const u = String(f95Url || "").trim();
+    return u ? `/api/f95gallery?url=${encodeURIComponent(u)}` : "";
+  }
+
+  function toF95PreviewUrl(url) {
+    const u = String(url || "").trim();
+    if (!u) return "";
+    if (/^https?:\/\/preview\.f95zone\.to\//i.test(u)) return u;
+    const m = u.match(/^https?:\/\/attachments\.f95zone\.to\/(\d{4})\/(\d{2})\/(.+)$/i);
+    if (m) return `https://preview.f95zone.to/${m[1]}/${m[2]}/${m[3]}`;
+    return u;
+  }
+
+  function normalizeF95MediaKey(url) {
+    const u = String(url || "").trim();
+    if (!u) return "";
+    try {
+      const x = new URL(u, location.origin);
+      const host = (x.hostname || "").toLowerCase();
+      let path = (x.pathname || "").replace(/\\/g, "/");
+      if (host === "preview.f95zone.to" || host === "attachments.f95zone.to") {
+        path = path.replace(/^\/(\d{4})\/(\d{2})\/(thumb\/)?/i, "/");
+        return path.toLowerCase();
+      }
+      return `${host}${path}`.toLowerCase();
+    } catch {
+      return u.replace(/[?#].*$/, "").toLowerCase();
+    }
+  }
+
+  function sameImageUrl(a, b) {
+    const aa = String(a || "").trim();
+    const bb = String(b || "").trim();
+    if (!aa || !bb) return false;
+    const ka = normalizeF95MediaKey(aa);
+    const kb = normalizeF95MediaKey(bb);
+    return ka && kb ? ka === kb : aa === bb;
+  }
+
+  function preloadImage(url) {
+    const u = String(url || "").trim();
+    if (!u) return Promise.resolve();
+    if (HOVER_GALLERY.preload.has(u)) return HOVER_GALLERY.preload.get(u);
+    const p = new Promise((resolve) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.loading = "eager";
+      img.onload = () => resolve();
+      img.onerror = () => resolve();
+      img.src = u;
+    });
+    HOVER_GALLERY.preload.set(u, p);
+    return p;
+  }
+
+  function applyThumbState(img, src, isFallback) {
+    if (!img) return;
+    img.src = src || "";
+    img.classList.toggle("is-fallback", !!isFallback);
+  }
+
+  async function fetchHoverGalleryUrls(rawEntry, fallbackUrl) {
+    const entry = rawEntry || {};
+    const f95Url = String(
+      entry.url || entry.threadUrl || entry.f95url || entry.f95Url || entry.sourceUrl || ""
+    ).trim();
+
+    const base = String(fallbackUrl || "").trim();
+    if (!f95Url) return base ? [base] : [];
+
+    if (!HOVER_GALLERY.cache.has(f95Url)) {
+      const api = getF95GalleryApiUrl(f95Url);
+      HOVER_GALLERY.cache.set(
+        f95Url,
+        fetch(api, { credentials: "same-origin", cache: "force-cache" })
+          .then((r) => (r.ok ? r.json() : null))
+          .then((data) => {
+            const raw = Array.isArray(data?.gallery) ? data.gallery : [];
+            const cleaned = [];
+            const seen = new Set();
+            const baseKey = normalizeF95MediaKey(base);
+
+            if (base) {
+              seen.add(baseKey || base);
+              cleaned.push(base);
+            }
+
+            for (const item of raw) {
+              const original = String(item || "").trim();
+              if (!original) continue;
+              const preview = toF95PreviewUrl(original) || original;
+              const key = normalizeF95MediaKey(preview) || preview;
+              if (base && sameImageUrl(preview, base)) continue;
+              if (seen.has(key)) continue;
+              seen.add(key);
+              cleaned.push(preview);
+            }
+
+            return cleaned.length ? cleaned : (base ? [base] : []);
+          })
+          .catch(() => (base ? [base] : []))
+      );
+    }
+    return HOVER_GALLERY.cache.get(f95Url);
+  }
+
+  function stopCardHoverSlideshow(card) {
+    const timer = HOVER_GALLERY.timers.get(card);
+    if (timer) clearInterval(timer);
+    HOVER_GALLERY.timers.delete(card);
+
+    const img = card?.querySelector(".thumb");
+    const baseSrc = HOVER_GALLERY.baseSrc.get(card) || "";
+    const baseFallback = !!HOVER_GALLERY.baseFallback.get(card);
+    if (img && baseSrc) applyThumbState(img, baseSrc, baseFallback);
+  }
+
+  function bindCardHoverGallery(card, rawEntry, fallbackUrl) {
+    const img = card?.querySelector(".thumb");
+    if (!card || !img) return;
+
+    const baseSrc = String(fallbackUrl || "").trim() || img.src;
+    const baseFallback = img.classList.contains("is-fallback");
+
+    HOVER_GALLERY.baseSrc.set(card, baseSrc);
+    HOVER_GALLERY.baseFallback.set(card, baseFallback);
+
+    card.addEventListener("mouseleave", () => {
+      HOVER_GALLERY.activeToken.set(card, null);
+      stopCardHoverSlideshow(card);
+    });
+
+    card.addEventListener("mouseenter", async () => {
+      stopCardHoverSlideshow(card);
+      const token = Symbol("hover");
+      HOVER_GALLERY.activeToken.set(card, token);
+
+      const urls = await fetchHoverGalleryUrls(rawEntry, baseSrc);
+      if (HOVER_GALLERY.activeToken.get(card) !== token) return;
+
+      if (!Array.isArray(urls) || urls.length < 2) {
+        applyThumbState(img, baseSrc, baseFallback);
+        return;
+      }
+
+      let idx = 0;
+      if (urls.length > 1 && sameImageUrl(urls[0], baseSrc)) idx = 1;
+      applyThumbState(img, urls[idx], false);
+      preloadImage(urls[(idx + 1) % urls.length]);
+
+      const timer = setInterval(() => {
+        if (!card.matches(":hover")) {
+          stopCardHoverSlideshow(card);
+          return;
+        }
+        idx = (idx + 1) % urls.length;
+        applyThumbState(img, urls[idx], false);
+        preloadImage(urls[(idx + 1) % urls.length]);
+      }, 2000);
+
+      HOVER_GALLERY.timers.set(card, timer);
+    });
+  }
+
+
   function renderGrid() {
     const grid = $("#grid");
     const empty = $("#gridEmpty");
@@ -991,6 +1170,7 @@
         </div>
       `;
 
+      bindCardHoverGallery(card, g.__raw || g, imgSrc);
       frag.appendChild(card);
     }
 
