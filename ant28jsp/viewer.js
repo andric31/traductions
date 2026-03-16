@@ -469,6 +469,16 @@
     return Number.isNaN(ts) ? null : ts;
   }
 
+  function parseDateTimeWithOffset(str) {
+    if (!str) return 0;
+    const raw = String(str).trim();
+    if (!raw) return 0;
+
+    const normalized = raw.replace(/([+-]\d{2})(\d{2})$/, "$1:$2");
+    const ts = Date.parse(normalized);
+    return Number.isNaN(ts) ? 0 : ts;
+  }
+
   function cleanTitle(raw) {
     let t = String(raw || "").trim();
     let categories = [];
@@ -570,11 +580,13 @@
 
     const updatedAtLocalRaw = game.updatedAtLocal || "";
     const createdAtLocalRaw = game.createdAtLocal || "";
-    const updatedAtLocalParsed = updatedAtLocalRaw ? Date.parse(updatedAtLocalRaw) : NaN;
-    const createdAtLocalParsed = createdAtLocalRaw ? Date.parse(createdAtLocalRaw) : NaN;
+    const createdAtDateTimeRaw = game.createdAtDateTime || "";
+    const updatedAtDateTimeRaw = game.updatedAtDateTime || "";
 
-    const updatedAtLocalTs = !Number.isNaN(updatedAtLocalParsed) ? updatedAtLocalParsed : 0;
-    const createdAtLocalTs = !Number.isNaN(createdAtLocalParsed) ? createdAtLocalParsed : 0;
+    const updatedAtLocalTs = parseDateTimeWithOffset(updatedAtLocalRaw);
+    const createdAtLocalTs = parseDateTimeWithOffset(createdAtLocalRaw);
+    const createdAtDateTimeTs = parseDateTimeWithOffset(createdAtDateTimeRaw);
+    const updatedAtDateTimeTs = parseDateTimeWithOffset(updatedAtDateTimeRaw);
 
     const ckey = counterKeyOfUid(uid);
 
@@ -610,6 +622,10 @@
       updatedAtLocalTs,
       createdAtLocal: createdAtLocalRaw,
       createdAtLocalTs,
+      createdAtDateTime: createdAtDateTimeRaw,
+      createdAtDateTimeTs,
+      updatedAtDateTime: updatedAtDateTimeRaw,
+      updatedAtDateTimeTs,
       __raw: game,
     };
   }
@@ -828,7 +844,7 @@
       return;
     }
 
-    if (["releaseDate", "updatedAt", "updatedAtLocal"].includes(k)) {
+    if (["releaseDate", "updatedAt", "updatedAtLocal", "createdAtDateTime", "updatedAtDateTime"].includes(k)) {
       const key = k + "Ts";
       state.filtered.sort((a, b) => ((a[key] || 0) - (b[key] || 0)) * mul);
       return;
