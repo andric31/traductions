@@ -1147,7 +1147,7 @@ body.age-gate-active footer {
   flex-wrap:wrap;
   gap:5px 10px;
   padding-top:0;
-  color:var(--muted);
+  color:rgba(232,234,240,.68);
   font-size:11px;
 }
 
@@ -1165,7 +1165,7 @@ body.age-gate-active footer {
   display:inline-block;
   flex:0 0 13px;
   background-color:currentColor;
-  opacity:.8;
+  opacity:.72;
   vertical-align:middle;
   -webkit-mask-repeat:no-repeat;
   -webkit-mask-position:center;
