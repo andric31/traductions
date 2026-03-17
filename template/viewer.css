@@ -1343,3 +1343,15 @@ body.age-gate-active footer {
 .quick-notif-open:hover{
   background:var(--hover-bg);
 }
+
+
+/* === Patch viewer tuiles : stats grisées comme le global === */
+.card-meta .card-stats,
+.card-meta .card-stats .card-stat,
+.card-meta .card-stats .card-stat span,
+.card-meta .card-stats .stat-icon{
+  color: var(--muted) !important;
+}
+.card-meta .card-stats .stat-icon{
+  opacity: .8 !important;
+}
