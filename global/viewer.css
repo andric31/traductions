@@ -978,7 +978,38 @@ a.card.card-link:focus-visible{
 .ratingCancel:active{ transform: translateY(1px); }
 
 /* ✅ Encadré stats sous la carte */
-.statsOut{ margin-top: 14px; }
+.statsOut{
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.03);
+  color: var(--muted);
+  font-size: 12px;
+  display:grid;
+  gap:6px;
+  justify-items:center;
+  user-select:none;
+}
+.statsLine{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+.statsLineSub{
+  opacity: .96;
+}
+.statsItem{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  color: var(--muted);
+}
+.statsOut strong{
+  color: rgba(255,255,255,0.82);
+  font-weight: 800;
+}
 
 /* ===== AGE GATE ===== */
 #age-gate {
