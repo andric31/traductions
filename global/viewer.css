@@ -978,38 +978,7 @@ a.card.card-link:focus-visible{
 .ratingCancel:active{ transform: translateY(1px); }
 
 /* ✅ Encadré stats sous la carte */
-.statsOut{
-  margin-top: 10px;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: rgba(255,255,255,0.03);
-  color: var(--muted);
-  font-size: 12px;
-  display:grid;
-  gap:6px;
-  justify-items:center;
-  user-select:none;
-}
-.statsLine{
-  display:flex;
-  gap:10px;
-  justify-content:center;
-  flex-wrap:wrap;
-}
-.statsLineSub{
-  opacity: .96;
-}
-.statsItem{
-  display:inline-flex;
-  align-items:center;
-  gap:4px;
-  color: var(--muted);
-}
-.statsOut strong{
-  color: rgba(255,255,255,0.82);
-  font-weight: 800;
-}
+.statsOut{ margin-top: 14px; }
 
 /* ===== AGE GATE ===== */
 #age-gate {
@@ -1299,10 +1268,10 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
 }
 
 .stat-icon{
-  width:14px;
-  height:14px;
+  width:13px;
+  height:13px;
   display:inline-block;
-  flex:0 0 14px;
+  flex:0 0 13px;
   background-color:currentColor;
   opacity:.8;
   vertical-align:middle;
