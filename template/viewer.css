@@ -509,29 +509,29 @@ a.card.card-link *{
 
 .badges-line .badge{ line-height: 1; }
 
-.badge.cat-vn{ background:#D32F2F; }
-.badge.cat-collection{ background:#616161; }
+.badge.cat-vn{ background:#D32F2F !important; color:#fff !important; }
+.badge.cat-collection{ background:#616161 !important; color:#fff !important; }
 
-.badge.eng-renpy{ background:#B069E8; }
-.badge.eng-rpgm{ background:#2196F3; color:#000; }
-.badge.eng-unity{ background:#FE5901; color:#000; }
-.badge.eng-others{ background:#8BC34A; color:#000; }
-.badge.eng-wolfrpg{ background:#4CAF50; color:#000; }
+.badge.eng-renpy{ background:#B069E8 !important; color:#fff !important; }
+.badge.eng-rpgm{ background:#2196F3 !important; color:#000 !important; }
+.badge.eng-unity{ background:#FE5901 !important; color:#000 !important; }
+.badge.eng-others{ background:#8BC34A !important; color:#000 !important; }
+.badge.eng-wolfrpg{ background:#4CAF50 !important; color:#000 !important; }
 
-.badge.eng-unrealengine{ background:#0D47A1; color:#fff; }
-.badge.eng-html{ background:#689F38; color:#000; }
-.badge.eng-java{ background:#52A6B0; color:#000; }
-.badge.eng-flash{ background:#616161; color:#fff; }
-.badge.eng-qsp{ background:#D32F2F; color:#fff; }
-.badge.eng-webgl{ background:#FE5901; color:#000; }
-.badge.eng-rags{ background:#FF9800; color:#000; }
-.badge.eng-tads{ background:#2196F3; color:#000; }
-.badge.eng-adrift{ background:#2196F3; color:#000; }
+.badge.eng-unrealengine{ background:#0D47A1 !important; color:#fff !important; }
+.badge.eng-html{ background:#689F38 !important; color:#000 !important; }
+.badge.eng-java{ background:#52A6B0 !important; color:#000 !important; }
+.badge.eng-flash{ background:#616161 !important; color:#fff !important; }
+.badge.eng-qsp{ background:#D32F2F !important; color:#fff !important; }
+.badge.eng-webgl{ background:#FE5901 !important; color:#000 !important; }
+.badge.eng-rags{ background:#FF9800 !important; color:#000 !important; }
+.badge.eng-tads{ background:#2196F3 !important; color:#000 !important; }
+.badge.eng-adrift{ background:#2196F3 !important; color:#000 !important; }
 
-.badge.status-completed{ background:#2196F3; color:#000; }
-.badge.status-abandoned{ background:#FF9800; color:#000; }
-.badge.status-onhold{ background:#03A9F4; color:#000; }
-.badge.status-encours{ background:#607D8B; }
+.badge.status-completed{ background:#2196F3 !important; color:#000 !important; }
+.badge.status-abandoned{ background:#FF9800 !important; color:#000 !important; }
+.badge.status-onhold{ background:#03A9F4 !important; color:#000 !important; }
+.badge.status-encours{ background:#607D8B !important; color:#fff !important; }
 
 .actions{
   margin-top:auto;
