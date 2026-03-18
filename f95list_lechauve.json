@@ -44,7 +44,8 @@
     "createdAtDateTime": "2024-01-14T11:00:55+0100",
     "updatedAtDateTime": "2026-02-28T23:38:24+0100",
     "createdAtLocal": "2025-11-10 22:15:00",
-    "updatedAtLocal": "2026-03-15 18:05:01"
+    "updatedAtLocal": "2026-03-15 18:05:01",
+    "translationType": "manuel - humaine"
   },
   {
     "uid": 2,
@@ -102,7 +103,8 @@
     "createdAtDateTime": "2024-07-02T17:15:23+0200",
     "updatedAtDateTime": "2026-03-08T17:05:51+0100",
     "createdAtLocal": "2025-11-10 23:20:00",
-    "updatedAtLocal": "2026-03-17 17:13:35"
+    "updatedAtLocal": "2026-03-17 17:13:35",
+    "translationType": "manuel - humaine"
   },
   {
     "uid": 3,
@@ -175,7 +177,8 @@
     "createdAtDateTime": "2021-12-02T16:53:56+0100",
     "updatedAtDateTime": "2026-03-16T02:55:14+0100",
     "createdAtLocal": "2025-11-11 23:30:00",
-    "updatedAtLocal": "2025-11-11 23:30:00"
+    "updatedAtLocal": "2025-11-11 23:30:00",
+    "translationType": "manuel - humaine"
   },
   {
     "uid": 4,
@@ -224,7 +227,8 @@
     "createdAtDateTime": "2022-02-02T23:55:31+0100",
     "updatedAtDateTime": "2022-02-02T23:55:31+0100",
     "createdAtLocal": "2025-11-12 04:10:00",
-    "updatedAtLocal": "2025-11-12 04:10:00"
+    "updatedAtLocal": "2025-11-12 04:10:00",
+    "translationType": "manuel - humaine"
   },
   {
     "uid": 5,
@@ -282,7 +286,8 @@
     "createdAtDateTime": "2020-06-23T13:51:23+0200",
     "updatedAtDateTime": "2026-01-26T18:29:12+0100",
     "createdAtLocal": "2025-11-12 20:02:00",
-    "updatedAtLocal": "2025-11-12 20:02:00"
+    "updatedAtLocal": "2025-11-12 20:02:00",
+    "translationType": "manuel - humaine"
   },
   {
     "uid": 6,
@@ -336,6 +341,7 @@
     "createdAtDateTime": "2021-04-03T11:29:25+0200",
     "updatedAtDateTime": "2025-12-06T20:35:28+0100",
     "createdAtLocal": "2025-11-13 06:17:00",
-    "updatedAtLocal": "2025-11-13 06:17:00"
+    "updatedAtLocal": "2025-11-13 06:17:00",
+    "translationType": "manuel - humaine"
   }
 ]
