@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="no-referrer">
+  <title>f95list FR — Données extension</title>
+  <style>
+    :root{
+      --bg:#0b1220;--panel:#111827;--panel-2:#0f172a;--text:#e6edf3;--muted:#9aa4af;
+      --border:#263244;--accent:#58a6ff;--green:#238636;--red:#da3633;--orange:#d29922;
+      --shadow:0 14px 40px rgba(0,0,0,.35)
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:linear-gradient(180deg,#07101d 0%,#0b1220 55%,#09111e 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+    .page{max-width:1600px;margin:0 auto;padding:10px 12px 12px;display:flex;flex-direction:column;gap:10px}
+    .hero,.panel,.card{background:rgba(17,24,39,.92);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow)}
+    .hero{padding:14px 16px;background:linear-gradient(135deg, rgba(96,165,250,.18), rgba(17,24,39,.96) 55%, rgba(34,197,94,.08))}
+    .hero-top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+    h1,h2,h3{margin:0}
+    h1{font-size:24px}
+    .subtitle{margin-top:6px;color:var(--muted);font-size:14px;line-height:1.4}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{border:1px solid var(--border);background:var(--panel);color:var(--text);padding:8px 12px;border-radius:12px;cursor:pointer;font-weight:600}
+    .btn:hover{filter:brightness(1.08)}
+    .layout{display:grid;grid-template-columns:380px minmax(0,1fr);gap:10px}
+    .panel{padding:12px}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+    .card{padding:12px}
+    .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+    .value{margin-top:6px;font-size:24px;font-weight:800}
+    .muted{color:var(--muted)}
+    .chips{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{display:inline-flex;align-items:center;padding:7px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:var(--panel-2);font-size:12px;font-weight:700}
+    pre{margin:0;background:var(--panel-2);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;overflow:auto;white-space:pre-wrap;word-break:break-word;font-size:12px;line-height:1.45}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .error{color:#ffd2cf}
+    @media (max-width:1000px){.layout,.two,.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div class="hero-top">
+        <div>
+          <h1>🧩 Données récupérées par l’extension</h1>
+          <div class="subtitle">Page de lecture des données du Google Apps Script utilisé par l’extension. Elle affiche les clés disponibles, le nombre de jeux, un exemple de jeu et les champs utiles comme <code>image</code>, <code>tlink</code>, <code>prlink</code>, etc.</div>
+        </div>
+        <div class="actions">
+          <a class="btn" href="./index.html">← Retour index</a>
+          <button class="btn" id="reloadBtn">Recharger</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="layout">
+      <section class="panel">
+        <h2>Résumé</h2>
+        <div class="grid" style="margin-top:10px">
+          <div class="card"><div class="label">Top-level keys</div><div class="value" id="topLevelCount">…</div></div>
+          <div class="card"><div class="label">Jeux</div><div class="value" id="gamesCount">…</div></div>
+          <div class="card"><div class="label">Updates</div><div class="value" id="updatesCount">…</div></div>
+        </div>
+
+        <div class="card" style="margin-top:10px">
+          <div class="label">Clés top-level détectées</div>
+          <div class="chips" id="topLevelKeys" style="margin-top:10px"></div>
+        </div>
+
+        <div class="card" style="margin-top:10px">
+          <div class="label">Clés d’un jeu</div>
+          <div class="chips" id="gameKeys" style="margin-top:10px"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Infos utiles pour le site</h2>
+        <div class="two" style="margin-top:10px">
+          <div class="card">
+            <div class="label">Champs utiles repérés</div>
+            <div class="chips" id="usefulKeys" style="margin-top:10px"></div>
+          </div>
+          <div class="card">
+            <div class="label">Exemple résumé</div>
+            <pre id="summaryPreview">Chargement…</pre>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:10px">
+          <div class="label">Exemple complet du 1er jeu</div>
+          <pre id="firstGameJson">Chargement…</pre>
+        </div>
+
+        <div class="card" style="margin-top:10px">
+          <div class="label">Données top-level complètes</div>
+          <pre id="topLevelJson">Chargement…</pre>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const DATA_URL = "https://script.google.com/macros/s/AKfycbybvrFy6B2L7rkLWJnrwRHhP0F6Sv0uk6V9zUTZibwEzUjKXf-abOK_N6jUhqFPs9US/exec";
+
+    const usefulOrder = [
+      "id","domain","hostname","name","version","tversion","status","tags","type",
+      "traductor","proofreader","ttype","link","tlink","trlink","prlink","image"
+    ];
+
+    function esc(v){
+      return String(v ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;");
+    }
+
+    function renderChips(id, values){
+      const el = document.getElementById(id);
+      el.innerHTML = values.map(v => `<span class="chip">${esc(v)}</span>`).join("");
+    }
+
+    function pick(obj, keys){
+      const out = {};
+      keys.forEach(k => { if (obj && Object.prototype.hasOwnProperty.call(obj, k)) out[k] = obj[k]; });
+      return out;
+    }
+
+    async function loadData(){
+      try{
+        document.getElementById("summaryPreview").textContent = "Chargement…";
+        document.getElementById("firstGameJson").textContent = "Chargement…";
+        document.getElementById("topLevelJson").textContent = "Chargement…";
+
+        const res = await fetch(DATA_URL, { cache:"no-store" });
+        if(!res.ok) throw new Error("HTTP " + res.status);
+        const json = await res.json();
+        const data = json?.data || {};
+        const games = Array.isArray(data.games) ? data.games : [];
+        const updates = Array.isArray(data.updates) ? data.updates : [];
+
+        const topKeys = Object.keys(data);
+        const firstGame = games[0] || {};
+        const gameKeys = Object.keys(firstGame);
+
+        document.getElementById("topLevelCount").textContent = topKeys.length;
+        document.getElementById("gamesCount").textContent = games.length;
+        document.getElementById("updatesCount").textContent = updates.length;
+
+        renderChips("topLevelKeys", topKeys);
+        renderChips("gameKeys", gameKeys);
+
+        const usefulDetected = usefulOrder.filter(k => gameKeys.includes(k));
+        renderChips("usefulKeys", usefulDetected);
+
+        const summary = {
+          topLevelKeys: topKeys,
+          usefulDetected,
+          firstGamePicked: pick(firstGame, usefulDetected)
+        };
+
+        document.getElementById("summaryPreview").textContent = JSON.stringify(summary, null, 2);
+        document.getElementById("firstGameJson").textContent = JSON.stringify(firstGame, null, 2);
+        document.getElementById("topLevelJson").textContent = JSON.stringify(data, null, 2);
+      }catch(err){
+        const msg = "Erreur de chargement : " + (err?.message || err);
+        document.getElementById("summaryPreview").innerHTML = '<span class="error">'+esc(msg)+'</span>';
+        document.getElementById("firstGameJson").innerHTML = '<span class="error">'+esc(msg)+'</span>';
+        document.getElementById("topLevelJson").innerHTML = '<span class="error">'+esc(msg)+'</span>';
+      }
+    }
+
+    document.getElementById("reloadBtn").addEventListener("click", loadData);
+    loadData();
+  </script>
+</body>
+</html>
