@@ -68,6 +68,21 @@
     .muted{color:var(--muted)}
     .empty{padding:32px 18px;color:var(--muted);text-align:center}
     .footer-note{color:var(--muted);font-size:13px;padding:2px 6px 6px}
+    .charts-panel{margin-top:18px}
+    .charts-title{margin:0 0 6px;font-size:24px;font-weight:800}
+    .charts-sub{margin:0 0 14px;color:var(--muted);font-size:14px}
+    .charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+    .chart-card{background:rgba(17,24,39,.92);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:22px;padding:16px}
+    .chart-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px}
+    .chart-title{font-size:20px;font-weight:800}
+    .chart-badge{padding:7px 10px;border-radius:999px;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.22);color:#bfdbfe;font-weight:800}
+    .donut{width:156px;height:156px;border-radius:50%;margin:8px auto 14px;position:relative}
+    .donut::before{content:'';position:absolute;inset:22px;border-radius:50%;background:var(--panel)}
+    .donut-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:1;text-align:center;font-weight:800}
+    .donut-center small{color:var(--muted);font-size:12px;font-weight:600}
+    .legend{display:grid;gap:8px}
+    .legend-row{display:grid;grid-template-columns:14px 1fr auto;gap:10px;align-items:center;font-size:13px}
+    .legend-dot{width:12px;height:12px;border-radius:999px}
     @media (max-width:1300px){
       .summary-grid{grid-template-columns:repeat(4,minmax(120px,1fr))}
     }
@@ -118,6 +133,14 @@
     <div class="sites-wrap" id="sitesWrap">
       <div class="panel empty">Chargement...</div>
     </div>
+
+    <section class="panel charts-panel" id="chartsPanel">
+      <h2 class="charts-title">Répartition en disques</h2>
+      <p class="charts-sub">Vue visuelle des résultats affichés, avec un disque global puis un disque par site.</p>
+      <div class="charts-grid" id="chartsGrid">
+        <div class="chart-card">Chargement...</div>
+      </div>
+    </section>
 
     <div class="footer-note" id="footerNote"></div>
   </div>
@@ -218,6 +241,100 @@
         select.appendChild(o);
       });
       if(values.includes(current)) select.value = current;
+    }
+
+    function buildDonutSegments(values){
+      const colors = {
+        aTester: '#f59e0b',
+        auto: '#60a5fa',
+        humaine: '#22c55e',
+        semi: '#a78bfa',
+        vo: '#f472b6'
+      };
+      const entries = [
+        ['À tester', values.aTester, colors.aTester],
+        ['Trad. auto', values.auto, colors.auto],
+        ['Trad. humaine', values.humaine, colors.humaine],
+        ['Trad. semi-auto', values.semi, colors.semi],
+        ['VO française', values.vo, colors.vo],
+      ];
+      const total = entries.reduce((s, [,v]) => s + v, 0);
+      let start = 0;
+      const gradient = entries.map(([, value, color]) => {
+        const span = total > 0 ? (value / total) * 100 : 0;
+        const from = start.toFixed(2);
+        const to = (start + span).toFixed(2);
+        start += span;
+        return `${color} ${from}% ${to}%`;
+      }).join(', ');
+      return { entries, gradient: total > 0 ? gradient : '#233044 0% 100%' };
+    }
+
+    function renderCharts(filteredRows){
+      const chartsGrid = document.getElementById('chartsGrid');
+      if(!filteredRows.length){
+        chartsGrid.innerHTML = '<div class="chart-card">Aucun résultat à afficher.</div>';
+        return;
+      }
+
+      const grouped = new Map();
+      filteredRows.forEach(r => {
+        if(!grouped.has(r.site)) grouped.set(r.site, []);
+        grouped.get(r.site).push(r);
+      });
+
+      const groups = [...grouped.entries()].map(([site, rows]) => {
+        const values = {
+          aTester: rows.reduce((s,r)=>s+pctToNumber(r.aTester),0),
+          auto: rows.reduce((s,r)=>s+pctToNumber(r.auto),0),
+          humaine: rows.reduce((s,r)=>s+pctToNumber(r.humaine),0),
+          semi: rows.reduce((s,r)=>s+pctToNumber(r.semi),0),
+          vo: rows.reduce((s,r)=>s+pctToNumber(r.vo),0),
+        };
+        return {
+          site,
+          values,
+          total: rows.reduce((s,r)=>s+pctToNumber(r.total),0)
+        };
+      }).sort((a,b)=>b.total-a.total);
+
+      const globalValues = {
+        aTester: groups.reduce((s,g)=>s+g.values.aTester,0),
+        auto: groups.reduce((s,g)=>s+g.values.auto,0),
+        humaine: groups.reduce((s,g)=>s+g.values.humaine,0),
+        semi: groups.reduce((s,g)=>s+g.values.semi,0),
+        vo: groups.reduce((s,g)=>s+g.values.vo,0),
+      };
+      const globalTotal = groups.reduce((s,g)=>s+g.total,0);
+
+      const cards = [{ site:'Total général', values:globalValues, total:globalTotal }, ...groups];
+
+      chartsGrid.innerHTML = cards.map(card => {
+        const donut = buildDonutSegments(card.values);
+        return `
+          <article class="chart-card">
+            <div class="chart-head">
+              <div class="chart-title">${esc(card.site)}</div>
+              <div class="chart-badge">${card.total.toFixed(2).replace('.', ',')}%</div>
+            </div>
+            <div class="donut" style="background:conic-gradient(${donut.gradient})">
+              <div class="donut-center">
+                ${card.total.toFixed(2).replace('.', ',')}%
+                <small>${card.site === 'Total général' ? 'résultat affiché' : 'total du site'}</small>
+              </div>
+            </div>
+            <div class="legend">
+              ${donut.entries.map(([label, value, color]) => `
+                <div class="legend-row">
+                  <span class="legend-dot" style="background:${color}"></span>
+                  <span>${label}</span>
+                  <strong>${value.toFixed(2).replace('.', ',')}%</strong>
+                </div>
+              `).join('')}
+            </div>
+          </article>
+        `;
+      }).join('');
     }
 
     function buildSummary(filteredRows){
@@ -327,6 +444,7 @@
       });
       buildSummary(rows);
       renderSites(rows);
+      renderCharts(rows);
       document.getElementById('footerNote').textContent = `${rows.length} ligne(s) affichée(s) · Source : Google Sheets`;
     }
 
