@@ -176,7 +176,7 @@ function renderUpdates(items, games){
         ? `<a class="name-pill link" href="./jeux/profil.html?id=${encodeURIComponent(game.id)}">${esc(name)}</a>`
         : `<span class="name-pill">${esc(name)}</span>`;
 
-      return `<span class="update-pill">${gameHtml}${tradHtml ? `<span class="update-sep">—</span>${tradHtml}` : ''}</span>`;
+      return `<span class="update-pill">${gameHtml}${tradHtml ? tradHtml : ''}</span>`;
     }).join('') : '<span class="muted">Aucun nom</span>';
 
     return `<article class="update-item">
