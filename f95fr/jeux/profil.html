@@ -113,7 +113,41 @@
 </div>
 
 <script>
+
 const DATA_URL="https://script.google.com/macros/s/AKfycbybvrFy6B2L7rkLWJnrwRHhP0F6Sv0uk6V9zUTZibwEzUjKXf-abOK_N6jUhqFPs9US/exec";
+const CACHE_KEY="f95fr_ext_cache_v1";
+const CACHE_TIME_KEY="f95fr_ext_cache_time_v1";
+const CACHE_TTL=1000*60*10;
+async function getExtensionData(force=false){
+  try{
+    const now=Date.now();
+    if(!force){
+      const cached=sessionStorage.getItem(CACHE_KEY) || localStorage.getItem(CACHE_KEY);
+      const time=Number(sessionStorage.getItem(CACHE_TIME_KEY) || localStorage.getItem(CACHE_TIME_KEY) || 0);
+      if(cached && time && now-time < CACHE_TTL){
+        return JSON.parse(cached);
+      }
+    }
+    const res=await fetch(DATA_URL,{cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const json=await res.json();
+    const data=json?.data||{};
+    const payload={games:Array.isArray(data.games)?data.games:[], updates:Array.isArray(data.updates)?data.updates:[], traductors:Array.isArray(data.traductors)?data.traductors:[]};
+    const ser=JSON.stringify(payload);
+    try{
+      sessionStorage.setItem(CACHE_KEY, ser);
+      sessionStorage.setItem(CACHE_TIME_KEY, String(now));
+      localStorage.setItem(CACHE_KEY, ser);
+      localStorage.setItem(CACHE_TIME_KEY, String(now));
+    }catch(_e){}
+    return payload;
+  }catch(err){
+    const cached=sessionStorage.getItem(CACHE_KEY) || localStorage.getItem(CACHE_KEY);
+    if(cached) return JSON.parse(cached);
+    throw err;
+  }
+}
+
 const state={games:[],updates:[],current:null};
 const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const arr=v=>Array.isArray(v)?v:(v==null||v==='')?[]:[v];
@@ -143,54 +177,58 @@ function renderGame(g){
     ${g.trlink?`<a class="btn" href="${esc(g.trlink)}" target="_blank" rel="noopener">Page traducteur</a>`:''}
     ${g.prlink?`<a class="btn" href="${esc(g.prlink)}" target="_blank" rel="noopener">Page relecteur</a>`:''}
   `;
-  const relatedSameTrad=state.games.filter(x=>x.id!==g.id && arr(x.traductor).some(n=>arr(g.traductor).includes(n))).slice(0,4);
-  const relatedSameType=state.games.filter(x=>x.id!==g.id && x.type===g.type && !relatedSameTrad.includes(x)).slice(0,4-relatedSameTrad.length);
-  const related=[...relatedSameTrad,...relatedSameType];
-  document.getElementById('relatedGrid').innerHTML=related.length?related.map(x=>`
-    <article class="related-card">
-      <div class="related-cover">${x.image?`<img src="${esc(x.image)}" loading="lazy" referrerpolicy="no-referrer">`:'<div class="empty" style="height:100%;border:none;border-radius:0">Aucune image</div>'}</div>
-      <div class="related-body">
-        <div style="font-size:16px;font-weight:800"><a href="./profil.html?id=${encodeURIComponent(x.id)}">${esc(x.name||'—')}</a></div>
-        <div class="line">
-          <span class="status ${statusClass(x.status)}">${esc(x.status||'—')}</span>
-          <span class="engine">${esc(x.type||'—')}</span>
-        </div>
-      </div>
-    </article>`).join(''):'<div class="empty">Aucun jeu lié trouvé.</div>';
-
-  const upd=state.updates.filter(u=>arr(u.names).some(n=>String(n).trim().toLowerCase()===String(g.name||'').trim().toLowerCase())).slice(0,20);
-  document.getElementById('updatesList').innerHTML=upd.length?upd.map(u=>{
-    const kind=String(u.type||'').toLowerCase().includes('ajout')||String(u.kind||'').toLowerCase().includes('add')?'add':'update';
-    return `<article class="update-item">
-      <div class="update-head">
-        <div class="type ${kind}">${kind==='add'?'Ajout':'MAJ'}</div>
-        <div class="date">${esc(String(u.date||''))}</div>
-      </div>
-      <div style="margin-top:8px;font-weight:700">${arr(u.names).map(n=>`<span class="chip">${esc(n)}</span>`).join(' ')}</div>
-    </article>`;
-  }).join(''):'<div class="empty">Aucune update trouvée pour ce jeu.</div>';
-
+  document.getElementById('relatedGrid').innerHTML='<div class="empty">Chargement des jeux liés…</div>';
+  document.getElementById('updatesList').innerHTML='<div class="empty">Chargement des updates…</div>';
   const profilesLinks=[
     ...arr(g.traductor).filter(Boolean).map(n=>`<a class="btn" href="../profils/profil.html?name=${encodeURIComponent(n)}">👤 ${esc(n)}</a>`),
     ...arr(g.proofreader).filter(Boolean).map(n=>`<a class="btn" href="../profils/profil.html?name=${encodeURIComponent(n)}">📝 ${esc(n)}</a>`)
   ];
   document.getElementById('profilesLinks').innerHTML=profilesLinks.length?profilesLinks.join(' '):'<span class="empty">Aucun profil lié.</span>';
-
   const summary=[
     ['Tags', arr(g.tags).length, 'nombre de tags'],
     ['Images', g.image?1:0, 'visuel disponible'],
     ['Traducteurs', arr(g.traductor).filter(Boolean).length, 'liés au jeu'],
     ['Relecteurs', arr(g.proofreader).filter(Boolean).length, 'liés au jeu'],
-    ['Updates', upd.length, 'dans updates'],
+    ['Updates', 0, 'dans updates'],
   ];
   document.getElementById('summaryGrid').innerHTML=summary.map(([l,v,s])=>`<div class="summary-card"><div class="summary-label">${esc(l)}</div><div class="summary-value">${esc(v)}</div><div class="summary-sub">${esc(s)}</div></div>`).join('');
+  requestAnimationFrame(()=>{
+    const relatedSameTrad=state.games.filter(x=>x.id!==g.id && arr(x.traductor).some(n=>arr(g.traductor).includes(n))).slice(0,4);
+    const relatedSameType=state.games.filter(x=>x.id!==g.id && x.type===g.type && !relatedSameTrad.includes(x)).slice(0,4-relatedSameTrad.length);
+    const related=[...relatedSameTrad,...relatedSameType];
+    document.getElementById('relatedGrid').innerHTML=related.length?related.map(x=>`
+      <article class="related-card">
+        <div class="related-cover">${x.image?`<img src="${esc(x.image)}" loading="lazy" referrerpolicy="no-referrer">`:'<div class="empty" style="height:100%;border:none;border-radius:0">Aucune image</div>'}</div>
+        <div class="related-body">
+          <div style="font-size:16px;font-weight:800"><a href="./profil.html?id=${encodeURIComponent(x.id)}">${esc(x.name||'—')}</a></div>
+          <div class="line">
+            <span class="status ${statusClass(x.status)}">${esc(x.status||'—')}</span>
+            <span class="engine">${esc(x.type||'—')}</span>
+          </div>
+        </div>
+      </article>`).join(''):'<div class="empty">Aucun jeu lié trouvé.</div>';
+
+    setTimeout(()=>{
+      const upd=state.updates.filter(u=>arr(u.names).some(n=>String(n).trim().toLowerCase()===String(g.name||'').trim().toLowerCase())).slice(0,20);
+      document.getElementById('updatesList').innerHTML=upd.length?upd.map(u=>{
+        const kind=String(u.type||'').toLowerCase().includes('ajout')||String(u.kind||'').toLowerCase().includes('add')?'add':'update';
+        return `<article class="update-item">
+          <div class="update-head">
+            <div class="type ${kind}">${kind==='add'?'Ajout':'MAJ'}</div>
+            <div class="date">${esc(String(u.date||''))}</div>
+          </div>
+          <div style="margin-top:8px;font-weight:700">${arr(u.names).map(n=>`<span class="chip">${esc(n)}</span>`).join(' ')}</div>
+        </article>`;
+      }).join(''):'<div class="empty">Aucune update trouvée pour ce jeu.</div>';
+      summary[4][1]=upd.length;
+      document.getElementById('summaryGrid').innerHTML=summary.map(([l,v,s])=>`<div class="summary-card"><div class="summary-label">${esc(l)}</div><div class="summary-value">${esc(v)}</div><div class="summary-sub">${esc(s)}</div></div>`).join('');
+    },0);
+  });
 }
 async function load(){
-  const res=await fetch(DATA_URL,{cache:'no-store'});
-  const json=await res.json();
-  const data=json?.data||{};
-  state.games=Array.isArray(data.games)?data.games:[];
-  state.updates=Array.isArray(data.updates)?data.updates:[];
+  const data=await getExtensionData(false);
+  state.games=data.games||[];
+  state.updates=data.updates||[];
   const id=qp('id');
   const game=state.games.find(g=>String(g.id)===String(id)) || state.games[0];
   if(!game){ document.querySelector('.page').innerHTML='<div class="empty">Aucun jeu trouvé.</div>'; return; }
