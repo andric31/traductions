@@ -64,7 +64,7 @@
           </div>
         </div>
         <div class="actions">
-          <a class="btn" href="./jeux/">🎮 Jeux avancés</a>
+          
         </div>
       </div>
     </section>
@@ -181,6 +181,7 @@ async function loadData(){
   }
 }
 document.getElementById('refreshBtn').addEventListener('click', loadData);
+document.getElementById('refreshBtn')?.addEventListener('click', loadData);
 loadData();
 </script>
 </body>
