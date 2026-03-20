@@ -26,7 +26,7 @@
     html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
     a{color:var(--accent);text-decoration:none}
     a:hover{text-decoration:underline}
-    .page{max-width:1500px;margin:0 auto;padding:24px}
+    .page{width:100%;max-width:none;margin:0;padding:16px 18px 24px}
     .hero{
       background:linear-gradient(180deg, rgba(88,166,255,.12), rgba(88,166,255,.03));
       border:1px solid var(--border);
@@ -56,7 +56,7 @@
       border-radius:18px;
       padding:14px;
       display:grid;
-      grid-template-columns: minmax(220px,1.5fr) repeat(5,minmax(140px,.8fr));
+      grid-template-columns: minmax(220px,1.7fr) repeat(5,minmax(140px,1fr));
       gap:10px;
       margin-bottom:16px;
       position:sticky;
@@ -72,6 +72,7 @@
       border-radius:12px;
       padding:11px 12px;
       font-size:14px;
+      min-width:0;
     }
     .stats{
       display:grid;
@@ -84,6 +85,7 @@
       border:1px solid var(--border);
       border-radius:16px;
       padding:14px;
+      min-width:0;
     }
     .stat .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
     .stat .value{font-size:28px;font-weight:800;margin-top:6px}
@@ -94,31 +96,46 @@
       overflow:hidden;
       box-shadow:var(--shadow);
     }
-    .table-scroll{overflow:auto;max-height:calc(100vh - 280px)}
-    table{width:100%;border-collapse:collapse;min-width:1320px}
+    .table-scroll{
+      overflow-y:auto;
+      overflow-x:hidden;
+      max-height:calc(100vh - 260px);
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      table-layout:fixed;
+      min-width:0;
+    }
     thead th{
       position:sticky;top:0;z-index:2;
       background:#1c2128;
       color:#f0f6fc;
       text-align:left;
-      font-size:12px;
+      font-size:11px;
       letter-spacing:.04em;
       text-transform:uppercase;
-      padding:12px 10px;
+      padding:11px 8px;
       border-bottom:1px solid var(--border);
-      white-space:nowrap;
+      white-space:normal;
+      line-height:1.25;
+      word-break:break-word;
     }
     tbody td{
-      padding:10px;
+      padding:10px 8px;
       border-bottom:1px solid rgba(255,255,255,.06);
-      vertical-align:middle;
-      font-size:14px;
+      vertical-align:top;
+      font-size:13px;
+      line-height:1.35;
+      word-break:break-word;
+      overflow-wrap:anywhere;
     }
     tbody tr:hover{background:rgba(255,255,255,.03)}
     .site-badge,.type-badge,.status-badge,.tradtype-badge{
       display:inline-flex;align-items:center;justify-content:center;
       padding:5px 10px;border-radius:999px;font-size:12px;font-weight:800;
-      border:1px solid rgba(255,255,255,.09);white-space:nowrap;
+      border:1px solid rgba(255,255,255,.09);white-space:normal;text-align:center;
+      max-width:100%;
     }
     .site-badge{background:rgba(88,166,255,.15);color:#c6e2ff}
     .type-badge{background:rgba(35,134,54,.18);color:#baf5c4}
@@ -138,16 +155,39 @@
     .error{color:#ffd2cf}
     .footer-note{color:var(--muted);font-size:13px;padding:14px 4px 0}
     .pill-link{display:inline-flex;align-items:center;gap:8px}
+
+    th:nth-child(1), td:nth-child(1){width:58px}
+    th:nth-child(2), td:nth-child(2){width:72px}
+    th:nth-child(3), td:nth-child(3){width:240px}
+    th:nth-child(4), td:nth-child(4){width:96px}
+    th:nth-child(5), td:nth-child(5){width:110px}
+    th:nth-child(6), td:nth-child(6){width:90px}
+    th:nth-child(7), td:nth-child(7){width:110px}
+    th:nth-child(8), td:nth-child(8){width:330px}
+    th:nth-child(9), td:nth-child(9){width:84px}
+    th:nth-child(10), td:nth-child(10){width:110px}
+    th:nth-child(11), td:nth-child(11){width:110px}
+    th:nth-child(12), td:nth-child(12){width:160px}
+
+    @media (max-width:1400px){
+      .toolbar{grid-template-columns: minmax(220px,1.4fr) repeat(3,minmax(140px,1fr));}
+      .stats{grid-template-columns:repeat(3,1fr)}
+      .table-scroll{overflow-x:auto}
+      table{min-width:1320px;table-layout:auto}
+    }
     @media (max-width:1100px){
       .toolbar{grid-template-columns:1fr 1fr}
       .stats{grid-template-columns:repeat(2,1fr)}
-      .table-scroll{max-height:none}
+      .table-scroll{max-height:none;overflow-x:auto}
+      table{min-width:1200px;table-layout:auto}
     }
     @media (max-width:700px){
       .page{padding:14px}
       .toolbar{grid-template-columns:1fr}
       .stats{grid-template-columns:1fr}
       h1{font-size:26px}
+      .table-scroll{overflow-x:auto}
+      table{min-width:1100px}
     }
   </style>
 </head>
