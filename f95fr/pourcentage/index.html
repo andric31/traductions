@@ -340,19 +340,24 @@
     function buildSummary(filteredRows){
       const sites = new Set(filteredRows.map(r => r.site)).size;
       const total = filteredRows.reduce((sum, r) => sum + pctToNumber(r.total), 0);
-      const aTester = filteredRows.reduce((sum, r) => sum + pctToNumber(r.aTester), 0);
-      const auto = filteredRows.reduce((sum, r) => sum + pctToNumber(r.auto), 0);
-      const humaine = filteredRows.reduce((sum, r) => sum + pctToNumber(r.humaine), 0);
-      const semi = filteredRows.reduce((sum, r) => sum + pctToNumber(r.semi), 0);
-      const vo = filteredRows.reduce((sum, r) => sum + pctToNumber(r.vo), 0);
+      const items = [
+        { label:'Trad. auto', value: filteredRows.reduce((sum, r) => sum + pctToNumber(r.auto), 0), sub:'part automatique' },
+        { label:'Trad. humaine', value: filteredRows.reduce((sum, r) => sum + pctToNumber(r.humaine), 0), sub:'part humaine' },
+        { label:'Trad. semi-auto', value: filteredRows.reduce((sum, r) => sum + pctToNumber(r.semi), 0), sub:'part semi-auto' },
+        { label:'VO française', value: filteredRows.reduce((sum, r) => sum + pctToNumber(r.vo), 0), sub:'part VO française' },
+        { label:'À tester', value: filteredRows.reduce((sum, r) => sum + pctToNumber(r.aTester), 0), sub:'part à tester' },
+      ].sort((a,b)=>b.value-a.value);
+
       const grid = document.getElementById('summaryGrid');
       grid.innerHTML = `
         <div class="summary-card"><div class="summary-label">Sites affichés</div><div class="summary-value">${sites}</div><div class="summary-sub">groupes visibles</div></div>
-        <div class="summary-card"><div class="summary-label">Trad. auto</div><div class="summary-value">${auto.toFixed(2).replace('.', ',')}%</div><div class="summary-sub">part automatique</div></div>
-        <div class="summary-card"><div class="summary-label">Trad. humaine</div><div class="summary-value">${humaine.toFixed(2).replace('.', ',')}%</div><div class="summary-sub">part humaine</div></div>
-        <div class="summary-card"><div class="summary-label">Trad. semi-auto</div><div class="summary-value">${semi.toFixed(2).replace('.', ',')}%</div><div class="summary-sub">part semi-auto</div></div>
-        <div class="summary-card"><div class="summary-label">VO française</div><div class="summary-value">${vo.toFixed(2).replace('.', ',')}%</div><div class="summary-sub">part VO française</div></div>
-        <div class="summary-card"><div class="summary-label">À tester</div><div class="summary-value">${aTester.toFixed(2).replace('.', ',')}%</div><div class="summary-sub">part à tester</div></div>
+        ${items.map(item => `
+          <div class="summary-card">
+            <div class="summary-label">${item.label}</div>
+            <div class="summary-value">${item.value.toFixed(2).replace('.', ',')}%</div>
+            <div class="summary-sub">${item.sub}</div>
+          </div>
+        `).join('')}
         <div class="summary-card"><div class="summary-label">Total cumulé</div><div class="summary-value">${total.toFixed(2).replace('.', ',')}%</div><div class="summary-sub">somme des lignes affichées</div></div>
       `;
     }
@@ -426,6 +431,18 @@
                     </tr>
                   `;
                 }).join('')}
+                <tr>
+                  <td><strong>Total</strong></td>
+                  <td class="num"><strong>${group.rows.reduce((sum,r)=>sum+pctToNumber(r.aTester),0).toFixed(2).replace('.', ',')}%</strong></td>
+                  <td class="num"><strong>${group.rows.reduce((sum,r)=>sum+pctToNumber(r.auto),0).toFixed(2).replace('.', ',')}%</strong></td>
+                  <td class="num"><strong>${group.rows.reduce((sum,r)=>sum+pctToNumber(r.humaine),0).toFixed(2).replace('.', ',')}%</strong></td>
+                  <td class="num"><strong>${group.rows.reduce((sum,r)=>sum+pctToNumber(r.semi),0).toFixed(2).replace('.', ',')}%</strong></td>
+                  <td class="num"><strong>${group.rows.reduce((sum,r)=>sum+pctToNumber(r.vo),0).toFixed(2).replace('.', ',')}%</strong></td>
+                  <td class="bar-cell">
+                    <div><strong>${group.total.toFixed(2).replace('.', ',')}%</strong></div>
+                    <div class="bar-track"><div class="bar-fill" style="width:${Math.max(0, Math.min(100, group.total))}%"></div></div>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
