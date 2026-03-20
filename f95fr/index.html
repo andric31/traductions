@@ -161,9 +161,8 @@
     function renderStats(rows){ const stats=document.getElementById('stats'); const total=rows.length; const enCours=rows.filter(r=>slugify(r.status).includes('en-cours')).length; const termine=rows.filter(r=>slugify(r.status).includes('termine')).length; const abandonne=rows.filter(r=>slugify(r.status).includes('abandonne')).length; const traducteurs=new Set(rows.map(r=>(r.translator||'').trim()).filter(Boolean)).size;
       stats.innerHTML = [['Total jeux', total, null],['En cours', enCours, null],['Terminés', termine, null],['Abandonnés', abandonne, null],['Traducteurs', traducteurs, './traducteurs/']].map(([label,value,href]) => {
         const isTradTile = label === 'Traducteurs';
-        const extraClass = isTradTile ? ' stat-no-hover' : '';
         return href
-          ? `<a class="stat clickable${extraClass}" href="${href}"><div class="label">${label}</div><div class="value">${value}</div>${isTradTile ? '' : '<div class="hint">Ouvrir la page dédiée</div>'}</a>`
+          ? `<a class="stat clickable" href="${href}"><div class="label">${label}</div><div class="value">${value}</div>${isTradTile ? '' : '<div class="hint">Ouvrir la page dédiée</div>'}</a>`
           : `<div class="stat"><div class="label">${label}</div><div class="value">${value}</div></div>`;
       }).join('');
     }
