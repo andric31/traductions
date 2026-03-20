@@ -1,1 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="no-referrer">
+  <title>f95list FR — Jeux avancés</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <style>
+    :root{--bg:#0b1220;--panel:#111827;--panel-2:#0f172a;--text:#e6edf3;--muted:#9aa4af;--border:#263244;--accent:#58a6ff;--green:#238636;--red:#da3633;--orange:#d29922;--shadow:0 14px 40px rgba(0,0,0,.35)}
+    *{box-sizing:border-box} html,body{margin:0;padding:0;background:linear-gradient(180deg,#07101d 0%,#0b1220 55%,#09111e 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+    .page{max-width:1700px;margin:0 auto;padding:12px;display:flex;flex-direction:column;gap:12px}
+    .hero,.panel,.card,.game-card,.mini{background:rgba(17,24,39,.92);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow)}
+    .hero{padding:16px 18px;background:linear-gradient(135deg, rgba(96,165,250,.18), rgba(17,24,39,.96) 55%, rgba(34,197,94,.08))}
+    .hero-top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+    h1,h2,h3{margin:0} h1{font-size:28px;line-height:1.1}
+    .subtitle{margin-top:6px;color:var(--muted);font-size:14px;line-height:1.4}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);padding:9px 13px;border-radius:12px;font-weight:700}
+    .btn.primary{background:rgba(31,111,235,.16);border-color:rgba(88,166,255,.45)}
+    .panel{padding:12px}
+    .stats{display:grid;grid-template-columns:repeat(5,minmax(110px,1fr));gap:8px}
+    .mini{padding:10px 12px}.mini .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.mini .v{margin-top:6px;font-size:24px;font-weight:800;line-height:1}
+    .toolbar{display:grid;grid-template-columns:minmax(240px,1.6fr) repeat(5,minmax(120px,1fr));gap:8px}
+    .toolbar input,.toolbar select{width:100%;background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:10px 11px}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .game-card{overflow:hidden;display:flex;flex-direction:column}
+    .cover{aspect-ratio:16/9;background:var(--panel-2);position:relative;border-bottom:1px solid rgba(255,255,255,.06)}
+    .cover img{width:100%;height:100%;object-fit:cover;display:block}
+    .cover .site{position:absolute;right:10px;top:10px;padding:6px 9px;border-radius:999px;background:rgba(11,18,32,.82);border:1px solid rgba(255,255,255,.08);font-size:11px;font-weight:800}
+    .body{padding:12px;display:flex;flex-direction:column;gap:10px}
+    .title{font-size:17px;font-weight:800;line-height:1.25}
+    .line,.chips,.actions-row{display:flex;flex-wrap:wrap;gap:8px}
+    .status,.engine,.ttype,.chip{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800;border:1px solid rgba(255,255,255,.08)}
+    .status.en-cours{background:rgba(210,153,34,.18)} .status.termine{background:rgba(35,134,54,.18)} .status.abandonne{background:rgba(218,54,51,.18)} .status.other{background:rgba(148,163,184,.18)}
+    .engine{background:rgba(31,111,235,.18)} .ttype{background:rgba(148,163,184,.18)} .chip{background:var(--panel-2)}
+    .meta-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .meta-box{background:var(--panel-2);border:1px solid rgba(255,255,255,.06);padding:8px 10px;border-radius:12px}
+    .meta-box .k{font-size:11px;text-transform:uppercase;color:var(--muted)} .meta-box .v{margin-top:4px;font-size:13px;font-weight:700}
+    .game-btn{display:inline-flex;align-items:center;justify-content:center;padding:9px 11px;border-radius:12px;border:1px solid var(--border);background:var(--panel-2);color:var(--text);font-weight:700}
+    .game-btn.primary{background:rgba(31,111,235,.16);border-color:rgba(88,166,255,.4)}
+    .muted{color:var(--muted)} .empty{padding:18px;border:1px dashed rgba(255,255,255,.12);border-radius:16px;color:var(--muted)}
+    @media (max-width:1400px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.toolbar{grid-template-columns:minmax(240px,1.6fr) repeat(3,minmax(120px,1fr))}.stats{grid-template-columns:repeat(3,minmax(110px,1fr))}}
+    @media (max-width:980px){.toolbar{grid-template-columns:1fr 1fr}.grid,.stats{grid-template-columns:1fr}}
+    @media (max-width:700px){.page{padding:10px}h1{font-size:24px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <section class="hero">
+    <div class="hero-top">
+      <div>
+        <h1>🎮 Jeux avancés</h1>
+        <div class="subtitle">Espace jeux séparé du Google Sheet, basé uniquement sur la base extension : image, statut, tags, moteur, traducteur, relecteur et liens réels.</div>
+      </div>
+      <div class="actions">
+        <a class="btn" href="../index.html">← Retour accueil</a>
+        <a class="btn" href="../profils/">👥 Profils avancés</a>
+      </div>
+    </div>
+  </section>
 
+  <section class="panel">
+    <div class="stats">
+      <div class="mini"><div class="k">Jeux</div><div class="v" id="gamesCount">…</div></div>
+      <div class="mini"><div class="k">Avec images</div><div class="v" id="imagesCount">…</div></div>
+      <div class="mini"><div class="k">Updates</div><div class="v" id="updatesCount">…</div></div>
+      <div class="mini"><div class="k">Traducteurs</div><div class="v" id="traductorsCount">…</div></div>
+      <div class="mini"><div class="k">Relecteurs</div><div class="v" id="proofreadersCount">…</div></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="toolbar">
+      <input id="searchInput" type="search" placeholder="Rechercher un jeu, un tag, un traducteur...">
+      <select id="statusFilter"><option value="">Tous les statuts</option></select>
+      <select id="engineFilter"><option value="">Tous les moteurs</option></select>
+      <select id="translationTypeFilter"><option value="">Tous les types de traduction</option></select>
+      <select id="translatorFilter"><option value="">Tous les traducteurs</option></select>
+      <select id="sortSelect">
+        <option value="title-asc">Titre A → Z</option>
+        <option value="title-desc">Titre Z → A</option>
+        <option value="id-desc">ID ↓</option>
+        <option value="status-asc">Statut A → Z</option>
+      </select>
+    </div>
+  </section>
+
+  <section class="grid" id="gamesGrid">
+    <div class="empty">Chargement...</div>
+  </section>
+</div>
+
+<script>
+const DATA_URL="https://script.google.com/macros/s/AKfycbybvrFy6B2L7rkLWJnrwRHhP0F6Sv0uk6V9zUTZibwEzUjKXf-abOK_N6jUhqFPs9US/exec";
+const state={games:[],updates:[]};
+const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const arr=v=>Array.isArray(v)?v:(v==null||v==='')?[]:[v];
+const uniq=a=>[...new Set(a)];
+const slug=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+function statusClass(status){ const s=slug(status); if(s.includes('en-cours')) return 'en-cours'; if(s.includes('termine')) return 'termine'; if(s.includes('abandonne')) return 'abandonne'; return 'other'; }
+function fillFilters(){
+  const games=state.games;
+  const fill=(id, vals, label)=>{ const el=document.getElementById(id), cur=el.value; el.innerHTML=`<option value="">${label}</option>`+vals.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join(''); if(vals.includes(cur)) el.value=cur; };
+  fill('statusFilter', uniq(games.map(g=>String(g.status||'').trim()).filter(Boolean)).sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'})), 'Tous les statuts');
+  fill('engineFilter', uniq(games.map(g=>String(g.type||'').trim()).filter(Boolean)).sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'})), 'Tous les moteurs');
+  fill('translationTypeFilter', uniq(games.map(g=>String(g.ttype||'').trim()).filter(Boolean)).sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'})), 'Tous les types de traduction');
+  fill('translatorFilter', uniq(state.games.flatMap(g=>arr(g.traductor)).map(v=>String(v).trim()).filter(Boolean)).sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'})), 'Tous les traducteurs');
+}
+function render(){
+  let rows=[...state.games];
+  const q=String(document.getElementById('searchInput').value||'').trim().toLowerCase();
+  const sf=document.getElementById('statusFilter').value;
+  const ef=document.getElementById('engineFilter').value;
+  const tf=document.getElementById('translationTypeFilter').value;
+  const tr=document.getElementById('translatorFilter').value;
+  const sort=document.getElementById('sortSelect').value;
+
+  if(q) rows=rows.filter(g => (`${g.name} ${arr(g.tags).join(' ')} ${g.type} ${g.status} ${g.version} ${g.ttype} ${arr(g.traductor).join(' ')} ${arr(g.proofreader).join(' ')}`).toLowerCase().includes(q));
+  if(sf) rows=rows.filter(g=>String(g.status||'')===sf);
+  if(ef) rows=rows.filter(g=>String(g.type||'')===ef);
+  if(tf) rows=rows.filter(g=>String(g.ttype||'')===tf);
+  if(tr) rows=rows.filter(g=>arr(g.traductor).includes(tr));
+
+  rows.sort((a,b)=>{
+    if(sort==='title-desc') return String(b.name||'').localeCompare(String(a.name||''),'fr',{sensitivity:'base'});
+    if(sort==='id-desc') return Number(b.id||0)-Number(a.id||0);
+    if(sort==='status-asc') return String(a.status||'').localeCompare(String(b.status||''),'fr',{sensitivity:'base'});
+    return String(a.name||'').localeCompare(String(b.name||''),'fr',{sensitivity:'base'});
+  });
+
+  const grid=document.getElementById('gamesGrid');
+  if(!rows.length){ grid.innerHTML='<div class="empty">Aucun jeu avec les filtres actuels.</div>'; return; }
+  grid.innerHTML=rows.map(g=>`
+    <article class="game-card">
+      <div class="cover">${g.image?`<img src="${esc(g.image)}" loading="lazy" referrerpolicy="no-referrer">`:'<div class="empty" style="height:100%;border:none;border-radius:0">Aucune image</div>'}<div class="site">${esc(g.domain||g.hostname||'Jeu')}</div></div>
+      <div class="body">
+        <div class="title"><a href="./profil.html?id=${encodeURIComponent(g.id)}">${esc(g.name||'—')}</a></div>
+        <div class="line">
+          <span class="status ${statusClass(g.status)}">${esc(g.status||'—')}</span>
+          <span class="engine">${esc(g.type||'—')}</span>
+          <span class="ttype">${esc(g.ttype||'—')}</span>
+        </div>
+        <div class="meta-row">
+          <div class="meta-box"><div class="k">Version jeu</div><div class="v">${esc(g.version||'—')}</div></div>
+          <div class="meta-box"><div class="k">Version trad</div><div class="v">${esc(g.tversion||'—')}</div></div>
+        </div>
+        <div class="meta-row">
+          <div class="meta-box"><div class="k">Traducteur</div><div class="v">${esc(arr(g.traductor).join(', ')||'—')}</div></div>
+          <div class="meta-box"><div class="k">Relecteur</div><div class="v">${esc(arr(g.proofreader).join(', ')||'—')}</div></div>
+        </div>
+        <div class="chips">${arr(g.tags).slice(0,6).map(t=>`<span class="chip">${esc(t)}</span>`).join('')}</div>
+        <div class="actions-row">
+          <a class="game-btn primary" href="./profil.html?id=${encodeURIComponent(g.id)}">Profil jeu</a>
+          ${g.link?`<a class="game-btn" href="${esc(g.link)}" target="_blank" rel="noopener">Jeu</a>`:''}
+          ${g.tlink?`<a class="game-btn" href="${esc(g.tlink)}" target="_blank" rel="noopener">Trad</a>`:''}
+        </div>
+      </div>
+    </article>`).join('');
+}
+async function load(){
+  const res=await fetch(DATA_URL,{cache:'no-store'});
+  const json=await res.json();
+  const data=json?.data||{};
+  state.games=Array.isArray(data.games)?data.games:[];
+  state.updates=Array.isArray(data.updates)?data.updates:[];
+  document.getElementById('gamesCount').textContent=state.games.length;
+  document.getElementById('imagesCount').textContent=state.games.filter(g=>g.image).length;
+  document.getElementById('updatesCount').textContent=state.updates.length;
+  document.getElementById('traductorsCount').textContent=uniq(state.games.flatMap(g=>arr(g.traductor)).filter(Boolean)).length;
+  document.getElementById('proofreadersCount').textContent=uniq(state.games.flatMap(g=>arr(g.proofreader)).filter(Boolean)).length;
+  fillFilters();
+  render();
+}
+['searchInput','statusFilter','engineFilter','translationTypeFilter','translatorFilter','sortSelect'].forEach(id=>document.getElementById(id).addEventListener(id==='searchInput'?'input':'change',render));
+load().catch(err=>{ document.getElementById('gamesGrid').innerHTML='<div class="empty">Impossible de charger la base extension.</div>'; console.error(err); });
+</script>
+</body>
+</html>
