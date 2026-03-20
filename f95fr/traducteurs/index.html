@@ -7,15 +7,45 @@
   <title>f95list FR — Traducteurs</title>
   <link rel="icon" type="image/png" href="/favicon.png">
   <style>
-    :root{--bg:#0e1117;--panel:#161b22;--panel-2:#11161d;--text:#e6edf3;--muted:#9aa4af;--border:#30363d;--accent:#58a6ff;--shadow:0 14px 40px rgba(0,0,0,.35)}
-    *{box-sizing:border-box} html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif} a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
-    .page{padding:16px 18px 24px}.hero,.panel{background:var(--panel);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow)}
-    .hero{padding:22px;margin-bottom:18px;background:linear-gradient(180deg, rgba(88,166,255,.12), rgba(88,166,255,.03))}.hero-top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
-    h1{margin:0;font-size:30px}.subtitle{margin-top:10px;color:var(--muted)}.actions{display:flex;gap:10px;flex-wrap:wrap}.btn{border:1px solid var(--border);background:var(--panel);color:var(--text);padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600}
-    .toolbar{padding:14px;border-bottom:1px solid rgba(255,255,255,.06);display:grid;grid-template-columns:minmax(240px,1.4fr) minmax(180px,.8fr) minmax(180px,.8fr) minmax(180px,.8fr);gap:10px}.toolbar input,.toolbar select{width:100%;background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:11px 12px}
-    .table-scroll{overflow:auto;max-height:calc(100vh - 250px)} table{width:100%;border-collapse:collapse;min-width:900px} th,td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left;font-size:14px;vertical-align:top} thead th{position:sticky;top:0;background:#1c2128;z-index:2;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
-    tbody tr:hover{background:rgba(255,255,255,.03)} .muted{color:var(--muted)} .footer-note{color:var(--muted);font-size:13px;padding:14px 4px 0}
-    @media (max-width:900px){.toolbar{grid-template-columns:1fr 1fr}.page{padding:14px}} @media (max-width:600px){.toolbar{grid-template-columns:1fr}}
+    :root{
+      --bg:#0b1220;--panel:#111827;--panel-2:#0f172a;--text:#e6edf3;--muted:#9aa4af;
+      --border:#263244;--accent:#58a6ff;--shadow:0 14px 40px rgba(0,0,0,.35)
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:linear-gradient(180deg,#07101d 0%,#0b1220 55%,#09111e 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+    .page{padding:16px 18px 24px}
+    .hero,.panel,.summary-card{background:rgba(17,24,39,.92);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow)}
+    .hero{padding:22px;margin-bottom:18px;background:linear-gradient(135deg, rgba(96,165,250,.18), rgba(17,24,39,.96) 55%, rgba(34,197,94,.08))}
+    .hero-top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+    h1{margin:0;font-size:30px}
+    .subtitle{margin-top:10px;color:var(--muted)}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{border:1px solid var(--border);background:var(--panel);color:var(--text);padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600}
+    .toolbar{padding:14px;border-bottom:1px solid rgba(255,255,255,.06);display:grid;grid-template-columns:minmax(240px,1.4fr) minmax(180px,.8fr) minmax(180px,.8fr) minmax(180px,.8fr);gap:10px}
+    .toolbar input,.toolbar select{width:100%;background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:11px 12px}
+    .summary-grid{display:grid;grid-template-columns:repeat(5,minmax(140px,1fr));gap:12px;padding:14px}
+    .summary-card{border-radius:18px;padding:14px 16px}
+    .summary-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+    .summary-value{margin-top:8px;font-size:31px;font-weight:800;line-height:1}
+    .summary-sub{margin-top:6px;color:var(--muted);font-size:13px}
+    .table-scroll{overflow:auto;max-height:calc(100vh - 330px)}
+    table{width:100%;border-collapse:collapse;min-width:980px}
+    th,td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left;font-size:14px;vertical-align:top}
+    thead th{position:sticky;top:0;background:#1c2128;z-index:2;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+    tbody tr:hover{background:rgba(255,255,255,.03)}
+    .muted{color:var(--muted)}
+    .footer-note{color:var(--muted);font-size:13px;padding:14px 4px 0}
+    .pages-badges{display:flex;flex-wrap:wrap;gap:6px}
+    .page-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.08);white-space:nowrap;font-weight:700;font-size:12px}
+    .badge-f95{background:rgba(31,111,235,.22)}
+    .badge-discord{background:rgba(88,101,242,.22)}
+    .badge-lewd{background:rgba(234,88,12,.18)}
+    .badge-other{background:rgba(148,163,184,.18)}
+    .num{font-variant-numeric:tabular-nums}
+    @media (max-width:1300px){.summary-grid{grid-template-columns:repeat(3,minmax(140px,1fr))}}
+    @media (max-width:900px){.toolbar{grid-template-columns:1fr 1fr}.summary-grid{grid-template-columns:repeat(2,minmax(140px,1fr))}.page{padding:14px}}
+    @media (max-width:600px){.toolbar,.summary-grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -28,21 +58,236 @@
         <select id="sortSelect"><option value="calc-desc">Calc ↓</option><option value="calc-asc">Calc ↑</option><option value="traduction-desc">Traduction ↓</option><option value="nom-asc">Nom A → Z</option></select>
         <select id="roleFilter"><option value="">Tous</option><option value="trad">A de la traduction</option><option value="relecture">A de la relecture</option></select>
       </div>
+      <div class="summary-grid" id="summaryGrid">
+        <div class="summary-card"><div class="summary-label">Chargement</div><div class="summary-value">…</div><div class="summary-sub">des traducteurs</div></div>
+      </div>
       <div class="table-scroll"><table><thead><tr><th>Nom</th><th>Pages</th><th>ID Discord</th><th>Traduction</th><th>Relecture</th><th>Calc</th></tr></thead><tbody id="tableBody"><tr><td colspan="6" class="muted">Chargement...</td></tr></tbody></table></div>
     </section>
     <div class="footer-note" id="footerNote"></div>
   </div>
 <script>
-const SHEET_ID='1ELRF0kpF8SoUlslX5ZXZoG4WXeWST6lN9bLws32EPfs', GID='1040172739', CSV_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`; const state={rows:[]};
-function parseCSV(text){const rows=[];let row=[],value='',inQuotes=false;for(let i=0;i<text.length;i++){const c=text[i],n=text[i+1];if(inQuotes){if(c==='"'&&n==='"'){value+='"';i++;}else if(c==='"'){inQuotes=false;}else value+=c;}else{if(c==='"')inQuotes=true;else if(c===','){row.push(value);value='';}else if(c==='\n'){row.push(value);rows.push(row);row=[];value='';}else if(c==='\r'){}else value+=c;}}row.push(value);rows.push(row);return rows.filter(r=>r.some(x=>String(x||'').trim()!==''));}
-function nh(h){return String(h||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();}
-function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-function num(v){const n=Number(String(v||'').replace(',', '.'));return Number.isFinite(n)?n:0;}
-function mapRows(matrix){const [headers,...data]=matrix;const idx={};headers.forEach((h,i)=>idx[nh(h)]=i);const pick=(r,...keys)=>{for(const k of keys){if(idx[k]!=null)return r[idx[k]]||'';}return '';};return data.map(r=>({nom:pick(r,'nom'), pages:pick(r,'pages'), discordId:pick(r,'id discord'), traduction:pick(r,'traduction'), relecture:pick(r,'relecture'), calc:pick(r,'calc')})).filter(r=>r.nom||r.discordId);}
-function fillPages(){const values=[...new Set(state.rows.map(r=>String(r.pages||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'}));const s=document.getElementById('pagesFilter');const cur=s.value;s.innerHTML='<option value="">Toutes les pages</option>';values.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;s.appendChild(o);});if(values.includes(cur))s.value=cur;}
-function render(rows){const body=document.getElementById('tableBody');if(!rows.length){body.innerHTML='<tr><td colspan="6" class="muted">Aucun résultat.</td></tr>';return;}body.innerHTML=rows.map(r=>`<tr><td>${esc(r.nom)||'—'}</td><td>${r.pages?(/^https?:/i.test(r.pages)||r.pages.includes('F95')||r.pages.includes('Discord')?`<a href="${esc(r.pages.startsWith('http')?r.pages:'#')}" ${r.pages.startsWith('http')?'target="_blank" rel="noopener"':''}>${esc(r.pages)}</a>`:esc(r.pages)): '—'}</td><td>${esc(r.discordId)||'—'}</td><td>${esc(r.traduction)||'0'}</td><td>${esc(r.relecture)||'0'}</td><td>${esc(r.calc)||'0'}</td></tr>`).join('');document.getElementById('footerNote').textContent=`${rows.length} ligne(s) affichée(s) · Source : Google Sheets`;}
-function applyFilters(){const q=document.getElementById('searchInput').value.trim().toLowerCase();const pages=document.getElementById('pagesFilter').value;const role=document.getElementById('roleFilter').value;const sort=document.getElementById('sortSelect').value;let rows=state.rows.filter(r=>{const hay=[r.nom,r.pages,r.discordId,r.traduction,r.relecture,r.calc].join(' ').toLowerCase();if(q&&!hay.includes(q))return false;if(pages&&r.pages!==pages)return false;if(role==='trad'&&num(r.traduction)<=0)return false;if(role==='relecture'&&num(r.relecture)<=0)return false;return true;});rows.sort((a,b)=>{switch(sort){case 'calc-asc': return num(a.calc)-num(b.calc);case 'traduction-desc': return num(b.traduction)-num(a.traduction);case 'nom-asc': return String(a.nom).localeCompare(String(b.nom),'fr',{sensitivity:'base'});default:return num(b.calc)-num(a.calc);}});render(rows);}
-async function load(){document.getElementById('tableBody').innerHTML='<tr><td colspan="6" class="muted">Chargement...</td></tr>';try{const res=await fetch(CSV_URL,{cache:'no-store'});if(!res.ok)throw new Error(res.status);const txt=await res.text();state.rows=mapRows(parseCSV(txt));fillPages();applyFilters();}catch(e){document.getElementById('tableBody').innerHTML='<tr><td colspan="6" class="muted">Impossible de charger cet onglet.</td></tr>';}}
-['searchInput','pagesFilter','sortSelect','roleFilter'].forEach(id=>document.getElementById(id).addEventListener(id==='searchInput'?'input':'change',applyFilters));document.getElementById('refreshBtn').addEventListener('click',load);load();
+const SHEET_ID='1ELRF0kpF8SoUlslX5ZXZoG4WXeWST6lN9bLws32EPfs';
+const GID='1040172739';
+const CSV_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
+const HTML_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=html&gid=${GID}`;
+const state={rows:[], realLinks:new Map()};
+
+function parseCSV(text){
+  const rows=[]; let row=[], value='', inQuotes=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i], n=text[i+1];
+    if(inQuotes){
+      if(c==='"' && n==='"'){ value+='"'; i++; }
+      else if(c==='"'){ inQuotes=false; }
+      else value+=c;
+    }else{
+      if(c==='"') inQuotes=true;
+      else if(c===','){ row.push(value); value=''; }
+      else if(c==='\n'){ row.push(value); rows.push(row); row=[]; value=''; }
+      else if(c==='\r'){}
+      else value+=c;
+    }
+  }
+  row.push(value); rows.push(row);
+  return rows.filter(r=>r.some(x=>String(x||'').trim()!=='')); 
+}
+function nh(h){ return String(h||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim(); }
+function esc(v){ return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function num(v){ const n=Number(String(v||'').replace(',', '.')); return Number.isFinite(n)?n:0; }
+
+function normalizeLabel(label){
+  return String(label||'').toLowerCase().replace(/\s+/g,' ').trim();
+}
+function splitPageLabels(pages){
+  return String(pages||'').split(/\s*-\s*/).map(x=>x.trim()).filter(Boolean);
+}
+function badgeClass(label){
+  const s = normalizeLabel(label);
+  if(s.includes('discord')) return 'badge-discord';
+  if(s.includes('lewd')) return 'badge-lewd';
+  if(s.includes('f95')) return 'badge-f95';
+  return 'badge-other';
+}
+function rowKey(nom, discordId){
+  return `${String(nom||'').trim()}|${String(discordId||'').trim()}`.toLowerCase();
+}
+function mapRows(matrix){
+  const [headers,...data]=matrix;
+  const idx={};
+  headers.forEach((h,i)=>idx[nh(h)]=i);
+  const pick=(r,...keys)=>{ for(const k of keys){ if(idx[k]!=null) return r[idx[k]]||''; } return ''; };
+  return data.map(r=>{
+    const nom = pick(r,'nom');
+    const discordId = pick(r,'id discord');
+    return {
+      nom,
+      pages: pick(r,'pages'),
+      discordId,
+      traduction: pick(r,'traduction'),
+      relecture: pick(r,'relecture'),
+      calc: pick(r,'calc'),
+      pageLinks: state.realLinks.get(rowKey(nom, discordId)) || []
+    };
+  }).filter(r=>r.nom||r.discordId);
+}
+
+function parseHtmlExportForLinks(html){
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const tables = [...doc.querySelectorAll('table')];
+  const found = new Map();
+
+  for(const table of tables){
+    const rows = [...table.querySelectorAll('tr')];
+    for(const tr of rows){
+      const cells = [...tr.querySelectorAll('td,th')];
+      if(cells.length < 6) continue;
+
+      const nom = cells[0]?.textContent?.trim() || '';
+      const discordId = cells[2]?.textContent?.trim() || '';
+      const key = rowKey(nom, discordId);
+      if(!nom && !discordId) continue;
+
+      const pageCell = cells[1];
+      const anchors = [...pageCell.querySelectorAll('a[href]')].map(a=>({
+        label: a.textContent.trim(),
+        href: a.getAttribute('href')
+      })).filter(x=>x.href);
+
+      if(anchors.length){
+        found.set(key, anchors);
+      }
+    }
+  }
+  return found;
+}
+
+function buildPagesHtml(row){
+  const labels = splitPageLabels(row.pages);
+  if(!labels.length) return '—';
+
+  const links = Array.isArray(row.pageLinks) ? [...row.pageLinks] : [];
+  const used = new Set();
+
+  const badges = labels.map((label, idx) => {
+    const norm = normalizeLabel(label);
+    let matchIndex = links.findIndex((x, i) => !used.has(i) && normalizeLabel(x.label).includes(norm));
+    if(matchIndex < 0){
+      matchIndex = links.findIndex((x, i) => !used.has(i) && norm.includes(normalizeLabel(x.label)));
+    }
+    if(matchIndex < 0 && idx < links.length && !used.has(idx)){
+      matchIndex = idx;
+    }
+
+    const cls = badgeClass(label);
+    if(matchIndex >= 0){
+      used.add(matchIndex);
+      const href = links[matchIndex].href;
+      return `<a class="page-badge ${cls}" href="${esc(href)}" target="_blank" rel="noopener">${esc(label)}</a>`;
+    }
+    return `<span class="page-badge ${cls}">${esc(label)}</span>`;
+  });
+
+  return `<div class="pages-badges">${badges.join('')}</div>`;
+}
+
+function fillPages(){
+  const values=[...new Set(state.rows.map(r=>String(r.pages||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'}));
+  const s=document.getElementById('pagesFilter');
+  const cur=s.value;
+  s.innerHTML='<option value="">Toutes les pages</option>';
+  values.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;s.appendChild(o);});
+  if(values.includes(cur)) s.value=cur;
+}
+
+function buildSummary(rows){
+  const totalTrad = rows.reduce((s,r)=>s+num(r.traduction),0);
+  const totalRel = rows.reduce((s,r)=>s+num(r.relecture),0);
+  const totalCalc = rows.reduce((s,r)=>s+num(r.calc),0);
+  const withDiscord = rows.filter(r=>String(r.discordId||'').trim()).length;
+  const withPageLinks = rows.filter(r=>Array.isArray(r.pageLinks) && r.pageLinks.length>0).length;
+
+  document.getElementById('summaryGrid').innerHTML = `
+    <div class="summary-card"><div class="summary-label">Traducteurs visibles</div><div class="summary-value">${rows.length}</div><div class="summary-sub">lignes affichées</div></div>
+    <div class="summary-card"><div class="summary-label">Traduction</div><div class="summary-value">${totalTrad}</div><div class="summary-sub">cumul traduction</div></div>
+    <div class="summary-card"><div class="summary-label">Relecture</div><div class="summary-value">${totalRel}</div><div class="summary-sub">cumul relecture</div></div>
+    <div class="summary-card"><div class="summary-label">Calc</div><div class="summary-value">${totalCalc}</div><div class="summary-sub">total combiné</div></div>
+    <div class="summary-card"><div class="summary-label">Liens réels lus</div><div class="summary-value">${withPageLinks}</div><div class="summary-sub">${withDiscord} avec ID Discord</div></div>
+  `;
+}
+
+function render(rows){
+  const body=document.getElementById('tableBody');
+  if(!rows.length){
+    body.innerHTML='<tr><td colspan="6" class="muted">Aucun résultat.</td></tr>';
+    buildSummary([]);
+    return;
+  }
+  body.innerHTML=rows.map(r=>`<tr>
+    <td>${esc(r.nom)||'—'}</td>
+    <td>${buildPagesHtml(r)}</td>
+    <td class="num">${esc(r.discordId)||'—'}</td>
+    <td class="num">${esc(r.traduction)||'0'}</td>
+    <td class="num">${esc(r.relecture)||'0'}</td>
+    <td class="num"><strong>${esc(r.calc)||'0'}</strong></td>
+  </tr>`).join('');
+  buildSummary(rows);
+  document.getElementById('footerNote').textContent=`${rows.length} ligne(s) affichée(s) · Source : Google Sheets`;
+}
+
+function applyFilters(){
+  const q=document.getElementById('searchInput').value.trim().toLowerCase();
+  const pages=document.getElementById('pagesFilter').value;
+  const role=document.getElementById('roleFilter').value;
+  const sort=document.getElementById('sortSelect').value;
+
+  let rows=state.rows.filter(r=>{
+    const hay=[r.nom,r.pages,r.discordId,r.traduction,r.relecture,r.calc].join(' ').toLowerCase();
+    if(q && !hay.includes(q)) return false;
+    if(pages && r.pages!==pages) return false;
+    if(role==='trad' && num(r.traduction)<=0) return false;
+    if(role==='relecture' && num(r.relecture)<=0) return false;
+    return true;
+  });
+
+  rows.sort((a,b)=>{
+    switch(sort){
+      case 'calc-asc': return num(a.calc)-num(b.calc);
+      case 'traduction-desc': return num(b.traduction)-num(a.traduction);
+      case 'nom-asc': return String(a.nom).localeCompare(String(b.nom),'fr',{sensitivity:'base'});
+      default: return num(b.calc)-num(a.calc);
+    }
+  });
+
+  render(rows);
+}
+
+async function load(){
+  document.getElementById('tableBody').innerHTML='<tr><td colspan="6" class="muted">Chargement...</td></tr>';
+  try{
+    state.realLinks = new Map();
+    try{
+      const htmlRes = await fetch(HTML_URL, {cache:'no-store'});
+      if(htmlRes.ok){
+        const htmlText = await htmlRes.text();
+        state.realLinks = parseHtmlExportForLinks(htmlText);
+      }
+    }catch(_e){}
+
+    const res=await fetch(CSV_URL,{cache:'no-store'});
+    if(!res.ok) throw new Error(res.status);
+    const txt=await res.text();
+    state.rows=mapRows(parseCSV(txt));
+    fillPages();
+    applyFilters();
+  }catch(e){
+    document.getElementById('tableBody').innerHTML='<tr><td colspan="6" class="muted">Impossible de charger cet onglet.</td></tr>';
+  }
+}
+
+['searchInput','pagesFilter','sortSelect','roleFilter'].forEach(id=>{
+  document.getElementById(id).addEventListener(id==='searchInput'?'input':'change',applyFilters);
+});
+document.getElementById('refreshBtn').addEventListener('click',load);
+load();
 </script>
 </body></html>
