@@ -201,7 +201,7 @@ function mapRowsFromSheet(sheet){
       if(pageLabels.length === 1){
         pageLinks.push({ label: pageLabels[0], href: pagesCellLink });
       } else {
-        pageLabels.forEach(label => pageLinks.push({ label, href: pagesCellLink }));
+        pageLinks.push({ label: pageLabels[0], href: pagesCellLink });
       }
     }
 
@@ -232,15 +232,15 @@ function buildPagesHtml(row){
   if(!labels.length) return '—';
 
   const links = Array.isArray(row.pageLinks) ? [...row.pageLinks] : [];
-  const hasSingleDetectedLink = labels.length === 1 && links.length === 1 && links[0].href;
+  const firstDetectedHref = links.length && links[0] && links[0].href ? links[0].href : '';
 
-  const badges = labels.map((label) => {
+  const badges = labels.map((label, idx) => {
     const cls = badgeClass(label);
     let href = '';
     let title = label;
 
-    if(hasSingleDetectedLink){
-      href = links[0].href || '';
+    if(idx === 0 && firstDetectedHref){
+      href = firstDetectedHref;
       title = `${label} · lien détecté`;
     } else {
       href = fallbackUrl(label);
@@ -272,7 +272,7 @@ function buildSummary(rows){
   const totalRel = rows.reduce((s,r)=>s+num(r.relecture),0);
   const totalCalc = rows.reduce((s,r)=>s+num(r.calc),0);
   const withDiscord = rows.filter(r=>String(r.discordId||'').trim()).length;
-  const withPageLinks = rows.filter(r=>((splitPageLabels(r.pages).length === 1 && Array.isArray(r.pageLinks) && r.pageLinks.length === 1 && String(r.pageLinks[0]?.href||'').trim()) || String(r.nomUrl||'').trim())).length;
+  const withPageLinks = rows.filter(r=>((Array.isArray(r.pageLinks) && r.pageLinks.length >= 1 && String(r.pageLinks[0]?.href||'').trim()) || String(r.nomUrl||'').trim())).length;
 
   document.getElementById('summaryGrid').innerHTML = `
     <div class="summary-card"><div class="summary-label">Traducteurs visibles</div><div class="summary-value">${rows.length}</div><div class="summary-sub">lignes affichées</div></div>
