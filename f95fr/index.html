@@ -161,7 +161,18 @@ function renderUpdates(items){
   }).join('');
 }
 async function loadData(){
+  const btn = document.getElementById('refreshBtn');
+  const list = document.getElementById('updatesList');
+  const footer = document.getElementById('footerNote');
   try{
+    if(btn){
+      btn.disabled = true;
+      btn.textContent = 'Rafraîchissement...';
+    }
+    if(list){
+      list.innerHTML = '<div class="empty">Rafraîchissement en cours…</div>';
+    }
+
     const res = await fetch(DATA_URL, {cache:'no-store'});
     if(!res.ok) throw new Error('HTTP ' + res.status);
     const json = await res.json();
@@ -173,13 +184,19 @@ async function loadData(){
     document.getElementById('updatesCount').textContent = updates.length;
     document.getElementById('tradCount').textContent = traductors.length;
     renderUpdates(updates);
-    document.getElementById('footerNote').textContent = `${games.length} jeu(x) • ${updates.length} update(s) • ${traductors.length} traducteur(s)`;
+    footer.textContent = `${games.length} jeu(x) • ${updates.length} update(s) • ${traductors.length} traducteur(s) • rafraîchi à ${new Date().toLocaleTimeString('fr-FR')}`;
   }catch(err){
-    document.getElementById('updatesList').innerHTML = `<div class="empty">Impossible de charger updates : ${esc(err.message || err)}</div>`;
-    document.getElementById('footerNote').textContent = 'Erreur de chargement';
+    if(list){
+      list.innerHTML = `<div class="empty">Impossible de charger updates : ${esc(err.message || err)}</div>`;
+    }
+    footer.textContent = 'Erreur de chargement';
+  }finally{
+    if(btn){
+      btn.disabled = false;
+      btn.textContent = 'Rafraîchir';
+    }
   }
 }
-document.getElementById('refreshBtn').addEventListener('click', loadData);
 document.getElementById('refreshBtn')?.addEventListener('click', loadData);
 loadData();
 </script>
