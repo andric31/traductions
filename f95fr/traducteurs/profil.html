@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aperçu — Fiche traducteur</title>
+  <style>
+    :root{
+      --bg:#0b1220;--panel:#111827;--panel-2:#0f172a;--text:#e6edf3;--muted:#9aa4af;
+      --border:#263244;--accent:#58a6ff;--green:#238636;--red:#da3633;--orange:#d29922;
+      --blue:#1f6feb;--shadow:0 14px 40px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:linear-gradient(180deg,#07101d 0%,#0b1220 55%,#09111e 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+    .page{max-width:1600px;margin:0 auto;padding:14px;display:flex;flex-direction:column;gap:12px}
+    .hero,.panel,.card,.summary-card,.profile-card,.game-card,.empty-visual{
+      background:rgba(17,24,39,.92);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow)
+    }
+    .hero{padding:16px 18px;background:linear-gradient(135deg, rgba(96,165,250,.18), rgba(17,24,39,.96) 55%, rgba(34,197,94,.08))}
+    .hero-top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+    h1,h2,h3{margin:0}
+    h1{font-size:28px;line-height:1.1}
+    .subtitle{margin-top:6px;color:var(--muted);font-size:14px;line-height:1.4}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{border:1px solid var(--border);background:var(--panel);color:var(--text);padding:9px 13px;border-radius:12px;cursor:pointer;font-weight:700}
+    .btn.primary{background:rgba(31,111,235,.16);border-color:rgba(88,166,255,.45)}
+    .layout{display:grid;grid-template-columns:380px minmax(0,1fr);gap:12px}
+    .profile-card{padding:14px;display:flex;flex-direction:column;gap:12px}
+    .profile-head{display:flex;gap:14px;align-items:center}
+    .avatar{
+      width:86px;height:86px;border-radius:22px;display:grid;place-items:center;
+      background:linear-gradient(135deg, rgba(31,111,235,.28), rgba(88,166,255,.08));
+      border:1px solid rgba(88,166,255,.32);font-size:34px;font-weight:800
+    }
+    .muted{color:var(--muted)}
+    .big-name{font-size:24px;font-weight:800}
+    .role-line{margin-top:6px;color:var(--muted);font-size:13px}
+    .pages-badges,.meta-badges,.chips{display:flex;flex-wrap:wrap;gap:8px}
+    .badge{
+      display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);font-weight:700;font-size:12px
+    }
+    .badge-f95{background:rgba(31,111,235,.22)}
+    .badge-discord{background:rgba(88,101,242,.22)}
+    .badge-lewd{background:rgba(234,88,12,.18)}
+    .badge-other{background:rgba(148,163,184,.18)}
+    .meta-list{display:grid;grid-template-columns:1fr;gap:8px}
+    .meta-item{padding:10px 12px;border-radius:14px;background:var(--panel-2);border:1px solid rgba(255,255,255,.06)}
+    .meta-item .k{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+    .meta-item .v{margin-top:4px;font-size:14px;font-weight:700}
+    .summary-panel{display:flex;flex-direction:column;gap:12px}
+    .summary-grid{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:8px}
+    .summary-card{padding:10px 12px}
+    .summary-label{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+    .summary-value{margin-top:6px;font-size:26px;font-weight:800;line-height:1}
+    .summary-sub{margin-top:4px;font-size:12px;color:var(--muted)}
+    .panel{padding:12px}
+    .section-title{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px}
+    .toolbar{display:grid;grid-template-columns:minmax(240px,1.4fr) repeat(4,minmax(140px,1fr));gap:8px}
+    .toolbar input,.toolbar select{
+      width:100%;background:var(--panel-2);border:1px solid var(--border);color:var(--text);
+      border-radius:12px;padding:10px 11px
+    }
+    .games-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .game-card{overflow:hidden;display:flex;flex-direction:column}
+    .cover{
+      aspect-ratio:16/9;display:grid;place-items:center;position:relative;
+      background:
+        radial-gradient(circle at top left, rgba(88,166,255,.28), transparent 36%),
+        linear-gradient(135deg, rgba(255,255,255,.05), rgba(255,255,255,.01));
+      border-bottom:1px solid rgba(255,255,255,.06)
+    }
+    .cover .ph{font-size:13px;color:var(--muted);text-align:center;padding:12px}
+    .cover .mini{
+      position:absolute;right:10px;top:10px;padding:6px 9px;border-radius:999px;
+      background:rgba(11,18,32,.82);border:1px solid rgba(255,255,255,.08);font-size:11px;font-weight:800
+    }
+    .game-body{padding:12px;display:flex;flex-direction:column;gap:10px}
+    .game-title{font-size:17px;font-weight:800;line-height:1.25}
+    .line{display:flex;flex-wrap:wrap;gap:8px}
+    .status,.engine,.tradtype{
+      display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;
+      font-size:12px;font-weight:800;border:1px solid rgba(255,255,255,.08)
+    }
+    .status.en-cours{background:rgba(210,153,34,.18)}
+    .status.termine{background:rgba(35,134,54,.18)}
+    .status.abandonne{background:rgba(218,54,51,.18)}
+    .engine{background:rgba(31,111,235,.18)}
+    .tradtype{background:rgba(148,163,184,.18)}
+    .meta-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .meta-box{background:var(--panel-2);border:1px solid rgba(255,255,255,.06);padding:8px 10px;border-radius:12px}
+    .meta-box .k{font-size:11px;text-transform:uppercase;color:var(--muted)}
+    .meta-box .v{margin-top:4px;font-size:13px;font-weight:700}
+    .tags{font-size:13px;color:var(--muted);line-height:1.45}
+    .actions-row{display:flex;gap:8px;flex-wrap:wrap}
+    .game-btn{
+      display:inline-flex;align-items:center;justify-content:center;padding:9px 11px;
+      border-radius:12px;border:1px solid var(--border);background:var(--panel-2);color:var(--text);font-weight:700
+    }
+    .game-btn.primary{background:rgba(31,111,235,.16);border-color:rgba(88,166,255,.4)}
+    .empty-visual{padding:12px}
+    .hint{font-size:12px;color:var(--muted)}
+    @media (max-width:1300px){
+      .games-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .summary-grid{grid-template-columns:repeat(3,minmax(120px,1fr))}
+    }
+    @media (max-width:980px){
+      .layout{grid-template-columns:1fr}
+      .toolbar{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width:700px){
+      .page{padding:10px}
+      .toolbar,.summary-grid,.games-grid{grid-template-columns:1fr}
+      h1{font-size:24px}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div class="hero-top">
+        <div>
+          <h1>👤 Aperçu — fiche traducteur</h1>
+          <div class="subtitle">
+            Maquette V1 inspirée du style actuel de <strong>f95fr</strong>, en réutilisant les types de données que tu as déjà :
+            nom, pages, ID Discord, traduction/relecture/calc, plus les jeux avec statut, tags, moteur, traducteur, relecteur et type de traduction.
+          </div>
+        </div>
+        <div class="actions">
+          <a class="btn" href="#">← Retour traducteurs</a>
+          <a class="btn primary" href="#">Ouvrir la fiche du jeu</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="layout">
+      <aside class="profile-card">
+        <div class="profile-head">
+          <div class="avatar">A31</div>
+          <div>
+            <div class="big-name">andric31</div>
+            <div class="role-line">Traducteur principal • aperçu statique</div>
+          </div>
+        </div>
+
+        <div class="pages-badges">
+          <span class="badge badge-f95">F95Zone</span>
+          <span class="badge badge-discord">Discord</span>
+          <span class="badge badge-lewd">LewdCorner</span>
+        </div>
+
+        <div class="meta-list">
+          <div class="meta-item"><div class="k">ID Discord</div><div class="v">123456789012345678</div></div>
+          <div class="meta-item"><div class="k">Description</div><div class="v">Fiche dédiée au traducteur avec résumé, jeux liés et futur emplacement pour images réelles.</div></div>
+        </div>
+
+        <div class="empty-visual">
+          <div class="section-title">
+            <h3>🖼️ Image / avatar</h3>
+          </div>
+          <div class="hint">Pour l’instant, je n’ai pas de source image fiable dans ce que tu m’as donné. Ici on pourra afficher plus tard un avatar traducteur ou une bannière.</div>
+        </div>
+      </aside>
+
+      <section class="summary-panel">
+        <div class="summary-grid">
+          <div class="summary-card"><div class="summary-label">Traductions</div><div class="summary-value">128</div><div class="summary-sub">issues de l’onglet traducteurs</div></div>
+          <div class="summary-card"><div class="summary-label">Relectures</div><div class="summary-value">24</div><div class="summary-sub">issues de l’onglet traducteurs</div></div>
+          <div class="summary-card"><div class="summary-label">Calc</div><div class="summary-value">152</div><div class="summary-sub">score global</div></div>
+          <div class="summary-card"><div class="summary-label">Jeux liés</div><div class="summary-value">140</div><div class="summary-sub">par traducteur / relecteur</div></div>
+          <div class="summary-card"><div class="summary-label">En cours</div><div class="summary-value">42</div><div class="summary-sub">statut calculé</div></div>
+          <div class="summary-card"><div class="summary-label">Terminés</div><div class="summary-value">81</div><div class="summary-sub">statut calculé</div></div>
+          <div class="summary-card"><div class="summary-label">Abandonnés</div><div class="summary-value">17</div><div class="summary-sub">statut calculé</div></div>
+          <div class="summary-card"><div class="summary-label">Ren’Py</div><div class="summary-value">90</div><div class="summary-sub">moteur dominant</div></div>
+          <div class="summary-card"><div class="summary-label">Unity</div><div class="summary-value">31</div><div class="summary-sub">moteur dominant</div></div>
+          <div class="summary-card"><div class="summary-label">Trad auto</div><div class="summary-value">110</div><div class="summary-sub">type de traduction</div></div>
+          <div class="summary-card"><div class="summary-label">Trad humaine</div><div class="summary-value">22</div><div class="summary-sub">type de traduction</div></div>
+          <div class="summary-card"><div class="summary-label">Semi-auto</div><div class="summary-value">8</div><div class="summary-sub">type de traduction</div></div>
+        </div>
+
+        <section class="panel">
+          <div class="section-title">
+            <h2>🎮 Jeux du traducteur</h2>
+            <div class="hint">Aperçu V1 avec cartes à la place du grand tableau</div>
+          </div>
+          <div class="toolbar">
+            <input type="search" placeholder="Rechercher un jeu, un tag, un moteur...">
+            <select><option>Tous les statuts</option><option>En cours</option><option>Terminé</option><option>Abandonné</option></select>
+            <select><option>Tous les moteurs</option><option>Ren’Py</option><option>Unity</option></select>
+            <select><option>Tous les types de trad</option><option>Auto</option><option>Humaine</option><option>Semi-auto</option></select>
+            <select><option>Tri : plus récent</option><option>Nom A → Z</option><option>ID croissant</option></select>
+          </div>
+        </section>
+      </section>
+    </div>
+
+    <section class="games-grid">
+      <article class="game-card">
+        <div class="cover">
+          <div class="mini">Image future</div>
+          <div class="ph">Aucune image fiable dans les données actuelles.<br>Emplacement réservé à la jaquette du jeu.</div>
+        </div>
+        <div class="game-body">
+          <div class="game-title">Jikage Rising</div>
+          <div class="line">
+            <span class="status en-cours">En cours</span>
+            <span class="engine">Ren’Py</span>
+            <span class="tradtype">Traduction auto</span>
+          </div>
+          <div class="meta-row">
+            <div class="meta-box"><div class="k">Version jeu</div><div class="v">v2.21a Arc 3</div></div>
+            <div class="meta-box"><div class="k">Version trad</div><div class="v">FR v1</div></div>
+          </div>
+          <div class="tags">Tags : romance, corruption, aventure, collection</div>
+          <div class="actions-row">
+            <a class="game-btn primary" href="#">Ouvrir le jeu</a>
+            <a class="game-btn" href="#">Ouvrir la trad</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="game-card">
+        <div class="cover">
+          <div class="mini">Image future</div>
+          <div class="ph">Carte de jeu avec futur visuel récupéré depuis une vraie base image.</div>
+        </div>
+        <div class="game-body">
+          <div class="game-title">Camp Pinewood 2</div>
+          <div class="line">
+            <span class="status termine">Terminé</span>
+            <span class="engine">Unity</span>
+            <span class="tradtype">Traduction humaine</span>
+          </div>
+          <div class="meta-row">
+            <div class="meta-box"><div class="k">Version jeu</div><div class="v">v1.0</div></div>
+            <div class="meta-box"><div class="k">Relecteur</div><div class="v">Frelon31</div></div>
+          </div>
+          <div class="tags">Tags : humour, aventure, gestion, 3D</div>
+          <div class="actions-row">
+            <a class="game-btn primary" href="#">Ouvrir le jeu</a>
+            <a class="game-btn" href="#">Ouvrir la trad</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="game-card">
+        <div class="cover">
+          <div class="mini">Image future</div>
+          <div class="ph">La zone image peut aussi devenir un carrousel ou un hover preview plus tard.</div>
+        </div>
+        <div class="game-body">
+          <div class="game-title">How Bad Can It Be?</div>
+          <div class="line">
+            <span class="status abandonne">Abandonné</span>
+            <span class="engine">Ren’Py</span>
+            <span class="tradtype">Semi-auto</span>
+          </div>
+          <div class="meta-row">
+            <div class="meta-box"><div class="k">ID F95</div><div class="v">66273</div></div>
+            <div class="meta-box"><div class="k">Site</div><div class="v">F95Zone</div></div>
+          </div>
+          <div class="tags">Tags : choix, drame, visual novel</div>
+          <div class="actions-row">
+            <a class="game-btn primary" href="#">Ouvrir le jeu</a>
+            <a class="game-btn" href="#">Ouvrir la trad</a>
+          </div>
+        </div>
+      </article>
+    </section>
+  </div>
+</body>
+</html>
