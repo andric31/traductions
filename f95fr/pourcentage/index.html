@@ -178,10 +178,12 @@
 
     function mapRows(matrix){
       const rows = [];
+      let currentSite = '';
       for(let i=0;i<matrix.length;i++){
         const r = matrix[i].map(x => String(x || '').trim());
         if(!r.length) continue;
-        const site = r[0];
+
+        const rawSite = r[0];
         const statut = r[1];
         const aTester = r[2];
         const auto = r[3];
@@ -189,10 +191,16 @@
         const semi = r[5];
         const vo = r[6];
         const total = r[7];
-        const first = site.toLowerCase();
-        if(!site || !statut) continue;
-        if(first.includes('counta') || first.includes('site')) continue;
+
+        const first = rawSite.toLowerCase();
+        if(first.includes('counta') || first === 'site') continue;
         if(first.includes('total pour') || first.includes('total général') || first.includes('total general')) continue;
+
+        if(rawSite) currentSite = rawSite;
+        const site = currentSite;
+
+        if(!site || !statut) continue;
+
         rows.push({ site, statut, aTester, auto, humaine, semi, vo, total });
       }
       return rows;
