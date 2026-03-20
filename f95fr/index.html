@@ -4,25 +4,52 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="referrer" content="no-referrer">
-  <title>f95list FR</title>
-  <link rel="icon" type="image/png" href="/favicon.png">
+  <title>f95list FR — Accueil</title>
   <style>
-    :root{--bg:#0b1220;--panel:#111827;--panel-2:#0f172a;--text:#e6edf3;--muted:#9aa4af;--border:#263244;--accent:#58a6ff;--green:#238636;--red:#da3633;--orange:#d29922;--blue:#1f6feb;--shadow:0 14px 40px rgba(0,0,0,.35);--radius:16px}
-    *{box-sizing:border-box} html,body{height:100%;margin:0;padding:0;background:linear-gradient(180deg,#07101d 0%,#0b1220 55%,#09111e 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;overflow:hidden}
+    :root{
+      --bg:#0b1220;--panel:#111827;--panel-2:#0f172a;--text:#e6edf3;--muted:#9aa4af;
+      --border:#263244;--accent:#58a6ff;--green:#238636;--red:#da3633;--orange:#d29922;
+      --shadow:0 14px 40px rgba(0,0,0,.35)
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:linear-gradient(180deg,#07101d 0%,#0b1220 55%,#09111e 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
     a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
-    .page{width:100%;max-width:none;margin:0;padding:10px 12px 6px;height:100vh;display:flex;flex-direction:column;overflow:hidden;gap:10px}
-    .hero{background:linear-gradient(135deg, rgba(96,165,250,.18), rgba(17,24,39,.96) 55%, rgba(34,197,94,.08));border:1px solid var(--border);border-radius:20px;padding:14px 16px;margin-bottom:0;box-shadow:var(--shadow)}
-    .hero-top{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-    h1{margin:0;font-size:24px;line-height:1.1}.subtitle{margin-top:6px;color:var(--muted);line-height:1.35;font-size:14px}.hero-actions{display:flex;gap:10px;flex-wrap:wrap}
-    .btn{border:1px solid var(--border);background:var(--panel);color:var(--text);padding:8px 12px;border-radius:12px;cursor:pointer;font-weight:600}.btn:hover{filter:brightness(1.08)}.btn.primary{background:rgba(31,111,235,.18);border-color:rgba(88,166,255,.45)}
-    .stats{display:grid;grid-template-columns:repeat(5, minmax(120px,1fr));gap:8px;margin-bottom:0;flex:0 0 auto}.stat{background:rgba(17,24,39,.92);border:1px solid var(--border);border-radius:16px;padding:8px 10px;min-width:0;display:block;color:inherit;text-decoration:none;transition:transform .12s ease, border-color .12s ease, background .12s ease}.stat.clickable{cursor:pointer}.stat.clickable:hover{transform:translateY(-1px);border-color:rgba(88,166,255,.45);background:linear-gradient(180deg, rgba(88,166,255,.08), rgba(88,166,255,.02));text-decoration:none}.stat-no-hover,.stat-no-hover:hover,.stat-no-hover:focus,.stat-no-hover:active{transform:none!important;border-color:var(--border)!important;background:rgba(17,24,39,.92)!important;box-shadow:none!important;filter:none!important;text-decoration:none!important}.stat-no-hover *{text-decoration:none!important}.stat .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}.stat .value{font-size:24px;font-weight:800;margin-top:4px;line-height:1}.stat .hint{font-size:12px;color:var(--muted);margin-top:4px}
-    .table-wrap{background:rgba(17,24,39,.92);border:1px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:var(--shadow);flex:1 1 auto;min-height:0;display:flex;flex-direction:column}.table-toolbar{padding:8px;border-bottom:1px solid rgba(255,255,255,.06);background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));flex:0 0 auto}.toolbar-grid{display:grid;grid-template-columns:minmax(240px,1.7fr) repeat(5,minmax(140px,1fr));gap:8px}.toolbar-grid input,.toolbar-grid select{width:100%;background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:9px 11px;font-size:14px;min-width:0}
-    .table-scroll{overflow-y:auto;overflow-x:hidden;flex:1 1 auto;min-height:0} table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:0} thead th{position:sticky;top:0;z-index:2;background:#1c2128;color:#f0f6fc;text-align:left;font-size:11px;letter-spacing:.04em;text-transform:uppercase;padding:11px 8px;border-bottom:1px solid var(--border);white-space:normal;line-height:1.25;word-break:break-word} tbody td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.06);vertical-align:top;font-size:13px;line-height:1.35;word-break:break-word;overflow-wrap:anywhere} tbody tr:hover{background:rgba(255,255,255,.03)}
-    .site-badge,.type-badge,.status-badge,.tradtype-badge{display:inline-flex;align-items:center;justify-content:center;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:800;border:1px solid rgba(255,255,255,.09);white-space:normal;text-align:center;max-width:100%}.site-badge{background:rgba(88,166,255,.15);color:#c6e2ff}.type-badge{background:rgba(35,134,54,.18);color:#baf5c4}.status-en-cours{background:rgba(31,111,235,.22);color:#c6e2ff}.status-termine{background:rgba(35,134,54,.22);color:#baf5c4}.status-abandonne{background:rgba(218,54,51,.22);color:#ffd2cf}.status-other{background:rgba(210,153,34,.18);color:#ffdf9c}.trad-humaine{background:rgba(35,134,54,.22);color:#baf5c4}.trad-auto{background:rgba(218,54,51,.22);color:#ffd2cf}.trad-semi{background:rgba(210,153,34,.18);color:#ffdf9c}.muted{color:var(--muted)}.empty,.error{padding:26px;text-align:center;color:var(--muted)}.error{color:#ffd2cf}.footer-note{color:var(--muted);font-size:12px;padding:2px 4px 0}.pill-link{display:inline-flex;align-items:center;gap:8px}
-    th:nth-child(1), td:nth-child(1){width:58px} th:nth-child(2), td:nth-child(2){width:72px} th:nth-child(3), td:nth-child(3){width:240px} th:nth-child(4), td:nth-child(4){width:96px} th:nth-child(5), td:nth-child(5){width:110px} th:nth-child(6), td:nth-child(6){width:90px} th:nth-child(7), td:nth-child(7){width:110px} th:nth-child(8), td:nth-child(8){width:330px} th:nth-child(9), td:nth-child(9){width:84px} th:nth-child(10), td:nth-child(10){width:110px} th:nth-child(11), td:nth-child(11){width:110px} th:nth-child(12), td:nth-child(12){width:160px}
-    @media (max-width:1400px){.toolbar-grid{grid-template-columns:minmax(220px,1.4fr) repeat(3,minmax(140px,1fr))}.stats{grid-template-columns:repeat(3,1fr)}.table-scroll{overflow-x:auto}table{min-width:1320px;table-layout:auto}}
-    @media (max-width:1100px){html,body{overflow:auto}.page{height:auto;overflow:visible}.toolbar-grid{grid-template-columns:1fr 1fr}.stats{grid-template-columns:repeat(2,1fr)}.table-wrap{flex:none;min-height:auto}.table-scroll{max-height:none;overflow-x:auto}table{min-width:1200px;table-layout:auto}}
-    @media (max-width:700px){.page{padding:14px}.toolbar-grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr}h1{font-size:22px}.table-scroll{overflow-x:auto}table{min-width:1100px}}
+    .page{max-width:1600px;margin:0 auto;padding:12px;display:flex;flex-direction:column;gap:12px}
+    .hero,.panel,.card,.update-item,.stat{background:rgba(17,24,39,.92);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow)}
+    .hero{padding:16px 18px;background:linear-gradient(135deg, rgba(96,165,250,.18), rgba(17,24,39,.96) 55%, rgba(34,197,94,.08))}
+    .hero-top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+    h1,h2,h3{margin:0}
+    h1{font-size:28px;line-height:1.1}
+    .subtitle{margin-top:6px;color:var(--muted);font-size:14px;line-height:1.4}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);padding:9px 13px;border-radius:12px;font-weight:700}
+    .btn.primary{background:rgba(31,111,235,.16);border-color:rgba(88,166,255,.45)}
+    .layout{display:grid;grid-template-columns:minmax(0,1.3fr) 420px;gap:12px}
+    .panel{padding:12px}
+    .nav-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .card{padding:14px;display:flex;flex-direction:column;gap:10px}
+    .card h3{font-size:20px}
+    .muted{color:var(--muted)}
+    .chips{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{display:inline-flex;align-items:center;padding:7px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:var(--panel-2);font-size:12px;font-weight:700}
+    .stats{display:grid;grid-template-columns:repeat(3,minmax(100px,1fr));gap:8px}
+    .stat{padding:10px 12px;border-radius:16px}
+    .stat .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+    .stat .v{margin-top:6px;font-size:24px;font-weight:800;line-height:1}
+    .updates{display:flex;flex-direction:column;gap:8px;max-height:760px;overflow:auto}
+    .update-item{padding:12px 13px;border-radius:16px}
+    .update-head{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+    .date{font-size:12px;color:var(--muted);font-weight:700}
+    .type{display:inline-flex;align-items:center;padding:5px 9px;border-radius:999px;border:1px solid rgba(255,255,255,.08);font-size:11px;font-weight:800}
+    .type.add{background:rgba(35,134,54,.18)}
+    .type.maj{background:rgba(31,111,235,.18)}
+    .type.other{background:rgba(148,163,184,.18)}
+    .names{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
+    .name-pill{display:inline-flex;align-items:center;padding:6px 9px;border-radius:999px;background:var(--panel-2);border:1px solid rgba(255,255,255,.06);font-size:12px}
+    .empty{padding:16px;border:1px dashed rgba(255,255,255,.12);border-radius:16px;color:var(--muted)}
+    .footer-note{color:var(--muted);font-size:12px;padding:2px 4px 0}
+    @media (max-width:1100px){.layout{grid-template-columns:1fr}.nav-grid{grid-template-columns:1fr}}
+    @media (max-width:700px){.page{padding:10px}.stats{grid-template-columns:1fr}.hero h1{font-size:24px}}
   </style>
 </head>
 <body>
@@ -30,149 +57,140 @@
     <section class="hero">
       <div class="hero-top">
         <div>
-          <h1>📘 f95list FR</h1>
-          <div class="subtitle">Tableau Google Sheets de la communauté française</div>
+          <h1>🏠 f95list FR — Accueil</h1>
+          <div class="subtitle">
+            Nouvelle page principale qui centralise l’architecture du site. Le bloc <strong>Google Sheet</strong> garde l’ancien système simple,
+            tandis que cette page met en avant les <strong>dernières MAJ / derniers ajouts</strong> venant de <code>updates</code>.
+          </div>
         </div>
-        <div class="hero-actions">
-          <a class="btn" href="/">← Accueil</a>
-          <a class="btn" href="https://docs.google.com/spreadsheets/d/1ELRF0kpF8SoUlslX5ZXZoG4WXeWST6lN9bLws32EPfs/edit?pli=1&gid=1224125898#gid=1224125898" target="_blank" rel="noopener">Ouvrir le tableur</a>
-          <a class="btn" href="./traducteurs/">Traducteurs</a>
-          <a class="btn" href="./maj/">MAJ</a>
-          <a class="btn" href="./pourcentage/">Pourcentage</a>
-          <button class="btn primary" id="refreshBtn" type="button">Rafraîchir</button>
+        <div class="actions">
+          <a class="btn" href="./google_shet/">📄 Google Sheet</a>
+          <a class="btn primary" href="./google_shet/traducteurs/">👥 Traducteurs (simple)</a>
         </div>
       </div>
     </section>
-    <section class="stats" id="stats"></section>
-    <section class="table-wrap">
-      <div class="table-toolbar" aria-label="Filtres">
-        <div class="toolbar-grid">
-          <input id="searchInput" type="search" placeholder="Rechercher un jeu, un tag, un traducteur..." autocomplete="off">
-          <select id="statusFilter"><option value="">Tous les statuts</option></select>
-          <select id="translatorFilter"><option value="">Tous les traducteurs</option></select>
-          <select id="engineFilter"><option value="">Tous les types</option></select>
-          <select id="translationTypeFilter"><option value="">Tous les types de traduction</option></select>
-          <select id="sortSelect">
-            <option value="title-asc">Titre A → Z</option>
-            <option value="title-desc">Titre Z → A</option>
-            <option value="id-desc">ID ↓</option>
-            <option value="id-asc">ID ↑</option>
-            <option value="translator-asc">Traducteur A → Z</option>
-            <option value="status-asc">Statut A → Z</option>
-          </select>
+
+    <div class="layout">
+      <section class="panel">
+        <h2>Navigation</h2>
+        <div class="nav-grid" style="margin-top:10px">
+          <article class="card">
+            <h3>📄 Espace Google Sheet</h3>
+            <div class="muted">Ce qu’on faisait avant, gardé volontairement simple et rangé à part.</div>
+            <div class="chips">
+              <span class="chip">Liste des jeux</span>
+              <span class="chip">MAJ</span>
+              <span class="chip">Pourcentage</span>
+              <span class="chip">Traducteurs</span>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="./google_shet/">Ouvrir l’espace Google Sheet</a>
+              <a class="btn" href="./google_shet/traducteurs/">Traducteurs</a>
+            </div>
+          </article>
+
+          <article class="card">
+            <h3>🧩 Évolution future</h3>
+            <div class="muted">La suite pourra se baser sur la base de données de l’extension pour les profils avancés, images, liens et cartes plus riches.</div>
+            <div class="chips">
+              <span class="chip">images</span>
+              <span class="chip">profils avancés</span>
+              <span class="chip">updates</span>
+              <span class="chip">liens réels</span>
+            </div>
+          </article>
+
+          <article class="card">
+            <h3>📊 Vue rapide</h3>
+            <div class="stats">
+              <div class="stat"><div class="k">Jeux</div><div class="v" id="gamesCount">…</div></div>
+              <div class="stat"><div class="k">Updates</div><div class="v" id="updatesCount">…</div></div>
+              <div class="stat"><div class="k">Traducteurs</div><div class="v" id="tradCount">…</div></div>
+            </div>
+          </article>
+
+          <article class="card">
+            <h3>🔗 Accès rapide</h3>
+            <div class="actions">
+              <a class="btn" href="./google_shet/maj/">Historique des MAJ</a>
+              <a class="btn" href="./google_shet/pourcentage/">Pourcentage</a>
+              <a class="btn" href="./google_shet/traducteurs/">Traducteurs / Relecteurs</a>
+            </div>
+          </article>
         </div>
-      </div>
-      <div class="table-scroll">
-        <table>
-          <thead><tr><th>ID</th><th>Site</th><th>Nom du jeu</th><th>Version</th><th>Trad. ver.</th><th>Lien trad</th><th>Statut</th><th>Tags</th><th>Type</th><th>Traducteur</th><th>Relecteur</th><th>Type de traduction</th></tr></thead>
-          <tbody id="tableBody"><tr><td colspan="12" class="empty">Chargement du tableur...</td></tr></tbody>
-        </table>
-      </div>
-    </section>
+      </section>
+
+      <aside class="panel">
+        <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap">
+          <h2>🕒 Dernières MAJ / derniers ajouts</h2>
+          <button class="btn" id="refreshBtn" type="button">Rafraîchir</button>
+        </div>
+        <div class="muted" style="margin-top:6px">Panneau basé sur <code>updates</code> de la même base que l’extension.</div>
+        <div class="updates" id="updatesList" style="margin-top:10px">
+          <div class="empty">Chargement…</div>
+        </div>
+      </aside>
+    </div>
+
     <div class="footer-note" id="footerNote"></div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script>
-    const SHEET_ID = '1ELRF0kpF8SoUlslX5ZXZoG4WXeWST6lN9bLws32EPfs';
-    const GID = '1224125898';
-    const TRADUCTEURS_GID = '1040172739';
-    const XLSX_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=xlsx&gid=${GID}`;
-    const SHEET_PAGE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit?gid=${GID}`;
-    const TRADUCTEURS_HTML_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=html&gid=${TRADUCTEURS_GID}`;
-    const state = { rows: [], filtered: [], translatorLinks: new Map() };
 
-    function normalizeHeader(h){ return String(h||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim(); }
-    function slugify(v){ return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''); }
-    function escapeHtml(v){ return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
-    function makeAbsoluteLink(value){ const v=String(value||'').trim(); if(!v) return ''; if(/^https?:\/\//i.test(v)) return v; if(/^\/\//.test(v)) return 'https:'+v; if(/^f95/i.test(v)) return 'https://'+v; return ''; }
-    function normalizeName(value){ return String(value||'').trim().toLowerCase(); }
-    function splitNames(value){ return String(value||'').split(/\s*[,;/]\s*|\s+-\s+/).map(v=>v.trim()).filter(Boolean); }
-    function parseTranslatorLinks(html){
-      const map = new Map();
-      const doc = new DOMParser().parseFromString(html, 'text/html');
-      for(const table of [...doc.querySelectorAll('table')]){
-        for(const tr of [...table.querySelectorAll('tr')]){
-          const cells=[...tr.querySelectorAll('td,th')];
-          if(cells.length < 2) continue;
-          const nameCell=cells[0];
-          const pagesCell=cells[1];
-          const name=(nameCell?.textContent||'').trim();
-          if(!name) continue;
-          const links=[...nameCell.querySelectorAll('a[href]'), ...pagesCell.querySelectorAll('a[href]')]
-            .map(a=>makeAbsoluteLink(a.getAttribute('href')||''))
-            .filter(Boolean);
-          if(links.length && !map.has(normalizeName(name))) map.set(normalizeName(name), links[0]);
-        }
-      }
-      return map;
-    }
-    function translatorHTML(value){
-      const names = splitNames(value);
-      if(!names.length) return '<span class="muted">—</span>';
-      const parts = names.map(name => {
-        const url = state.translatorLinks.get(normalizeName(name));
-        return url ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(name)}</a>` : escapeHtml(name);
-      });
-      return parts.join(', ');
-    }
-    function extractFormulaLink(formula){
-      const f = String(formula || '');
-      const m = f.match(/(?:HYPERLINK|LIEN_HYPERTEXTE)\s*\(\s*"([^"]+)"/i);
-      return m ? m[1] : '';
-    }
-    function getCellMeta(ws, addr){
-      const cell = ws[addr];
-      if(!cell) return { text:'', url:'' };
-      const text = cell.w ?? cell.v ?? '';
-      const url = cell.l?.Target || extractFormulaLink(cell.f) || '';
-      return { text: String(text ?? '').trim(), url: String(url ?? '').trim() };
-    }
-    function mapWorksheet(ws){
-      const range = XLSX.utils.decode_range(ws['!ref']);
-      const headers = [];
-      for(let c=range.s.c;c<=range.e.c;c++) headers.push(normalizeHeader(getCellMeta(ws, XLSX.utils.encode_cell({r:0,c})).text));
-      const idx = Object.fromEntries(headers.map((h,i)=>[h,i]));
-      const ci = (...names) => { for(const n of names){ if(idx[n] != null) return idx[n]; } return -1; };
-      const col = {
-        id: ci('id'), site: ci('site'), title: ci('nom du jeu'), version: ci('version'), tradVersion: ci('trad ver'),
-        link: ci('lien trad'), status: ci('statut'), tags: ci('tags'), engine: ci('type'), translator: ci('traducteur'),
-        reviewer: ci('relecteur'), translationType: ci('type de traduction')
-      };
-      const rows = [];
-      for(let r=1;r<=range.e.r;r++){
-        const read = key => col[key] >= 0 ? getCellMeta(ws, XLSX.utils.encode_cell({r, c: col[key]})) : { text:'', url:'' };
-        const id = read('id'); const site = read('site'); const title = read('title'); const version = read('version');
-        const tradVersion = read('tradVersion'); const link = read('link'); const status = read('status'); const tags = read('tags');
-        const engine = read('engine'); const translator = read('translator'); const reviewer = read('reviewer'); const translationType = read('translationType');
-        const row = {
-          id:id.text, site:site.text, title:title.text, titleUrl:makeAbsoluteLink(title.url), version:version.text,
-          tradVersion:tradVersion.text, link:makeAbsoluteLink(link.url || link.text), status:status.text, tags:tags.text,
-          engine:engine.text, translator:translator.text, reviewer:reviewer.text, translationType:translationType.text
-        };
-        if(Object.values(row).some(v => String(v || '').trim() !== '')) rows.push(row);
-      }
-      return rows;
-    }
-    function translationLinkHTML(value){ const url=makeAbsoluteLink(value); if(!url) return '<span class="muted">—</span>'; return `<a class="pill-link" href="${escapeHtml(url)}" target="_blank" rel="noopener">🔗 Traduction</a>`; }
-    function getStatusClass(status){ const s=slugify(status); if(s.includes('en-cours')) return 'status-en-cours'; if(s.includes('termine')) return 'status-termine'; if(s.includes('abandonne')) return 'status-abandonne'; return 'status-other'; }
-    function getTranslationTypeClass(value){ const s=slugify(value); if(s.includes('humaine')) return 'trad-humaine'; if(s.includes('semi-automatique')) return 'trad-semi'; if(s.includes('automatique')) return 'trad-auto'; return 'status-other'; }
-    function uniqueValues(key){ return [...new Set(state.rows.map(r=>String(r[key]||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'})); }
-    function fillSelect(selectId, values, emptyLabel){ const select=document.getElementById(selectId); const current=select.value; select.innerHTML=`<option value="">${emptyLabel}</option>`; values.forEach(v=>{ const opt=document.createElement('option'); opt.value=v; opt.textContent=v; select.appendChild(opt); }); if(values.includes(current)) select.value=current; }
-    function renderStats(rows){ const stats=document.getElementById('stats'); const total=rows.length; const enCours=rows.filter(r=>slugify(r.status).includes('en-cours')).length; const termine=rows.filter(r=>slugify(r.status).includes('termine')).length; const abandonne=rows.filter(r=>slugify(r.status).includes('abandonne')).length; const traducteurs=new Set(rows.map(r=>(r.translator||'').trim()).filter(Boolean)).size;
-      stats.innerHTML = [['Total jeux', total, null],['En cours', enCours, null],['Terminés', termine, null],['Abandonnés', abandonne, null],['Traducteurs', traducteurs, './traducteurs/']].map(([label,value,href]) => {
-        const isTradTile = label === 'Traducteurs';
-        return href
-          ? `<a class="stat clickable" href="${href}"><div class="label">${label}</div><div class="value">${value}</div>${isTradTile ? '' : '<div class="hint">Ouvrir la page dédiée</div>'}</a>`
-          : `<div class="stat"><div class="label">${label}</div><div class="value">${value}</div></div>`;
-      }).join('');
-    }
-    function applyFilters(){ const q=document.getElementById('searchInput').value.trim().toLowerCase(); const status=document.getElementById('statusFilter').value; const translator=document.getElementById('translatorFilter').value; const engine=document.getElementById('engineFilter').value; const translationType=document.getElementById('translationTypeFilter').value; const sort=document.getElementById('sortSelect').value; let rows=state.rows.filter(r=>{ const hay=[r.id,r.site,r.title,r.version,r.tradVersion,r.status,r.tags,r.engine,r.translator,r.reviewer,r.translationType].join(' ').toLowerCase(); if(q&&!hay.includes(q)) return false; if(status&&r.status!==status) return false; if(translator&&r.translator!==translator) return false; if(engine&&r.engine!==engine) return false; if(translationType&&r.translationType!==translationType) return false; return true; }); rows.sort((a,b)=>{ switch(sort){ case 'title-desc': return String(b.title).localeCompare(String(a.title),'fr',{sensitivity:'base'}); case 'id-asc': return Number(a.id||0)-Number(b.id||0); case 'id-desc': return Number(b.id||0)-Number(a.id||0); case 'translator-asc': return String(a.translator).localeCompare(String(b.translator),'fr',{sensitivity:'base'}); case 'status-asc': return String(a.status).localeCompare(String(b.status),'fr',{sensitivity:'base'}); default: return String(a.title).localeCompare(String(b.title),'fr',{sensitivity:'base'}); } }); state.filtered=rows; renderTable(rows); document.getElementById('footerNote').textContent=`${rows.length} jeu(x) affiché(s) · Source : Google Sheets`; }
-    function renderTable(rows){ const tbody=document.getElementById('tableBody'); if(!rows.length){ tbody.innerHTML='<tr><td colspan="12" class="empty">Aucun résultat avec les filtres actuels.</td></tr>'; return; } tbody.innerHTML=rows.map(r=>`<tr><td>${escapeHtml(r.id)||'<span class="muted">—</span>'}</td><td><span class="site-badge">${escapeHtml(r.site||'—')}</span></td><td>${r.title?(r.titleUrl?`<a href="${escapeHtml(r.titleUrl)}" target="_blank" rel="noopener">${escapeHtml(r.title)}</a>`:`${escapeHtml(r.title)}`):'<span class="muted">—</span>'}</td><td>${escapeHtml(r.version)||'<span class="muted">—</span>'}</td><td>${escapeHtml(r.tradVersion)||'<span class="muted">—</span>'}</td><td>${translationLinkHTML(r.link)}</td><td><span class="status-badge ${getStatusClass(r.status)}">${escapeHtml(r.status||'—')}</span></td><td>${escapeHtml(r.tags)||'<span class="muted">—</span>'}</td><td><span class="type-badge">${escapeHtml(r.engine||'—')}</span></td><td>${translatorHTML(r.translator)}</td><td>${translatorHTML(r.reviewer)}</td><td><span class="tradtype-badge ${getTranslationTypeClass(r.translationType)}">${escapeHtml(r.translationType||'—')}</span></td></tr>`).join(''); }
-    function renderError(message){ document.getElementById('tableBody').innerHTML=`<tr><td colspan="12" class="error">${escapeHtml(message)}<br><br><a href="${escapeHtml(SHEET_PAGE_URL)}" target="_blank" rel="noopener">Ouvrir le tableur</a></td></tr>`; document.getElementById('footerNote').textContent='Impossible de lire le tableur automatiquement pour le moment.'; }
-    async function loadSheet(){ document.getElementById('tableBody').innerHTML='<tr><td colspan="12" class="empty">Chargement du tableur...</td></tr>'; try{ const response=await fetch(XLSX_URL,{cache:'no-store'}); if(!response.ok) throw new Error(`HTTP ${response.status}`); const workbook=XLSX.read(await response.arrayBuffer(), { type:'array', cellFormula:true, cellHTML:false, cellNF:false, cellText:true, cellStyles:false, cellDates:false }); const firstSheetName = workbook.SheetNames[0]; const ws = workbook.Sheets[firstSheetName]; const rows = mapWorksheet(ws); if(!rows.length) throw new Error('Aucune ligne exploitable trouvée dans le tableur.'); state.rows=rows; fillSelect('statusFilter', uniqueValues('status'), 'Tous les statuts'); fillSelect('translatorFilter', uniqueValues('translator'), 'Tous les traducteurs'); fillSelect('engineFilter', uniqueValues('engine'), 'Tous les types'); fillSelect('translationTypeFilter', uniqueValues('translationType'), 'Tous les types de traduction'); renderStats(rows); applyFilters(); }catch(err){ console.error(err); renderStats([]); renderError('Le tableur n\'a pas pu être chargé. Vérifie que le Google Sheets est bien accessible publiquement en export XLSX.'); } }
-    document.getElementById('refreshBtn').addEventListener('click', loadSheet);
-    ['searchInput','statusFilter','translatorFilter','engineFilter','translationTypeFilter','sortSelect'].forEach(id => document.getElementById(id).addEventListener(id === 'searchInput' ? 'input' : 'change', applyFilters));
-    loadSheet();
-  </script>
+<script>
+const DATA_URL = "https://script.google.com/macros/s/AKfycbybvrFy6B2L7rkLWJnrwRHhP0F6Sv0uk6V9zUTZibwEzUjKXf-abOK_N6jUhqFPs9US/exec";
+
+function esc(v){ return String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function normalizeType(v){
+  const s = String(v || '').toLowerCase();
+  if(s.includes('ajout') || s.includes('add')) return 'add';
+  if(s.includes('maj') || s.includes('mise') || s.includes('update')) return 'maj';
+  return 'other';
+}
+function formatDate(v){
+  if(!v) return 'Date inconnue';
+  const d = new Date(v);
+  if(!isNaN(d)) return d.toLocaleString('fr-FR');
+  return String(v);
+}
+function renderUpdates(items){
+  const box = document.getElementById('updatesList');
+  if(!items.length){
+    box.innerHTML = '<div class="empty">Aucune update trouvée.</div>';
+    return;
+  }
+  box.innerHTML = items.slice(0,20).map(item => {
+    const names = Array.isArray(item.names) ? item.names : [];
+    const typeCls = normalizeType(item.type || item.kind || item.label || '');
+    const typeLabel = item.type || item.kind || item.label || 'Update';
+    return `<article class="update-item">
+      <div class="update-head">
+        <span class="type ${typeCls}">${esc(typeLabel)}</span>
+        <span class="date">${esc(formatDate(item.date))}</span>
+      </div>
+      <div class="names">${names.length ? names.map(n => `<span class="name-pill">${esc(n)}</span>`).join('') : '<span class="muted">Aucun nom</span>'}</div>
+    </article>`;
+  }).join('');
+}
+async function loadData(){
+  try{
+    const res = await fetch(DATA_URL, {cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    const data = json && json.data ? json.data : {};
+    const games = Array.isArray(data.games) ? data.games : [];
+    const updates = Array.isArray(data.updates) ? data.updates : [];
+    const traductors = Array.isArray(data.traductors) ? data.traductors : [];
+    document.getElementById('gamesCount').textContent = games.length;
+    document.getElementById('updatesCount').textContent = updates.length;
+    document.getElementById('tradCount').textContent = traductors.length;
+    renderUpdates(updates);
+    document.getElementById('footerNote').textContent = `${games.length} jeu(x) • ${updates.length} update(s) • ${traductors.length} traducteur(s)`;
+  }catch(err){
+    document.getElementById('updatesList').innerHTML = `<div class="empty">Impossible de charger updates : ${esc(err.message || err)}</div>`;
+    document.getElementById('footerNote').textContent = 'Erreur de chargement';
+  }
+}
+document.getElementById('refreshBtn').addEventListener('click', loadData);
+loadData();
+</script>
 </body>
 </html>
