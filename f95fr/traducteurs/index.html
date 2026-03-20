@@ -42,7 +42,7 @@
     .badge-discord{background:rgba(88,101,242,.22)}
     .badge-lewd{background:rgba(234,88,12,.18)}
     .badge-other{background:rgba(148,163,184,.18)}
-    .num{font-variant-numeric:tabular-nums}
+    .num{font-variant-numeric:tabular-nums}.debug-link{display:block;max-width:320px;color:var(--muted);font-size:11px;line-height:1.35;word-break:break-all}.debug-link a{color:var(--accent);text-decoration:none}.debug-link a:hover{text-decoration:underline}
     @media (max-width:1300px){.summary-grid{grid-template-columns:repeat(3,minmax(140px,1fr))}}
     @media (max-width:900px){.toolbar{grid-template-columns:1fr 1fr}.summary-grid{grid-template-columns:repeat(2,minmax(140px,1fr))}.page{padding:14px}}
     @media (max-width:600px){.toolbar,.summary-grid{grid-template-columns:1fr}}
@@ -62,7 +62,7 @@
       <div class="summary-grid" id="summaryGrid">
         <div class="summary-card"><div class="summary-label">Chargement</div><div class="summary-value">…</div><div class="summary-sub">des traducteurs</div></div>
       </div>
-      <div class="table-scroll"><table><thead><tr><th>Nom</th><th>Pages</th><th>ID Discord</th><th>Traduction</th><th>Relecture</th><th>Calc</th></tr></thead><tbody id="tableBody"><tr><td colspan="6" class="muted">Chargement...</td></tr></tbody></table></div>
+      <div class="table-scroll"><table><thead><tr><th>Nom</th><th>Pages</th><th>Debug lien</th><th>ID Discord</th><th>Traduction</th><th>Relecture</th><th>Calc</th></tr></thead><tbody id="tableBody"><tr><td colspan="7" class="muted">Chargement...</td></tr></tbody></table></div>
     </section>
     <div class="footer-note" id="footerNote"></div>
   </div>
@@ -265,6 +265,32 @@ function buildPagesHtml(row){
   return `<div class="pages-badges">${badges.join('')}</div>`;
 }
 
+function buildDebugLinksHtml(row){
+  const links = Array.isArray(row.pageLinks) ? row.pageLinks : [];
+  const parts = [];
+
+  if(row.nomUrl){
+    parts.push(`<div><strong>Nom:</strong> <a href="${esc(row.nomUrl)}" target="_blank" rel="noopener">${esc(row.nomUrl)}</a></div>`);
+  }
+  if(links.length){
+    links.forEach((x, i) => {
+      parts.push(`<div><strong>${esc(x.label || 'Lien ' + (i+1))}:</strong> <a href="${esc(x.href || '')}" target="_blank" rel="noopener">${esc(x.href || '')}</a></div>`);
+    });
+  }
+  if(!parts.length){
+    const labels = splitPageLabels(row.pages);
+    if(labels.length){
+      labels.forEach(label => {
+        const fb = fallbackUrl(label);
+        if(fb){
+          parts.push(`<div><strong>${esc(label)}:</strong> <a href="${esc(fb)}" target="_blank" rel="noopener">${esc(fb)}</a> <span class="muted">(secours)</span></div>`);
+        }
+      });
+    }
+  }
+  return parts.length ? `<div class="debug-link">${parts.join('')}</div>` : '—';
+}
+
 function fillPages(){
   const values=[...new Set(state.rows.map(r=>String(r.pages||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'}));
   const s=document.getElementById('pagesFilter');
@@ -293,13 +319,14 @@ function buildSummary(rows){
 function render(rows){
   const body=document.getElementById('tableBody');
   if(!rows.length){
-    body.innerHTML='<tr><td colspan="6" class="muted">Aucun résultat.</td></tr>';
+    body.innerHTML='<tr><td colspan="7" class="muted">Aucun résultat.</td></tr>';
     buildSummary([]);
     return;
   }
   body.innerHTML=rows.map(r=>`<tr>
     <td>${r.nom ? (r.nomUrl ? `<a href="${esc(r.nomUrl)}" target="_blank" rel="noopener">${esc(r.nom)}</a>` : esc(r.nom)) : '—'}</td>
     <td>${buildPagesHtml(r)}</td>
+    <td>${buildDebugLinksHtml(r)}</td>
     <td class="num">${esc(r.discordId)||'—'}</td>
     <td class="num">${esc(r.traduction)||'0'}</td>
     <td class="num">${esc(r.relecture)||'0'}</td>
@@ -337,7 +364,7 @@ function applyFilters(){
 }
 
 async function load(){
-  document.getElementById('tableBody').innerHTML='<tr><td colspan="6" class="muted">Chargement...</td></tr>';
+  document.getElementById('tableBody').innerHTML='<tr><td colspan="7" class="muted">Chargement...</td></tr>';
   try{
     const res = await fetch(XLSX_URL,{cache:'no-store'});
     if(!res.ok) throw new Error(res.status);
@@ -349,7 +376,7 @@ async function load(){
     fillPages();
     applyFilters();
   }catch(e){
-    document.getElementById('tableBody').innerHTML='<tr><td colspan="6" class="muted">Impossible de charger cet onglet.</td></tr>';
+    document.getElementById('tableBody').innerHTML='<tr><td colspan="7" class="muted">Impossible de charger cet onglet.</td></tr>';
   }
 }
 
