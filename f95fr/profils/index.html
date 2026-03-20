@@ -1,1 +1,203 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="no-referrer">
+  <title>f95list FR — Profils avancés</title>
+  <style>
+    :root{--bg:#0b1220;--panel:#111827;--panel-2:#0f172a;--text:#e6edf3;--muted:#9aa4af;--border:#263244;--accent:#58a6ff;--green:#238636;--red:#da3633;--orange:#d29922;--shadow:0 14px 40px rgba(0,0,0,.35)}
+    *{box-sizing:border-box} html,body{margin:0;padding:0;background:linear-gradient(180deg,#07101d 0%,#0b1220 55%,#09111e 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+    .page{max-width:1650px;margin:0 auto;padding:12px;display:flex;flex-direction:column;gap:12px}
+    .hero,.panel,.card,.tile,.mini{background:rgba(17,24,39,.92);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow)}
+    .hero{padding:16px 18px;background:linear-gradient(135deg, rgba(96,165,250,.18), rgba(17,24,39,.96) 55%, rgba(34,197,94,.08))}
+    .hero-top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+    h1,h2,h3{margin:0} h1{font-size:28px;line-height:1.1}
+    .subtitle{margin-top:6px;color:var(--muted);font-size:14px;line-height:1.4}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);padding:9px 13px;border-radius:12px;font-weight:700}
+    .btn.primary{background:rgba(31,111,235,.16);border-color:rgba(88,166,255,.45)}
+    .layout{display:grid;grid-template-columns:320px minmax(0,1fr);gap:12px}
+    .panel{padding:12px}
+    .stats{display:grid;grid-template-columns:repeat(4,minmax(100px,1fr));gap:8px}
+    .mini{padding:10px 12px}.mini .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.mini .v{margin-top:6px;font-size:24px;font-weight:800;line-height:1}
+    .filters{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .filters input,.filters select{width:100%;background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:10px 11px}
+    .list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .tile{overflow:hidden;display:flex;flex-direction:column}
+    .tile-top{padding:14px;display:flex;gap:12px;align-items:center}
+    .avatar{width:64px;height:64px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg, rgba(31,111,235,.28), rgba(88,166,255,.08));border:1px solid rgba(88,166,255,.32);font-size:24px;font-weight:800;flex:0 0 auto;overflow:hidden}
+    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+    .name{font-size:20px;font-weight:800;line-height:1.15}
+    .muted{color:var(--muted)}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .chip{display:inline-flex;align-items:center;padding:7px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:var(--panel-2);font-size:12px;font-weight:700}
+    .tile-body{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
+    .line{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+    .box{background:var(--panel-2);border:1px solid rgba(255,255,255,.06);padding:8px 10px;border-radius:12px}
+    .box .k{font-size:11px;text-transform:uppercase;color:var(--muted)} .box .v{margin-top:4px;font-size:14px;font-weight:700}
+    .thumbs{display:flex;gap:8px;overflow:hidden}
+    .thumb{width:64px;height:64px;border-radius:12px;background:var(--panel-2);border:1px solid rgba(255,255,255,.06);overflow:hidden;flex:0 0 auto}
+    .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .tile-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .small-btn{display:inline-flex;align-items:center;justify-content:center;padding:8px 10px;border-radius:12px;border:1px solid var(--border);background:var(--panel-2);color:var(--text);font-weight:700}
+    .small-btn.primary{background:rgba(31,111,235,.16);border-color:rgba(88,166,255,.4)}
+    .empty{padding:18px;border:1px dashed rgba(255,255,255,.12);border-radius:16px;color:var(--muted)}
+    @media (max-width:1300px){.list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media (max-width:980px){.layout{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(100px,1fr))}}
+    @media (max-width:700px){.page{padding:10px}.filters,.list,.line,.stats{grid-template-columns:1fr}h1{font-size:24px}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div class="hero-top">
+        <div>
+          <h1>👥 Profils traducteurs avancés</h1>
+          <div class="subtitle">Espace séparé du Google Sheet. Cette section se base uniquement sur la base extension : jeux, images, liens, traducteurs, relecteurs, types de traduction et updates.</div>
+        </div>
+        <div class="actions">
+          <a class="btn" href="../index.html">← Retour accueil</a>
+          <a class="btn" href="../google_shet/traducteurs/">📄 Traducteurs simples</a>
+        </div>
+      </div>
+    </section>
 
+    <div class="layout">
+      <section class="panel">
+        <h2>Navigation</h2>
+        <div class="stats" style="margin-top:10px">
+          <div class="mini"><div class="k">Profils</div><div class="v" id="profilesCount">…</div></div>
+          <div class="mini"><div class="k">Jeux</div><div class="v" id="gamesCount">…</div></div>
+          <div class="mini"><div class="k">Updates</div><div class="v" id="updatesCount">…</div></div>
+          <div class="mini"><div class="k">Avec images</div><div class="v" id="imagesCount">…</div></div>
+        </div>
+        <div class="filters" style="margin-top:10px">
+          <input id="searchInput" type="search" placeholder="Rechercher un traducteur, un jeu, un tag...">
+          <select id="roleFilter">
+            <option value="">Tous les rôles</option>
+            <option value="traductor">Traducteur</option>
+            <option value="proofreader">Relecteur</option>
+            <option value="both">Les deux</option>
+          </select>
+          <select id="sortSelect">
+            <option value="games-desc">Tri : jeux ↓</option>
+            <option value="name-asc">Nom A → Z</option>
+            <option value="updates-desc">Updates ↓</option>
+            <option value="images-desc">Images ↓</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Profils</h2>
+        <div class="list" id="profilesList" style="margin-top:10px">
+          <div class="empty">Chargement...</div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+<script>
+const DATA_URL="https://script.google.com/macros/s/AKfycbybvrFy6B2L7rkLWJnrwRHhP0F6Sv0uk6V9zUTZibwEzUjKXf-abOK_N6jUhqFPs9US/exec";
+const state={games:[],updates:[],profiles:[]};
+const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const norm=v=>String(v||'').trim().toLowerCase();
+const arr=v=>Array.isArray(v)?v:(v==null||v==='')?[]:[v];
+const initials=name=>String(name||'?').split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]?.toUpperCase()||'').join('')||'?';
+const uniq=a=>[...new Set(a)];
+function tagsText(tags){ return Array.isArray(tags) ? tags.join(' ') : String(tags||''); }
+function buildProfiles(games, updates){
+  const map=new Map();
+  const ensure=(name, role)=>{
+    const key=norm(name); if(!key) return null;
+    if(!map.has(key)) map.set(key,{name:String(name).trim(), asTraductor:0, asProofreader:0, games:[], updates:0, images:0, tags:new Set(), sampleImages:[]});
+    const p=map.get(key); if(role==='traductor') p.asTraductor++; if(role==='proofreader') p.asProofreader++; return p;
+  };
+  games.forEach(g=>{
+    arr(g.traductor).forEach(n=>{
+      const p=ensure(n,'traductor'); if(!p) return;
+      p.games.push(g); if(g.image) p.images++; if(g.image && p.sampleImages.length<3) p.sampleImages.push(g.image);
+      arr(g.tags).forEach(t=>p.tags.add(t));
+    });
+    arr(g.proofreader).forEach(n=>{
+      const p=ensure(n,'proofreader'); if(!p) return;
+      p.games.push(g); if(g.image) p.images++; if(g.image && p.sampleImages.length<3) p.sampleImages.push(g.image);
+      arr(g.tags).forEach(t=>p.tags.add(t));
+    });
+  });
+  updates.forEach(u=>{
+    arr(u.names).forEach(n=>{ const p=ensure(n,''); if(p) p.updates++; });
+  });
+  return [...map.values()].map(p=>({...p,games:uniq(p.games), tags:[...p.tags].slice(0,8), role:p.asTraductor&&p.asProofreader?'both':p.asTraductor?'traductor':'proofreader'}));
+}
+function render(){
+  let rows=[...state.profiles];
+  const q=norm(document.getElementById('searchInput').value);
+  const role=document.getElementById('roleFilter').value;
+  const sort=document.getElementById('sortSelect').value;
+  if(q){
+    rows=rows.filter(p=>{
+      const hay=(p.name+' '+p.games.map(g=>g.name).join(' ')+' '+p.tags.join(' ')).toLowerCase();
+      return hay.includes(q);
+    });
+  }
+  if(role) rows=rows.filter(p=>p.role===role);
+  rows.sort((a,b)=>{
+    if(sort==='name-asc') return a.name.localeCompare(b.name,'fr',{sensitivity:'base'});
+    if(sort==='updates-desc') return b.updates-a.updates || b.games.length-a.games.length;
+    if(sort==='images-desc') return b.images-a.images || b.games.length-a.games.length;
+    return b.games.length-a.games.length || a.name.localeCompare(b.name,'fr',{sensitivity:'base'});
+  });
+  const list=document.getElementById('profilesList');
+  if(!rows.length){ list.innerHTML='<div class="empty">Aucun profil avec les filtres actuels.</div>'; return; }
+  list.innerHTML=rows.map(p=>`
+    <article class="tile">
+      <div class="tile-top">
+        <div class="avatar">${p.sampleImages[0]?`<img src="${esc(p.sampleImages[0])}" loading="lazy" referrerpolicy="no-referrer">`:esc(initials(p.name))}</div>
+        <div>
+          <div class="name"><a href="./profil.html?name=${encodeURIComponent(p.name)}">${esc(p.name)}</a></div>
+          <div class="muted">${p.role==='both'?'Traducteur + Relecteur':p.role==='traductor'?'Traducteur':'Relecteur'}</div>
+          <div class="chips">
+            ${p.tags.map(t=>`<span class="chip">${esc(t)}</span>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="tile-body">
+        <div class="line">
+          <div class="box"><div class="k">Jeux</div><div class="v">${p.games.length}</div></div>
+          <div class="box"><div class="k">Updates</div><div class="v">${p.updates}</div></div>
+          <div class="box"><div class="k">Images</div><div class="v">${p.images}</div></div>
+          <div class="box"><div class="k">Rôle</div><div class="v">${p.role==='both'?'2':'1'}</div></div>
+        </div>
+        <div class="thumbs">
+          ${p.sampleImages.length ? p.sampleImages.map(img=>`<div class="thumb"><img src="${esc(img)}" loading="lazy" referrerpolicy="no-referrer"></div>`).join('') : '<div class="muted">Aucune image</div>'}
+        </div>
+        <div class="tile-actions">
+          <a class="small-btn primary" href="./profil.html?name=${encodeURIComponent(p.name)}">Ouvrir le profil</a>
+        </div>
+      </div>
+    </article>`).join('');
+}
+async function load(){
+  const res=await fetch(DATA_URL,{cache:'no-store'});
+  const json=await res.json();
+  const data=json?.data||{};
+  state.games=Array.isArray(data.games)?data.games:[];
+  state.updates=Array.isArray(data.updates)?data.updates:[];
+  state.profiles=buildProfiles(state.games,state.updates);
+  document.getElementById('profilesCount').textContent=state.profiles.length;
+  document.getElementById('gamesCount').textContent=state.games.length;
+  document.getElementById('updatesCount').textContent=state.updates.length;
+  document.getElementById('imagesCount').textContent=state.games.filter(g=>g.image).length;
+  render();
+}
+['searchInput','roleFilter','sortSelect'].forEach(id=>document.getElementById(id).addEventListener(id==='searchInput'?'input':'change',render));
+load().catch(err=>{
+  document.getElementById('profilesList').innerHTML='<div class="empty">Impossible de charger la base extension.</div>';
+  console.error(err);
+});
+</script>
+</body>
+</html>
