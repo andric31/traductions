@@ -70,8 +70,7 @@ const SHEET_ID='1ELRF0kpF8SoUlslX5ZXZoG4WXeWST6lN9bLws32EPfs';
 const GID='1040172739';
 const CSV_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
 const HTML_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=html&gid=${GID}`;
-const GVIZ_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:html&gid=${GID}`;
-const state={rows:[], realLinks:new Map(), linkDebug:[]};
+const state={rows:[], realLinks:new Map()};
 
 function parseCSV(text){
   const rows=[]; let row=[], value='', inQuotes=false;
@@ -217,13 +216,6 @@ function fillPages(){
   if(values.includes(cur)) s.value=cur;
 }
 
-function setDebugNote(){
-  const note = document.getElementById('footerNote');
-  const base = `${state.rows.length || 0} ligne(s) chargée(s) · Source : Google Sheets`;
-  const dbg = (state.linkDebug || []).map(x => `${x.name}: ${x.status}`).join(' | ');
-  note.textContent = dbg ? `${base} · ${dbg}` : base;
-}
-
 function buildSummary(rows){
   const totalTrad = rows.reduce((s,r)=>s+num(r.traduction),0);
   const totalRel = rows.reduce((s,r)=>s+num(r.relecture),0);
@@ -256,7 +248,7 @@ function render(rows){
     <td class="num"><strong>${esc(r.calc)||'0'}</strong></td>
   </tr>`).join('');
   buildSummary(rows);
-setDebugNote();
+  document.getElementById('footerNote').textContent=`${rows.length} ligne(s) affichée(s) · Source : Google Sheets`;
 }
 
 function applyFilters(){
@@ -286,38 +278,17 @@ function applyFilters(){
   render(rows);
 }
 
-async function tryHtmlSource(name, url){
-  try{
-    const res = await fetch(url, { cache:'no-store' });
-    const type = res.type || 'unknown';
-    if(!res.ok){
-      state.linkDebug.push({ name, status: `HTTP ${res.status} (${type})` });
-      return new Map();
-    }
-    const text = await res.text();
-    const links = parseHtmlExportForLinks(text);
-    state.linkDebug.push({ name, status: `ok (${type}) · ${text.length} chars · liens ${links.size}` });
-    return links;
-  }catch(e){
-    state.linkDebug.push({ name, status: `erreur ${e && e.message ? e.message : e}` });
-    return new Map();
-  }
-}
-
 async function load(){
   document.getElementById('tableBody').innerHTML='<tr><td colspan="6" class="muted">Chargement...</td></tr>';
-  document.getElementById('footerNote').textContent='Test des liens en cours...';
   try{
     state.realLinks = new Map();
-    state.linkDebug = [];
-
-    const htmlLinks = await tryHtmlSource('export html', HTML_URL);
-    if(htmlLinks.size > 0){
-      state.realLinks = htmlLinks;
-    }else{
-      const gvizLinks = await tryHtmlSource('gviz html', GVIZ_URL);
-      if(gvizLinks.size > 0) state.realLinks = gvizLinks;
-    }
+    try{
+      const htmlRes = await fetch(HTML_URL, {cache:'no-store'});
+      if(htmlRes.ok){
+        const htmlText = await htmlRes.text();
+        state.realLinks = parseHtmlExportForLinks(htmlText);
+      }
+    }catch(_e){}
 
     const res=await fetch(CSV_URL,{cache:'no-store'});
     if(!res.ok) throw new Error(res.status);
@@ -327,7 +298,6 @@ async function load(){
     applyFilters();
   }catch(e){
     document.getElementById('tableBody').innerHTML='<tr><td colspan="6" class="muted">Impossible de charger cet onglet.</td></tr>';
-    document.getElementById('footerNote').textContent = `Erreur de chargement : ${e && e.message ? e.message : e}`;
   }
 }
 
