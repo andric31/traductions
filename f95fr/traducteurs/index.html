@@ -47,10 +47,11 @@
     @media (max-width:900px){.toolbar{grid-template-columns:1fr 1fr}.summary-grid{grid-template-columns:repeat(2,minmax(140px,1fr))}.page{padding:14px}}
     @media (max-width:600px){.toolbar,.summary-grid{grid-template-columns:1fr}}
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
   <div class="page">
-    <section class="hero"><div class="hero-top"><div><h1>👥 Traducteurs / Relecteurs</h1><div class="subtitle">Lecture dédiée de l’onglet Google Sheets des traducteurs.</div></div><div class="actions"><a class="btn" href="../">← Retour f95fr</a><a class="btn" href="https://docs.google.com/spreadsheets/d/1ELRF0kpF8SoUlslX5ZXZoG4WXeWST6lN9bLws32EPfs/edit?pli=1&gid=1040172739#gid=1040172739" target="_blank" rel="noopener">Ouvrir le tableur</a><button class="btn" id="refreshBtn" type="button">Rafraîchir</button></div></div></section>
+    <section class="hero"><div class="hero-top"><div><h1>👥 Traducteurs / Relecteurs</h1><div class="subtitle">Lecture dédiée de l’onglet Google Sheets des traducteurs.</div></div><div class="actions"><a class="btn" href="../">← Retour f95fr</a><a class="btn" href="https://docs.google.com/spreadsheets/d/1ELRF0kpF8SoUlslX5ZXZoG4WXeWST6lN9bLws32EPfs/edit?pli=1&gid=1040172739#gid=1040172739" target="_blank" rel="noopener">Ouvrir le tableur</a><button class="btn" id="refreshBtn" type="button">Rafraîchir</button><a class="btn secondary" href="./profil.html">👤 Aperçu profil</a></div></div></section>
     <section class="panel">
       <div class="toolbar">
         <input id="searchInput" type="search" placeholder="Rechercher un nom, une page, un ID Discord...">
@@ -68,9 +69,8 @@
 <script>
 const SHEET_ID='1ELRF0kpF8SoUlslX5ZXZoG4WXeWST6lN9bLws32EPfs';
 const GID='1040172739';
-const CSV_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
-const HTML_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=html&gid=${GID}`;
-const state={rows:[], realLinks:new Map()};
+const XLSX_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=xlsx`;
+const state={rows:[]};
 
 function parseCSV(text){
   const rows=[]; let row=[], value='', inQuotes=false;
@@ -111,54 +111,112 @@ function badgeClass(label){
 function rowKey(nom, discordId){
   return `${String(nom||'').trim()}|${String(discordId||'').trim()}`.toLowerCase();
 }
-function mapRows(matrix){
-  const [headers,...data]=matrix;
-  const idx={};
-  headers.forEach((h,i)=>idx[nh(h)]=i);
-  const pick=(r,...keys)=>{ for(const k of keys){ if(idx[k]!=null) return r[idx[k]]||''; } return ''; };
-  return data.map(r=>{
-    const nom = pick(r,'nom');
-    const discordId = pick(r,'id discord');
-    return {
-      nom,
-      pages: pick(r,'pages'),
-      discordId,
-      traduction: pick(r,'traduction'),
-      relecture: pick(r,'relecture'),
-      calc: pick(r,'calc'),
-      pageLinks: state.realLinks.get(rowKey(nom, discordId)) || []
-    };
-  }).filter(r=>r.nom||r.discordId);
+function decodeRangeAddress(range){
+  if(!range || !range.s || !range.e) return [];
+  const out = [];
+  for(let c = range.s.c; c <= range.e.c; c++) out.push(c);
+  return out;
 }
+function getCellDisplayValue(sheet, addr){
+  const cell = sheet[addr];
+  if(!cell) return '';
+  if(cell.w != null && cell.w !== '') return String(cell.w);
+  if(cell.v != null) return String(cell.v);
+  return '';
+}
+function getCellLink(sheet, addr){
+  const cell = sheet[addr];
+  if(cell && cell.l && cell.l.Target) return String(cell.l.Target);
+  return '';
+}
+function findHeaderInfo(sheet){
+  const range = XLSX.utils.decode_range(sheet['!ref'] || 'A1:A1');
+  const wanted = ['nom','pages','id discord','traduction','relecture','calc'];
 
-function parseHtmlExportForLinks(html){
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-  const tables = [...doc.querySelectorAll('table')];
-  const found = new Map();
-
-  for(const table of tables){
-    const rows = [...table.querySelectorAll('tr')];
-    for(const tr of rows){
-      const cells = [...tr.querySelectorAll('td,th')];
-      if(cells.length < 6) continue;
-
-      const nom = cells[0]?.textContent?.trim() || '';
-      const discordId = cells[2]?.textContent?.trim() || '';
-      const key = rowKey(nom, discordId);
-      if(!nom && !discordId) continue;
-
-      const pageCell = cells[1];
-      const anchors = [...pageCell.querySelectorAll('a[href]')].map(a=>({
-        label: a.textContent.trim(),
-        href: a.getAttribute('href')
-      })).filter(x=>x.href);
-
-      if(anchors.length){
-        found.set(key, anchors);
-      }
+  for(let r = range.s.r; r <= Math.min(range.e.r, range.s.r + 25); r++){
+    const headers = decodeRangeAddress(range).map(c => nh(getCellDisplayValue(sheet, XLSX.utils.encode_cell({r, c}))));
+    const score = wanted.filter(k => headers.includes(k)).length;
+    if(score >= 4){
+      const idx = {};
+      headers.forEach((h, i) => idx[h] = i);
+      return { range, headerRow: r, idx };
     }
   }
-  return found;
+  return null;
+}
+function findBestSheet(workbook){
+  const exact = workbook.Sheets['Traducteurs/Relecteurs'];
+  if(exact) return exact;
+  let bestName = null;
+  let bestScore = -1;
+  for(const name of workbook.SheetNames){
+    const sheet = workbook.Sheets[name];
+    const info = findHeaderInfo(sheet);
+    if(!info) continue;
+    const headers = Object.keys(info.idx);
+    const score = ['nom','pages','id discord','traduction','relecture','calc'].filter(k => headers.includes(k)).length;
+    if(score > bestScore){
+      bestScore = score;
+      bestName = name;
+    }
+  }
+  return bestName ? workbook.Sheets[bestName] : workbook.Sheets[workbook.SheetNames[0]];
+}
+function mapRowsFromSheet(sheet){
+  const info = findHeaderInfo(sheet);
+  if(!info) return [];
+  const { range, headerRow, idx } = info;
+
+  const getIndex = (...keys) => {
+    for(const k of keys){ if(idx[k] != null) return idx[k]; }
+    return -1;
+  };
+
+  const colNom = getIndex('nom');
+  const colPages = getIndex('pages');
+  const colDiscord = getIndex('id discord');
+  const colTraduction = getIndex('traduction');
+  const colRelecture = getIndex('relecture');
+  const colCalc = getIndex('calc');
+
+  const rows = [];
+  for(let r = headerRow + 1; r <= range.e.r; r++){
+    const read = (col) => col >= 0 ? getCellDisplayValue(sheet, XLSX.utils.encode_cell({r, c: col})) : '';
+    const readLink = (col) => col >= 0 ? getCellLink(sheet, XLSX.utils.encode_cell({r, c: col})) : '';
+
+    const nom = read(colNom).trim();
+    const discordId = read(colDiscord).trim();
+    const traduction = read(colTraduction).trim();
+    const relecture = read(colRelecture).trim();
+    const calc = read(colCalc).trim();
+
+    if(!nom && !discordId && !traduction && !relecture && !calc) continue;
+
+    const rawPages = read(colPages).trim();
+    const pageLinks = [];
+    const pageLabels = splitPageLabels(rawPages);
+    const pagesCellLink = readLink(colPages);
+
+    if(pageLabels.length && pagesCellLink){
+      if(pageLabels.length === 1){
+        pageLinks.push({ label: pageLabels[0], href: pagesCellLink });
+      } else {
+        pageLinks.push({ label: pageLabels[0], href: pagesCellLink });
+      }
+    }
+
+    rows.push({
+      nom,
+      nomUrl: readLink(colNom),
+      pages: rawPages,
+      discordId,
+      traduction,
+      relecture,
+      calc,
+      pageLinks
+    });
+  }
+  return rows;
 }
 
 function fallbackUrl(label){
@@ -174,24 +232,15 @@ function buildPagesHtml(row){
   if(!labels.length) return '—';
 
   const links = Array.isArray(row.pageLinks) ? [...row.pageLinks] : [];
-  const used = new Set();
+  const firstDetectedHref = links.length && links[0] && links[0].href ? links[0].href : '';
 
   const badges = labels.map((label, idx) => {
-    const norm = normalizeLabel(label);
-    let matchIndex = links.findIndex((x, i) => !used.has(i) && normalizeLabel(x.label).includes(norm));
-    if(matchIndex < 0){
-      matchIndex = links.findIndex((x, i) => !used.has(i) && norm.includes(normalizeLabel(x.label)));
-    }
-    if(matchIndex < 0 && idx < links.length && !used.has(idx)){
-      matchIndex = idx;
-    }
-
     const cls = badgeClass(label);
     let href = '';
     let title = label;
-    if(matchIndex >= 0){
-      used.add(matchIndex);
-      href = links[matchIndex].href || '';
+
+    if(idx === 0 && firstDetectedHref){
+      href = firstDetectedHref;
       title = `${label} · lien détecté`;
     } else {
       href = fallbackUrl(label);
@@ -201,11 +250,13 @@ function buildPagesHtml(row){
     if(href){
       return `<a class="page-badge ${cls}" href="${esc(href)}" target="_blank" rel="noopener" title="${esc(title)}">${esc(label)}</a>`;
     }
-    return `<span class="page-badge ${cls}">${esc(label)}</span>`;
+    return `<span class="page-badge ${cls}" title="${esc(title)}">${esc(label)}</span>`;
   });
 
   return `<div class="pages-badges">${badges.join('')}</div>`;
 }
+
+
 
 function fillPages(){
   const values=[...new Set(state.rows.map(r=>String(r.pages||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'}));
@@ -221,7 +272,7 @@ function buildSummary(rows){
   const totalRel = rows.reduce((s,r)=>s+num(r.relecture),0);
   const totalCalc = rows.reduce((s,r)=>s+num(r.calc),0);
   const withDiscord = rows.filter(r=>String(r.discordId||'').trim()).length;
-  const withPageLinks = rows.filter(r=>Array.isArray(r.pageLinks) && r.pageLinks.length>0).length;
+  const withPageLinks = rows.filter(r=>((Array.isArray(r.pageLinks) && r.pageLinks.length >= 1 && String(r.pageLinks[0]?.href||'').trim()) || String(r.nomUrl||'').trim())).length;
 
   document.getElementById('summaryGrid').innerHTML = `
     <div class="summary-card"><div class="summary-label">Traducteurs visibles</div><div class="summary-value">${rows.length}</div><div class="summary-sub">lignes affichées</div></div>
@@ -240,7 +291,7 @@ function render(rows){
     return;
   }
   body.innerHTML=rows.map(r=>`<tr>
-    <td>${esc(r.nom)||'—'}</td>
+    <td>${r.nom ? `<a href="./profil.html?name=${encodeURIComponent(r.nom)}">${esc(r.nom)}</a>${r.nomUrl ? ` <a href="${esc(r.nomUrl)}" target="_blank" rel="noopener" title="Page externe">↗</a>` : ''}` : '—'}</td>
     <td>${buildPagesHtml(r)}</td>
     <td class="num">${esc(r.discordId)||'—'}</td>
     <td class="num">${esc(r.traduction)||'0'}</td>
@@ -281,19 +332,13 @@ function applyFilters(){
 async function load(){
   document.getElementById('tableBody').innerHTML='<tr><td colspan="6" class="muted">Chargement...</td></tr>';
   try{
-    state.realLinks = new Map();
-    try{
-      const htmlRes = await fetch(HTML_URL, {cache:'no-store'});
-      if(htmlRes.ok){
-        const htmlText = await htmlRes.text();
-        state.realLinks = parseHtmlExportForLinks(htmlText);
-      }
-    }catch(_e){}
-
-    const res=await fetch(CSV_URL,{cache:'no-store'});
+    const res = await fetch(XLSX_URL,{cache:'no-store'});
     if(!res.ok) throw new Error(res.status);
-    const txt=await res.text();
-    state.rows=mapRows(parseCSV(txt));
+    const buffer = await res.arrayBuffer();
+    const wb = XLSX.read(buffer, {type:'array'});
+    const sheet = findBestSheet(wb);
+    if(!sheet) throw new Error('sheet not found');
+    state.rows = mapRowsFromSheet(sheet);
     fillPages();
     applyFilters();
   }catch(e){
