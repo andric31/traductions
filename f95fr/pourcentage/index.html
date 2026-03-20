@@ -40,7 +40,7 @@
     .toolbar{display:grid;grid-template-columns:minmax(220px,1.4fr) minmax(200px,.9fr) minmax(200px,.9fr);gap:10px}
     .toolbar input,.toolbar select{width:100%;background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:14px;padding:12px 14px;font-size:14px;outline:none}
     .toolbar input:focus,.toolbar select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(96,165,250,.14)}
-    .summary-grid{display:grid;grid-template-columns:repeat(5,minmax(140px,1fr));gap:12px;margin-top:14px}
+    .summary-grid{display:grid;grid-template-columns:repeat(6,minmax(140px,1fr));gap:12px;margin-top:14px}
     .summary-card{border-radius:18px;padding:14px 16px}
     .summary-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
     .summary-value{margin-top:8px;font-size:31px;font-weight:800;line-height:1}
@@ -68,7 +68,7 @@
     .muted{color:var(--muted)}
     .empty{padding:32px 18px;color:var(--muted);text-align:center}
     .footer-note{color:var(--muted);font-size:13px;padding:2px 6px 6px}
-    @media (max-width:1100px){
+    @media (max-width:1300px){
       .summary-grid{grid-template-columns:repeat(3,minmax(140px,1fr))}
     }
     @media (max-width:820px){
@@ -223,6 +223,7 @@
     function buildSummary(filteredRows){
       const sites = new Set(filteredRows.map(r => r.site)).size;
       const total = filteredRows.reduce((sum, r) => sum + pctToNumber(r.total), 0);
+      const aTester = filteredRows.reduce((sum, r) => sum + pctToNumber(r.aTester), 0);
       const auto = filteredRows.reduce((sum, r) => sum + pctToNumber(r.auto), 0);
       const humaine = filteredRows.reduce((sum, r) => sum + pctToNumber(r.humaine), 0);
       const semi = filteredRows.reduce((sum, r) => sum + pctToNumber(r.semi), 0);
@@ -230,10 +231,12 @@
       const grid = document.getElementById('summaryGrid');
       grid.innerHTML = `
         <div class="summary-card"><div class="summary-label">Sites affichés</div><div class="summary-value">${sites}</div><div class="summary-sub">groupes visibles</div></div>
-        <div class="summary-card"><div class="summary-label">Total cumulé</div><div class="summary-value">${total.toFixed(2).replace('.', ',')}%</div><div class="summary-sub">somme des lignes affichées</div></div>
         <div class="summary-card"><div class="summary-label">Trad. auto</div><div class="summary-value">${auto.toFixed(2).replace('.', ',')}%</div><div class="summary-sub">part automatique</div></div>
         <div class="summary-card"><div class="summary-label">Trad. humaine</div><div class="summary-value">${humaine.toFixed(2).replace('.', ',')}%</div><div class="summary-sub">part humaine</div></div>
-        <div class="summary-card"><div class="summary-label">Semi-auto + VO FR</div><div class="summary-value">${(semi + vo).toFixed(2).replace('.', ',')}%</div><div class="summary-sub">autres types</div></div>
+        <div class="summary-card"><div class="summary-label">Trad. semi-auto</div><div class="summary-value">${semi.toFixed(2).replace('.', ',')}%</div><div class="summary-sub">part semi-auto</div></div>
+        <div class="summary-card"><div class="summary-label">VO française</div><div class="summary-value">${vo.toFixed(2).replace('.', ',')}%</div><div class="summary-sub">part VO française</div></div>
+        <div class="summary-card"><div class="summary-label">À tester</div><div class="summary-value">${aTester.toFixed(2).replace('.', ',')}%</div><div class="summary-sub">part à tester</div></div>
+        <div class="summary-card"><div class="summary-label">Total cumulé</div><div class="summary-value">${total.toFixed(2).replace('.', ',')}%</div><div class="summary-sub">somme des lignes affichées</div></div>
       `;
     }
 
