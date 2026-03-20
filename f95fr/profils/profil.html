@@ -86,10 +86,6 @@
         </div>
       </div>
       <div class="meta">
-        <div class="meta-item">
-          <div class="k">Choisir un profil</div>
-          <div class="v"><select id="profileSelect" style="width:100%;margin-top:6px;background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:10px 11px"></select></div>
-        </div>
         <div class="meta-item"><div class="k">Liens</div><div class="v" id="profileLinks">—</div></div>
         <div class="meta-item"><div class="k">Résumé</div><div class="v" id="profileResume">Chargement...</div></div>
         <div class="meta-item"><div class="k">Tags dominants</div><div class="v" id="topTags">—</div></div>
@@ -305,7 +301,6 @@ function selectProfile(name){
   document.getElementById('gamesGrid').innerHTML='<div class="empty">Chargement des jeux liés…</div>';
   document.getElementById('updatesList').innerHTML='<div class="empty">Chargement des updates liées…</div>';
   updateSummary(p);
-  document.getElementById('profileSelect').value=p.name;
   const url=new URL(location.href); url.searchParams.set('name', p.name); history.replaceState({},'',url);
   requestAnimationFrame(()=>{
     fillFilters(p.games);
@@ -318,12 +313,9 @@ async function load(){
   state.games=data.games||[];
   state.updates=data.updates||[];
   state.profiles=buildProfiles(state.games,state.updates);
-  const sel=document.getElementById('profileSelect');
-  sel.innerHTML=state.profiles.map(p=>`<option value="${esc(p.name)}">${esc(p.name)}</option>`).join('');
   const qp=new URLSearchParams(location.search).get('name');
   const first=state.profiles.find(p=>norm(p.name)===norm(qp))||state.profiles[0];
   if(first) selectProfile(first.name);
-  sel.addEventListener('change',()=>selectProfile(sel.value));
 }
 ['searchInput','statusFilter','engineFilter','translationTypeFilter','sortSelect'].forEach(id=>document.getElementById(id).addEventListener(id==='searchInput'?'input':'change',()=>{ const p=state.profiles.find(x=>norm(x.name)===norm(state.current)); if(p) renderGames(p); }));
 load().catch(err=>{
