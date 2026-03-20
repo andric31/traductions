@@ -24,7 +24,7 @@
     .actions{display:flex;gap:10px;flex-wrap:wrap}
     .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);padding:9px 13px;border-radius:12px;font-weight:700}
     .btn.primary{background:rgba(31,111,235,.16);border-color:rgba(88,166,255,.45)}
-    .layout{display:grid;grid-template-columns:minmax(0,1.3fr) 420px;gap:12px}
+    .layout{display:grid;grid-template-columns:1fr;gap:12px}
     .panel{padding:12px}
     .nav-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
     .card{padding:14px;display:flex;flex-direction:column;gap:10px}
@@ -77,7 +77,7 @@
             <div class="muted">Ce qu’on faisait avant, gardé volontairement simple et rangé à part.</div>
             <div class="actions">
               <a class="btn primary" href="./google_shet/">Ouvrir l’espace Google Sheet</a>
-              <a class="btn" href="./google_shet/traducteurs/">Traducteurs</a>
+              <a class="btn" href="./google_shet/traducteurs/">Traducteurs / Relecteurs</a>
               <a class="btn" href="./google_shet/maj/">MAJ</a>
               <a class="btn" href="./google_shet/pourcentage/">Pourcentage</a>
             </div>
@@ -99,29 +99,20 @@
               <div class="stat"><div class="k">Traducteurs</div><div class="v" id="tradCount">…</div></div>
             </div>
           </article>
-
-          <article class="card">
-            <h3>🔗 Accès rapide</h3>
-            <div class="actions">
-              <a class="btn" href="./google_shet/maj/">Historique des MAJ</a>
-              <a class="btn" href="./google_shet/pourcentage/">Pourcentage</a>
-              <a class="btn" href="./google_shet/traducteurs/">Traducteurs / Relecteurs</a>
-            </div>
-          </article>
         </div>
       </section>
-
-      <aside class="panel">
-        <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap">
-          <h2>🕒 Dernières MAJ / derniers ajouts</h2>
-          <button class="btn" id="refreshBtn" type="button">Rafraîchir</button>
-        </div>
-        <div class="muted" style="margin-top:6px">Panneau basé sur <code>updates</code> de la même base que l’extension.</div>
-        <div class="updates" id="updatesList" style="margin-top:10px">
-          <div class="empty">Chargement…</div>
-        </div>
-      </aside>
     </div>
+
+    <section class="panel">
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap">
+        <h2>🕒 Dernières MAJ / derniers ajouts</h2>
+        <button class="btn" id="refreshBtn" type="button">Rafraîchir</button>
+      </div>
+      <div class="muted" style="margin-top:6px">Panneau basé sur <code>updates</code> de la même base que l’extension.</div>
+      <div class="updates" id="updatesList" style="margin-top:10px">
+        <div class="empty">Chargement…</div>
+      </div>
+    </section>
 
     <div class="footer-note" id="footerNote"></div>
   </div>
