@@ -283,12 +283,18 @@ async function load(){
   try{
     state.realLinks = new Map();
     try{
-      const htmlRes = await fetch(HTML_URL, {cache:'no-store'});
-      if(htmlRes.ok){
-        const htmlText = await htmlRes.text();
-        state.realLinks = parseHtmlExportForLinks(htmlText);
-      }
-    }catch(_e){}
+      const htmlRes = await fetch(HTML_URL, { cache: 'no-store' });
+      console.log('HTML status:', htmlRes.status, 'type:', htmlRes.type);
+    
+      const htmlText = await htmlRes.text();
+      console.log('HTML len:', htmlText.length);
+      console.log('Contains <a:', htmlText.includes('<a '));
+    
+      state.realLinks = parseHtmlExportForLinks(htmlText);
+      console.log('Detected realLinks:', state.realLinks.size);
+    }catch(e){
+      console.error('HTML fetch failed:', e);
+    }
 
     const res=await fetch(CSV_URL,{cache:'no-store'});
     if(!res.ok) throw new Error(res.status);
