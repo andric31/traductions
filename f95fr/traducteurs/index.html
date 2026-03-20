@@ -70,7 +70,7 @@ const SHEET_ID='1ELRF0kpF8SoUlslX5ZXZoG4WXeWST6lN9bLws32EPfs';
 const GID='1040172739';
 const CSV_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
 const HTML_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=html&gid=${GID}`;
-const state={rows:[], realLinks:new Map()};
+const state={rows:[], realLinks:new Map(), nameLinks:new Map()};
 
 function parseCSV(text){
   const rows=[]; let row=[], value='', inQuotes=false;
@@ -134,7 +134,8 @@ function mapRows(matrix){
 function parseHtmlExportForLinks(html){
   const doc = new DOMParser().parseFromString(html, 'text/html');
   const tables = [...doc.querySelectorAll('table')];
-  const found = new Map();
+  const pageLinks = new Map();
+  const nameLinks = new Map();
 
   for(const table of tables){
     const rows = [...table.querySelectorAll('tr')];
@@ -147,6 +148,9 @@ function parseHtmlExportForLinks(html){
       const key = rowKey(nom, discordId);
       if(!nom && !discordId) continue;
 
+      const nameHref = cells[0]?.querySelector('a[href]')?.getAttribute('href') || '';
+      if(nameHref) nameLinks.set(key, nameHref);
+
       const pageCell = cells[1];
       const anchors = [...pageCell.querySelectorAll('a[href]')].map(a=>({
         label: a.textContent.trim(),
@@ -154,11 +158,11 @@ function parseHtmlExportForLinks(html){
       })).filter(x=>x.href);
 
       if(anchors.length){
-        found.set(key, anchors);
+        pageLinks.set(key, anchors);
       }
     }
   }
-  return found;
+  return { pageLinks, nameLinks };
 }
 
 function fallbackUrl(label){
@@ -240,7 +244,7 @@ function render(rows){
     return;
   }
   body.innerHTML=rows.map(r=>`<tr>
-    <td>${esc(r.nom)||'—'}</td>
+    <td>${r.nom ? (r.nomUrl ? `<a href="${esc(r.nomUrl)}" target="_blank" rel="noopener">${esc(r.nom)}</a>` : esc(r.nom)) : '—'}</td>
     <td>${buildPagesHtml(r)}</td>
     <td class="num">${esc(r.discordId)||'—'}</td>
     <td class="num">${esc(r.traduction)||'0'}</td>
@@ -282,11 +286,14 @@ async function load(){
   document.getElementById('tableBody').innerHTML='<tr><td colspan="6" class="muted">Chargement...</td></tr>';
   try{
     state.realLinks = new Map();
+    state.nameLinks = new Map();
     try{
       const htmlRes = await fetch(HTML_URL, {cache:'no-store'});
       if(htmlRes.ok){
         const htmlText = await htmlRes.text();
-        state.realLinks = parseHtmlExportForLinks(htmlText);
+        const parsedLinks = parseHtmlExportForLinks(htmlText);
+        state.realLinks = parsedLinks.pageLinks;
+        state.nameLinks = parsedLinks.nameLinks;
       }
     }catch(_e){}
 
