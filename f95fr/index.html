@@ -44,8 +44,7 @@
     .type.add{background:rgba(35,134,54,.18)}
     .type.maj{background:rgba(31,111,235,.18)}
     .type.other{background:rgba(148,163,184,.18)}
-    .names{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
-    .name-pill{display:inline-flex;align-items:center;padding:6px 9px;border-radius:999px;background:var(--panel-2);border:1px solid rgba(255,255,255,.06);font-size:12px}.name-pill.link{color:var(--text);text-decoration:none}.name-pill.link:hover{border-color:rgba(88,166,255,.45);background:rgba(88,166,255,.08)}.name-pill.trad{font-size:11px;padding:5px 8px;background:rgba(88,166,255,.08)}
+    .names{margin-top:8px;display:flex;flex-wrap:wrap;gap:8px}.update-pill{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;padding:6px 8px;border-radius:999px;background:var(--panel-2);border:1px solid rgba(255,255,255,.06);font-size:12px}.update-pill:hover{border-color:rgba(88,166,255,.18)}.name-pill{display:inline-flex;align-items:center;padding:0;border-radius:999px;background:transparent;border:none;font-size:12px}.name-pill.link{color:var(--text);text-decoration:none}.name-pill.link:hover{color:var(--accent);text-decoration:none}.name-pill.trad{font-size:11px;padding:4px 7px;background:rgba(88,166,255,.10);border:1px solid rgba(88,166,255,.22);border-radius:999px}.update-sep{opacity:.45}
     .empty{padding:16px;border:1px dashed rgba(255,255,255,.12);border-radius:16px;color:var(--muted)}
     .footer-note{color:var(--muted);font-size:12px;padding:2px 4px 0}
     @media (max-width:1100px){.layout{grid-template-columns:1fr}.nav-grid{grid-template-columns:1fr}}
@@ -170,14 +169,14 @@ function renderUpdates(items, games){
       const game = gameMap.get(norm(name));
       const traducteurs = game ? arr(game.traductor).filter(Boolean) : [];
       const tradHtml = traducteurs.length
-        ? traducteurs.map(tr => `<a class="name-pill trad link" href="./profils/profil.html?name=${encodeURIComponent(tr)}">${esc(tr)}</a>`).join('')
+        ? traducteurs.map(tr => `<a class="name-pill trad link" href="./profils/profil.html?name=${encodeURIComponent(tr)}">${esc(tr)}</a>`).join('<span class="update-sep">•</span>')
         : '';
 
       const gameHtml = game && game.id
         ? `<a class="name-pill link" href="./jeux/profil.html?id=${encodeURIComponent(game.id)}">${esc(name)}</a>`
         : `<span class="name-pill">${esc(name)}</span>`;
 
-      return `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap">${gameHtml}${tradHtml}</span>`;
+      return `<span class="update-pill">${gameHtml}${tradHtml ? `<span class="update-sep">—</span>${tradHtml}` : ''}</span>`;
     }).join('') : '<span class="muted">Aucun nom</span>';
 
     return `<article class="update-item">
