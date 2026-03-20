@@ -12,30 +12,30 @@
       --border:#263244;--accent:#58a6ff;--shadow:0 14px 40px rgba(0,0,0,.35)
     }
     *{box-sizing:border-box}
-    html,body{margin:0;padding:0;background:linear-gradient(180deg,#07101d 0%,#0b1220 55%,#09111e 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    html,body{margin:0;padding:0;height:100%;overflow:hidden;background:linear-gradient(180deg,#07101d 0%,#0b1220 55%,#09111e 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
     a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
-    .page{padding:12px 14px 16px}
-    .hero,.panel,.summary-card{background:rgba(17,24,39,.92);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow)}
-    .hero{padding:16px 18px;margin-bottom:12px;background:linear-gradient(135deg, rgba(96,165,250,.18), rgba(17,24,39,.96) 55%, rgba(34,197,94,.08))}
+    .page{padding:10px 12px 12px;height:100vh;display:flex;flex-direction:column;gap:10px}
+    .hero,.panel,.summary-card{background:rgba(17,24,39,.92);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow)} .panel{display:flex;flex-direction:column;flex:1;min-height:0}
+    .hero{padding:14px 16px;margin-bottom:0;background:linear-gradient(135deg, rgba(96,165,250,.18), rgba(17,24,39,.96) 55%, rgba(34,197,94,.08))}
     .hero-top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
     h1{margin:0;font-size:24px}
     .subtitle{margin-top:6px;color:var(--muted);font-size:14px}
     .actions{display:flex;gap:10px;flex-wrap:wrap}
     .btn{border:1px solid var(--border);background:var(--panel);color:var(--text);padding:8px 12px;border-radius:12px;cursor:pointer;font-weight:600}
-    .toolbar{padding:10px;border-bottom:1px solid rgba(255,255,255,.06);display:grid;grid-template-columns:minmax(240px,1.4fr) minmax(180px,.8fr) minmax(180px,.8fr) minmax(180px,.8fr);gap:8px}
+    .toolbar{padding:8px;border-bottom:1px solid rgba(255,255,255,.06);display:grid;grid-template-columns:minmax(240px,1.4fr) minmax(180px,.8fr) minmax(180px,.8fr) minmax(180px,.8fr);gap:8px}
     .toolbar input,.toolbar select{width:100%;background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:9px 11px}
-    .summary-grid{display:grid;grid-template-columns:repeat(5,minmax(120px,1fr));gap:8px;padding:10px}
-    .summary-card{border-radius:16px;padding:10px 12px}
+    .summary-grid{display:grid;grid-template-columns:repeat(5,minmax(120px,1fr));gap:8px;padding:8px}
+    .summary-card{border-radius:16px;padding:8px 10px}
     .summary-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
-    .summary-value{margin-top:6px;font-size:26px;font-weight:800;line-height:1}
+    .summary-value{margin-top:4px;font-size:24px;font-weight:800;line-height:1}
     .summary-sub{margin-top:4px;color:var(--muted);font-size:12px}
-    .table-scroll{overflow:auto;max-height:calc(100vh - 250px)}
+    .table-scroll{overflow:auto;flex:1;min-height:0;max-height:none}
     table{width:100%;border-collapse:collapse;min-width:980px}
     th,td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left;font-size:14px;vertical-align:top}
     thead th{position:sticky;top:0;background:#1c2128;z-index:2;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
     tbody tr:hover{background:rgba(255,255,255,.03)}
     .muted{color:var(--muted)}
-    .footer-note{color:var(--muted);font-size:13px;padding:14px 4px 0}
+    .footer-note{color:var(--muted);font-size:12px;padding:2px 4px 0}
     .pages-badges{display:flex;flex-wrap:wrap;gap:6px}
     .page-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.08);white-space:nowrap;font-weight:700;font-size:12px}
     .badge-f95{background:rgba(31,111,235,.22)}
@@ -188,15 +188,18 @@ function buildPagesHtml(row){
 
     const cls = badgeClass(label);
     let href = '';
+    let title = label;
     if(matchIndex >= 0){
       used.add(matchIndex);
       href = links[matchIndex].href || '';
+      title = `${label} · lien détecté`;
     } else {
       href = fallbackUrl(label);
+      title = `${label} · lien de secours`;
     }
 
     if(href){
-      return `<a class="page-badge ${cls}" href="${esc(href)}" target="_blank" rel="noopener">${esc(label)}</a>`;
+      return `<a class="page-badge ${cls}" href="${esc(href)}" target="_blank" rel="noopener" title="${esc(title)}">${esc(label)}</a>`;
     }
     return `<span class="page-badge ${cls}">${esc(label)}</span>`;
   });
@@ -225,7 +228,7 @@ function buildSummary(rows){
     <div class="summary-card"><div class="summary-label">Traduction</div><div class="summary-value">${totalTrad}</div><div class="summary-sub">cumul traduction</div></div>
     <div class="summary-card"><div class="summary-label">Relecture</div><div class="summary-value">${totalRel}</div><div class="summary-sub">cumul relecture</div></div>
     <div class="summary-card"><div class="summary-label">Calc</div><div class="summary-value">${totalCalc}</div><div class="summary-sub">total combiné</div></div>
-    <div class="summary-card"><div class="summary-label">Liens trouvés</div><div class="summary-value">${withPageLinks}</div><div class="summary-sub">${withDiscord} avec ID Discord</div></div>
+    <div class="summary-card"><div class="summary-label">Liens détectés</div><div class="summary-value">${withPageLinks}</div><div class="summary-sub">sinon lien de secours</div></div>
   `;
 }
 
