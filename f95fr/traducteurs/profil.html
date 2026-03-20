@@ -3,40 +3,43 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Aperçu — Fiche traducteur</title>
+  <meta name="referrer" content="no-referrer">
+  <title>f95list FR — Profil traducteur</title>
   <style>
     :root{
       --bg:#0b1220;--panel:#111827;--panel-2:#0f172a;--text:#e6edf3;--muted:#9aa4af;
       --border:#263244;--accent:#58a6ff;--green:#238636;--red:#da3633;--orange:#d29922;
-      --blue:#1f6feb;--shadow:0 14px 40px rgba(0,0,0,.35);
+      --shadow:0 14px 40px rgba(0,0,0,.35)
     }
     *{box-sizing:border-box}
     html,body{margin:0;padding:0;background:linear-gradient(180deg,#07101d 0%,#0b1220 55%,#09111e 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
     a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
-    .page{max-width:1600px;margin:0 auto;padding:14px;display:flex;flex-direction:column;gap:12px}
-    .hero,.panel,.card,.summary-card,.profile-card,.game-card,.empty-visual{
+    .page{max-width:1650px;margin:0 auto;padding:10px 12px 12px;display:flex;flex-direction:column;gap:10px}
+    .hero,.panel,.profile-card,.summary-card,.game-card{
       background:rgba(17,24,39,.92);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow)
     }
-    .hero{padding:16px 18px;background:linear-gradient(135deg, rgba(96,165,250,.18), rgba(17,24,39,.96) 55%, rgba(34,197,94,.08))}
+    .hero{padding:14px 16px;background:linear-gradient(135deg, rgba(96,165,250,.18), rgba(17,24,39,.96) 55%, rgba(34,197,94,.08))}
     .hero-top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
     h1,h2,h3{margin:0}
-    h1{font-size:28px;line-height:1.1}
+    h1{font-size:24px}
     .subtitle{margin-top:6px;color:var(--muted);font-size:14px;line-height:1.4}
     .actions{display:flex;gap:10px;flex-wrap:wrap}
-    .btn{border:1px solid var(--border);background:var(--panel);color:var(--text);padding:9px 13px;border-radius:12px;cursor:pointer;font-weight:700}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);padding:8px 12px;border-radius:12px;cursor:pointer;font-weight:700}
     .btn.primary{background:rgba(31,111,235,.16);border-color:rgba(88,166,255,.45)}
-    .layout{display:grid;grid-template-columns:380px minmax(0,1fr);gap:12px}
+    .layout{display:grid;grid-template-columns:360px minmax(0,1fr);gap:10px}
     .profile-card{padding:14px;display:flex;flex-direction:column;gap:12px}
     .profile-head{display:flex;gap:14px;align-items:center}
     .avatar{
-      width:86px;height:86px;border-radius:22px;display:grid;place-items:center;
+      width:84px;height:84px;border-radius:22px;display:grid;place-items:center;
       background:linear-gradient(135deg, rgba(31,111,235,.28), rgba(88,166,255,.08));
-      border:1px solid rgba(88,166,255,.32);font-size:34px;font-weight:800
+      border:1px solid rgba(88,166,255,.32);font-size:30px;font-weight:800
     }
-    .muted{color:var(--muted)}
     .big-name{font-size:24px;font-weight:800}
     .role-line{margin-top:6px;color:var(--muted);font-size:13px}
-    .pages-badges,.meta-badges,.chips{display:flex;flex-wrap:wrap;gap:8px}
+    .meta-item{padding:10px 12px;border-radius:14px;background:var(--panel-2);border:1px solid rgba(255,255,255,.06)}
+    .meta-item .k{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+    .meta-item .v{margin-top:4px;font-size:14px;font-weight:700}
+    .pages-badges,.chips{display:flex;flex-wrap:wrap;gap:8px}
     .badge{
       display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border-radius:999px;
       border:1px solid rgba(255,255,255,.08);font-weight:700;font-size:12px
@@ -45,11 +48,6 @@
     .badge-discord{background:rgba(88,101,242,.22)}
     .badge-lewd{background:rgba(234,88,12,.18)}
     .badge-other{background:rgba(148,163,184,.18)}
-    .meta-list{display:grid;grid-template-columns:1fr;gap:8px}
-    .meta-item{padding:10px 12px;border-radius:14px;background:var(--panel-2);border:1px solid rgba(255,255,255,.06)}
-    .meta-item .k{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
-    .meta-item .v{margin-top:4px;font-size:14px;font-weight:700}
-    .summary-panel{display:flex;flex-direction:column;gap:12px}
     .summary-grid{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:8px}
     .summary-card{padding:10px 12px}
     .summary-label{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
@@ -57,7 +55,7 @@
     .summary-sub{margin-top:4px;font-size:12px;color:var(--muted)}
     .panel{padding:12px}
     .section-title{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px}
-    .toolbar{display:grid;grid-template-columns:minmax(240px,1.4fr) repeat(4,minmax(140px,1fr));gap:8px}
+    .toolbar{display:grid;grid-template-columns:minmax(220px,1.4fr) repeat(4,minmax(140px,1fr));gap:8px}
     .toolbar input,.toolbar select{
       width:100%;background:var(--panel-2);border:1px solid var(--border);color:var(--text);
       border-radius:12px;padding:10px 11px
@@ -71,14 +69,14 @@
         linear-gradient(135deg, rgba(255,255,255,.05), rgba(255,255,255,.01));
       border-bottom:1px solid rgba(255,255,255,.06)
     }
-    .cover .ph{font-size:13px;color:var(--muted);text-align:center;padding:12px}
     .cover .mini{
       position:absolute;right:10px;top:10px;padding:6px 9px;border-radius:999px;
       background:rgba(11,18,32,.82);border:1px solid rgba(255,255,255,.08);font-size:11px;font-weight:800
     }
+    .cover .ph{font-size:13px;color:var(--muted);text-align:center;padding:12px}
     .game-body{padding:12px;display:flex;flex-direction:column;gap:10px}
     .game-title{font-size:17px;font-weight:800;line-height:1.25}
-    .line{display:flex;flex-wrap:wrap;gap:8px}
+    .line,.actions-row{display:flex;flex-wrap:wrap;gap:8px}
     .status,.engine,.tradtype{
       display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;
       font-size:12px;font-weight:800;border:1px solid rgba(255,255,255,.08)
@@ -86,6 +84,7 @@
     .status.en-cours{background:rgba(210,153,34,.18)}
     .status.termine{background:rgba(35,134,54,.18)}
     .status.abandonne{background:rgba(218,54,51,.18)}
+    .status.other{background:rgba(148,163,184,.18)}
     .engine{background:rgba(31,111,235,.18)}
     .tradtype{background:rgba(148,163,184,.18)}
     .meta-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -93,43 +92,30 @@
     .meta-box .k{font-size:11px;text-transform:uppercase;color:var(--muted)}
     .meta-box .v{margin-top:4px;font-size:13px;font-weight:700}
     .tags{font-size:13px;color:var(--muted);line-height:1.45}
-    .actions-row{display:flex;gap:8px;flex-wrap:wrap}
     .game-btn{
       display:inline-flex;align-items:center;justify-content:center;padding:9px 11px;
       border-radius:12px;border:1px solid var(--border);background:var(--panel-2);color:var(--text);font-weight:700
     }
     .game-btn.primary{background:rgba(31,111,235,.16);border-color:rgba(88,166,255,.4)}
-    .empty-visual{padding:12px}
-    .hint{font-size:12px;color:var(--muted)}
-    @media (max-width:1300px){
-      .games-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-      .summary-grid{grid-template-columns:repeat(3,minmax(120px,1fr))}
-    }
-    @media (max-width:980px){
-      .layout{grid-template-columns:1fr}
-      .toolbar{grid-template-columns:1fr 1fr}
-    }
-    @media (max-width:700px){
-      .page{padding:10px}
-      .toolbar,.summary-grid,.games-grid{grid-template-columns:1fr}
-      h1{font-size:24px}
-    }
+    .muted{color:var(--muted)} .footer-note{color:var(--muted);font-size:12px;padding:2px 4px 0}
+    .empty{padding:18px;border:1px dashed rgba(255,255,255,.12);border-radius:16px;color:var(--muted)}
+    @media (max-width:1300px){.games-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.summary-grid{grid-template-columns:repeat(3,minmax(120px,1fr))}}
+    @media (max-width:980px){.layout{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr 1fr}}
+    @media (max-width:700px){.page{padding:10px}.toolbar,.summary-grid,.games-grid{grid-template-columns:1fr}h1{font-size:22px}}
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
   <div class="page">
     <section class="hero">
       <div class="hero-top">
         <div>
-          <h1>👤 Aperçu — fiche traducteur</h1>
-          <div class="subtitle">
-            Maquette V1 inspirée du style actuel de <strong>f95fr</strong>, en réutilisant les types de données que tu as déjà :
-            nom, pages, ID Discord, traduction/relecture/calc, plus les jeux avec statut, tags, moteur, traducteur, relecteur et type de traduction.
-          </div>
+          <h1 id="pageTitle">👤 Profil traducteur</h1>
+          <div class="subtitle">Fiche détaillée générée à partir des deux onglets Google Sheets déjà utilisés par ton site : traducteurs + liste des jeux.</div>
         </div>
         <div class="actions">
-          <a class="btn" href="#">← Retour traducteurs</a>
-          <a class="btn primary" href="#">Ouvrir la fiche du jeu</a>
+          <a class="btn" href="./index.html">← Retour traducteurs</a>
+          <a class="btn" href="../index.html">🏠 Retour f95fr</a>
         </div>
       </div>
     </section>
@@ -137,137 +123,383 @@
     <div class="layout">
       <aside class="profile-card">
         <div class="profile-head">
-          <div class="avatar">A31</div>
+          <div class="avatar" id="avatar">?</div>
           <div>
-            <div class="big-name">andric31</div>
-            <div class="role-line">Traducteur principal • aperçu statique</div>
+            <div class="big-name" id="profileName">Chargement...</div>
+            <div class="role-line" id="roleLine">Sélection du profil</div>
           </div>
         </div>
 
-        <div class="pages-badges">
-          <span class="badge badge-f95">F95Zone</span>
-          <span class="badge badge-discord">Discord</span>
-          <span class="badge badge-lewd">LewdCorner</span>
-        </div>
-
-        <div class="meta-list">
-          <div class="meta-item"><div class="k">ID Discord</div><div class="v">123456789012345678</div></div>
-          <div class="meta-item"><div class="k">Description</div><div class="v">Fiche dédiée au traducteur avec résumé, jeux liés et futur emplacement pour images réelles.</div></div>
-        </div>
-
-        <div class="empty-visual">
-          <div class="section-title">
-            <h3>🖼️ Image / avatar</h3>
+        <div class="meta-item">
+          <div class="k">Choisir un traducteur</div>
+          <div class="v">
+            <select id="translatorSelect" style="width:100%;margin-top:6px;background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:10px 11px"></select>
           </div>
-          <div class="hint">Pour l’instant, je n’ai pas de source image fiable dans ce que tu m’as donné. Ici on pourra afficher plus tard un avatar traducteur ou une bannière.</div>
+        </div>
+
+        <div class="meta-item">
+          <div class="k">Pages</div>
+          <div class="v" id="profilePages">—</div>
+        </div>
+
+        <div class="meta-item">
+          <div class="k">ID Discord</div>
+          <div class="v" id="profileDiscord">—</div>
+        </div>
+
+        <div class="meta-item">
+          <div class="k">Résumé</div>
+          <div class="v" id="profileResume">Chargement...</div>
         </div>
       </aside>
 
-      <section class="summary-panel">
-        <div class="summary-grid">
-          <div class="summary-card"><div class="summary-label">Traductions</div><div class="summary-value">128</div><div class="summary-sub">issues de l’onglet traducteurs</div></div>
-          <div class="summary-card"><div class="summary-label">Relectures</div><div class="summary-value">24</div><div class="summary-sub">issues de l’onglet traducteurs</div></div>
-          <div class="summary-card"><div class="summary-label">Calc</div><div class="summary-value">152</div><div class="summary-sub">score global</div></div>
-          <div class="summary-card"><div class="summary-label">Jeux liés</div><div class="summary-value">140</div><div class="summary-sub">par traducteur / relecteur</div></div>
-          <div class="summary-card"><div class="summary-label">En cours</div><div class="summary-value">42</div><div class="summary-sub">statut calculé</div></div>
-          <div class="summary-card"><div class="summary-label">Terminés</div><div class="summary-value">81</div><div class="summary-sub">statut calculé</div></div>
-          <div class="summary-card"><div class="summary-label">Abandonnés</div><div class="summary-value">17</div><div class="summary-sub">statut calculé</div></div>
-          <div class="summary-card"><div class="summary-label">Ren’Py</div><div class="summary-value">90</div><div class="summary-sub">moteur dominant</div></div>
-          <div class="summary-card"><div class="summary-label">Unity</div><div class="summary-value">31</div><div class="summary-sub">moteur dominant</div></div>
-          <div class="summary-card"><div class="summary-label">Trad auto</div><div class="summary-value">110</div><div class="summary-sub">type de traduction</div></div>
-          <div class="summary-card"><div class="summary-label">Trad humaine</div><div class="summary-value">22</div><div class="summary-sub">type de traduction</div></div>
-          <div class="summary-card"><div class="summary-label">Semi-auto</div><div class="summary-value">8</div><div class="summary-sub">type de traduction</div></div>
-        </div>
+      <section style="display:flex;flex-direction:column;gap:10px">
+        <div class="summary-grid" id="summaryGrid"></div>
 
         <section class="panel">
           <div class="section-title">
-            <h2>🎮 Jeux du traducteur</h2>
-            <div class="hint">Aperçu V1 avec cartes à la place du grand tableau</div>
+            <h2>🎮 Jeux liés</h2>
+            <div class="muted" id="gamesCount">Chargement...</div>
           </div>
           <div class="toolbar">
-            <input type="search" placeholder="Rechercher un jeu, un tag, un moteur...">
-            <select><option>Tous les statuts</option><option>En cours</option><option>Terminé</option><option>Abandonné</option></select>
-            <select><option>Tous les moteurs</option><option>Ren’Py</option><option>Unity</option></select>
-            <select><option>Tous les types de trad</option><option>Auto</option><option>Humaine</option><option>Semi-auto</option></select>
-            <select><option>Tri : plus récent</option><option>Nom A → Z</option><option>ID croissant</option></select>
+            <input type="search" id="searchInput" placeholder="Rechercher un jeu, un tag, un moteur...">
+            <select id="statusFilter"><option value="">Tous les statuts</option></select>
+            <select id="engineFilter"><option value="">Tous les moteurs</option></select>
+            <select id="translationTypeFilter"><option value="">Tous les types de traduction</option></select>
+            <select id="sortSelect">
+              <option value="title-asc">Titre A → Z</option>
+              <option value="title-desc">Titre Z → A</option>
+              <option value="id-desc">ID ↓</option>
+              <option value="id-asc">ID ↑</option>
+              <option value="status-asc">Statut A → Z</option>
+            </select>
           </div>
         </section>
       </section>
     </div>
 
-    <section class="games-grid">
-      <article class="game-card">
-        <div class="cover">
-          <div class="mini">Image future</div>
-          <div class="ph">Aucune image fiable dans les données actuelles.<br>Emplacement réservé à la jaquette du jeu.</div>
-        </div>
-        <div class="game-body">
-          <div class="game-title">Jikage Rising</div>
-          <div class="line">
-            <span class="status en-cours">En cours</span>
-            <span class="engine">Ren’Py</span>
-            <span class="tradtype">Traduction auto</span>
-          </div>
-          <div class="meta-row">
-            <div class="meta-box"><div class="k">Version jeu</div><div class="v">v2.21a Arc 3</div></div>
-            <div class="meta-box"><div class="k">Version trad</div><div class="v">FR v1</div></div>
-          </div>
-          <div class="tags">Tags : romance, corruption, aventure, collection</div>
-          <div class="actions-row">
-            <a class="game-btn primary" href="#">Ouvrir le jeu</a>
-            <a class="game-btn" href="#">Ouvrir la trad</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="game-card">
-        <div class="cover">
-          <div class="mini">Image future</div>
-          <div class="ph">Carte de jeu avec futur visuel récupéré depuis une vraie base image.</div>
-        </div>
-        <div class="game-body">
-          <div class="game-title">Camp Pinewood 2</div>
-          <div class="line">
-            <span class="status termine">Terminé</span>
-            <span class="engine">Unity</span>
-            <span class="tradtype">Traduction humaine</span>
-          </div>
-          <div class="meta-row">
-            <div class="meta-box"><div class="k">Version jeu</div><div class="v">v1.0</div></div>
-            <div class="meta-box"><div class="k">Relecteur</div><div class="v">Frelon31</div></div>
-          </div>
-          <div class="tags">Tags : humour, aventure, gestion, 3D</div>
-          <div class="actions-row">
-            <a class="game-btn primary" href="#">Ouvrir le jeu</a>
-            <a class="game-btn" href="#">Ouvrir la trad</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="game-card">
-        <div class="cover">
-          <div class="mini">Image future</div>
-          <div class="ph">La zone image peut aussi devenir un carrousel ou un hover preview plus tard.</div>
-        </div>
-        <div class="game-body">
-          <div class="game-title">How Bad Can It Be?</div>
-          <div class="line">
-            <span class="status abandonne">Abandonné</span>
-            <span class="engine">Ren’Py</span>
-            <span class="tradtype">Semi-auto</span>
-          </div>
-          <div class="meta-row">
-            <div class="meta-box"><div class="k">ID F95</div><div class="v">66273</div></div>
-            <div class="meta-box"><div class="k">Site</div><div class="v">F95Zone</div></div>
-          </div>
-          <div class="tags">Tags : choix, drame, visual novel</div>
-          <div class="actions-row">
-            <a class="game-btn primary" href="#">Ouvrir le jeu</a>
-            <a class="game-btn" href="#">Ouvrir la trad</a>
-          </div>
-        </div>
-      </article>
+    <section class="games-grid" id="gamesGrid">
+      <div class="empty">Chargement...</div>
     </section>
+
+    <div class="footer-note" id="footerNote"></div>
   </div>
+
+  <script>
+    const SHEET_ID='1ELRF0kpF8SoUlslX5ZXZoG4WXeWST6lN9bLws32EPfs';
+    const XLSX_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=xlsx`;
+    const state={traducteurs:[], jeux:[], currentName:'', filtered:[]};
+
+    function nh(h){ return String(h||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim(); }
+    function slugify(v){ return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''); }
+    function esc(v){ return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+    function num(v){ const n=Number(String(v||'').replace(',', '.')); return Number.isFinite(n)?n:0; }
+    function makeAbsoluteLink(value){ const v=String(value||'').trim(); if(!v) return ''; if(/^https?:\/\//i.test(v)) return v; if(/^\/\//.test(v)) return 'https:'+v; if(/^f95/i.test(v)) return 'https://'+v; return ''; }
+    function normalizeName(v){ return String(v||'').trim().toLowerCase(); }
+    function splitNames(value){ return String(value||'').split(/\s*[,;/]\s*|\s+-\s+/).map(v=>v.trim()).filter(Boolean); }
+    function splitPageLabels(pages){ return String(pages||'').split(/\s*-\s*/).map(x=>x.trim()).filter(Boolean); }
+    function normalizeLabel(label){ return String(label||'').toLowerCase().replace(/\s+/g,' ').trim(); }
+    function badgeClass(label){ const s=normalizeLabel(label); if(s.includes('discord')) return 'badge-discord'; if(s.includes('lewd')) return 'badge-lewd'; if(s.includes('f95')) return 'badge-f95'; return 'badge-other'; }
+    function getStatusClass(status){ const s=slugify(status); if(s.includes('en-cours')) return 'en-cours'; if(s.includes('termine')) return 'termine'; if(s.includes('abandonne')) return 'abandonne'; return 'other'; }
+    function initials(name){ const parts=String(name||'').trim().split(/\s+/).filter(Boolean); return (parts.slice(0,2).map(p=>p[0]?.toUpperCase()||'').join('') || '?'); }
+
+    function decodeRangeAddress(range){
+      if(!range || !range.s || !range.e) return [];
+      const out=[]; for(let c=range.s.c;c<=range.e.c;c++) out.push(c); return out;
+    }
+    function getCellDisplayValue(sheet, addr){
+      const cell = sheet[addr];
+      if(!cell) return '';
+      if(cell.w != null && cell.w !== '') return String(cell.w);
+      if(cell.v != null) return String(cell.v);
+      return '';
+    }
+    function getCellLink(sheet, addr){
+      const cell = sheet[addr];
+      if(cell && cell.l && cell.l.Target) return String(cell.l.Target);
+      return '';
+    }
+
+    function findHeaderInfo(sheet, wanted, minScore){
+      const range = XLSX.utils.decode_range(sheet['!ref'] || 'A1:A1');
+      for(let r=range.s.r; r<=Math.min(range.e.r, range.s.r+25); r++){
+        const headers = decodeRangeAddress(range).map(c => nh(getCellDisplayValue(sheet, XLSX.utils.encode_cell({r,c}))));
+        const score = wanted.filter(k => headers.includes(k)).length;
+        if(score >= minScore){
+          const idx={}; headers.forEach((h,i)=>idx[h]=i);
+          return { range, headerRow:r, idx };
+        }
+      }
+      return null;
+    }
+
+    function findTranslatorSheet(wb){
+      let best=null, bestScore=-1;
+      for(const name of wb.SheetNames){
+        const ws = wb.Sheets[name];
+        const info = findHeaderInfo(ws, ['nom','pages','id discord','traduction','relecture','calc'], 4);
+        if(info){
+          const score = ['nom','pages','id discord','traduction','relecture','calc'].filter(k => info.idx[k] != null).length;
+          if(score > bestScore){ bestScore=score; best=ws; }
+        }
+      }
+      return best;
+    }
+
+    function findGamesSheet(wb){
+      let best=null, bestScore=-1;
+      for(const name of wb.SheetNames){
+        const ws = wb.Sheets[name];
+        const info = findHeaderInfo(ws, ['id','site','nom du jeu','version','trad ver','lien trad','statut','tags','type','traducteur','relecteur','type de traduction'], 7);
+        if(info){
+          const score = ['id','site','nom du jeu','version','trad ver','lien trad','statut','tags','type','traducteur','relecteur','type de traduction'].filter(k => info.idx[k] != null).length;
+          if(score > bestScore){ bestScore=score; best=ws; }
+        }
+      }
+      return best;
+    }
+
+    function parseTranslatorRows(ws){
+      const info = findHeaderInfo(ws, ['nom','pages','id discord','traduction','relecture','calc'], 4);
+      if(!info) return [];
+      const {range, headerRow, idx} = info;
+      const gi = (...keys) => { for(const k of keys){ if(idx[k]!=null) return idx[k]; } return -1; };
+      const cols = { nom:gi('nom'), pages:gi('pages'), discordId:gi('id discord'), traduction:gi('traduction'), relecture:gi('relecture'), calc:gi('calc') };
+      const rows=[];
+      for(let r=headerRow+1; r<=range.e.r; r++){
+        const read=(col)=> col>=0 ? getCellDisplayValue(ws, XLSX.utils.encode_cell({r,c:col})) : '';
+        const readLink=(col)=> col>=0 ? getCellLink(ws, XLSX.utils.encode_cell({r,c:col})) : '';
+        const nom=read(cols.nom).trim();
+        const pages=read(cols.pages).trim();
+        const discordId=read(cols.discordId).trim();
+        const traduction=read(cols.traduction).trim();
+        const relecture=read(cols.relecture).trim();
+        const calc=read(cols.calc).trim();
+        if(!nom && !pages && !discordId && !traduction && !relecture && !calc) continue;
+        const labels = splitPageLabels(pages);
+        const pagesCellLink = readLink(cols.pages);
+        const pageLinks = [];
+        if(labels.length && pagesCellLink){
+          pageLinks.push({label:labels[0], href:pagesCellLink});
+        }
+        rows.push({nom,pages,discordId,traduction,relecture,calc,nomUrl:readLink(cols.nom),pageLinks});
+      }
+      return rows.filter(r=>r.nom);
+    }
+
+    function parseGameRows(ws){
+      const info = findHeaderInfo(ws, ['id','site','nom du jeu','version','trad ver','lien trad','statut','tags','type','traducteur','relecteur','type de traduction'], 7);
+      if(!info) return [];
+      const {range, headerRow, idx} = info;
+      const gi = (...keys) => { for(const k of keys){ if(idx[k]!=null) return idx[k]; } return -1; };
+      const cols = {
+        id:gi('id'), site:gi('site'), title:gi('nom du jeu'), version:gi('version'), tradVersion:gi('trad ver'),
+        link:gi('lien trad'), status:gi('statut'), tags:gi('tags'), engine:gi('type'), translator:gi('traducteur'),
+        reviewer:gi('relecteur'), translationType:gi('type de traduction')
+      };
+      const rows=[];
+      for(let r=headerRow+1; r<=range.e.r; r++){
+        const read=(col)=> col>=0 ? {text:getCellDisplayValue(ws, XLSX.utils.encode_cell({r,c:col})), url:getCellLink(ws, XLSX.utils.encode_cell({r,c:col}))} : {text:'',url:''};
+        const id=read(cols.id), site=read(cols.site), title=read(cols.title), version=read(cols.version), tradVersion=read(cols.tradVersion), link=read(cols.link), status=read(cols.status), tags=read(cols.tags), engine=read(cols.engine), translator=read(cols.translator), reviewer=read(cols.reviewer), translationType=read(cols.translationType);
+        const row={
+          id:id.text, site:site.text, title:title.text, titleUrl:makeAbsoluteLink(title.url), version:version.text,
+          tradVersion:tradVersion.text, link:makeAbsoluteLink(link.url || link.text), status:status.text, tags:tags.text,
+          engine:engine.text, translator:translator.text, reviewer:reviewer.text, translationType:translationType.text
+        };
+        if(Object.values(row).some(v => String(v || '').trim() !== '')) rows.push(row);
+      }
+      return rows;
+    }
+
+    function pageBadgesHtml(row){
+      const labels = splitPageLabels(row.pages);
+      if(!labels.length) return '<span class="muted">—</span>';
+      const firstDetectedHref = row.pageLinks && row.pageLinks[0] && row.pageLinks[0].href ? row.pageLinks[0].href : '';
+      return `<div class="pages-badges">${labels.map((label, idx) => {
+        let href='';
+        if(idx===0 && firstDetectedHref) href=firstDetectedHref;
+        else{
+          const s=normalizeLabel(label);
+          if(s.includes('discord')) href='https://discord.com/';
+          else if(s.includes('f95')) href='https://f95zone.to/';
+          else if(s.includes('lewd')) href='https://lewdcorner.com/';
+        }
+        const cls=badgeClass(label);
+        return href ? `<a class="badge ${cls}" href="${esc(href)}" target="_blank" rel="noopener">${esc(label)}</a>` : `<span class="badge ${cls}">${esc(label)}</span>`;
+      }).join('')}</div>`;
+    }
+
+    function buildSummaryCards(profile, games){
+      const counts = {
+        traductions:num(profile?.traduction), relectures:num(profile?.relecture), calc:num(profile?.calc), jeux:games.length,
+        enCours:games.filter(g=>slugify(g.status).includes('en-cours')).length,
+        termines:games.filter(g=>slugify(g.status).includes('termine')).length,
+        abandonnes:games.filter(g=>slugify(g.status).includes('abandonne')).length,
+        renpy:games.filter(g=>slugify(g.engine).includes('ren-py') || slugify(g.engine).includes('renpy')).length,
+        unity:games.filter(g=>slugify(g.engine).includes('unity')).length,
+        auto:games.filter(g=>slugify(g.translationType).includes('auto')).length,
+        humaine:games.filter(g=>slugify(g.translationType).includes('humaine')).length
+      };
+      const cards = [
+        ['Traductions', counts.traductions, 'onglet traducteurs'],
+        ['Relectures', counts.relectures, 'onglet traducteurs'],
+        ['Calc', counts.calc, 'score global'],
+        ['Jeux liés', counts.jeux, 'trad + relecture'],
+        ['En cours', counts.enCours, 'statut calculé'],
+        ['Terminés', counts.termines, 'statut calculé'],
+        ['Abandonnés', counts.abandonnes, 'statut calculé'],
+        ['Ren’Py', counts.renpy, 'moteur'],
+        ['Unity', counts.unity, 'moteur'],
+        ['Trad auto', counts.auto, 'type de traduction'],
+        ['Trad humaine', counts.humaine, 'type de traduction'],
+      ];
+      document.getElementById('summaryGrid').innerHTML = cards.map(([label, value, sub])=>`<div class="summary-card"><div class="summary-label">${esc(label)}</div><div class="summary-value">${esc(value)}</div><div class="summary-sub">${esc(sub)}</div></div>`).join('');
+    }
+
+    function fillFilters(games){
+      const fill=(id, values, allLabel)=>{
+        const s=document.getElementById(id), cur=s.value;
+        s.innerHTML=`<option value="">${allLabel}</option>`;
+        values.forEach(v=>{ const o=document.createElement('option'); o.value=v; o.textContent=v; s.appendChild(o); });
+        if(values.includes(cur)) s.value=cur;
+      };
+      fill('statusFilter', [...new Set(games.map(g=>String(g.status||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'})), 'Tous les statuts');
+      fill('engineFilter', [...new Set(games.map(g=>String(g.engine||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'})), 'Tous les moteurs');
+      fill('translationTypeFilter', [...new Set(games.map(g=>String(g.translationType||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'})), 'Tous les types de traduction');
+    }
+
+    function renderGames(games){
+      const grid=document.getElementById('gamesGrid');
+      if(!games.length){
+        grid.innerHTML='<div class="empty">Aucun jeu trouvé pour ce profil avec les filtres actuels.</div>';
+        document.getElementById('gamesCount').textContent='0 jeu';
+        document.getElementById('footerNote').textContent='0 jeu affiché';
+        return;
+      }
+      grid.innerHTML=games.map(g=>`<article class="game-card">
+        <div class="cover"><div class="mini">${esc(g.site||'Jeu')}</div><div class="ph">Emplacement réservé aux images.<br>Avec les données actuelles, je n’ai pas encore de source visuelle fiable par jeu.</div></div>
+        <div class="game-body">
+          <div class="game-title">${g.title ? (g.titleUrl ? `<a href="${esc(g.titleUrl)}" target="_blank" rel="noopener">${esc(g.title)}</a>` : esc(g.title)) : '—'}</div>
+          <div class="line">
+            <span class="status ${getStatusClass(g.status)}">${esc(g.status||'—')}</span>
+            <span class="engine">${esc(g.engine||'—')}</span>
+            <span class="tradtype">${esc(g.translationType||'—')}</span>
+          </div>
+          <div class="meta-row">
+            <div class="meta-box"><div class="k">Version jeu</div><div class="v">${esc(g.version||'—')}</div></div>
+            <div class="meta-box"><div class="k">Version trad</div><div class="v">${esc(g.tradVersion||'—')}</div></div>
+          </div>
+          <div class="meta-row">
+            <div class="meta-box"><div class="k">Traducteur</div><div class="v">${esc(g.translator||'—')}</div></div>
+            <div class="meta-box"><div class="k">Relecteur</div><div class="v">${esc(g.reviewer||'—')}</div></div>
+          </div>
+          <div class="tags">${g.tags ? `Tags : ${esc(g.tags)}` : '<span class="muted">Aucun tag</span>'}</div>
+          <div class="actions-row">
+            ${g.titleUrl ? `<a class="game-btn primary" href="${esc(g.titleUrl)}" target="_blank" rel="noopener">Ouvrir le jeu</a>` : ''}
+            ${g.link ? `<a class="game-btn" href="${esc(g.link)}" target="_blank" rel="noopener">Ouvrir la trad</a>` : ''}
+          </div>
+        </div>
+      </article>`).join('');
+      document.getElementById('gamesCount').textContent=`${games.length} jeu(x)`;
+      document.getElementById('footerNote').textContent=`${games.length} jeu(x) affiché(s) · Source : Google Sheets`;
+    }
+
+    function applyFilters(){
+      const q=document.getElementById('searchInput').value.trim().toLowerCase();
+      const status=document.getElementById('statusFilter').value;
+      const engine=document.getElementById('engineFilter').value;
+      const tt=document.getElementById('translationTypeFilter').value;
+      const sort=document.getElementById('sortSelect').value;
+
+      let rows = state.jeux.filter(g => {
+        const names = [...splitNames(g.translator), ...splitNames(g.reviewer)].map(normalizeName);
+        if(!names.includes(normalizeName(state.currentName))) return false;
+        const hay=[g.id,g.site,g.title,g.version,g.tradVersion,g.status,g.tags,g.engine,g.translator,g.reviewer,g.translationType].join(' ').toLowerCase();
+        if(q && !hay.includes(q)) return false;
+        if(status && g.status !== status) return false;
+        if(engine && g.engine !== engine) return false;
+        if(tt && g.translationType !== tt) return false;
+        return true;
+      });
+
+      rows.sort((a,b)=>{
+        switch(sort){
+          case 'title-desc': return String(b.title||'').localeCompare(String(a.title||''),'fr',{sensitivity:'base'});
+          case 'id-desc': return num(b.id)-num(a.id);
+          case 'id-asc': return num(a.id)-num(b.id);
+          case 'status-asc': return String(a.status||'').localeCompare(String(b.status||''),'fr',{sensitivity:'base'});
+          default: return String(a.title||'').localeCompare(String(b.title||''),'fr',{sensitivity:'base'});
+        }
+      });
+
+      state.filtered = rows;
+      renderGames(rows);
+    }
+
+    function updateProfile(name){
+      state.currentName = name;
+      const profile = state.traducteurs.find(r => normalizeName(r.nom) === normalizeName(name)) || null;
+      const allGames = state.jeux.filter(g => {
+        const names = [...splitNames(g.translator), ...splitNames(g.reviewer)].map(normalizeName);
+        return names.includes(normalizeName(name));
+      });
+
+      document.getElementById('pageTitle').textContent = `👤 Profil — ${name}`;
+      document.title = `f95list FR — ${name}`;
+      document.getElementById('profileName').textContent = name;
+      document.getElementById('avatar').textContent = initials(name);
+      document.getElementById('roleLine').textContent = `${allGames.length} jeu(x) lié(s) dans la base actuelle`;
+      document.getElementById('profileDiscord').textContent = profile?.discordId || '—';
+      document.getElementById('profilePages').innerHTML = profile ? pageBadgesHtml(profile) : '<span class="muted">—</span>';
+      document.getElementById('profileResume').innerHTML = profile
+        ? `${num(profile.traduction)} traduction(s) • ${num(profile.relecture)} relecture(s) • calc ${num(profile.calc)}${profile.nomUrl ? ` • <a href="${esc(profile.nomUrl)}" target="_blank" rel="noopener">page externe ↗</a>` : ''}`
+        : 'Profil trouvé dans les jeux, mais sans ligne dédiée dans l’onglet traducteurs.';
+      buildSummaryCards(profile, allGames);
+      fillFilters(allGames);
+      applyFilters();
+
+      const url = new URL(window.location.href);
+      url.searchParams.set('name', name);
+      history.replaceState({}, '', url.toString());
+      document.getElementById('translatorSelect').value = name;
+    }
+
+    function fillTranslatorSelect(){
+      const select=document.getElementById('translatorSelect');
+      const names=[...new Set([
+        ...state.traducteurs.map(r=>r.nom).filter(Boolean),
+        ...state.jeux.flatMap(g => [...splitNames(g.translator), ...splitNames(g.reviewer)])
+      ])].sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'}));
+      select.innerHTML = names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');
+      const qp = new URLSearchParams(location.search).get('name');
+      const initial = names.find(n=>normalizeName(n)===normalizeName(qp)) || names[0] || '';
+      if(initial) updateProfile(initial);
+      select.addEventListener('change', ()=>updateProfile(select.value));
+    }
+
+    async function load(){
+      try{
+        const res=await fetch(XLSX_URL,{cache:'no-store'});
+        if(!res.ok) throw new Error(res.status);
+        const buffer=await res.arrayBuffer();
+        const wb=XLSX.read(buffer,{type:'array'});
+        const tradWs=findTranslatorSheet(wb);
+        const gamesWs=findGamesSheet(wb);
+        state.traducteurs = tradWs ? parseTranslatorRows(tradWs) : [];
+        state.jeux = gamesWs ? parseGameRows(gamesWs) : [];
+        fillTranslatorSelect();
+      }catch(e){
+        document.getElementById('gamesGrid').innerHTML = '<div class="empty">Impossible de charger les données du Google Sheets pour le moment.</div>';
+        document.getElementById('footerNote').textContent = 'Erreur de chargement';
+      }
+    }
+
+    ['searchInput','statusFilter','engineFilter','translationTypeFilter','sortSelect'].forEach(id=>{
+      document.addEventListener('change', e => { if(e.target && e.target.id===id) applyFilters(); });
+      const el=document.getElementById(id); if(el) el.addEventListener(id==='searchInput'?'input':'change', applyFilters);
+    });
+
+    load();
+  </script>
 </body>
 </html>
