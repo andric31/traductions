@@ -100,7 +100,7 @@
       <section class="panel">
         <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px">
           <h2>🎮 Jeux liés</h2>
-          <div class="muted" id="gamesCount">Chargement...</div>
+          <div class="muted" id="gamesCount">Chargement rapide…</div>
         </div>
         <div class="toolbar">
           <input id="searchInput" type="search" placeholder="Rechercher un jeu, un tag, un moteur...">
@@ -128,7 +128,41 @@
 </div>
 
 <script>
+
 const DATA_URL="https://script.google.com/macros/s/AKfycbybvrFy6B2L7rkLWJnrwRHhP0F6Sv0uk6V9zUTZibwEzUjKXf-abOK_N6jUhqFPs9US/exec";
+const CACHE_KEY="f95fr_ext_cache_v1";
+const CACHE_TIME_KEY="f95fr_ext_cache_time_v1";
+const CACHE_TTL=1000*60*10;
+async function getExtensionData(force=false){
+  try{
+    const now=Date.now();
+    if(!force){
+      const cached=sessionStorage.getItem(CACHE_KEY) || localStorage.getItem(CACHE_KEY);
+      const time=Number(sessionStorage.getItem(CACHE_TIME_KEY) || localStorage.getItem(CACHE_TIME_KEY) || 0);
+      if(cached && time && now-time < CACHE_TTL){
+        return JSON.parse(cached);
+      }
+    }
+    const res=await fetch(DATA_URL,{cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const json=await res.json();
+    const data=json?.data||{};
+    const payload={games:Array.isArray(data.games)?data.games:[], updates:Array.isArray(data.updates)?data.updates:[], traductors:Array.isArray(data.traductors)?data.traductors:[]};
+    const ser=JSON.stringify(payload);
+    try{
+      sessionStorage.setItem(CACHE_KEY, ser);
+      sessionStorage.setItem(CACHE_TIME_KEY, String(now));
+      localStorage.setItem(CACHE_KEY, ser);
+      localStorage.setItem(CACHE_TIME_KEY, String(now));
+    }catch(_e){}
+    return payload;
+  }catch(err){
+    const cached=sessionStorage.getItem(CACHE_KEY) || localStorage.getItem(CACHE_KEY);
+    if(cached) return JSON.parse(cached);
+    throw err;
+  }
+}
+
 const state={games:[],updates:[],profiles:[],current:''};
 const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const norm=v=>String(v||'').trim().toLowerCase();
@@ -267,16 +301,21 @@ function selectProfile(name){
   document.getElementById('profileResume').innerHTML=`${p.games.length} jeu(x) • ${p.updates.length} update(s) • ${p.images} image(s)`;
   document.getElementById('topTags').innerHTML=p.topTags.length?p.topTags.slice(0,10).map(t=>`<span class="chip">${esc(t)}</span>`).join(' '):'—';
   document.getElementById('profileLinks').innerHTML=p.links.length?p.links.slice(0,5).map((l,i)=>`<a class="chip" href="${esc(l)}" target="_blank" rel="noopener">Lien ${i+1}</a>`).join(' '):'—';
-  updateSummary(p); fillFilters(p.games); renderUpdates(p); renderGames(p);
+  document.getElementById('gamesGrid').innerHTML='<div class="empty">Chargement des jeux liés…</div>';
+  document.getElementById('updatesList').innerHTML='<div class="empty">Chargement des updates liées…</div>';
+  updateSummary(p);
   document.getElementById('profileSelect').value=p.name;
   const url=new URL(location.href); url.searchParams.set('name', p.name); history.replaceState({},'',url);
+  requestAnimationFrame(()=>{
+    fillFilters(p.games);
+    renderGames(p);
+    setTimeout(()=>renderUpdates(p), 0);
+  });
 }
 async function load(){
-  const res=await fetch(DATA_URL,{cache:'no-store'});
-  const json=await res.json();
-  const data=json?.data||{};
-  state.games=Array.isArray(data.games)?data.games:[];
-  state.updates=Array.isArray(data.updates)?data.updates:[];
+  const data=await getExtensionData(false);
+  state.games=data.games||[];
+  state.updates=data.updates||[];
   state.profiles=buildProfiles(state.games,state.updates);
   const sel=document.getElementById('profileSelect');
   sel.innerHTML=state.profiles.map(p=>`<option value="${esc(p.name)}">${esc(p.name)}</option>`).join('');
