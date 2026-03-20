@@ -24,7 +24,7 @@
     .actions{display:flex;gap:10px;flex-wrap:wrap}
     .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);padding:9px 13px;border-radius:12px;font-weight:700}
     .btn.primary{background:rgba(31,111,235,.16);border-color:rgba(88,166,255,.45)}
-    .layout{display:grid;grid-template-columns:1fr;gap:12px}
+    .layout{display:grid;grid-template-columns:minmax(0,1.3fr) 420px;gap:12px}
     .panel{padding:12px}
     .nav-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
     .card{padding:14px;display:flex;flex-direction:column;gap:10px}
@@ -46,6 +46,9 @@
     .type.other{background:rgba(148,163,184,.18)}
     .names{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
     .name-pill{display:inline-flex;align-items:center;padding:6px 9px;border-radius:999px;background:var(--panel-2);border:1px solid rgba(255,255,255,.06);font-size:12px}
+    a.name-pill{color:var(--text);text-decoration:none}
+    a.name-pill:hover{border-color:rgba(88,166,255,.45);background:rgba(88,166,255,.08)}
+    .update-meta{margin-top:8px;font-size:12px;color:var(--muted);line-height:1.45}
     .empty{padding:16px;border:1px dashed rgba(255,255,255,.12);border-radius:16px;color:var(--muted)}
     .footer-note{color:var(--muted);font-size:12px;padding:2px 4px 0}
     @media (max-width:1100px){.layout{grid-template-columns:1fr}.nav-grid{grid-template-columns:1fr}}
@@ -59,11 +62,14 @@
         <div>
           <h1>🏠 f95list FR — Accueil</h1>
           <div class="subtitle">
-            Page principale qui centralise les données de la communauté française.
+            Nouvelle page principale qui centralise l’architecture du site. Le bloc <strong>Google Sheet</strong> garde l’ancien système simple,
+            tandis que cette page met en avant les <strong>dernières MAJ / derniers ajouts</strong> venant de <code>updates</code>.
           </div>
         </div>
         <div class="actions">
-          
+          <a class="btn" href="./google_shet/">📄 Google Sheet</a>
+          <a class="btn primary" href="./profils/">👥 Profils avancés</a>
+          <a class="btn" href="./google_shet/traducteurs/">👥 Traducteurs (simple)</a>
         </div>
       </div>
     </section>
@@ -73,29 +79,29 @@
         <h2>Navigation</h2>
         <div class="nav-grid" style="margin-top:10px">
           <article class="card">
-            <h3>📄 Espace Google Sheets</h3>
-            <div class="muted">Tableau Google Sheets de la communauté française, repensé avec une interface dédiée.</div>
+            <h3>📄 Espace Google Sheet</h3>
+            <div class="muted">Ce qu’on faisait avant, gardé volontairement simple et rangé à part.</div>
+            <div class="chips">
+              <span class="chip">Liste des jeux</span>
+              <span class="chip">MAJ</span>
+              <span class="chip">Pourcentage</span>
+              <span class="chip">Traducteurs</span>
+            </div>
             <div class="actions">
               <a class="btn primary" href="./google_shet/">Ouvrir l’espace Google Sheet</a>
-              <a class="btn" href="./google_shet/traducteurs/">Traducteurs / Relecteurs</a>
-              <a class="btn" href="./google_shet/maj/">MAJ</a>
-              <a class="btn" href="./google_shet/pourcentage/">Pourcentage</a>
+              <a class="btn" href="./google_shet/traducteurs/">Traducteurs</a>
             </div>
           </article>
 
           <article class="card">
             <h3>🧩 Profils avancés</h3>
-            <div class="muted">Nouvel espace séparé du Google Sheets, basé uniquement sur la base extension.</div>
-            <div class="actions">
-              <a class="btn primary" href="./profils/">👥 Profils avancés</a>
-            </div>
-          </article>
-
-          <article class="card">
-            <h3>🎮 Jeux avancés</h3>
-            <div class="muted">Nouvel espace séparé du Google Sheets, basé uniquement sur la base extension.</div>
-            <div class="actions">
-              <a class="btn primary" href="./jeux/">🎮 Jeux avancés</a>
+            <div class="muted">Nouvel espace séparé du Google Sheet, basé uniquement sur la base extension pour les profils, images, liens réels et cartes plus riches.</div>
+            <div class="chips">
+              <span class="chip">images</span>
+              <span class="chip">profils avancés</span>
+              <span class="chip">updates</span>
+              <span class="chip">liens réels</span>
+              <span class="chip"><a href="./profils/">ouvrir</a></span>
             </div>
           </article>
 
@@ -107,20 +113,29 @@
               <div class="stat"><div class="k">Traducteurs</div><div class="v" id="tradCount">…</div></div>
             </div>
           </article>
+
+          <article class="card">
+            <h3>🔗 Accès rapide</h3>
+            <div class="actions">
+              <a class="btn" href="./google_shet/maj/">Historique des MAJ</a>
+              <a class="btn" href="./google_shet/pourcentage/">Pourcentage</a>
+              <a class="btn" href="./google_shet/traducteurs/">Traducteurs / Relecteurs</a>
+            </div>
+          </article>
         </div>
       </section>
-    </div>
 
-    <section class="panel">
-      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap">
-        <h2>🕒 Dernières MAJ / derniers ajouts</h2>
-        <button class="btn" id="refreshBtn" type="button">Rafraîchir</button>
-      </div>
-      <div class="muted" style="margin-top:6px">Panneau basé sur <code>updates</code> de la même base que l’extension.</div>
-      <div class="updates" id="updatesList" style="margin-top:10px">
-        <div class="empty">Chargement…</div>
-      </div>
-    </section>
+      <aside class="panel">
+        <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap">
+          <h2>🕒 Dernières MAJ / derniers ajouts</h2>
+          <button class="btn" id="refreshBtn" type="button">Rafraîchir</button>
+        </div>
+        <div class="muted" style="margin-top:6px">Panneau basé sur <code>updates</code> de la même base que l’extension.</div>
+        <div class="updates" id="updatesList" style="margin-top:10px">
+          <div class="empty">Chargement…</div>
+        </div>
+      </aside>
+    </div>
 
     <div class="footer-note" id="footerNote"></div>
   </div>
@@ -141,38 +156,61 @@ function formatDate(v){
   if(!isNaN(d)) return d.toLocaleString('fr-FR');
   return String(v);
 }
-function renderUpdates(items){
+function normalizeName(v){
+  return String(v || '').trim().toLowerCase();
+}
+function renderUpdates(items, games){
   const box = document.getElementById('updatesList');
   if(!items.length){
     box.innerHTML = '<div class="empty">Aucune update trouvée.</div>';
     return;
   }
+
+  const byName = new Map();
+  (Array.isArray(games) ? games : []).forEach(game => {
+    const key = normalizeName(game && game.name);
+    if(!key) return;
+    if(!byName.has(key)) byName.set(key, []);
+    byName.get(key).push(game);
+  });
+
   box.innerHTML = items.slice(0,20).map(item => {
     const names = Array.isArray(item.names) ? item.names : [];
     const typeCls = normalizeType(item.type || item.kind || item.label || '');
     const typeLabel = item.type || item.kind || item.label || 'Update';
+
+    const matchedGames = names.flatMap(name => byName.get(normalizeName(name)) || []);
+    const traducteurs = [...new Set(matchedGames.flatMap(game => {
+      if(Array.isArray(game.traductor)) return game.traductor.filter(Boolean);
+      return game.traductor ? [game.traductor] : [];
+    }))];
+
+    const namesHtml = names.length
+      ? names.map(name => {
+          const matches = byName.get(normalizeName(name)) || [];
+          const game = matches[0];
+          return game && game.id
+            ? `<a class="name-pill" href="./jeux/profil.html?id=${encodeURIComponent(game.id)}">${esc(name)}</a>`
+            : `<span class="name-pill">${esc(name)}</span>`;
+        }).join('')
+      : '<span class="muted">Aucun nom</span>';
+
+    const metaHtml = traducteurs.length
+      ? `<div class="update-meta">Traducteur${traducteurs.length > 1 ? 's' : ''} : ${traducteurs.map(t => esc(t)).join(', ')}</div>`
+      : '';
+
     return `<article class="update-item">
       <div class="update-head">
         <span class="type ${typeCls}">${esc(typeLabel)}</span>
         <span class="date">${esc(formatDate(item.date))}</span>
       </div>
-      <div class="names">${names.length ? names.map(n => `<span class="name-pill">${esc(n)}</span>`).join('') : '<span class="muted">Aucun nom</span>'}</div>
+      <div class="names">${namesHtml}</div>
+      ${metaHtml}
     </article>`;
   }).join('');
 }
 async function loadData(){
-  const btn = document.getElementById('refreshBtn');
-  const list = document.getElementById('updatesList');
-  const footer = document.getElementById('footerNote');
   try{
-    if(btn){
-      btn.disabled = true;
-      btn.textContent = 'Rafraîchissement...';
-    }
-    if(list){
-      list.innerHTML = '<div class="empty">Rafraîchissement en cours…</div>';
-    }
-
     const res = await fetch(DATA_URL, {cache:'no-store'});
     if(!res.ok) throw new Error('HTTP ' + res.status);
     const json = await res.json();
@@ -183,21 +221,14 @@ async function loadData(){
     document.getElementById('gamesCount').textContent = games.length;
     document.getElementById('updatesCount').textContent = updates.length;
     document.getElementById('tradCount').textContent = traductors.length;
-    renderUpdates(updates);
-    footer.textContent = `${games.length} jeu(x) • ${updates.length} update(s) • ${traductors.length} traducteur(s) • rafraîchi à ${new Date().toLocaleTimeString('fr-FR')}`;
+    renderUpdates(updates, games);
+    document.getElementById('footerNote').textContent = `${games.length} jeu(x) • ${updates.length} update(s) • ${traductors.length} traducteur(s)`;
   }catch(err){
-    if(list){
-      list.innerHTML = `<div class="empty">Impossible de charger updates : ${esc(err.message || err)}</div>`;
-    }
-    footer.textContent = 'Erreur de chargement';
-  }finally{
-    if(btn){
-      btn.disabled = false;
-      btn.textContent = 'Rafraîchir';
-    }
+    document.getElementById('updatesList').innerHTML = `<div class="empty">Impossible de charger updates : ${esc(err.message || err)}</div>`;
+    document.getElementById('footerNote').textContent = 'Erreur de chargement';
   }
 }
-document.getElementById('refreshBtn')?.addEventListener('click', loadData);
+document.getElementById('refreshBtn').addEventListener('click', loadData);
 loadData();
 </script>
 </body>
