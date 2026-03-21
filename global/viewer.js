@@ -751,6 +751,12 @@
 
     const c = cleanTitle(displayTitleRaw);
 
+    let finalStatus = "";
+    if (game.gameData?.status) finalStatus = String(game.gameData.status).trim();
+    else if (game.status) finalStatus = String(game.status).trim();
+    else if (game.version && ["Completed", "Abandoned", "Onhold"].includes(String(game.version).trim())) finalStatus = String(game.version).trim();
+    else finalStatus = c.status;
+
     const updatedAtTs = parseFrenchDate(game.updatedAt);
     const releaseDateTs = parseFrenchDate(game.releaseDate);
 
@@ -786,7 +792,7 @@
       category: c.categories[0] || null,
       engines,
       engine: engines[0] || null,
-      status: (c.status === "En cours" || STATUS_ALLOWED.includes(c.status)) ? c.status : "En cours",
+      status: (finalStatus === "En cours" || STATUS_ALLOWED.includes(finalStatus)) ? finalStatus : "En cours",
       discord: String(game.discordlink || ""),
       translation: String(game.translation || ""),
       image: displayImageRaw,
