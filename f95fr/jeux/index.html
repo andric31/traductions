@@ -24,14 +24,16 @@
     .mini{padding:10px 12px}.mini .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.mini .v{margin-top:6px;font-size:24px;font-weight:800;line-height:1}
     .toolbar{display:grid;grid-template-columns:minmax(240px,1.6fr) repeat(5,minmax(120px,1fr));gap:8px}
     .toolbar input,.toolbar select{width:100%;background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:10px 11px}
-    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
-    .game-card{display:flex;flex-direction:column;min-width:0;border-radius:20px;overflow:visible}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:stretch}
+    .game-card{display:flex;flex-direction:column;min-width:0;border-radius:20px;overflow:visible;height:100%}
     .cover{aspect-ratio:16/9;background:#091224;position:relative;border-bottom:1px solid rgba(255,255,255,.06);overflow:hidden;border-radius:20px 20px 0 0}
     .cover img{width:100%;height:100%;object-fit:contain;object-position:center center;display:block;background:#091224}
     .cover .site{position:absolute;right:10px;top:10px;padding:6px 9px;border-radius:999px;background:rgba(11,18,32,.82);border:1px solid rgba(255,255,255,.08);font-size:11px;font-weight:800}
-    .body{padding:12px;display:flex;flex-direction:column;gap:10px}
+    .body{padding:12px;display:flex;flex-direction:column;gap:10px;flex:1}
     .title{font-size:17px;font-weight:800;line-height:1.25}
     .line,.chips,.actions-row{display:flex;flex-wrap:wrap;gap:8px}
+    .chips{align-content:flex-start;min-height:62px}
+    .actions-row{margin-top:auto}
     .status,.engine,.ttype,.chip{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800;border:1px solid rgba(255,255,255,.08)}
     .status.en-cours{background:rgba(210,153,34,.18)} .status.termine{background:rgba(35,134,54,.18)} .status.abandonne{background:rgba(218,54,51,.18)} .status.other{background:rgba(148,163,184,.18)}
     .engine{background:rgba(31,111,235,.18)} .ttype{background:rgba(148,163,184,.18)} .chip{background:var(--panel-2)}
