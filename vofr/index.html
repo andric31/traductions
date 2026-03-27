@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>f95list_viewer</title>
+
+  <!-- ✅ Thème instant (comme le viewer) : localStorage.viewerTheme -> <html data-theme="..."> -->
+  <script>
+  (function(){
+    try{
+      const t = (localStorage.getItem("viewerTheme") || "auto").trim() || "auto";
+      const root = document.documentElement; // <html>
+      root.removeAttribute("data-theme");
+      if (t !== "auto") root.setAttribute("data-theme", t);
+    }catch{}
+  })();
+  </script>
+
+  <link id="dynamic-favicon" rel="icon" type="image/png" href="./avatar.png">
+  <script>
+  (function(){
+    const fav = document.getElementById("dynamic-favicon");
+    const testUrl = "./avatar.png?v=" + Date.now();
+    const img = new Image();
+    img.onload  = () => fav.href = testUrl;
+    img.onerror = () => fav.href = "/favicon.png?v=" + Date.now();
+    img.src = testUrl;
+  })();
+  </script>
+
+  <link rel="stylesheet" href="./viewer.css" />
+  <link rel="stylesheet" href="./themes.css" />
+  <link rel="stylesheet" href="./game.css" />
+
+  <style>
+    html{ height:auto; overflow-y: scroll; }
+
+    body.mode-game{
+      margin:0;
+      overflow-y: visible;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding: 18px 0 0;
+    }
+
+    /* ✅ En mode jeu : cache le viewer */
+    body.mode-game #page-viewer{ display:none !important; }
+    body.mode-game #page-game{ display:block !important; }
+
+    /* ✅ En mode viewer : cache la page jeu (évite un flash si le JS switch arrive après) */
+    body:not(.mode-game) #page-game{ display:none !important; }
+    body:not(.mode-game) #page-viewer{ display:block !important; }
+  </style>
+</head>
+<body>
+
+  <!-- ✅ Popover unique pour le menu ☰ (doit être hors #page-viewer/#page-game)
+       Sinon, en mode viewer, il reste dans un parent display:none et ne peut pas s'afficher. -->
+  <div id="topMenuPopover" class="menu-popover hidden"></div>
+
+  <!-- ✅ Nom affiché via manifest (casse exacte), fallback slug — SANS BOUCLE -->
+  <script>
+  (async function(){
+    function detectSlug(){
+      try{
+        const forced = (window.__SITE_SLUG__ || "").toString().trim();
+        if(forced) return forced.toLowerCase();
+      }catch{}
+      const segs = (location.pathname || "/").split("/").filter(Boolean);
+      return String(segs[0] || "").trim().toLowerCase();
+    }
+
+    const slug = detectSlug();
+    window.__SITE_SLUG__ = slug;
+
+    let nice = slug ? (slug[0].toUpperCase() + slug.slice(1)) : "";
+
+    try{
+      const r = await fetch("/traducteurs_manifest.json", { cache:"no-store" });
+      if (r.ok){
+        const list = await r.json();
+        const found = Array.isArray(list)
+          ? list.find(x => String(x?.key||"").toLowerCase() === slug)
+          : null;
+        if (found && found.name) nice = String(found.name);
+      }
+    }catch(e){}
+
+    window.__SITE_NAME__ = nice;
+
+    const txt = nice || slug || "";
+    document.title = txt;
+
+    function applyH1(){
+      const h1 = document.getElementById("viewerTitle");
+      if (h1) h1.textContent = txt;
+      return !!h1;
+    }
+
+    if (applyH1()) return;
+
+    window.addEventListener("DOMContentLoaded", () => {
+      if (applyH1()) return;
+
+      let tries = 0;
+      const timer = setInterval(() => {
+        tries++;
+        if (applyH1() || tries >= 20) clearInterval(timer);
+      }, 100);
+    });
+  })();
+  </script>
+
+  <!-- PAGE VIEWER -->
+  <div id="page-viewer">
+
+    <!-- 🔞 AGE GATE -->
+    <div id="age-gate" style="display:none;">
+      <div class="age-box">
+        <h2>🔞 Contenu réservé aux adultes</h2>
+        <p>
+          Ce site contient des images et contenus destinés à un public majeur.<br>
+          En continuant, vous confirmez avoir <strong>18 ans ou plus</strong>.
+        </p>
+
+        <button id="age-yes">J’ai 18 ans</button>
+        <button id="age-no">Quitter</button>
+      </div>
+    </div>
+
+    <header class="topbar" role="banner">
+      <div class="top-title-row top-title-flex">
+        <button id="hamburgerBtnViewer" class="hamburger-btn" type="button"
+                aria-label="Menu" title="Menu" aria-expanded="false">
+          <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
+        </button>
+
+        <h1 id="viewerTitle">f95list_viewer</h1>
+
+        <div id="topTitleTools" class="top-title-tools">
+          <span class="total-inline">Total : <strong id="countTotal">0</strong></span>
+
+          <select id="cols" title="Vignettes par ligne">
+            <option value="auto">Vignettes/ligne : Auto</option>
+            <option value="1">1 par ligne</option>
+            <option value="2">2 par ligne</option>
+            <option value="3">3 par ligne</option>
+            <option value="4">4 par ligne</option>
+            <option value="5">5 par ligne</option>
+            <option value="6">6 par ligne</option>
+            <option value="7">7 par ligne</option>
+            <option value="8">8 par ligne</option>
+            <option value="9">9 par ligne</option>
+            <option value="10">10 par ligne</option>
+          </select>
+
+          <select id="pageSize" title="Affichage progressif">
+            <option value="50">Afficher par 50</option>
+            <option value="100">Afficher par 100</option>
+            <option value="all">Tout afficher</option>
+          </select>
+
+          <select id="theme" title="Thème">
+            <option value="auto">Thème : Auto (Windows)</option>
+            <option value="dark">Thème : Sombre</option>
+            <option value="white">Thème : Clair</option>
+	    
+            <option value="valentine">Thème : Saint-Valentin 💘</option>
+            <option value="carnaval">Thème : Carnaval 🎭</option>
+            <option value="paques">Thème : Pâques 🐣</option>
+            <option value="halloween">Thème : Halloween 🎃</option>
+            <option value="noel">Thème : Noël 🎄</option>
+            <option value="nouvelan">Thème : Nouvel An 🎆</option>
+            
+            <option value="printemps">Thème : Printemps 🌸</option>
+            <option value="ete">Thème : Été 🌞</option>
+            <option value="automne">Thème : Automne 🍂</option>
+            <option value="hiver">Thème : Hiver ❄️</option>
+            
+            <option value="sakura">Thème : Sakura 🌸</option>
+            <option value="desert">Thème : Désert 🏜️</option>
+            <option value="ocean">Thème : Océan 🌊</option>
+            <option value="forest">Thème : Forêt 🌲</option>
+            
+            <option value="vaporwave">Thème : Vaporwave 🌴</option>
+            <option value="cyberpunk">Thème : Cyberpunk ⚡</option>
+            <option value="neon">Thème : Néon 🌈</option>
+            <option value="midnight">Thème : Midnight 🌑</option>
+            
+            <option value="galaxy">Thème : Galaxy 🌌</option>
+            <option value="gothic">Thème : Gothic 🧛</option>
+            <option value="coffee">Thème : Coffee ☕</option>
+            
+            <option value="lava">Thème : Lava 🔥</option>
+            <option value="ice">Thème : Ice 🧊</option>
+            <option value="matrix">Thème : Matrix 🌫</option>
+            <option value="sunset">Thème : Sunset 🌇</option>
+            <option value="retro">Thème : Retro 🎮</option>
+            <option value="tropical">Thème : Tropical 🏖️</option>
+            <option value="crimson">Thème : Crimson 🩸</option>
+            <option value="steam">Thème : Steam ⚙️</option>
+          </select>
+
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <div class="search-wrap">
+          <input id="search" type="search" placeholder="Rechercher un jeu." autocomplete="off" />
+        </div>
+
+        <select id="sort" title="Trier">
+          <option value="updatedAtLocal-desc">Date de la traduction</option>
+          <option value="views-desc">👁️ Vues</option>
+          <option value="likes-desc">❤️ J'aime</option>
+          <option value="mega-desc">📥 Téléchargements</option>
+          <option value="title-asc">Titre A→Z</option>
+          <option value="title-desc">Titre Z→A</option>
+          <option value="createdAtDateTime-desc">Date de création du thread F95</option>
+        </select>
+
+        <select id="filterCat" title="Catégorie">
+          <option value="all">Catégorie : Toutes</option>
+          <option value="VN">VN</option>
+          <option value="Collection">Collection</option>
+        </select>
+
+        <select id="filterEngine" title="Moteur">
+          <option value="all">Moteur : Tous</option>
+          <option value="Ren'Py">Ren'Py</option>
+          <option value="RPGM">RPGM</option>
+          <option value="Unity">Unity</option>
+          <option value="Others">Others</option>
+          <option value="Wolf RPG">Wolf RPG</option>
+        </select>
+
+        <select id="filterStatus" title="Statut">
+          <option value="all">Statut : Tous</option>
+          <option value="Completed">Completed</option>
+          <option value="Abandoned">Abandoned</option>
+          <option value="Onhold">Onhold</option>
+          <option value="En cours">En cours</option>
+        </select>
+
+        <button id="tagsBtn" type="button" class="tags-btn" aria-haspopup="menu" aria-expanded="false">
+          🏷️ Tags <span id="tagsCount" class="tags-count hidden">0</span>
+        </button>
+
+        <button id="refresh" type="button">Rafraîchir</button>
+      </div>
+    </header>
+
+    <main role="main">
+      <section id="gridMode" class="grid-wrap" aria-label="Vignettes des jeux">
+        <div id="viewerAnnonceHost"></div>
+
+        <div id="grid" class="grid"></div>
+        <div id="gridEmpty" class="empty hidden">Aucun résultat.</div>
+      </section>
+
+      <footer class="viewer-footer">
+        👁️ Vues de la page : <strong id="mainViews">—</strong>
+      </footer>
+    </main>
+  </div>
+
+  <!-- PAGE JEU (même page, via ?id= / ?uid=) -->
+  <div id="page-game" style="display:none;">
+    <div class="wrap">
+      <div class="cardPreview" id="card" aria-live="polite">
+  
+        <div class="cardInner">
+  
+          <div class="headRow">
+            <!-- ✅ IMPORTANT : id hamburgerBtn (pas hamburgerBtnGame) -->
+            <button type="button" class="hamburger-btn" id="hamburgerBtn"
+                    aria-label="Ouvrir le menu" aria-haspopup="menu" aria-expanded="false">
+              <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
+            </button>
+  
+            <button class="btnLike like-btn" id="btnLike" type="button" aria-label="J’aime">🤍</button>
+            <div class="badgesRow" id="badges"></div>
+          </div>
+  
+  
+          <div class="majState" id="majState" hidden></div>
+
+          <h1 class="title" id="title">Chargement…</h1>
+  
+          <div class="coverGallery" id="coverGallery">
+            <div class="coverStage" id="coverStage">
+              <img id="cover" class="cover is-placeholder" alt="" referrerpolicy="no-referrer">
+              <button type="button" class="coverCtrl coverExpand" id="coverExpandBtn" aria-label="Agrandir l’image" title="Agrandir l’image">
+                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M9 4H4v5M15 4h5v5M20 15v5h-5M4 15v5h5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button type="button" class="coverCtrl coverPrev" id="coverPrevBtn" aria-label="Image précédente" title="Image précédente" style="display:none;">
+                <svg class="galarr" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><path d="M16 5 L8 12 L16 19" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button type="button" class="coverCtrl coverNext" id="coverNextBtn" aria-label="Image suivante" title="Image suivante" style="display:none;">
+                <svg class="galarr" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><path d="M8 5 L16 12 L8 19" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="coverCount" id="coverCount" style="display:none;"></div>
+            </div>
+          </div>
+
+          <div class="coverLightbox hidden" id="coverLightbox" aria-hidden="true">
+            <div class="coverLightboxBackdrop" id="coverLightboxBackdrop"></div>
+            <div class="coverLightboxDialog" role="dialog" aria-modal="true" aria-label="Galerie d’images">
+              <button type="button" class="coverCtrl coverLightboxClose" id="coverLightboxClose" aria-label="Fermer" title="Fermer">✕</button>
+              <button type="button" class="coverCtrl coverPrev coverLightboxPrev" id="coverLightboxPrev" aria-label="Image précédente" title="Image précédente" style="display:none;">
+                <svg class="galarr" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><path d="M16 5 L8 12 L16 19" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button type="button" class="coverCtrl coverNext coverLightboxNext" id="coverLightboxNext" aria-label="Image suivante" title="Image suivante" style="display:none;">
+                <svg class="galarr" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><path d="M8 5 L16 12 L8 19" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <img id="coverLightboxImg" class="coverLightboxImg" alt="" referrerpolicy="no-referrer">
+              <div class="coverCount coverLightboxCount" id="coverLightboxCount" style="display:none;"></div>
+            </div>
+          </div>
+  
+          <div class="infoBlock tagsBox" id="tagsBox">
+            <div class="tagsRow" id="tags"></div>
+          </div>
+          
+          <!-- 📝 Description -->
+          <div id="descriptionBox" class="descInnerBox" style="display:none;">
+            <div id="descriptionText" class="infoText"></div>
+          </div>
+
+          <!-- ✅ BOUTONS -->
+          <div class="btnRow">
+            <a class="btnLike btn-discord" id="btnDiscord" target="_blank" rel="noopener" style="display:none;">💬 Discord</a>
+            <a class="btnLike btn-f95" id="btnF95" target="_blank" rel="noopener" style="display:none;">
+              <span class="f95-white">F95</span><span class="f95-red">Zone</span>
+            </a>
+          </div>
+  
+          <div class="btnMainRow">
+            <a class="btnLike btnMega" id="btnMega" target="_blank" rel="noopener" style="display:none;">
+              📥 Télécharger la traduction · MEGA
+            </a>
+          </div>
+  
+          <div id="archiveBox" style="display:none; margin-top:12px; justify-content:center;">
+            <a id="archiveLink" class="btnLike" target="_blank" rel="noopener" style="justify-content:center;">
+              📦 Archives de la traduction
+            </a>
+          </div>
+  
+          <!-- ✅ ℹ️ Informations -->
+          <div id="notesBox" class="infoBlock" style="display:none;">
+            <h3>ℹ️ Informations</h3>
+            <div id="notesText" class="infoTextMuted"></div>
+          </div>
+  
+          <!-- ⭐ Notation -->
+          <div id="ratingBox" class="infoBlock" style="text-align:center;">
+            <div style="color:var(--muted); font-size:12px; margin-bottom:6px;">
+              Note de la traduction :
+              <strong id="ratingAvg">—</strong>
+              (<span id="ratingCount">0</span> votes)
+            </div>
+  
+            <div id="ratingChoices" style="display:flex; justify-content:center; gap:8px;"></div>
+            <div id="ratingMsg" style="margin-top:6px; color:var(--muted); font-size:12px;"></div>
+          </div>
+  
+        </div>
+      </div>
+  
+      <div class="statsOut infoBlock" id="statsOut" style="display:none;">
+        <div class="statsLine">
+          <span class="statsItem" id="statTranslationWrap" title="Date de traduction inconnue">⏱️ Mise à jour : <strong id="statTranslationTime">—</strong></span>
+          <span class="statsItem">👁️ Vues : <strong id="statViews">0</strong></span>
+          <span class="statsItem">📥 Téléchargements : <strong id="statMegaClicks">0</strong></span>
+          <span class="statsItem">❤️ J’aime : <strong id="statLikes">0</strong></span>
+          <span class="statsItem" id="statRatingWrap" title="Note moyenne de la traduction">⭐ Note : <strong id="statRating">—</strong></span>
+        </div>
+        <div class="statsLine statsLineSub">
+          <span class="statsItem" id="statAddedWrap" title="Date d’ajout inconnue">📅 Ajouté le <strong id="statAddedDate">—</strong></span>
+        </div>
+      </div>
+  
+      <div class="err" id="errBox"></div>
+    </div>
+  
+    <!-- ✅ Observer : mini fade sur #ratingMsg à chaque changement -->
+    <script>
+      (function(){
+        const msg = document.getElementById("ratingMsg");
+        if (!msg) return;
+  
+        const flash = () => {
+          msg.classList.remove("msgFade");
+          void msg.offsetWidth;
+          msg.classList.add("msgFade");
+        };
+  
+        const obs = new MutationObserver(() => flash());
+        obs.observe(msg, { childList: true, characterData: true, subtree: true });
+  
+        if ((msg.textContent || "").trim()) flash();
+      })();
+    </script>
+  </div>
+
+<!-- ✅ JS externes en defer -->
+  <script src="./viewer.menu.js" defer></script>
+  <script src="./viewer.menu.about.js" defer></script>
+  <script src="/viewer.menu.extension.js" defer></script>
+  <script src="/viewer.agegate.js" defer></script>
+  <script src="/viewer.annonce.js" defer></script>
+
+  <script src="./viewer.js" defer></script>
+  <script src="./game.js" defer></script>
+
+  <!-- ✅ switch viewer/game -->
+  <script>
+    (function(){
+      const p = new URLSearchParams(location.search);
+      const hasGame = (p.get("id")||"").trim() || (p.get("uid")||"").trim();
+      const v = document.getElementById("page-viewer");
+      const g = document.getElementById("page-game");
+      if (hasGame) {
+        document.body.classList.add("mode-game");
+        if (v) v.style.display = "none";
+        if (g) g.style.display = "";
+      } else {
+        document.body.classList.remove("mode-game");
+        if (g) g.style.display = "none";
+        if (v) v.style.display = "";
+      }
+    })();
+  </script>
+
+  <!-- ✅ Sync thème si changé dans un autre onglet -->
+  <script>
+  window.addEventListener("storage", (e) => {
+    if (e.key !== "viewerTheme") return;
+    try{
+      const t = (localStorage.getItem("viewerTheme") || "auto").trim() || "auto";
+      const root = document.documentElement;
+      root.removeAttribute("data-theme");
+      if (t !== "auto") root.setAttribute("data-theme", t);
+    }catch{}
+  });
+  </script>
+
+</body>
+</html>
+
