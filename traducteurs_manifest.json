@@ -23,4 +23,12 @@
     "listUrl": "/f95list_ikaros.json",
     "openBase": "https://traductions.pages.dev/ikaros/"
   }
+,
+  {
+    "key": "vofr",
+    "name": "VO Française",
+    "listUrl": "/f95list_vofr.json",
+    "openBase": "https://traductions.pages.dev/vofr/"
+  }
+
 ]
