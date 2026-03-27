@@ -71,18 +71,11 @@
   overflow: hidden;
   isolation: isolate;
 
-  --card-bg: linear-gradient(
-    180deg,
-    rgba(9, 13, 24, 0.12) 0%,
-    rgba(9, 13, 24, 0.34) 52%,
-    rgba(9, 13, 24, 0.86) 100%
-  );
-  --card-border: rgba(255,255,255,0.14);
+  --card-border: rgba(255,255,255,0.12);
   --card-accent: rgba(255,255,255,0.96);
-
   box-shadow:
-    0 0 0 1px rgba(255,255,255,0.06) inset,
-    0 14px 34px rgba(0,0,0,0.34);
+    0 0 0 1px rgba(255,255,255,0.05) inset,
+    0 12px 28px rgba(0,0,0,0.34);
 }
 
 .card[data-tr="vofr"]::before{
@@ -91,47 +84,26 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: 42%;
+  height: 40%;
   pointer-events: none;
   z-index: 0;
   background:
     linear-gradient(
       180deg,
-      rgba(0,0,0,0) 0%,
-      rgba(7,11,22,0.16) 18%,
-      rgba(7,11,22,0.78) 100%
+      rgba(7,11,22,0.00) 0%,
+      rgba(7,11,22,0.28) 18%,
+      rgba(7,11,22,0.82) 100%
     ),
     linear-gradient(
       90deg,
-      rgba(0,85,164,0.14) 0%,
-      rgba(0,85,164,0.10) 22%,
-      rgba(255,255,255,0.05) 38%,
-      rgba(255,255,255,0.10) 50%,
-      rgba(255,255,255,0.05) 62%,
-      rgba(239,65,53,0.10) 78%,
-      rgba(239,65,53,0.14) 100%
+      rgba(0,85,164,0.22) 0%,
+      rgba(0,85,164,0.10) 18%,
+      rgba(255,255,255,0.10) 38%,
+      rgba(255,255,255,0.18) 50%,
+      rgba(255,255,255,0.10) 62%,
+      rgba(239,65,53,0.10) 82%,
+      rgba(239,65,53,0.22) 100%
     );
-}
-
-.card[data-tr="vofr"]::after{
-  content: "";
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  bottom: 10px;
-  height: 4px;
-  border-radius: 999px;
-  pointer-events: none;
-  z-index: 2;
-  background: linear-gradient(
-    90deg,
-    #0055a4 0%,
-    #ffffff 50%,
-    #ef4135 100%
-  );
-  opacity: 0.95;
-  box-shadow:
-    0 0 10px rgba(255,255,255,0.16);
 }
 
 .card[data-tr="vofr"] > *{
@@ -141,14 +113,6 @@
 
 .card[data-tr="vofr"]:hover{
   box-shadow:
-    0 0 0 1px rgba(255,255,255,0.14),
-    0 0 24px -14px rgba(255,255,255,0.18),
-    0 18px 42px rgba(0,0,0,0.42);
-}
-
-.card[data-tr="vofr"]:hover::after{
-  box-shadow:
-    0 0 10px rgba(0,85,164,0.22),
-    0 0 12px rgba(255,255,255,0.24),
-    0 0 10px rgba(239,65,53,0.22);
+    0 0 0 1px rgba(255,255,255,0.10),
+    0 16px 36px rgba(0,0,0,0.42);
 }
