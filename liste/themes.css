@@ -85,12 +85,9 @@
 .card[data-tr="vofr"]:hover{
   box-shadow:
     inset 3px 0 0 #000091,
-    inset 0 3px 0 rgba(255,255,255,0.95),
+    inset 0 4px 0 rgba(255,255,255,1),
     inset -3px 0 0 #E1000F,
-    inset 0 -3px 0 rgba(255,255,255,0.95),
+    inset 0 -4px 0 rgba(255,255,255,1),
     0 0 0 1px rgba(255,255,255,0.16),
-    0 0 18px rgba(0,0,145,0.18),
-    0 0 22px rgba(255,255,255,0.10),
-    0 0 18px rgba(225,0,15,0.18),
     0 14px 38px rgba(0,0,0,0.45);
 }
