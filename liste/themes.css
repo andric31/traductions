@@ -67,52 +67,23 @@
 
 /* VO Française — effet bleu blanc rouge */
 .card[data-tr="vofr"]{
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-
-  --card-border: rgba(255,255,255,0.12);
+  --card-bg: linear-gradient(
+    90deg,
+    rgba(0, 85, 164, 0.26) 0%,
+    rgba(0, 85, 164, 0.26) 33.333%,
+    rgba(255, 255, 255, 0.18) 33.333%,
+    rgba(255, 255, 255, 0.18) 66.666%,
+    rgba(239, 65, 53, 0.26) 66.666%,
+    rgba(239, 65, 53, 0.26) 100%
+  );
+  --card-border: rgba(255,255,255,0.18);
   --card-accent: rgba(255,255,255,0.96);
   box-shadow:
-    0 0 0 1px rgba(255,255,255,0.05) inset,
-    0 12px 28px rgba(0,0,0,0.34);
-}
-
-.card[data-tr="vofr"]::before{
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 40%;
-  pointer-events: none;
-  z-index: 0;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(7,11,22,0.00) 0%,
-      rgba(7,11,22,0.28) 18%,
-      rgba(7,11,22,0.82) 100%
-    ),
-    linear-gradient(
-      90deg,
-      rgba(0,85,164,0.22) 0%,
-      rgba(0,85,164,0.10) 18%,
-      rgba(255,255,255,0.10) 38%,
-      rgba(255,255,255,0.18) 50%,
-      rgba(255,255,255,0.10) 62%,
-      rgba(239,65,53,0.10) 82%,
-      rgba(239,65,53,0.22) 100%
-    );
-}
-
-.card[data-tr="vofr"] > *{
-  position: relative;
-  z-index: 1;
+    0 0 0 1px rgba(255,255,255,0.06) inset;
 }
 
 .card[data-tr="vofr"]:hover{
   box-shadow:
-    0 0 0 1px rgba(255,255,255,0.10),
-    0 16px 36px rgba(0,0,0,0.42);
+    0 0 0 1px rgba(255,255,255,0.18),
+    0 14px 38px rgba(0,0,0,0.45);
 }
