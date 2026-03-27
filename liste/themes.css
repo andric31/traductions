@@ -78,15 +78,35 @@
   );
   --card-border: rgba(255,255,255,0.16);
   --card-accent: rgba(255,255,255,0.96);
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,0.05) inset;
+  position: relative;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.05) inset;
+}
+
+/* contour hover extérieur bleu blanc rouge */
+.card[data-tr="vofr"]::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(90deg, #000091 0 33.333%, #FFFFFF 33.333% 66.666%, #E1000F 66.666% 100%);
+  opacity: 0;
+  transition: opacity .18s ease;
+  pointer-events: none;
+
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+}
+
+.card[data-tr="vofr"]:hover::after{
+  opacity: 1;
 }
 
 .card[data-tr="vofr"]:hover{
   border-color: transparent;
   box-shadow:
-    inset 3px 0 0 #000091,
-    inset -3px 0 0 #E1000F,
-    inset 0 3px 0 #FFFFFF,
-    inset 0 -3px 0 #FFFFFF;
+    0 14px 38px rgba(0,0,0,0.45);
 }
