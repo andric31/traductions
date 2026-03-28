@@ -388,13 +388,18 @@
     "discordlink": "https://discord.com/channels/1278373830624149524/1487384504544002169/1487384504544002169",
     "translation": "",
     "translationType": "manuel - humaine",
-    "translationsExtra": [],
+    "translationsExtra": [
+      {
+        "name": "F95Zone",
+        "link": "https://f95zone.to/threads/erastorm-snowstorm-0-11-bb-us-fr-mod-chap-1.292651/"
+      }
+    ],
     "translationsArchive": "",
     "description": "Au fins fonds des terres du Nord - au milieu des lacs, des montagnes et des forêts - 3 clans cohabitent dans l'étrange village de Njardarheimr.\nCes clans sont si différents que rien ne semble pouvoir les unir, mais face à un danger plus grand, ils deviennent les puissants Vikings.\nCette aventure épique et immersive dans les terres du Nord vous permettra d'explorer les anciens mystères nordiques, de prendre des décisions importantes, de lutter pour votre survie et de rencontrer de nombreuses jeunes filles.\nQuel que soit le chemin que vous choisirez, seuls les plus déterminés survivront.",
     "notes": "",
     "createdAtDateTime": "2021-12-19T15:25:13+0100",
     "updatedAtDateTime": "2025-12-28T10:56:30+0100",
     "createdAtLocal": "2026-03-28 10:44:19",
-    "updatedAtLocal": "2026-03-28 10:44:19"
+    "updatedAtLocal": "2026-03-28 10:47:23"
   }
 ]
