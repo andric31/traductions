@@ -66,6 +66,11 @@ function getListUrl() {
   }
 }
 
+function isVoFrListUrl(url) {
+  const s = String(url || "").toLowerCase();
+  return s.includes("f95list_vofr.json") || /(^|\/)vofr(\/|$)/.test(s);
+}
+
 function getParamsFromUrl() {
   try {
     const p = new URLSearchParams(location.search);
@@ -905,6 +910,19 @@ async function renderTranslationStatus(game) {
   const maj = document.getElementById("majState");
   const badgesWrap = document.getElementById("badges");
   const clean = (s) => String(s || "").replace(/\s+/g, " ").trim();
+
+  if (isVoFrListUrl(getListUrl())) {
+    if (maj) {
+      maj.textContent = "";
+      maj.style.display = "none";
+      maj.classList.remove("maj-ok", "maj-ko");
+    }
+    if (badgesWrap) {
+      const prev = badgesWrap.querySelector(".badge[data-f95status='1']");
+      if (prev) prev.remove();
+    }
+    return;
+  }
 
   // ✅ storedTitle = titre complet (source de vérité)
   const storedTitle = clean(game.rawTitle || game.title || "");
