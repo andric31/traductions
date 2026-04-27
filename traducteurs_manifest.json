@@ -12,18 +12,11 @@
     "openBase": "https://traductions.pages.dev/ant28jsp/"
   },
   {
-    "key": "lechauve",
-    "name": "Le Chauve",
-    "listUrl": "/f95list_lechauve.json",
-    "openBase": "https://traductions.pages.dev/lechauve/"
-  },
-  {
     "key": "ikaros",
     "name": "Ikaros",
     "listUrl": "/f95list_ikaros.json",
     "openBase": "https://traductions.pages.dev/ikaros/"
-  }
-,
+  },
   {
     "key": "vofr",
     "name": "VO Française - Intégrée",
