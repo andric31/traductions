@@ -1396,6 +1396,10 @@
                 <span class="stat-icon stat-icon-likes" aria-hidden="true"></span>
                 <span>${formatInt(likes)}</span>
               </span>
+              <span class="card-stat" title="Note étoile moyenne et nombre de votes">
+                <span class="stat-icon stat-icon-rating" aria-hidden="true"></span>
+                <span>${escapeHtml(ratingText)}</span>
+              </span>
             </div>
           </div>
         </div>
