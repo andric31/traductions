@@ -65,12 +65,12 @@
 }
 
 
-/* VOFR / VOSTFR — contour bleu blanc rouge, fond plus foncé, hover bleu France */
+/* VOFR / VOSTFR — contour bleu blanc rouge, fond éclairci, hover bleu France */
 .card[data-tr="vofr"],
 .card[data-tr="vostfr"],
 .card[data-tr="vo-fr"],
 .card[data-tr="vo_fr"]{
-  --card-bg: rgba(12,16,26,0.92);
+  --card-bg: rgba(255,255,255,0.045);
   --card-border: transparent;
   --card-accent: rgba(0,0,145,0.72);
   position: relative;
@@ -78,15 +78,15 @@
   border: 1px solid transparent !important;
   background:
     linear-gradient(90deg,
-      rgba(0,0,145,0.18) 0%,
-      rgba(0,0,145,0.18) 32%,
-      rgba(255,255,255,0.045) 32%,
-      rgba(255,255,255,0.045) 68%,
-      rgba(225,0,15,0.16) 68%,
-      rgba(225,0,15,0.16) 100%) padding-box,
+      rgba(0,0,145,0.20) 0%,
+      rgba(0,0,145,0.20) 32%,
+      rgba(255,255,255,0.06) 32%,
+      rgba(255,255,255,0.06) 68%,
+      rgba(225,0,15,0.18) 68%,
+      rgba(225,0,15,0.18) 100%) padding-box,
     linear-gradient(180deg,
-      rgba(19,24,38,0.95) 0%,
-      rgba(11,15,24,0.97) 100%) padding-box,
+      rgba(28,34,50,0.92) 0%,
+      rgba(18,24,36,0.95) 100%) padding-box,
     linear-gradient(90deg,
       #000091 0%,
       #000091 33.33%,
@@ -101,7 +101,7 @@
 .card[data-tr="vo-fr"]:hover,
 .card[data-tr="vo_fr"]:hover{
   box-shadow:
-    0 0 0 1px rgba(0,0,145,0.22) inset,
-    0 0 22px -6px rgba(0,0,145,0.72),
+    0 0 0 1px rgba(0,0,145,0.18) inset,
+    0 0 22px -6px rgba(0,0,145,0.68),
     0 14px 38px rgba(0,0,0,0.45);
 }
