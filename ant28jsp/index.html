@@ -158,9 +158,14 @@
           </select>
 
           <select id="pageSize" title="Affichage progressif">
+            <option value="auto" selected>Afficher par : Auto</option>
             <option value="50">Afficher par 50</option>
             <option value="100">Afficher par 100</option>
             <option value="all">Tout afficher</option>
+          </select>
+          <select id="updateBadgesToggle" title="Afficher ou masquer les rubans Ajout / MAJ">
+            <option value="on" selected>Rubans : Affichés</option>
+            <option value="off">Rubans : Masqués</option>
           </select>
 
           <select id="theme" title="Thème">
@@ -416,7 +421,6 @@
   });
   </script>
   <script src="/viewer.quicklinks.traducteurs.js" defer></script>
-
 
 </body>
 </html>
