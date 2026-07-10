@@ -79,12 +79,12 @@
   border-color: transparent !important;
   background:
     linear-gradient(90deg,
-      rgba(0,85,164,0.26) 0%,
-      rgba(0,85,164,0.26) 32%,
+      rgba(0,0,145,0.26) 0%,
+      rgba(0,0,145,0.26) 32%,
       rgba(255,255,255,0.11) 32%,
       rgba(255,255,255,0.11) 68%,
-      rgba(239,65,53,0.24) 68%,
-      rgba(239,65,53,0.24) 100%),
+      rgba(225,0,15,0.24) 68%,
+      rgba(225,0,15,0.24) 100%),
     var(--card-bg);
 }
 
@@ -100,12 +100,12 @@
   pointer-events:none;
   z-index:3;
   background: linear-gradient(90deg,
-    #0055a4 0%,
-    #0055a4 33.33%,
+    #000091 0%,
+    #000091 33.33%,
     #ffffff 33.33%,
     #ffffff 66.66%,
-    #ef4135 66.66%,
-    #ef4135 100%);
+    #E1000F 66.66%,
+    #E1000F 100%);
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
@@ -119,7 +119,7 @@
 .card[data-tr="vo_fr"]:hover{
   box-shadow:
     0 0 0 1px rgba(255,255,255,0.10) inset,
-    0 0 18px -7px rgba(239,65,53,0.80),
-    0 0 18px -7px rgba(0,85,164,0.80),
+    0 0 18px -7px rgba(225,0,15,0.82),
+    0 0 18px -7px rgba(0,0,145,0.82),
     0 14px 38px rgba(0,0,0,0.45);
 }
