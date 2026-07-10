@@ -51,7 +51,9 @@
 }
 
 /* lechauve — bleu moderne */
-.card[data-tr="lechauve"]{
+.card[data-tr="lechauve"],
+.card[data-tr="le-chauve"],
+.card[data-tr="le_chauve"]{
   --card-bg: rgba(33,150,243,0.10);
   --card-border: rgba(33,150,243,0.35);
   --card-accent: rgba(33,150,243,0.85);
@@ -62,4 +64,37 @@
   --card-bg: rgba(254,89,1,0.10);
   --card-border: rgba(254,89,1,0.35);
   --card-accent: rgba(254,89,1,0.90);
+}
+
+
+/* VOFR / VOSTFR — fond un peu plus foncé, sans barres latérales */
+.card[data-tr="vofr"],
+.card[data-tr="vostfr"],
+.card[data-tr="vo-fr"],
+.card[data-tr="vo_fr"],
+.card[data-tr="v o f r"],
+.card[data-tr="vost-fr"]{
+  --card-bg: rgba(14,18,28,0.88);
+  --card-border: rgba(86,120,190,0.34);
+  --card-accent: rgba(110,155,255,0.78);
+  border-color: rgba(86,120,190,0.34) !important;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(24,30,44,0.90) 0%,
+      rgba(14,18,28,0.96) 100%
+    ) !important;
+}
+
+.card[data-tr="vofr"]:hover,
+.card[data-tr="vostfr"]:hover,
+.card[data-tr="vo-fr"]:hover,
+.card[data-tr="vo_fr"]:hover,
+.card[data-tr="v o f r"]:hover,
+.card[data-tr="vost-fr"]:hover{
+  border-color: rgba(118,165,255,0.58) !important;
+  box-shadow:
+    0 0 0 1px rgba(118,165,255,0.40),
+    0 0 24px -8px rgba(118,165,255,0.34),
+    0 14px 38px rgba(0,0,0,0.45);
 }
