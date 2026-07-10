@@ -51,7 +51,11 @@
 }
 
 /* lechauve — bleu moderne */
-.card[data-tr="lechauve"]{
+.card[data-tr="lechauve"],
+.card[data-tr="le-chauve"],
+.card[data-tr="le_chauve"],
+.card[data-tr="vostfr"],
+.card[data-tr="vofr"]{
   --card-bg: rgba(33,150,243,0.10);
   --card-border: rgba(33,150,243,0.35);
   --card-accent: rgba(33,150,243,0.85);
@@ -63,3 +67,6 @@
   --card-border: rgba(254,89,1,0.35);
   --card-accent: rgba(254,89,1,0.90);
 }
+
+
+/* vostfr-restore-note : garde l'ancien style des tuiles VOSTFR / VOFR. */
