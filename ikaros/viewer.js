@@ -157,8 +157,9 @@
     filterStatus: "all",
     filterTags: [],
     cols: "auto",
-    pageSize: 50,
+    pageSize: "auto",
     visibleCount: 0,
+    infiniteLoading: false,
   };
 
   // =========================
@@ -651,6 +652,67 @@
     }[m]));
   }
 
+
+
+  // =========================
+  // ✅ Affichage des rubans Ajout / MAJ
+  // Par défaut : activé
+  // =========================
+  const UPDATE_BADGES_STORE_KEY = "viewerShowUpdateBadges";
+
+  function areUpdateBadgesEnabled() {
+    try {
+      return localStorage.getItem(UPDATE_BADGES_STORE_KEY) !== "off";
+    } catch {
+      return true;
+    }
+  }
+
+  function setUpdateBadgesEnabled(enabled) {
+    try {
+      localStorage.setItem(UPDATE_BADGES_STORE_KEY, enabled ? "on" : "off");
+    } catch {}
+
+    try {
+      document.documentElement.classList.toggle("update-badges-hidden", !enabled);
+    } catch {}
+  }
+
+  // ✅ Ruban Ajout / MAJ
+  // createdAtLocal == updatedAtLocal => AJOUT
+  // createdAtLocal != updatedAtLocal => MAJ
+  function normalizeLocalDateValue(v) {
+    return String(v || "").trim();
+  }
+
+  function getEntryUpdateKind(rawEntry) {
+    const created = normalizeLocalDateValue(rawEntry?.createdAtLocal);
+    const updated = normalizeLocalDateValue(rawEntry?.updatedAtLocal);
+
+    if (!created || !updated) return { key: "unknown", label: "", title: "" };
+
+    if (created === updated) {
+      return {
+        key: "add",
+        label: "AJOUT",
+        title: `Ajout de la traduction : ${updated}`,
+      };
+    }
+
+    return {
+      key: "update",
+      label: "MAJ",
+      title: `Mise à jour de la traduction : ${updated} • Ajout initial : ${created}`,
+    };
+  }
+
+  function updateKindRibbonHtml(rawEntry) {
+    if (!areUpdateBadgesEnabled()) return "";
+    const k = getEntryUpdateKind(rawEntry);
+    if (!k.label) return "";
+    return `<span class="update-ribbon update-ribbon--${escapeHtml(k.key)}" title="${escapeHtml(k.title)}">${escapeHtml(k.label)}</span>`;
+  }
+
   function getSavedTags() {
     try {
       const raw = localStorage.getItem(TAGS_STORE_KEY) || "[]";
@@ -933,6 +995,93 @@
   }
 
 
+
+
+  // =========================
+  // Affichage auto + scroll infini
+  // =========================
+  const AUTO_PAGE_STEP = 50;
+
+  function getCurrentColsCount() {
+    const gridEl = $("#grid");
+    if (!gridEl) return 1;
+
+    if (state.cols !== "auto") {
+      return Math.max(1, Math.min(10, parseInt(state.cols, 10) || 1));
+    }
+
+    try {
+      const tpl = getComputedStyle(gridEl).gridTemplateColumns || "";
+      const count = tpl.split(" ").filter(Boolean).length;
+      return Math.max(1, count || 1);
+    } catch {
+      return 1;
+    }
+  }
+
+  function alignVisibleCount(count, total) {
+    const cols = getCurrentColsCount();
+    const raw = Number(count || 0);
+    let n = Math.max(0, Math.ceil(raw / cols) * cols);
+    if (n >= total) return total;
+    return Math.min(total, n);
+  }
+
+  function getPageStep() {
+    if (state.pageSize === "all") return Infinity;
+    if (state.pageSize === "auto") return AUTO_PAGE_STEP;
+    const n = parseInt(state.pageSize, 10);
+    return !isNaN(n) && n > 0 ? n : AUTO_PAGE_STEP;
+  }
+
+  function growVisibleCount() {
+    const total = state.filtered.length;
+    if (!total || state.pageSize === "all") return false;
+
+    const current = state.visibleCount || 0;
+    const next = alignVisibleCount(current + getPageStep(), total);
+    if (next <= current) return false;
+
+    state.visibleCount = next;
+    renderGrid();
+    return true;
+  }
+
+  function maybeAutoLoadMore() {
+    if (state.infiniteLoading || state.pageSize !== "auto") return;
+    if (!state.filtered.length || state.visibleCount >= state.filtered.length) return;
+
+    const doc = document.scrollingElement || document.documentElement || document.body;
+    const scrollTop = window.scrollY || window.pageYOffset || doc.scrollTop || 0;
+    const viewportH = window.innerHeight || doc.clientHeight || 0;
+    const scrollH = Math.max(
+      doc.scrollHeight || 0,
+      document.documentElement?.scrollHeight || 0,
+      document.body?.scrollHeight || 0
+    );
+
+    const gridEl = $("#grid");
+    const gridBottom = gridEl ? gridEl.getBoundingClientRect().bottom : Infinity;
+    const AUTO_SCROLL_TRIGGER_PX = 120;
+    const nearPageBottom = scrollTop + viewportH >= scrollH - AUTO_SCROLL_TRIGGER_PX;
+    const nearGridBottom = gridBottom <= viewportH + AUTO_SCROLL_TRIGGER_PX;
+    if (!nearPageBottom && !nearGridBottom) return;
+
+    state.infiniteLoading = true;
+    requestAnimationFrame(() => {
+      growVisibleCount();
+      state.infiniteLoading = false;
+      requestAnimationFrame(maybeAutoLoadMore);
+    });
+  }
+
+  function bindInfiniteScroll() {
+    window.addEventListener("scroll", maybeAutoLoadMore, { passive: true });
+    window.addEventListener("wheel", maybeAutoLoadMore, { passive: true });
+    window.addEventListener("touchmove", maybeAutoLoadMore, { passive: true });
+    window.addEventListener("resize", maybeAutoLoadMore, { passive: true });
+  }
+
   // =========================
   // Hover gallery (preview F95 sur les tuiles)
   // =========================
@@ -1130,9 +1279,10 @@
     const total = state.filtered.length;
 
     if (!state.visibleCount || state.visibleCount < 0) {
-      state.visibleCount = state.pageSize === "all" ? total : Math.min(total, state.pageSize);
+      state.visibleCount = state.pageSize === "all" ? total : alignVisibleCount(getPageStep(), total);
     }
 
+    state.visibleCount = state.pageSize === "all" ? total : alignVisibleCount(state.visibleCount, total);
     const limit = state.pageSize === "all" ? total : Math.min(total, state.visibleCount);
     const frag = document.createDocumentFragment();
 
@@ -1150,6 +1300,7 @@
       const likes = GAME_STATS.likes.get(g.ckey) || 0;
       const rating = GAME_RATINGS.byKey.get(g.ckey) || { avg: 0, count: 0, sum: 0 };
       const ratingText = formatRatingForCard(rating.avg, rating.count);
+      const updateRibbon = updateKindRibbonHtml(g.__raw || g);
 
       // ✅ Tuile entièrement cliquable (comme le site principal)
       card.href = pageHref;
@@ -1162,6 +1313,7 @@
              referrerpolicy="no-referrer"
              loading="lazy"
              onerror="this.onerror=null;this.src='/favicon.png';this.classList.add('is-fallback');">
+        ${updateRibbon}
         <div class="body">
           <h3 class="name clamp-2">${escapeHtml(getDisplayTitle(g.__raw || g))}</h3>
           <div class="badges-line one-line">${badgesLineHtml(g)}</div>
@@ -1196,8 +1348,8 @@
 
     if (limit < total && state.pageSize !== "all") {
       const rest = total - limit;
-      const step = typeof state.pageSize === "number" ? state.pageSize : 50;
-      const more = Math.min(step, rest);
+      const nextLimit = alignVisibleCount(limit + getPageStep(), total);
+      const more = Math.min(nextLimit - limit, rest);
 
       const wrap = document.createElement("div");
       wrap.className = "load-more-wrap";
@@ -1206,7 +1358,7 @@
       btn.className = "load-more-btn";
       btn.textContent = `Afficher +${more} (${rest} restants)`;
       btn.addEventListener("click", () => {
-        state.visibleCount = Math.min(total, limit + step);
+        state.visibleCount = nextLimit;
         renderGrid();
       });
 
@@ -1215,6 +1367,7 @@
     }
 
     updateStats();
+    requestAnimationFrame(maybeAutoLoadMore);
   }
 
   // =========================
@@ -1255,11 +1408,19 @@
   $("#pageSize")?.addEventListener("change", (e) => {
     const v = e.target.value;
     if (v === "all") state.pageSize = "all";
+    else if (v === "auto") state.pageSize = "auto";
     else {
       const n = parseInt(v, 10);
       state.pageSize = !isNaN(n) && n > 0 ? n : 50;
     }
     state.visibleCount = 0;
+    renderGrid();
+  });
+
+
+  $("#updateBadgesToggle")?.addEventListener("change", (e) => {
+    const enabled = e.target.value !== "off";
+    setUpdateBadgesEnabled(enabled);
     renderGrid();
   });
 
@@ -1292,8 +1453,8 @@
     updateTagsCountBadge();
     closeTagsPopover();
 
-    state.pageSize = 50;
-    $("#pageSize") && ($("#pageSize").value = "50");
+    state.pageSize = "auto";
+    $("#pageSize") && ($("#pageSize").value = "auto");
 
     GAME_STATS.loaded = false;
     GAME_STATS.views.clear();
@@ -1347,6 +1508,19 @@
       state.cols = getViewerCols();
       const colsSel = $("#cols");
       if (colsSel) colsSel.value = state.cols;
+
+      const pageSizeSel = $("#pageSize");
+      if (pageSizeSel) pageSizeSel.value = state.pageSize;
+
+      const badgesSel = $("#updateBadgesToggle");
+      const badgesEnabled = areUpdateBadgesEnabled();
+      setUpdateBadgesEnabled(badgesEnabled);
+      if (badgesSel) badgesSel.value = badgesEnabled ? "on" : "off";
+
+      if (!window.__viewerInfiniteScrollBound) {
+        window.__viewerInfiniteScrollBound = true;
+        bindInfiniteScroll();
+      }
   
       const raw = await loadList();
       state.all = Array.isArray(raw) ? raw.map(normalizeGame) : [];
