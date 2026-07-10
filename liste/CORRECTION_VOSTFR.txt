@@ -1,14 +1,1 @@
-Correction faite depuis 'liste encien.zip'.
 
-But : repartir de l'ancienne liste pour ne pas perdre le style des tuiles VOSTFR / VOFR, puis réappliquer seulement :
-- les icônes en haut qui renvoient vers ton site ;
-- le masquage de la notation par étoiles.
-
-Fichiers à remplacer dans /liste/ :
-- index.html
-- viewer.js
-- viewer.css
-- themes.css
-- viewer.quicklinks.traducteurs.js
-
-Important : je n'ai pas remis/changé favicon.png ici, car ce n'était pas le logo concerné.
