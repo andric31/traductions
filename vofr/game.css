@@ -824,3 +824,14 @@ html[data-theme="light"] .infoBlock .infoTextMuted{
   color: #ffb4b4;
 }
 
+
+
+/* Patch traducteurs : pas de notation par étoiles */
+#ratingBox,
+#statRatingWrap,
+.card-stat:has(.stat-icon-rating),
+html.viewer-rating-hidden #ratingBox,
+html.viewer-rating-hidden #statRatingWrap,
+html.viewer-rating-hidden .card-stat:has(.stat-icon-rating){
+  display:none!important;
+}

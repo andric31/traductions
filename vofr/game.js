@@ -1343,6 +1343,7 @@ function setMyVote4(gameId, v) {
 }
 
 function renderRating4UI(gameId, data, enabled = true) {
+  return;
   const choices = $("ratingChoices");
   const avgEl = $("ratingAvg");
   const countEl = $("ratingCount");
@@ -1723,12 +1724,7 @@ function renderVideoBlock({ id, videoUrl }) {
     await initCounters(counterKey, megaHref, archiveHref);
 
     // Rating
-    try {
-      const j = await rating4Get(counterKey);
-      if (j?.ok) renderRating4UI(counterKey, j, true);
-    } catch {
-      renderRating4UI(counterKey, { ok: false, avg: 0, count: 0 }, false);
-    }
+    // Notation désactivée sur le site traducteurs.
 
     // Déplacer la notation en bas de l'encadré principal
     const cardInner = document.querySelector(".cardInner");
