@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="viewer-rating-hidden">
 <head>
   <meta charset="utf-8" />
   <meta name="referrer" content="no-referrer">
@@ -355,19 +355,6 @@
             <h3>ℹ️ Informations</h3>
             <div id="notesText" class="infoTextMuted"></div>
           </div>
-  
-          <!-- ⭐ Notation -->
-          <div id="ratingBox" class="infoBlock" style="text-align:center;">
-            <div style="color:var(--muted); font-size:12px; margin-bottom:6px;">
-              Note de la traduction :
-              <strong id="ratingAvg">—</strong>
-              (<span id="ratingCount">0</span> votes)
-            </div>
-  
-            <div id="ratingChoices" style="display:flex; justify-content:center; gap:8px;"></div>
-            <div id="ratingMsg" style="margin-top:6px; color:var(--muted); font-size:12px;"></div>
-          </div>
-  
         </div>
       </div>
   
@@ -377,7 +364,6 @@
           <span class="statsItem">👁️ Vues : <strong id="statViews">0</strong></span>
           <span class="statsItem">📥 Téléchargements : <strong id="statMegaClicks">0</strong></span>
           <span class="statsItem">❤️ J’aime : <strong id="statLikes">0</strong></span>
-          <span class="statsItem" id="statRatingWrap" title="Note moyenne de la traduction">⭐ Note : <strong id="statRating">—</strong></span>
         </div>
         <div class="statsLine statsLineSub">
           <span class="statsItem" id="statAddedWrap" title="Date d’ajout inconnue">📅 Ajouté le <strong id="statAddedDate">—</strong></span>
@@ -386,25 +372,6 @@
   
       <div class="err" id="errBox"></div>
     </div>
-  
-    <!-- ✅ Observer : mini fade sur #ratingMsg à chaque changement -->
-    <script>
-      (function(){
-        const msg = document.getElementById("ratingMsg");
-        if (!msg) return;
-  
-        const flash = () => {
-          msg.classList.remove("msgFade");
-          void msg.offsetWidth;
-          msg.classList.add("msgFade");
-        };
-  
-        const obs = new MutationObserver(() => flash());
-        obs.observe(msg, { childList: true, characterData: true, subtree: true });
-  
-        if ((msg.textContent || "").trim()) flash();
-      })();
-    </script>
   </div>
 
 <!-- ✅ JS externes en defer -->
@@ -448,6 +415,8 @@
     }catch{}
   });
   </script>
+  <script src="/viewer.quicklinks.traducteurs.js" defer></script>
+
 
 </body>
 </html>
