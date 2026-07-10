@@ -51,9 +51,7 @@
 }
 
 /* lechauve — bleu moderne */
-.card[data-tr="lechauve"],
-.card[data-tr="le-chauve"],
-.card[data-tr="le_chauve"]{
+.card[data-tr="lechauve"]{
   --card-bg: rgba(33,150,243,0.10);
   --card-border: rgba(33,150,243,0.35);
   --card-accent: rgba(33,150,243,0.85);
@@ -67,34 +65,50 @@
 }
 
 
-/* VOFR / VOSTFR — fond un peu plus foncé, sans barres latérales */
+/* VOFR / VOSTFR — tuiles bleu blanc rouge comme avant, pas bleu plein */
 .card[data-tr="vofr"],
 .card[data-tr="vostfr"],
 .card[data-tr="vo-fr"],
-.card[data-tr="vo_fr"],
-.card[data-tr="v o f r"],
-.card[data-tr="vost-fr"]{
-  --card-bg: rgba(14,18,28,0.88);
-  --card-border: rgba(86,120,190,0.34);
-  --card-accent: rgba(110,155,255,0.78);
-  border-color: rgba(86,120,190,0.34) !important;
+.card[data-tr="vo_fr"]{
+  --card-bg: rgba(255,255,255,0.045);
+  --card-border: rgba(255,255,255,0.24);
+  --card-accent: rgba(255,255,255,0.55);
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(255,255,255,0.24);
   background:
-    linear-gradient(
-      180deg,
-      rgba(24,30,44,0.90) 0%,
-      rgba(14,18,28,0.96) 100%
-    ) !important;
+    linear-gradient(90deg,
+      rgba(0,85,164,0.26) 0%,
+      rgba(0,85,164,0.26) 32%,
+      rgba(255,255,255,0.11) 32%,
+      rgba(255,255,255,0.11) 68%,
+      rgba(239,65,53,0.24) 68%,
+      rgba(239,65,53,0.24) 100%),
+    var(--card-bg);
+}
+
+.card[data-tr="vofr"]::before,
+.card[data-tr="vostfr"]::before,
+.card[data-tr="vo-fr"]::before,
+.card[data-tr="vo_fr"]::before{
+  content:"";
+  position:absolute;
+  inset:0 auto 0 0;
+  width:7px;
+  pointer-events:none;
+  background:linear-gradient(180deg,#0055a4 0 33.33%,#ffffff 33.33% 66.66%,#ef4135 66.66% 100%);
+  opacity:.95;
+  z-index:2;
 }
 
 .card[data-tr="vofr"]:hover,
 .card[data-tr="vostfr"]:hover,
 .card[data-tr="vo-fr"]:hover,
-.card[data-tr="vo_fr"]:hover,
-.card[data-tr="v o f r"]:hover,
-.card[data-tr="vost-fr"]:hover{
-  border-color: rgba(118,165,255,0.58) !important;
+.card[data-tr="vo_fr"]:hover{
+  border-color: rgba(255,255,255,0.55);
   box-shadow:
-    0 0 0 1px rgba(118,165,255,0.40),
-    0 0 24px -8px rgba(118,165,255,0.34),
+    0 0 0 1px rgba(255,255,255,0.35),
+    0 0 20px -7px rgba(239,65,53,0.80),
+    0 0 20px -7px rgba(0,85,164,0.80),
     0 14px 38px rgba(0,0,0,0.45);
 }
