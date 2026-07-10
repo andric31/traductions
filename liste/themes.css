@@ -88,20 +88,6 @@
     var(--card-bg);
 }
 
-.card[data-tr="vofr"]::before,
-.card[data-tr="vostfr"]::before,
-.card[data-tr="vo-fr"]::before,
-.card[data-tr="vo_fr"]::before{
-  content:"";
-  position:absolute;
-  inset:0 auto 0 0;
-  width:7px;
-  pointer-events:none;
-  background:linear-gradient(180deg,#0055a4 0 33.33%,#ffffff 33.33% 66.66%,#ef4135 66.66% 100%);
-  opacity:.95;
-  z-index:2;
-}
-
 .card[data-tr="vofr"]::after,
 .card[data-tr="vostfr"]::after,
 .card[data-tr="vo-fr"]::after,
