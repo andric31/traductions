@@ -1308,3 +1308,14 @@ body.mode-game .ratingTitle{ margin:0 0 8px 0; color:var(--muted); font-size:12p
   -webkit-mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='m12 17.27 6.18 3.73-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21Z'/></svg>");
   mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='m12 17.27 6.18 3.73-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21Z'/></svg>");
 }
+
+
+/* Patch traducteurs : pas de notation par étoiles */
+#ratingBox,
+#statRatingWrap,
+.card-stat:has(.stat-icon-rating),
+html.viewer-rating-hidden #ratingBox,
+html.viewer-rating-hidden #statRatingWrap,
+html.viewer-rating-hidden .card-stat:has(.stat-icon-rating){
+  display:none!important;
+}
