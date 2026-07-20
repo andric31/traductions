@@ -18,10 +18,15 @@
     "openBase": "https://traductions.pages.dev/ikaros/"
   },
   {
-    "key": "vofr",
-    "name": "VO Française - Intégrée",
-    "listUrl": "/f95list_vofr.json",
-    "openBase": "https://traductions.pages.dev/vofr/"
+    "key": "viii",
+    "name": "VIII",
+    "listUrl": "/f95list_viii.json",
+    "openBase": "https://traductions.pages.dev/viii/"
+  },
+  {
+    "key": "renleefax",
+    "name": "RenLeefax",
+    "listUrl": "/f95list_renleefax.json",
+    "openBase": "https://traductions.pages.dev/renleefax/"
   }
-
 ]
