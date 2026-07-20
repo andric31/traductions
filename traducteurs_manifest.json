@@ -28,5 +28,11 @@
     "name": "RenLeefax",
     "listUrl": "/f95list_renleefax.json",
     "openBase": "https://traductions.pages.dev/renleefax/"
+  },
+  {
+    "key": "vofr",
+    "name": "VO Française - Intégrée",
+    "listUrl": "/f95list_vofr.json",
+    "openBase": "https://traductions.pages.dev/vofr/"
   }
 ]
