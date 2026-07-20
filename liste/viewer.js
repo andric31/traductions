@@ -546,6 +546,15 @@
       const listUrl = (t && t.listUrl ? String(t.listUrl) : "").trim();
       if (!listUrl) continue;
 
+      // Déduit aussi la clé depuis le nom de la liste.
+      // Ex. /f95list_renleefax.json -> renleefax
+      // Cela garantit l'application du thème même si "key" manque au manifeste.
+      const listKeyMatch = listUrl.match(/(?:^|\/)f95list_([^/?#]+)\.json(?:[?#].*)?$/i);
+      const listKey = listKeyMatch ? String(listKeyMatch[1]).trim() : "";
+      const translatorKey = (t && (t.key || t.slug))
+        ? String(t.key || t.slug).trim()
+        : listKey;
+
       try {
         const r = await fetch(listUrl, { cache: "no-store" });
         if (!r.ok) throw new Error("HTTP " + r.status);
@@ -559,7 +568,7 @@
         for (const g of games) {
           if (!g || typeof g !== "object") continue;
           if (!g._translator) g._translator = name;
-          if (!g._translatorKey && t && t.key) g._translatorKey = String(t.key);
+          if (!g._translatorKey && translatorKey) g._translatorKey = translatorKey;
           if (!g._openBase && t && t.openBase) g._openBase = String(t.openBase);
           combined.push(g);
         }
