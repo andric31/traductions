@@ -68,9 +68,9 @@
 /* RenLeefax — rouge feu */
 .card[data-tr="renleefax"],
 .card[data-tr="f95list_renleefax"]{
-  --card-bg: rgba(178,24,8,0.15);
-  --card-border: rgba(255,62,18,0.58);
-  --card-accent: rgba(255,92,24,0.98);
+  --card-bg: linear-gradient(180deg, rgba(150,0,0,0.16), rgba(72,0,0,0.30));
+  --card-border: rgba(255,36,0,0.68);
+  --card-accent: rgba(255,54,18,0.98);
 }
 
 /* VIII — violet électrique */
