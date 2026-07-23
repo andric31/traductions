@@ -65,12 +65,12 @@
 }
 
 
-/* RenLeefax — rouge feu */
+/* RenLeefax — rouge feu franc, distinct de l’orange Ikaros */
 .card[data-tr="renleefax"],
 .card[data-tr="f95list_renleefax"]{
-  --card-bg: linear-gradient(180deg, rgba(150,0,0,0.16), rgba(72,0,0,0.30));
-  --card-border: rgba(255,36,0,0.68);
-  --card-accent: rgba(255,54,18,0.98);
+  --card-bg: linear-gradient(180deg, rgba(180,0,0,0.24), rgba(58,0,0,0.42));
+  --card-border: rgba(255,0,0,0.86);
+  --card-accent: rgba(255,0,0,1);
 }
 
 /* VIII — violet électrique */
