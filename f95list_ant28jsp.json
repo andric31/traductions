@@ -24264,5 +24264,41 @@
     "updatedAtDateTime": "2021-07-31T22:06:57+0200",
     "createdAtLocal": "2026-08-23 14:04:13",
     "updatedAtLocal": "2026-08-23 14:04:13"
+  },
+  {
+    "uid": 576,
+    "id": "88514",
+    "collection": "",
+    "serie": "",
+    "title": "Ren'Py Abandoned Derge Quest [Prototype v2] [DergeProductions]",
+    "url": "https://f95zone.to/threads/88514/",
+    "tags": [
+      "2d game",
+      "2dcg",
+      "character creation",
+      "female protagonist",
+      "male protagonist"
+    ],
+    "f95FranceTranslation": "non défini",
+    "cleanTitle": "Derge Quest [Prototype v2] [DergeProductions]",
+    "updatedAt": "18 juillet 2021",
+    "releaseDate": "18 juillet 2021",
+    "version": "Prototype v2",
+    "censored": "No",
+    "os": "Windows, Linux and Mac",
+    "imageUrl": "https://attachments.f95zone.to/2021/07/1322848_1321589_main_menu.png",
+    "videoUrl": "",
+    "discordlink": "https://discord.com/channels/1278373830624149524/1541046233370468474/1541046233370468474",
+    "translation": "https://mega.nz/file/bJsjmaID#6xof61bMoHTemDm7z0kk6jP7dA1s9wehHNcM3od0X8M",
+    "translationType": "automatique",
+    "translationsExtra": [],
+    "translationsArchive": "",
+    "description": "Il s'agit à la fois d'un outil de prototypage, d'un jeu d'habillage, d'un générateur d'éléments graphiques pour jeux vidéo (utilisables aussi bien gratuitement que commercialement) et d'un support pédagogique pour apprendre le développement de jeux indépendants et la programmation. Cela demandera du temps et des efforts, mais j'espère que vous prendrez plaisir à l'utiliser. Dieu sait que j'aurais sauté sur l'occasion d'avoir un tel outil à mes débuts !",
+    "notes": "",
+    "f95Info": {},
+    "createdAtDateTime": "2021-07-16T07:06:53+0200",
+    "updatedAtDateTime": "2021-07-18T21:02:38+0200",
+    "createdAtLocal": "2026-08-23 14:04:45",
+    "updatedAtLocal": "2026-08-23 14:04:45"
   }
 ]
