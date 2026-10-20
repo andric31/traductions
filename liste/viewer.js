@@ -835,6 +835,9 @@
           <div class="tag-title">Tags</div>
           <button type="button" class="tag-clear" id="tagsClearBtn">Tout enlever</button>
         </div>
+        <div class="tag-search-wrap">
+          <input id="tagsSearch" class="tag-search-input" type="search" placeholder="Rechercher un tag..." aria-label="Rechercher un tag" autocomplete="off" />
+        </div>
         <div class="tag-list" id="tagsList"></div>
       `;
       document.body.appendChild(pop);
@@ -882,6 +885,7 @@
   }
 
   let TAGS_UI_BOUND = false;
+  let TAGS_UI_DATA = { tags: [], counts: new Map() };
 
   function initTagsUI(allTags) {
     const dom = ensureTagsDom();
@@ -889,12 +893,25 @@
     const { btn, pop } = dom;
     const list = document.getElementById("tagsList");
     if (!list) return;
+    const searchInput = document.getElementById("tagsSearch");
+    const counts = new Map();
+    for (const game of state.all || []) {
+      for (const tag of new Set(Array.isArray(game.tags) ? game.tags : [])) {
+        if (tag) counts.set(tag, (counts.get(tag) || 0) + 1);
+      }
+    }
+    // Les gestionnaires déjà installés lisent aussi les données après Rafraîchir.
+    TAGS_UI_DATA = { tags: allTags.slice(), counts };
 
     const renderTagList = () => {
       const active = new Set(state.filterTags || []);
+      const query = String(searchInput?.value || "").trim().toLowerCase();
       list.innerHTML = "";
+      const visibleTags = TAGS_UI_DATA.tags
+        .filter(tag => !query || String(tag).toLowerCase().includes(query))
+        .sort((a, b) => Number(active.has(b)) - Number(active.has(a)) || String(a).localeCompare(String(b)));
 
-      for (const t of allTags) {
+      for (const t of visibleTags) {
         const item = document.createElement("button");
         item.type = "button";
         item.className = "tag-item" + (active.has(t) ? " active" : "");
@@ -903,8 +920,11 @@
             <span class="tag-check">✓</span>
             <span class="tag-name">${escapeHtml(t)}</span>
           </span>
+          <span class="tag-hit-count">${TAGS_UI_DATA.counts.get(t) || 0}</span>
         `;
-        item.addEventListener("click", () => {
+        item.addEventListener("click", (event) => {
+          // Le bouton est recréé ci-dessous : ne pas le prendre pour un clic extérieur.
+          event.stopPropagation();
           const cur = new Set(state.filterTags || []);
           if (cur.has(t)) cur.delete(t);
           else cur.add(t);
@@ -917,6 +937,12 @@
         });
 
         list.appendChild(item);
+      }
+      if (!visibleTags.length) {
+        const empty = document.createElement("div");
+        empty.className = "tag-empty";
+        empty.textContent = "Aucun tag trouvé.";
+        list.appendChild(empty);
       }
     };
 
@@ -934,7 +960,10 @@
         btn.setAttribute("aria-expanded", "true");
         renderTagList();
         positionTagsPopover(pop, btn);
+        try { searchInput?.focus({ preventScroll: true }); } catch {}
       });
+
+      searchInput?.addEventListener("input", renderTagList);
 
       document.getElementById("tagsClearBtn")?.addEventListener("click", () => {
         state.filterTags = [];
