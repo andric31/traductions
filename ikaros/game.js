@@ -262,19 +262,11 @@ const galleryState = {
   timer: null,
   hover: false,
   loadedForUrl: "",
+  requestToken: 0,
 };
 
 function galleryUrlKey(raw) {
-  const u = String(raw || "").trim();
-  if (!u) return "";
-  try {
-    const x = new URL(u, location.origin);
-    const host = (x.hostname || "").toLowerCase();
-    const path = (x.pathname || "").replace(/\/+$/, "");
-    return `${host}${path}`;
-  } catch {
-    return u.replace(/[?#].*$/, "").replace(/\/+$/, "");
-  }
+  return globalThis.F95Images.normalizeF95MediaKey(raw);
 }
 
 function dedupKeepOrder(list) {
@@ -283,7 +275,7 @@ function dedupKeepOrder(list) {
   for (const raw of list || []) {
     const u = String(raw || "").trim();
     const k = galleryUrlKey(u);
-    if (!u || !k || seen.has(k)) continue;
+    if (!u || !k || globalThis.F95Images.isGalleryAvatarUrl(u) || seen.has(k)) continue;
     seen.add(k);
     out.push(u);
   }
@@ -328,21 +320,50 @@ function setLightboxBackground(url) {
   lb.style.setProperty("--lb-bg", u ? `url("${u.replace(/"/g, '\"')}")` : "none");
 }
 
-function galleryGoTo(index) {
-  if (!Array.isArray(galleryState.urls) || !galleryState.urls.length) return;
-  const len = galleryState.urls.length;
-  galleryState.index = ((index % len) + len) % len;
-  const u = galleryState.urls[galleryState.index] || "";
-  const img = $("cover");
-  const lb = $("coverLightboxImg");
-  if (img) {
-    img.classList.remove("is-placeholder");
-    img.src = u;
-    img.onerror = () => { img.onerror = null; };
+function showGalleryPlaceholder() {
+  for (const id of ["cover", "coverLightboxImg"]) {
+    const img = $(id);
+    if (!img) continue;
+    img.onerror = null;
+    img.removeAttribute("src");
+    if (id === "cover") img.classList.add("is-placeholder");
   }
-  if (lb) lb.src = u;
-  setLightboxBackground(u);
+  setLightboxBackground("");
   updateGalleryControls();
+}
+
+async function galleryGoTo(index) {
+  if (!Array.isArray(galleryState.urls) || !galleryState.urls.length) return;
+  const token = ++galleryState.requestToken;
+  const len = galleryState.urls.length;
+  const direction = index < galleryState.index ? -1 : 1;
+  const start = ((index % len) + len) % len;
+  galleryState.index = start;
+  for (let offset = 0; offset < len; offset++) {
+    const candidate = (start + direction * offset + len) % len;
+    const u = await globalThis.F95Images.findWorkingF95Image([galleryState.urls[candidate]]);
+    // Un clic récent a priorité sur une récupération lente de l'image précédente.
+    if (galleryState.requestToken !== token) return;
+    if (!u) continue;
+    galleryState.index = candidate;
+    galleryState.urls[candidate] = u;
+    for (const id of ["cover", "coverLightboxImg"]) {
+      const img = $(id);
+      if (!img) continue;
+      img.referrerPolicy = "no-referrer";
+      img.classList.remove("is-placeholder");
+      img.onerror = () => {
+        if (galleryState.requestToken !== token) return;
+        globalThis.F95Images.markImageFailed(u);
+        galleryGoTo(galleryState.index);
+      };
+      img.src = u;
+    }
+    setLightboxBackground(u);
+    updateGalleryControls();
+    return;
+  }
+  if (galleryState.requestToken === token) showGalleryPlaceholder();
 }
 
 function setupGalleryEvents() {
@@ -359,12 +380,12 @@ function setupGalleryEvents() {
     e.preventDefault();
     const lb = $("coverLightbox");
     if (!lb) return;
-    const current = galleryState.urls[galleryState.index] || "";
+    const current = $("cover")?.getAttribute("src") || "";
     setLightboxBackground(current);
     lb.classList.remove("hidden");
     lb.setAttribute("aria-hidden", "false");
     const img = $("coverLightboxImg");
-    if (img) img.src = current;
+    if (img && current) { img.referrerPolicy = "no-referrer"; img.src = current; }
   });
   const closeLb = () => {
     const lb = $("coverLightbox");
@@ -390,38 +411,17 @@ function setupGalleryEvents() {
 async function loadF95Gallery(f95Url, fallbackUrl) {
   setupGalleryEvents();
   const fallback = String(fallbackUrl || "").trim();
-  const baseUrl = String(f95Url || "").trim();
-  const fallbackKey = galleryUrlKey(fallback);
-
-  if (!baseUrl) {
-    galleryState.urls = fallback ? [fallback] : [];
-    galleryState.index = 0;
-    if (galleryState.urls.length) galleryGoTo(0);
-    else updateGalleryControls();
-    return;
-  }
-  if (galleryState.loadedForUrl === baseUrl) return;
+  const baseUrl = globalThis.F95Images.getF95ThreadUrl({ url: f95Url }, fallback);
+  if (!baseUrl || galleryState.loadedForUrl === baseUrl) return;
   galleryState.loadedForUrl = baseUrl;
-
-  let merged = fallback ? [fallback] : [];
-  try {
-    const resp = await fetch(getF95GalleryApiUrl(baseUrl));
-    const data = await resp.json();
-    if (data && data.ok) {
-      const remote = [];
-      if (data.cover) remote.push(data.cover);
-      if (Array.isArray(data.gallery)) remote.push(...data.gallery);
-      if (remote.length) {
-        const filteredRemote = remote.filter((u) => galleryUrlKey(u) !== fallbackKey);
-        merged = fallback ? [fallback, ...filteredRemote] : filteredRemote;
-      }
-    }
-  } catch {}
-
-  galleryState.urls = dedupKeepOrder(merged);
-  galleryState.index = 0;
-  if (galleryState.urls.length) galleryGoTo(0);
-  else updateGalleryControls();
+  const media = await globalThis.F95Images.fetchF95GalleryMedia({ url: baseUrl }, fallback);
+  if (galleryState.loadedForUrl !== baseUrl) return;
+  const currentKey = galleryUrlKey(galleryState.urls[galleryState.index]);
+  galleryState.urls = dedupKeepOrder([fallback, media.cover, ...media.gallery]);
+  const currentIndex = galleryState.urls.findIndex(u => galleryUrlKey(u) === currentKey);
+  galleryState.index = currentIndex >= 0 ? currentIndex : 0;
+  if (galleryState.urls.length) galleryGoTo(galleryState.index);
+  else showGalleryPlaceholder();
 }
 
 function setText(id, text) {
@@ -453,41 +453,17 @@ function showError(msg) {
   }
 }
 
-/**
- * IMPORTANT:
- * - Si pas d'image => on laisse la cover en "placeholder" (PAS de favicon)
- * - Si image cassée => on repasse en placeholder (PAS de favicon)
- */
+/** Cover sans favicon : les images indisponibles restent en placeholder. */
 function setCover(url) {
   const img = $("cover");
   if (!img) return;
-
-  const u = (url || "").trim();
-  img.referrerPolicy = "no-referrer";
-
-  if (!u) {
-    galleryState.urls = [];
-    galleryState.index = 0;
-    img.removeAttribute("src");
-    img.classList.add("is-placeholder");
-    updateGalleryControls();
-    return;
-  }
-
-  galleryState.urls = [u];
+  const u = String(url || "").trim();
+  galleryState.requestToken++;
+  galleryState.loadedForUrl = "";
+  galleryState.urls = u && !globalThis.F95Images.isGalleryAvatarUrl(u) ? [u] : [];
   galleryState.index = 0;
-  img.classList.remove("is-placeholder");
-  img.src = u;
-  const lb = $("coverLightboxImg");
-  if (lb) lb.src = u;
-  setLightboxBackground(u);
-  updateGalleryControls();
-
-  img.onerror = () => {
-    img.onerror = null;
-    img.removeAttribute("src");
-    img.classList.add("is-placeholder");
-  };
+  showGalleryPlaceholder();
+  if (galleryState.urls.length) galleryGoTo(0);
 }
 
 function renderTags(tags) {
@@ -726,37 +702,9 @@ function renderSeriesBlocks(seriesList, games, currentCanonicalKey) {
 // Badges
 // ============================================================================
 const CAT_ALLOWED = ["VN", "Collection"];
-const ENGINE_ALLOWED = ["Ren'Py", "RPGM", "Unity", "Unreal Engine", "HTML", "Java", "Flash", "QSP", "WebGL", "RAGS", "Tads", "ADRIFT", "Others", "Wolf RPG"];
+const ENGINE_ALLOWED = globalThis.F95Engines.allowed;
 const STATUS_ALLOWED = ["Completed", "Abandoned", "Onhold"];
 
-const ENGINE_RAW = {
-  renpy: "Ren'Py",
-  "ren'py": "Ren'Py",
-  rpgm: "RPGM",
-  rpgmaker: "RPGM",
-  rpgmakermv: "RPGM",
-  rpgmakermz: "RPGM",
-  unity: "Unity",
-  unreal: "Unreal Engine",
-  unrealengine: "Unreal Engine",
-  "unreal engine": "Unreal Engine",
-  ue4: "Unreal Engine",
-  ue5: "Unreal Engine",
-  html: "HTML",
-  html5: "HTML",
-  web: "HTML",
-  java: "Java",
-  flash: "Flash",
-  qsp: "QSP",
-  webgl: "WebGL",
-  rags: "RAGS",
-  tads: "Tads",
-  adrift: "ADRIFT",
-  others: "Others",
-  other: "Others",
-  wolf: "Wolf RPG",
-  wolfrpg: "Wolf RPG",
-};
 
 function slug(s) {
   return String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
@@ -766,92 +714,7 @@ const SEP_RE = /[\u2014\u2013\-:]/;
 const ucFirst = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
 function cleanTitle(raw) {
-  let t = String(raw || "").trim();
-  let categories = [];
-  let engines = [];
-  let status = null;
-  let othersExplicit = false;
-
-  if (/^collection\b/i.test(t)) {
-    categories.push("Collection");
-    t = t.replace(/^collection[ :\-]*/i, "").trim();
-  }
-
-  const head = t.split(SEP_RE)[0];
-  const tokens = head.split(/[\s/|,]+/).filter(Boolean);
-  let cut = 0;
-
-  for (let i = 0; i < tokens.length; i++) {
-    const wRaw = tokens[i];
-    const w = wRaw.toLowerCase();
-    const norm = w.replace(/[^\w']/g, "");
-
-    if (norm === "vn") {
-      if (!categories.includes("VN")) categories.push("VN");
-      cut = i + 1;
-      continue;
-    }
-
-    if (norm === "wolf" && tokens[i + 1] && tokens[i + 1].toLowerCase().replace(/[^\w']/g, "") === "rpg") {
-      if (!engines.includes("Wolf RPG")) engines.push("Wolf RPG");
-      cut = i + 2;
-      i++;
-      continue;
-    }
-
-    if (norm === "wolf") break;
-
-    if (norm === "flash") {
-      if (!engines.includes("Flash")) engines.push("Flash");
-      cut = i + 1;
-      continue;
-    }
-
-    if (norm === "others" || norm === "other") {
-      if (!engines.includes("Others")) engines.push("Others");
-      othersExplicit = true;
-      cut = i + 1;
-      continue;
-    }
-
-    if (ENGINE_RAW[norm] !== undefined) {
-      const eng = ENGINE_RAW[norm];
-      if (eng && !engines.includes(eng)) engines.push(eng);
-      cut = i + 1;
-      continue;
-    }
-
-    const pretty = ucFirst(norm);
-    if (STATUS_ALLOWED.includes(pretty)) {
-      status = pretty;
-      cut = i + 1;
-      continue;
-    }
-
-    if (w === "&" || w === "and" || w === "/") {
-      cut = i + 1;
-      continue;
-    }
-
-    break;
-  }
-
-  if (cut > 0) {
-    const headSlice = tokens.slice(0, cut).join(" ");
-    t = t.slice(headSlice.length).trim();
-    t = t.replace(/^[\u2014\u2013\-:|]+/, "").trim();
-  }
-
-  if (!status) status = "En cours";
-
-  categories = categories.filter((c) => CAT_ALLOWED.includes(c));
-  engines = engines.filter((e) => ENGINE_ALLOWED.includes(e));
-
-  if (!othersExplicit && engines.includes("Others") && engines.some((e) => e !== "Others")) {
-    engines = engines.filter((e) => e !== "Others");
-  }
-
-  return { title: t, categories, engines, status };
+  return globalThis.F95Engines.cleanTitle(raw);
 }
 
 function makeBadge(type, value) {
@@ -877,10 +740,7 @@ function renderBadgesFromGame(display, entry, isCollectionChild) {
   if (!isCollectionChild && c.categories.includes("VN")) wrap.appendChild(makeBadge("cat", "VN"));
 
   if (isCollectionChild) {
-    if (display?.engine) {
-      const eng = ENGINE_RAW[slug(display.engine)] || display.engine;
-      c.engines = [eng];
-    } else if (!c.engines || c.engines.length === 0) {
+    if (!c.engines || c.engines.length === 0) {
       const cp = cleanTitle(parentTitle);
       c.engines = cp.engines || [];
     }
@@ -892,6 +752,7 @@ function renderBadgesFromGame(display, entry, isCollectionChild) {
     }
   }
 
+  c.engines = globalThis.F95Engines.enginesFromGame(entry, c.engines);
   for (const eng of c.engines || []) wrap.appendChild(makeBadge("eng", eng));
   if (c.status) wrap.appendChild(makeBadge("status", c.status));
 }
@@ -1525,7 +1386,7 @@ function renderVideoBlock({ id, videoUrl }) {
     setText("title", title);
     const coverUrl = display.imageUrl || entry.imageUrl || "";
     setCover(coverUrl);
-    await loadF95Gallery(entry.url || display.url || "", coverUrl);
+    await loadF95Gallery(globalThis.F95Images.getF95ThreadUrl(entry, coverUrl), coverUrl);
     renderTags(display.tags || entry.tags || []);
 
     // Badges + status
