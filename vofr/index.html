@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" class="viewer-rating-hidden">
+<html lang="fr" data-game-quicklinks="viewer" class="viewer-rating-hidden">
 <head>
   <meta charset="utf-8" />
   <meta name="referrer" content="no-referrer">
@@ -30,9 +30,9 @@
   })();
   </script>
 
-  <link rel="stylesheet" href="./viewer.css?v=20261020-tags-1" />
-  <link rel="stylesheet" href="./themes.css" />
-  <link rel="stylesheet" href="./game.css" />
+  <link rel="stylesheet" href="./viewer.css?v=20261020-tags-1" data-game-legacy-style />
+  <link rel="stylesheet" href="./themes.css" data-game-legacy-style />
+  <link rel="stylesheet" href="./game.css" data-game-legacy-style />
 
   <style>
     html{ height:auto; overflow-y: scroll; }
@@ -57,6 +57,12 @@
   <link rel="stylesheet" href="/assets/f95/engines.css?v=20261020-1">
   <script src="/assets/f95/engines.js?v=20261020-1" defer></script>
   <script src="/assets/f95/images.js?v=20261020-1" defer></script>
+  <!-- Ces styles ne s’activent que sur la fiche de jeu. -->
+  <link rel="stylesheet" href="/assets/v250/viewer.css?v=20261020-1" media="not all" data-game-style>
+  <link rel="stylesheet" href="/assets/v250/themes.css?v=20261020-1" media="not all" data-game-style>
+  <link rel="stylesheet" href="/assets/v250/game.css?v=20261020-icons-1" media="not all" data-game-style>
+  <link rel="stylesheet" href="/assets/v250/game.related.css?v=20261020-game-1" media="not all" data-game-style>
+  <script src="/assets/v250/game-init.js?v=20261020-game-1"></script>
 </head>
 <body>
 
@@ -279,111 +285,128 @@
     </main>
   </div>
 
-  <!-- PAGE JEU (même page, via ?id= / ?uid=) -->
+  <!-- Fiche de jeu : présentation du site principal, logique du traducteur conservée. -->
   <div id="page-game" style="display:none;">
-    <div class="wrap">
-      <div class="cardPreview" id="card" aria-live="polite">
-  
-        <div class="cardInner">
-  
-          <div class="headRow">
-            <!-- ✅ IMPORTANT : id hamburgerBtn (pas hamburgerBtnGame) -->
-            <button type="button" class="hamburger-btn" id="hamburgerBtn"
-                    aria-label="Ouvrir le menu" aria-haspopup="menu" aria-expanded="false">
-              <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
-            </button>
-  
-            <button class="btnLike like-btn" id="btnLike" type="button" aria-label="J’aime">🤍</button>
-            <div class="badgesRow" id="badges"></div>
-          </div>
-  
-  
-          <div class="majState" id="majState" hidden></div>
+<div class="wrap">
+    <div class="gameTopLayout">
+      <div class="gameMainColumn">
+        <div class="cardPreview" id="card" aria-live="polite">
+          <div class="cardInner">
 
-          <h1 class="title" id="title">Chargement…</h1>
-  
-          <div class="coverGallery" id="coverGallery">
-            <div class="coverStage" id="coverStage">
-              <img id="cover" class="cover is-placeholder" alt="" referrerpolicy="no-referrer">
-              <button type="button" class="coverCtrl coverExpand" id="coverExpandBtn" aria-label="Agrandir l’image" title="Agrandir l’image">
-                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M9 4H4v5M15 4h5v5M20 15v5h-5M4 15v5h5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div class="headRow">
+              <button type="button" class="hamburger-btn" id="hamburgerBtn" aria-label="Ouvrir le menu" aria-haspopup="menu" aria-expanded="false">
+                <span class="ham-lines" aria-hidden="true"><span></span><span></span><span></span></span>
               </button>
-              <button type="button" class="coverCtrl coverPrev" id="coverPrevBtn" aria-label="Image précédente" title="Image précédente" style="display:none;">
-                <svg class="galarr" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><path d="M16 5 L8 12 L16 19" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </button>
-              <button type="button" class="coverCtrl coverNext" id="coverNextBtn" aria-label="Image suivante" title="Image suivante" style="display:none;">
-                <svg class="galarr" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><path d="M8 5 L16 12 L8 19" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </button>
-              <div class="coverCount" id="coverCount" style="display:none;"></div>
+
+              <div class="badgesRow" id="badges"></div>
             </div>
-          </div>
 
-          <div class="coverLightbox hidden" id="coverLightbox" aria-hidden="true">
-            <div class="coverLightboxBackdrop" id="coverLightboxBackdrop"></div>
-            <div class="coverLightboxDialog" role="dialog" aria-modal="true" aria-label="Galerie d’images">
-              <button type="button" class="coverCtrl coverLightboxClose" id="coverLightboxClose" aria-label="Fermer" title="Fermer">✕</button>
-              <button type="button" class="coverCtrl coverPrev coverLightboxPrev" id="coverLightboxPrev" aria-label="Image précédente" title="Image précédente" style="display:none;">
-                <svg class="galarr" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><path d="M16 5 L8 12 L16 19" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </button>
-              <button type="button" class="coverCtrl coverNext coverLightboxNext" id="coverLightboxNext" aria-label="Image suivante" title="Image suivante" style="display:none;">
-                <svg class="galarr" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><path d="M8 5 L16 12 L8 19" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </button>
-              <img id="coverLightboxImg" class="coverLightboxImg" alt="" referrerpolicy="no-referrer">
-              <div class="coverCount coverLightboxCount" id="coverLightboxCount" style="display:none;"></div>
+            <div class="majState" id="majState" hidden></div>
+
+            <h1 class="title" id="title">Chargement…</h1>
+            <div class="coverGallery" id="coverGallery">
+              <div class="coverStage" id="coverStage">
+                <img id="cover" class="cover is-placeholder" alt="" referrerpolicy="no-referrer">
+                <button type="button" class="coverCtrl coverExpand" id="coverExpandBtn" aria-label="Agrandir l’image" title="Agrandir l’image">
+                  <svg viewbox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M9 4H4v5M15 4h5v5M20 15v5h-5M4 15v5h5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                </button>
+                <button type="button" class="coverCtrl coverPrev" id="coverPrevBtn" aria-label="Image précédente" title="Image précédente" style="display:none;">
+                  <svg class="galarr" viewbox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><path d="M16 5 L8 12 L16 19" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                </button>
+                <button type="button" class="coverCtrl coverNext" id="coverNextBtn" aria-label="Image suivante" title="Image suivante" style="display:none;">
+                  <svg class="galarr" viewbox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><path d="M8 5 L16 12 L8 19" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                </button>
+                <div class="coverCount" id="coverCount" style="display:none;"></div>
+              </div>
             </div>
+
+            <div class="coverLightbox hidden" id="coverLightbox" aria-hidden="true">
+              <div class="coverLightboxBackdrop" id="coverLightboxBackdrop"></div>
+              <div class="coverLightboxDialog" role="dialog" aria-modal="true" aria-label="Galerie d’images">
+                <button type="button" class="coverCtrl coverLightboxClose" id="coverLightboxClose" aria-label="Fermer" title="Fermer">✕</button>
+                <button type="button" class="coverCtrl coverPrev coverLightboxPrev" id="coverLightboxPrev" aria-label="Image précédente" title="Image précédente" style="display:none;">
+                  <svg class="galarr" viewbox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><path d="M16 5 L8 12 L16 19" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                </button>
+                <button type="button" class="coverCtrl coverNext coverLightboxNext" id="coverLightboxNext" aria-label="Image suivante" title="Image suivante" style="display:none;">
+                  <svg class="galarr" viewbox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><path d="M8 5 L16 12 L8 19" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                </button>
+                <img id="coverLightboxImg" class="coverLightboxImg" alt="" referrerpolicy="no-referrer">
+                <div class="coverCount coverLightboxCount" id="coverLightboxCount" style="display:none;"></div>
+              </div>
+            </div>
+
+            <div id="mainInfoBox" class="infoBlock">
+              <div class="tagsRow" id="tags"></div>
+
+              <div id="descriptionBox" class="descInnerBox" style="display:none;">
+                <div id="descriptionText" class="infoText"></div>
+              </div>
+
+              </div>
           </div>
-  
-          <div class="infoBlock tagsBox" id="tagsBox">
-            <div class="tagsRow" id="tags"></div>
+        </div>
+
+        <div class="infoBlock statsOut statsUnderMain" id="statsOut" style="display:none;">
+          <h3>📊 Statistiques</h3>
+          <div class="statsLine">
+            <span class="statsItem" id="statTranslationWrap" title="Date de traduction inconnue">⏱️ Mise à jour : <strong id="statTranslationTime">—</strong></span>
+            <span class="statsItem">👁️ Vues : <strong id="statViews">0</strong></span>
+            <span class="statsItem">📥 Téléchargements : <strong id="statMegaClicks">0</strong></span>
+            <span class="statsItem">❤️ J’aime : <strong id="statLikes">0</strong></span>
+            <span class="statsItem" id="statAddedWrap" title="Date d’ajout inconnue">📅 Ajouté le <strong id="statAddedDate">—</strong></span>
           </div>
-          
-          <!-- 📝 Description -->
-          <div id="descriptionBox" class="descInnerBox" style="display:none;">
-            <div id="descriptionText" class="infoText"></div>
+        </div>
+      </div>
+
+      <aside class="gameSidePanel">
+        <div class="infoBlock gameActionsCard">
+          <div class="sideAccent"></div>
+          <h3>🔗 Téléchargements &amp; liens</h3>
+          <div class="sideIntro">Retrouve ici les liens et informations utiles pour cette traduction.</div>
+
+          <div class="btnRow btnRowSide">
+            <a class="btnLike" id="btnDiscord" target="_blank" rel="noopener" style="display:none;">💬 Discord</a>
+            <a class="btnLike" id="btnF95" target="_blank" rel="noopener" style="display:none;">F95Zone</a>
           </div>
 
-          <!-- ✅ BOUTONS -->
-          <div class="btnRow">
-            <a class="btnLike btn-discord" id="btnDiscord" target="_blank" rel="noopener" style="display:none;">💬 Discord</a>
-            <a class="btnLike btn-f95" id="btnF95" target="_blank" rel="noopener" style="display:none;">
-              <span class="f95-white">F95</span><span class="f95-red">Zone</span>
-            </a>
+          <div class="btnMainRow btnMainRowSide">
+            <a class="btnLike btnMega" id="btnMega" target="_blank" rel="noopener" style="display:none;">📥 Télécharger la traduction · MEGA</a>
+            <!-- translationsExtra injecté ici -->
           </div>
-  
-          <div class="btnMainRow">
-            <a class="btnLike btnMega" id="btnMega" target="_blank" rel="noopener" style="display:none;">
-              📥 Télécharger la traduction · MEGA
-            </a>
+
+          <div id="notesBox" class="translationAboutInline" style="display:none;">
+            <h3>📝 À propos de cette traduction</h3>
+            <div id="notesText" class="infoTextMuted"></div>
           </div>
-  
-          <div id="archiveBox" style="display:none; margin-top:12px; justify-content:center;">
+
+          <div id="archiveBox" style="display:none; justify-content:center;">
             <a id="archiveLink" class="btnLike" target="_blank" rel="noopener" style="justify-content:center;">
               📦 Archives de la traduction
             </a>
           </div>
-  
-          <!-- ✅ ℹ️ Informations -->
-          <div id="notesBox" class="infoBlock" style="display:none;">
-            <h3>ℹ️ Informations</h3>
-            <div id="notesText" class="infoTextMuted"></div>
-          </div>
         </div>
-      </div>
-  
-      <div class="statsOut infoBlock" id="statsOut" style="display:none;">
-        <div class="statsLine">
-          <span class="statsItem" id="statTranslationWrap" title="Date de traduction inconnue">⏱️ Mise à jour : <strong id="statTranslationTime">—</strong></span>
-          <span class="statsItem">👁️ Vues : <strong id="statViews">0</strong></span>
-          <span class="statsItem">📥 Téléchargements : <strong id="statMegaClicks">0</strong></span>
-          <span class="statsItem">❤️ J’aime : <strong id="statLikes">0</strong></span>
+
+        <div id="likeBox" class="infoBlock translationLikeCard translationSideCard" style="text-align:center;">
+          <h3>❤️ Tu aimes ce jeu ?</h3>
+          <div class="likeIntro">Laisse un like pour cette fiche et cette traduction.</div>
+          <button class="btnLike sideLikeBtn" id="btnLike" type="button" aria-label="J’aime">🤍</button>
         </div>
-        <div class="statsLine statsLineSub">
-          <span class="statsItem" id="statAddedWrap" title="Date d’ajout inconnue">📅 Ajouté le <strong id="statAddedDate">—</strong></span>
-        </div>
-      </div>
-  
-      <div class="err" id="errBox"></div>
+
+        </aside>
     </div>
+
+    <div class="infoBlock similarGamesBlock" id="similarGamesBlock" style="display:none;">
+      <div class="similarHead">
+        <h3>Jeux similaires</h3>
+        <div class="similarSub" id="similarGamesSub">Basé sur les tags des jeux de cette liste</div>
+      </div>
+      <div class="similarGrid no-rating is-ready" id="similarGamesGrid"></div>
+    </div>
+
+    <div class="err" id="errBox"></div>
+  </div>
+
+  
   </div>
 
 <!-- ✅ JS externes en defer -->
@@ -395,6 +418,7 @@
 
   <script src="./viewer.js?v=20261020-tags-1" defer></script>
   <script src="./game.js?v=20261020-images-engines" defer></script>
+  <script src="/assets/v250/game.related.js?v=20261020-icons-1" defer></script>
 
   <!-- ✅ switch viewer/game -->
   <script>
@@ -427,7 +451,7 @@
     }catch{}
   });
   </script>
-  <script src="/viewer.quicklinks.traducteurs.js" defer></script>
+  <script src="/viewer.quicklinks.traducteurs.js?v=20261020-icons-1" defer></script>
 
 </body>
 </html>
