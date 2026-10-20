@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" class="viewer-rating-hidden">
+<html lang="fr" data-v250-page="viewer" class="viewer-rating-hidden">
 <head>
   <meta charset="utf-8" />
   <meta name="referrer" content="no-referrer">
@@ -54,6 +54,15 @@
     body:not(.mode-game) #page-game{ display:none !important; }
     body:not(.mode-game) #page-viewer{ display:block !important; }
   </style>
+  <!-- Habillage v250 inactif sur les fiches ?id= / ?uid=. -->
+  <link rel="stylesheet" href="/assets/v250/viewer.css?v=20261020-1" media="not all" data-v250-style>
+  <link rel="stylesheet" href="/assets/v250/themes.css?v=20261020-1" media="not all" data-v250-style>
+  <link rel="stylesheet" href="/assets/v250/appearance.css?v=20261020-1" media="not all" data-v250-style>
+  <script src="/assets/v250/appearance-init.js?v=20261020-1"></script>
+  <script src="/assets/v250/appearance.js?v=20261020-1" defer></script>
+  <link rel="stylesheet" href="/assets/f95/engines.css?v=20261020-1">
+  <script src="/assets/f95/engines.js?v=20261020-1" defer></script>
+  <script src="/assets/f95/images.js?v=20261020-1" defer></script>
 </head>
 <body>
 
@@ -238,6 +247,16 @@
           <option value="Ren'Py">Ren'Py</option>
           <option value="RPGM">RPGM</option>
           <option value="Unity">Unity</option>
+          <option value="Godot">Godot</option>
+          <option value="Unreal Engine">Unreal Engine</option>
+          <option value="HTML">HTML</option>
+          <option value="Java">Java</option>
+          <option value="Flash">Flash</option>
+          <option value="QSP">QSP</option>
+          <option value="WebGL">WebGL</option>
+          <option value="RAGS">RAGS</option>
+          <option value="Tads">Tads</option>
+          <option value="ADRIFT">ADRIFT</option>
           <option value="Others">Others</option>
           <option value="Wolf RPG">Wolf RPG</option>
         </select>
@@ -386,8 +405,8 @@
   <script src="/viewer.agegate.js" defer></script>
   <script src="/viewer.annonce.js" defer></script>
 
-  <script src="./viewer.js" defer></script>
-  <script src="./game.js" defer></script>
+  <script src="./viewer.js?v=20261020-images-engines" defer></script>
+  <script src="./game.js?v=20261020-images-engines" defer></script>
 
   <!-- ✅ switch viewer/game -->
   <script>
