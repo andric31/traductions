@@ -1959,6 +1959,14 @@ html[data-theme="light"] .infoBlock .infoTextMuted{
 }
 
 /* Adaptation de présentation au conteneur commun viewer/fiche. */
+#page-game #btnLike { color:#555 !important; }
+#page-game #btnLike:hover,
+#page-game #btnLike:focus-visible,
+#page-game #btnLike[aria-pressed="true"] { color:#ffd54a !important; }
+#page-game #btnLike .likeIconSvg,
+#page-game #btnLike .likeIconSvg path { color:inherit !important; }
+#page-game #btnLike .likeIconSvg path { stroke:currentColor !important; fill:none; }
+#page-game #btnLike .likeIconSvg--liked path { fill:currentColor; }
 body.mode-game { height:auto; }
 #page-game { min-width:0; }
 #page-game .btnMainRowSide { flex-direction:column; gap:10px; }

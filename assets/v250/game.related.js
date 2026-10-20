@@ -4,6 +4,25 @@
   "use strict";
   if (!document.body.classList.contains("mode-game")) return;
 
+  // Seul le dessin change : game.js conserve le stockage, le compteur et le clic.
+  const likeButton = document.getElementById("btnLike");
+  if (likeButton) {
+    const thumbPath = '<path d="M8 21H5.5A1.5 1.5 0 0 1 4 19.5v-7A1.5 1.5 0 0 1 5.5 11H8m0 10V11m0 10h8.2c.8 0 1.4-.5 1.6-1.3l1.1-5.2c.2-.9-.5-1.8-1.5-1.8H13V7.8c0-1-.8-1.8-1.8-1.8h-.1L8 11"/>';
+    const observer = new MutationObserver(syncThumb);
+    function syncThumb() {
+      const liked = likeButton.getAttribute("aria-label") === "Je n’aime plus";
+      observer.disconnect();
+      const current = likeButton.querySelector(".likeIconSvg");
+      if (!current || current.classList.contains("likeIconSvg--liked") !== liked) {
+        likeButton.innerHTML = `<svg class="likeIconSvg${liked ? " likeIconSvg--liked" : ""}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${thumbPath}</svg>`;
+      }
+      likeButton.setAttribute("aria-pressed", String(liked));
+      likeButton.title = liked ? "Je n’aime plus" : "J’aime";
+      observer.observe(likeButton, { childList: true, attributes: true, attributeFilter: ["aria-label"] });
+    }
+    syncThumb();
+  }
+
   const dataOf = game => game?.gameData || game || {};
   const tagsOf = game => [...new Set((dataOf(game).tags || game?.tags || [])
     .map(tag => String(tag || "").trim().toLowerCase()).filter(Boolean))];
