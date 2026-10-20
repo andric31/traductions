@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-v250-page="home">
 <head>
   <meta charset="UTF-8">
   <title>Traductions FR</title>
@@ -65,6 +65,140 @@
     }
 
     .card.simple { gap: 0; }
+  </style>
+
+  <!-- Conserver les cartes, classes et liens d'origine : lus par l'extension. -->
+  <link rel="stylesheet" href="/assets/v250/viewer.css?v=20261020-1" media="not all" data-v250-style>
+  <link rel="stylesheet" href="/assets/v250/themes.css?v=20261020-1" media="not all" data-v250-style>
+  <link rel="stylesheet" href="/assets/v250/appearance.css?v=20261020-1" media="not all" data-v250-style>
+  <script src="/assets/v250/appearance-init.js?v=20261020-1"></script>
+  <script src="/assets/v250/appearance.js?v=20261020-1" defer></script>
+  <style>
+    /* Habillage de l'accueil seulement ; aucune reconstruction des cartes. */
+    html.v250-ui[data-v250-page="home"] body {
+      height: auto;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-content: start;
+      gap: 12px;
+      padding: calc(var(--topbar-h) + 32px) max(20px, calc((100% - 1280px) / 2)) 36px;
+    }
+    .v250-ui body > h1 {
+      grid-column: 1 / 3;
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.25;
+      color: var(--title);
+    }
+    .v250-ui body > .subtitle {
+      grid-column: 1 / 3;
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 15px;
+      opacity: 1;
+    }
+    .v250-ui body > .card {
+      min-width: 0;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+      overflow: visible;
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--translator-color, var(--border));
+      border-radius: 14px;
+      background: var(--card);
+      box-shadow: 0 1px 2px rgba(0,0,0,.05);
+    }
+    .v250-ui body > .card:hover {
+      border-color: var(--translator-color, var(--primary));
+      box-shadow: var(--card-hover-shadow);
+      transform: translateY(-2px);
+    }
+    .v250-ui body > .card:focus-within {
+      outline: 2px solid var(--primary);
+      outline-offset: 3px;
+    }
+    .v250-ui .card > .avatar {
+      display: block;
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: var(--bg2);
+    }
+    .v250-ui .card > .card-content { gap: 9px; }
+    .v250-ui .card-content > a {
+      color: var(--fg);
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 1.3;
+      text-decoration: none;
+    }
+    .v250-ui .card-content > a::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+    }
+    .v250-ui .card-content > a:focus-visible { outline: none; }
+    .v250-ui .card:hover .card-content > a { color: var(--primary); }
+    .v250-ui .card-content > small {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+      margin: 0;
+      opacity: 1;
+      overflow-wrap: anywhere;
+    }
+    .v250-ui body > .card.simple {
+      grid-column: 3;
+      grid-row: 1 / 3;
+      justify-self: end;
+      align-self: start;
+      justify-content: center;
+      min-height: 44px;
+      padding: 12px 18px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--btn);
+    }
+    .v250-ui .card.simple .card-content > a { font-size: 14px; font-weight: 650; }
+    .v250-ui .card:has(a[href="https://andric31-traductions.pages.dev/"]) { --translator-color: #7b88a8; }
+    .v250-ui .card:has(a[href="/ant28jsp/"]) { --translator-color: #00b983; }
+    .v250-ui .card:has(a[href="/ikaros/"]) { --translator-color: #fe5901; }
+    .v250-ui .card:has(a[href="/viii/"]) { --translator-color: #ab5cff; }
+    .v250-ui .card:has(a[href="/renleefax/"]) { --translator-color: #f33440; }
+    .v250-ui body > .card:has(a[href="/vofr/"]) {
+      border: 1px solid transparent;
+      background: linear-gradient(var(--card), var(--card)) padding-box,
+        linear-gradient(90deg,#000091 0%,#000091 33.33%,#fff 33.33%,#fff 66.66%,#e1000f 66.66%) border-box;
+    }
+    .home-topbar { display: none; }
+    .v250-ui .home-topbar { display: block; }
+    @media (max-width: 1000px) {
+      html.v250-ui[data-v250-page="home"] body { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .v250-ui body > h1, .v250-ui body > .subtitle { grid-column: 1 / -1; }
+      .v250-ui body > .subtitle { margin-bottom: 4px; }
+      .v250-ui body > .card.simple { grid-column: 1 / -1; grid-row: auto; justify-self: start; margin-bottom: 12px; }
+    }
+    @media (max-width: 600px) {
+      html.v250-ui[data-v250-page="home"] body {
+        grid-template-columns: minmax(0, 1fr);
+        padding: calc(var(--topbar-h) + 22px) 12px 24px;
+      }
+      .v250-ui body > h1 { font-size: 24px; }
+      .v250-ui body > .card { padding: 18px; }
+      .v250-ui body > .card.simple { justify-self: stretch; padding: 12px; align-items: center; }
+      .v250-ui .card.simple .card-content > a { font-size: 13px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .v250-ui body > .card { transition: none; }
+      .v250-ui body > .card:hover { transform: none; }
+    }
   </style>
 </head>
 <body>
@@ -138,5 +272,50 @@ document.querySelectorAll(".avatar").forEach(img => {
 });
 </script>
 
+  <header class="topbar home-topbar">
+    <div class="top-title-row top-title-flex">
+      <span class="home-brand"><img src="/favicon.png" alt="" width="28" height="28">Traductions FR</span>
+      <div class="top-title-tools home-theme"><select id="theme" title="Thème" aria-label="Thème du site">
+        <option value="auto">Thème : Auto (Windows)</option>
+        <option value="dark">Thème : Sombre</option>
+        <option value="white">Thème : Clair</option>
+
+        <option value="valentine">Thème : Saint-Valentin 💘</option>
+        <option value="carnaval">Thème : Carnaval 🎭</option>
+        <option value="paques">Thème : Pâques 🐣</option>
+        <option value="halloween">Thème : Halloween 🎃</option>
+        <option value="noel">Thème : Noël 🎄</option>
+        <option value="nouvelan">Thème : Nouvel An 🎆</option>
+        
+        <option value="printemps">Thème : Printemps 🌸</option>
+        <option value="ete">Thème : Été 🌞</option>
+        <option value="automne">Thème : Automne 🍂</option>
+        <option value="hiver">Thème : Hiver ❄️</option>
+        
+        <option value="sakura">Thème : Sakura 🌸</option>
+        <option value="desert">Thème : Désert 🏜️</option>
+        <option value="ocean">Thème : Océan 🌊</option>
+        <option value="forest">Thème : Forêt 🌲</option>
+        
+        <option value="vaporwave">Thème : Vaporwave 🌴</option>
+        <option value="cyberpunk">Thème : Cyberpunk ⚡</option>
+        <option value="neon">Thème : Néon 🌈</option>
+        <option value="midnight">Thème : Midnight 🌑</option>
+        
+        <option value="galaxy">Thème : Galaxy 🌌</option>
+        <option value="gothic">Thème : Gothic 🧛</option>
+        <option value="coffee">Thème : Coffee ☕</option>
+        
+        <option value="lava">Thème : Lava 🔥</option>
+        <option value="ice">Thème : Ice 🧊</option>
+        <option value="matrix">Thème : Matrix 🌫</option>
+        <option value="sunset">Thème : Sunset 🌇</option>
+        <option value="retro">Thème : Retro 🎮</option>
+        <option value="tropical">Thème : Tropical 🏖️</option>
+        <option value="crimson">Thème : Crimson 🩸</option>
+        <option value="steam">Thème : Steam ⚙️</option>
+      </select></div>
+    </div>
+  </header>
 </body>
 </html>
