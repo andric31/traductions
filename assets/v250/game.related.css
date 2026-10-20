@@ -1,0 +1,382 @@
+.similarGamesBlock{
+  margin-top: 14px;
+}
+
+.similarHead{
+  display:flex;
+  flex-direction:row;
+  align-items:baseline;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:12px;
+}
+
+.similarHead h3{
+  margin:0;
+}
+
+.similarSub{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.similarGrid{
+  display:grid;
+  grid-template-columns:repeat(5, minmax(0, 1fr));
+  gap:12px;
+  padding:2px 2px 4px;
+  overflow:visible;
+}
+
+
+
+
+
+.similarCard{
+  min-width:0;
+  min-height:100%;
+  text-decoration:none;
+  color:inherit;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 6px 16px rgba(0,0,0,0.28);
+  display:grid;
+  grid-template-rows:140px auto
+}
+
+.similarCard:hover{
+  border-color: var(--card-hover-border, rgba(255,255,255,0.22));
+  box-shadow:
+    0 0 0 1px var(--card-hover-glow, rgba(255,255,255,0.18)),
+    0 0 22px -6px var(--card-hover-glow, rgba(255,255,255,0.18)),
+    0 14px 38px rgba(0,0,0,0.45);
+  transform: translateY(-3px);
+}
+
+.similarThumb{
+  width:100%;
+  height:140px;
+  object-fit:cover;
+  display:block;
+  background:var(--thumb-bg, #0f121a);
+}
+
+.similarThumb.is-fallback{
+  object-fit:contain;
+  background: var(--thumb-fallback-bg, #0f121a);
+}
+
+.similarBody{
+  padding:12px;
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+  height:100%;
+}
+
+.similarTitle{
+  margin:0 0 6px 0;
+}
+
+.similarBadges{
+  margin:6px 0 10px 0;
+}
+
+.similarGrid .badge{
+  display:inline-flex;
+  align-items:center;
+  padding:4px 8px;
+  font-size:12px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  white-space:nowrap;
+  color:var(--fg);
+  line-height:1;
+}
+
+/* Couleurs alignées sur le viewer principal */
+.similarGrid .badge.cat-vn{ background:#D32F2F; }
+.similarGrid .badge.cat-collection{ background:#616161; }
+
+.similarGrid .badge.eng-ren-py{ background:#B069E8; }
+.similarGrid .badge.eng-rpgm{ background:#2196F3; color:#000; }
+.similarGrid .badge.eng-unity{ background:#FE5901; color:#000; }
+.similarGrid .badge.eng-godot{ background:#03A9F4; color:#fff; }
+.similarGrid .badge.eng-others{ background:#8BC34A; color:#000; }
+.similarGrid .badge.eng-wolf-rpg{ background:#4CAF50; color:#000; }
+.similarGrid .badge.eng-unreal-engine{ background:#0D47A1; color:#fff; }
+.similarGrid .badge.eng-html{ background:#689F38; color:#000; }
+.similarGrid .badge.eng-java{ background:#52A6B0; color:#000; }
+.similarGrid .badge.eng-flash{ background:#616161; color:#fff; }
+.similarGrid .badge.eng-qsp{ background:#D32F2F; color:#fff; }
+.similarGrid .badge.eng-webgl{ background:#FE5901; color:#000; }
+.similarGrid .badge.eng-rags{ background:#FF9800; color:#000; }
+.similarGrid .badge.eng-tads{ background:#2196F3; color:#000; }
+.similarGrid .badge.eng-adrift{ background:#2196F3; color:#000; }
+
+.similarGrid .badge.status-completed{ background:#2196F3; color:#000; }
+.similarGrid .badge.status-abandoned{ background:#FF9800; color:#000; }
+.similarGrid .badge.status-onhold{ background:#03A9F4; color:#000; }
+.similarGrid .badge.status-en-cours{ background:#607D8B; color:#fff; }
+
+.similarGrid .card-meta{
+  margin-top:auto;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  padding-top:2px;
+}
+
+.similarGrid .card-stats{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px 10px;
+  padding-top:0;
+  color:var(--muted);
+  font-size:10px;
+}
+
+.similarGrid .card-stat{
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  font-weight:600;
+  line-height:1.2;
+}
+
+.similarGrid .stat-icon{
+  width:13px;
+  height:13px;
+  display:inline-block;
+  flex:0 0 13px;
+  background-color:currentColor;
+  opacity:.8;
+  vertical-align:middle;
+  -webkit-mask-repeat:no-repeat;
+  -webkit-mask-position:center;
+  -webkit-mask-size:contain;
+  mask-repeat:no-repeat;
+  mask-position:center;
+  mask-size:contain;
+}
+
+.similarGrid .stat-icon-time{
+  -webkit-mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm1 10.59 3.3 3.3-1.42 1.42L11 13V7h2Z'/></svg>");
+  mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm1 10.59 3.3 3.3-1.42 1.42L11 13V7h2Z'/></svg>");
+}
+
+.similarGrid .stat-icon-views{
+  -webkit-mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7Zm0 11a4 4 0 1 1 4-4 4 4 0 0 1-4 4Zm0-6a2 2 0 1 0 2 2 2 2 0 0 0-2-2Z'/></svg>");
+  mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7Zm0 11a4 4 0 1 1 4-4 4 4 0 0 1-4 4Zm0-6a2 2 0 1 0 2 2 2 2 0 0 0-2-2Z'/></svg>");
+}
+
+.similarGrid .stat-icon-downloads{
+  -webkit-mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='M5 20h14v-2H5m14-9h-4V3H9v6H5l7 7 7-7Z'/></svg>");
+  mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='M5 20h14v-2H5m14-9h-4V3H9v6H5l7 7 7-7Z'/></svg>");
+}
+
+.similarGrid .stat-icon-likes{
+  -webkit-mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='m12 21-1.45-1.32C5.4 15.36 2 12.28 2 8.5A4.5 4.5 0 0 1 6.5 4 5 5 0 0 1 12 7.09 5 5 0 0 1 17.5 4 4.5 4.5 0 0 1 22 8.5c0 3.78-3.4 6.86-8.55 11.18Z'/></svg>");
+  mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='m12 21-1.45-1.32C5.4 15.36 2 12.28 2 8.5A4.5 4.5 0 0 1 6.5 4 5 5 0 0 1 12 7.09 5 5 0 0 1 17.5 4 4.5 4.5 0 0 1 22 8.5c0 3.78-3.4 6.86-8.55 11.18Z'/></svg>");
+}
+
+.similarGrid .stat-icon-rating{
+  -webkit-mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='m12 17.27 6.18 3.73-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21Z'/></svg>");
+  mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='m12 17.27 6.18 3.73-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21Z'/></svg>");
+}
+
+/* Mode non connecté : la note est masquée, on espace un peu mieux les icônes restantes. */
+.similarGrid.no-rating .card-stats{
+  gap:6px 14px;
+}
+
+.similarGrid.no-rating .card-stat{
+  gap:4px;
+}
+
+
+
+.similarMoreCard{
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  min-height:100%;
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(90,140,255,.18), transparent 55%),
+    radial-gradient(120% 120% at 100% 100%, rgba(190,90,255,.16), transparent 55%),
+    var(--card);
+}
+
+.similarMoreInner{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  height:100%;
+  gap:10px;
+  padding:18px 14px;
+}
+
+.similarMoreIcon{
+  font-size:34px;
+  line-height:1;
+}
+
+.similarMoreTitle{
+  margin:0;
+  font-size:18px;
+  font-weight:900;
+}
+
+.similarMoreText{
+  margin:0;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.45;
+}
+@media (max-width: 1200px){
+  .similarGrid{
+    grid-template-columns:repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px){
+  .similarGrid{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px){
+  .similarGrid{
+    grid-template-columns:1fr;
+  }
+  .similarCard{
+    grid-template-rows:150px auto;
+  }
+  .similarThumb{
+    height:150px;
+  }
+}
+
+html[data-theme="white"] .similarCard,
+html[data-theme="clair"] .similarCard,
+html[data-theme="light"] .similarCard,
+:root[data-theme="white"] .similarCard,
+:root[data-theme="clair"] .similarCard,
+:root[data-theme="light"] .similarCard{
+  background:#ffffff;
+}
+
+
+@media (min-width: 901px){
+  .similarGrid .card-stats{ font-size:11px; }
+}
+
+
+.sameAuthorBlock{
+  margin-top: 14px;
+}
+
+.sameAuthorGrid{
+  grid-template-columns:repeat(5, minmax(0, 1fr));
+}
+
+@media (max-width: 1200px){
+  .sameAuthorGrid{ grid-template-columns:repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 760px){
+  .sameAuthorGrid{ grid-template-columns:repeat(2, minmax(0, 1fr)); }
+}
+
+
+.similarGhostCard{
+  pointer-events:none;
+  user-select:none;
+  background:color-mix(in srgb, var(--card) 72%, transparent);
+  border-style:dashed;
+  border-color:rgba(255,255,255,0.08);
+  box-shadow:none;
+}
+
+.similarGhostCard:hover{
+  transform:none;
+  box-shadow:none;
+  border-color:rgba(255,255,255,0.08);
+}
+
+.similarGhostThumb{
+  background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+}
+
+.similarGhostLine,
+.similarGhostPill{
+  display:block;
+  background:rgba(255,255,255,0.06);
+}
+
+.similarGhostLineTitle{
+  width:78%;
+  height:16px;
+  border-radius:999px;
+  margin:2px 0 10px;
+}
+
+.similarGhostBadges{
+  display:flex;
+  gap:6px;
+  margin:4px 0 10px;
+}
+
+.similarGhostPill{
+  width:64px;
+  height:22px;
+  border-radius:999px;
+}
+
+.similarGhostPillShort{
+  width:42px;
+}
+
+.similarGhostCard .card-stats{
+  opacity:.45;
+}
+
+@media (max-width: 1200px){
+  .similarGhostCard{
+    display:none;
+  }
+}
+
+
+.similarGrid.is-loading{
+  opacity:0;
+}
+
+.similarGrid.is-ready{
+  opacity:1;
+  transition:opacity .18s ease;
+}
+
+.similarGrid.is-loading .similarThumb,
+.similarGrid:not(.is-ready) .similarThumb{
+  visibility:hidden;
+}
+
+
+/* Notes des cartes liées :
+   - masquées par défaut pour les visiteurs non connectés ;
+   - affichées uniquement quand game.js confirme un compte connecté. */
+html:not(.game-rating-visible) .similarGrid .card-stat-rating{
+  display:none !important;
+}
+
+html:not(.game-rating-visible) .similarGrid .card-stats{
+  gap:6px 14px;
+}
+
+html:not(.game-rating-visible) .similarGrid .card-stat{
+  gap:4px;
+}
