@@ -65,12 +65,45 @@
     }
 
     .card.simple { gap: 0; }
+    /* Le compteur occupe la place libre à droite de l'avatar. */
+    body > .card[data-translator],
+    html.v250-ui body > .card[data-translator] {
+      display: grid;
+      grid-template-columns: 64px minmax(0, 1fr);
+      grid-template-rows: 64px auto;
+      align-content: start;
+    }
+    .card[data-translator] > .avatar { grid-area: 1 / 1; }
+    .card[data-translator] > .card-content { grid-area: 2 / 1 / 3 / -1; }
+    .translation-count {
+      grid-area: 1 / 2;
+      justify-self: end;
+      align-self: center;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      max-width: 100%;
+      text-align: right;
+      color: var(--fg, #e6edf3);
+    }
+    .translation-count[hidden] { display: none; }
+    .translation-count strong {
+      font-size: 26px;
+      font-weight: 750;
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+    }
+    .translation-count span {
+      font-size: 12px;
+      line-height: 1.35;
+      color: var(--muted, #a4afbb);
+    }
   </style>
 
   <!-- Conserver les cartes, classes et liens d'origine : lus par l'extension. -->
   <link rel="stylesheet" href="/assets/v250/viewer.css?v=20261020-1" media="not all" data-v250-style>
   <link rel="stylesheet" href="/assets/v250/themes.css?v=20261020-1" media="not all" data-v250-style>
-  <link rel="stylesheet" href="/assets/v250/appearance.css?v=20261020-1" media="not all" data-v250-style>
+  <link rel="stylesheet" href="/assets/v250/appearance.css?v=20261020-2" media="not all" data-v250-style>
   <script src="/assets/v250/appearance-init.js?v=20261020-1"></script>
   <script src="/assets/v250/appearance.js?v=20261020-1" defer></script>
   <style>
@@ -214,48 +247,54 @@ Traductions de jeux VN
   </div>
 </div>
 
-<div class="card">
+<div class="card" data-translator="andric31">
   <img class="avatar" src="/andric31/avatar.png" alt="andric31">
+  <div class="translation-count" hidden aria-live="polite" aria-atomic="true"><strong>…</strong><span>traductions</span></div>
   <div class="card-content">
     <a href="https://andric31-traductions.pages.dev/" target="_blank">andric31</a>
     <small>Traducteur · Traductions automatiques de jeux Ren'Py, RPGM, Unity, Godot, Unreal Engine, Wolf RPG et Autres ... Développeur ...</small>
   </div>
 </div>
 
-<div class="card">
+<div class="card" data-translator="ant28jsp">
   <img class="avatar" src="/ant28jsp/avatar.png" alt="Ant28jsp">
+  <div class="translation-count" hidden aria-live="polite" aria-atomic="true"><strong>…</strong><span>traductions</span></div>
   <div class="card-content">
     <a href="/ant28jsp/" target="_blank">Ant28jsp</a>
     <small>Traducteur · Traductions automatiques de jeux Ren'Py, RPG Maker MV (RPGM)</small>
   </div>
 </div>
 
-<div class="card">
+<div class="card" data-translator="ikaros">
   <img class="avatar" src="/ikaros/avatar.png" alt="Ikaros">
+  <div class="translation-count" hidden aria-live="polite" aria-atomic="true"><strong>…</strong><span>traductions</span></div>
   <div class="card-content">
     <a href="/ikaros/" target="_blank">Ikaros</a>
     <small>Traducteur · Traductions manuelles et automatiques de jeux Unity, Ren'py</small>
   </div>
 </div>
 
-<div class="card">
+<div class="card" data-translator="viii">
   <img class="avatar" src="/viii/avatar.png" alt="Ikaros">
+  <div class="translation-count" hidden aria-live="polite" aria-atomic="true"><strong>…</strong><span>traductions</span></div>
   <div class="card-content">
     <a href="/viii/" target="_blank">VIII</a>
     <small>Traducteur · Traductions automatiques avec relecture de jeux Ren'py</small>
   </div>
 </div>
 
-<div class="card">
+<div class="card" data-translator="renleefax">
   <img class="avatar" src="/renleefax/avatar.png" alt="Ikaros">
+  <div class="translation-count" hidden aria-live="polite" aria-atomic="true"><strong>…</strong><span>traductions</span></div>
   <div class="card-content">
     <a href="/renleefax/" target="_blank">RenLeefax</a>
     <small>Traducteur · Traductions automatiques de jeux Ren'Py, Unity et autres</small>
   </div>
 </div>
 
-<div class="card">
+<div class="card" data-translator="vofr">
   <img class="avatar" src="/vofr/avatar.png" alt="Ikaros">
+  <div class="translation-count" hidden aria-live="polite" aria-atomic="true"><strong>…</strong><span>traductions</span></div>
   <div class="card-content">
     <a href="/vofr/" target="_blank">VO Française - Intégrée</a>
     <small>Des jeux avec traduction française intégrée, prêts à être lancés.</small>
@@ -270,6 +309,67 @@ document.querySelectorAll(".avatar").forEach(img => {
     img.src = "/default-avatar.png";
   };
 });
+</script>
+
+<script>
+/* Même source que les viewers et la liste globale, sans modifier leurs filtres. */
+(async function loadTranslationCounts() {
+  const cards = [...document.querySelectorAll('body > .card[data-translator]')];
+  const formatter = new Intl.NumberFormat('fr-FR');
+
+  async function fetchJson(url) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12000);
+    try {
+      const response = await fetch(url, { cache: 'no-store', signal: controller.signal });
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      return await response.json();
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  function unavailable(card) {
+    const counter = card.querySelector('.translation-count');
+    counter.querySelector('strong').textContent = '—';
+    counter.querySelector('span').textContent = 'Total indisponible';
+    counter.title = 'Le nombre de traductions ne peut pas être chargé pour le moment.';
+  }
+
+  cards.forEach(card => {
+    const counter = card.querySelector('.translation-count');
+    counter.hidden = false;
+    counter.title = 'Chargement du nombre de traductions…';
+  });
+
+  let translators;
+  try {
+    const manifest = await fetchJson('/traducteurs_manifest.json');
+    translators = Array.isArray(manifest) ? manifest : manifest && manifest.traducteurs;
+    if (!Array.isArray(translators)) throw new Error('Manifeste invalide');
+  } catch {
+    cards.forEach(unavailable);
+    return;
+  }
+
+  await Promise.all(cards.map(async card => {
+    try {
+      const translator = translators.find(item => item && (item.key || item.slug) === card.dataset.translator);
+      if (!translator || !translator.listUrl) throw new Error('Liste absente');
+      const games = await fetchJson(translator.listUrl);
+      // Les viewers comptent les entrées du tableau, collections comprises,
+      // avant application de la recherche et des filtres personnels.
+      if (!Array.isArray(games)) throw new Error('Liste invalide');
+      const total = games.length;
+      const counter = card.querySelector('.translation-count');
+      counter.querySelector('strong').textContent = formatter.format(total);
+      counter.querySelector('span').textContent = total > 1 ? 'traductions' : 'traduction';
+      counter.title = formatter.format(total) + (total > 1 ? ' traductions disponibles' : ' traduction disponible');
+    } catch {
+      unavailable(card);
+    }
+  }));
+})();
 </script>
 
   <header class="topbar home-topbar">
