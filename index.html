@@ -1,142 +1,119 @@
-﻿<!DOCTYPE html>
-<html lang="fr">
+<!DOCTYPE html>
+<html lang="fr" data-v250-page="home">
 <head>
   <meta charset="UTF-8">
   <title>Traductions FR</title>
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="/favicon.png">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      background: #0e1117;
-      color: #e6edf3;
-      margin: 0;
-      padding: 40px;
-    }
-    h1 { margin-bottom: 10px; }
-    .subtitle { opacity: 0.8; margin-bottom: 30px; }
-
-    /* ===== Cards ===== */
-    .card {
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 10px;
-      padding: 14px;
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .avatar {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      object-fit: cover;
-      flex-shrink: 0;
-      border: 1px solid #30363d;
-      background: #0e1117;
-    }
-
-    .card-content {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-
-    .card a {
-      color: #58a6ff;
-      font-size: 18px;
-      text-decoration: none;
-      font-weight: 600;
-      line-height: 1.2;
-      word-break: break-word;
-    }
-    .card a:hover { text-decoration: underline; }
-
-    .card small {
-      opacity: 0.8;
-      margin-top: 6px;
-      line-height: 1.35;
-      word-break: break-word;
-    }
-
-    .card.simple { gap: 0; }
-  </style>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <!-- Habillage v250 inactif sur les fiches ?id= / ?uid=. -->
+  <link rel="stylesheet" href="/assets/v250/viewer.css?v=20261020-1" media="not all" data-v250-style>
+  <link rel="stylesheet" href="/assets/v250/themes.css?v=20261020-1" media="not all" data-v250-style>
+  <link rel="stylesheet" href="/assets/v250/appearance.css?v=20261020-1" media="not all" data-v250-style>
+  <script src="/assets/v250/appearance-init.js?v=20261020-1"></script>
+  <script src="/assets/v250/appearance.js?v=20261020-1" defer></script>
 </head>
 <body>
+  <header class="topbar home-topbar">
+    <div class="top-title-row top-title-flex">
+      <a class="home-brand" href="/"><img src="/favicon.png" alt="" width="28" height="28">Traductions FR</a>
+      <div class="top-title-tools home-theme"><select id="theme" title="Thème">
+        <option value="auto">Thème : Auto (Windows)</option>
+        <option value="dark">Thème : Sombre</option>
+        <option value="white">Thème : Clair</option>
 
-<h1>🌍 Projet de Traduction FR</h1>
-<div class="subtitle">
-Traductions de jeux VN
-</div>
-
-<div class="card simple">
-  <div class="card-content">
-    <a href="/liste/" target="_blank">🌐 Liste globale des traductions</a>
-  </div>
-</div>
-
-<div class="card">
-  <img class="avatar" src="/andric31/avatar.png" alt="andric31">
-  <div class="card-content">
-    <a href="https://andric31-traductions.pages.dev/" target="_blank">andric31</a>
+        <option value="valentine">Thème : Saint-Valentin 💘</option>
+        <option value="carnaval">Thème : Carnaval 🎭</option>
+        <option value="paques">Thème : Pâques 🐣</option>
+        <option value="halloween">Thème : Halloween 🎃</option>
+        <option value="noel">Thème : Noël 🎄</option>
+        <option value="nouvelan">Thème : Nouvel An 🎆</option>
+        
+        <option value="printemps">Thème : Printemps 🌸</option>
+        <option value="ete">Thème : Été 🌞</option>
+        <option value="automne">Thème : Automne 🍂</option>
+        <option value="hiver">Thème : Hiver ❄️</option>
+        
+        <option value="sakura">Thème : Sakura 🌸</option>
+        <option value="desert">Thème : Désert 🏜️</option>
+        <option value="ocean">Thème : Océan 🌊</option>
+        <option value="forest">Thème : Forêt 🌲</option>
+        
+        <option value="vaporwave">Thème : Vaporwave 🌴</option>
+        <option value="cyberpunk">Thème : Cyberpunk ⚡</option>
+        <option value="neon">Thème : Néon 🌈</option>
+        <option value="midnight">Thème : Midnight 🌑</option>
+        
+        <option value="galaxy">Thème : Galaxy 🌌</option>
+        <option value="gothic">Thème : Gothic 🧛</option>
+        <option value="coffee">Thème : Coffee ☕</option>
+        
+        <option value="lava">Thème : Lava 🔥</option>
+        <option value="ice">Thème : Ice 🧊</option>
+        <option value="matrix">Thème : Matrix 🌫</option>
+        <option value="sunset">Thème : Sunset 🌇</option>
+        <option value="retro">Thème : Retro 🎮</option>
+        <option value="tropical">Thème : Tropical 🏖️</option>
+        <option value="crimson">Thème : Crimson 🩸</option>
+        <option value="steam">Thème : Steam ⚙️</option>
+      </select></div>
+    </div>
+  </header>
+  <main class="home-main">
+    <section class="home-intro" aria-labelledby="home-title">
+      <div>
+        <h1 id="home-title"><svg class="home-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18M5 6.5h14M5 17.5h14"/></svg><span>Projet de Traduction FR</span></h1>
+        <p>Traductions de jeux VN</p>
+      </div>
+      <a class="home-catalogue-link" href="/liste/" target="_blank" rel="noopener noreferrer"><svg class="home-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18M5 6.5h14M5 17.5h14"/></svg>Liste globale des traductions <span aria-hidden="true">↗</span></a>
+    </section>
+    <section aria-labelledby="translators-title">
+      <h2 class="home-section-title" id="translators-title">Les traducteurs <span class="home-section-count">6</span></h2>
+      <div class="translator-grid">
+<article class="translator-card" data-tr="andric31">
+  <img class="translator-avatar" width="64" height="64" src="/andric31/avatar.png" alt="andric31">
+  <div class="translator-content">
+    <a href="https://andric31-traductions.pages.dev/" target="_blank" rel="noopener noreferrer">andric31</a>
     <small>Traducteur · Traductions automatiques de jeux Ren'Py, RPG Maker MV (RPGM), Unity .json .xml .csv .txt, Godot, TyranoBuilder (TyranoScript), KiriKiri / KAG (KiriKiri Adventure Game), Visual Novel Maker (VNM), Electron, NW.js (Node-Webkit) ... Développeur ...</small>
   </div>
-</div>
-
-<div class="card">
-  <img class="avatar" src="/ant28jsp/avatar.png" alt="Ant28jsp">
-  <div class="card-content">
-    <a href="/ant28jsp/" target="_blank">Ant28jsp</a>
+</article>
+<article class="translator-card" data-tr="ant28jsp">
+  <img class="translator-avatar" width="64" height="64" src="/ant28jsp/avatar.png" alt="Ant28jsp">
+  <div class="translator-content">
+    <a href="/ant28jsp/" target="_blank" rel="noopener noreferrer">Ant28jsp</a>
     <small>Traducteur · Traductions automatiques de jeux Ren'Py, RPG Maker MV (RPGM)</small>
   </div>
-</div>
-
-<div class="card">
-  <img class="avatar" src="/ikaros/avatar.png" alt="Ikaros">
-  <div class="card-content">
-    <a href="/ikaros/" target="_blank">Ikaros</a>
+</article>
+<article class="translator-card" data-tr="ikaros">
+  <img class="translator-avatar" width="64" height="64" src="/ikaros/avatar.png" alt="Ikaros">
+  <div class="translator-content">
+    <a href="/ikaros/" target="_blank" rel="noopener noreferrer">Ikaros</a>
     <small>Traducteur · Traductions manuelles et automatiques de jeux Unity, Ren'py</small>
   </div>
-</div>
-
-<div class="card">
-  <img class="avatar" src="/viii/avatar.png" alt="Ikaros">
-  <div class="card-content">
-    <a href="/viii/" target="_blank">VIII</a>
+</article>
+<article class="translator-card" data-tr="viii">
+  <img class="translator-avatar" width="64" height="64" src="/viii/avatar.png" alt="VIII">
+  <div class="translator-content">
+    <a href="/viii/" target="_blank" rel="noopener noreferrer">VIII</a>
     <small>Traducteur · Traductions automatiques avec relecture de jeux Ren'py</small>
   </div>
-</div>
-
-<div class="card">
-  <img class="avatar" src="/renleefax/avatar.png" alt="Ikaros">
-  <div class="card-content">
-    <a href="/renleefax/" target="_blank">RenLeefax</a>
+</article>
+<article class="translator-card" data-tr="renleefax">
+  <img class="translator-avatar" width="64" height="64" src="/renleefax/avatar.png" alt="RenLeefax">
+  <div class="translator-content">
+    <a href="/renleefax/" target="_blank" rel="noopener noreferrer">RenLeefax</a>
     <small>Traducteur · Traductions automatiques de jeux Ren'Py, Unity et autres</small>
   </div>
-</div>
-
-<div class="card">
-  <img class="avatar" src="/vofr/avatar.png" alt="Ikaros">
-  <div class="card-content">
-    <a href="/vofr/" target="_blank">VO Française - Intégrée</a>
+</article>
+<article class="translator-card" data-tr="vofr">
+  <img class="translator-avatar" width="64" height="64" src="/vofr/avatar.png" alt="VO Française - Intégrée">
+  <div class="translator-content">
+    <a href="/vofr/" target="_blank" rel="noopener noreferrer">VO Française - Intégrée</a>
     <small>Des jeux avec traduction française intégrée, prêts à être lancés.</small>
   </div>
-</div>
-
-<script>
-/* fallback avatar automatique */
-document.querySelectorAll(".avatar").forEach(img => {
-  img.onerror = () => {
-    img.onerror = null; // évite boucle infinie
-    img.src = "/default-avatar.png";
-  };
-});
-</script>
-
+</article>
+      </div>
+    </section>
+    <footer class="home-footer">Projet de Traduction FR</footer>
+  </main>
 </body>
 </html>
