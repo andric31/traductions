@@ -1,5 +1,7 @@
 (() => {
   const BASE = "https://andric31-traductions.pages.dev";
+  const hasGameQuicklinks = () => document.body.classList.contains('mode-game') &&
+    document.documentElement.dataset.gameQuicklinks === 'viewer';
   const LINKS = [
     ["quickWikiBtn", "/wiki/", "Wiki", `<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>`],
     ["quickLaboBtn", "/labo/", "Labo", `<path d="M9 3h6"/><path d="M10 3v5.25L5.35 17.1A2.6 2.6 0 0 0 7.65 21h8.7a2.6 2.6 0 0 0 2.3-3.9L14 8.25V3"/><path d="M8.35 15h7.3"/><path d="M10 18h4"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/>`],
@@ -7,6 +9,7 @@
     ["quickTicketBtn", "/ticket/", "Ticket", `<path d="M5 6.5h14a1.5 1.5 0 0 1 1.5 1.5v2a2 2 0 0 0 0 4v2a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 16v-2a2 2 0 0 0 0-4V8A1.5 1.5 0 0 1 5 6.5Z"/><path d="M9 10h6"/><path d="M9 14h6"/>`],
     ["quickMessagesBtn", "/messages/", "Messages", `<path d="M6.25 6.25h11.5A2.25 2.25 0 0 1 20 8.5v6a2.25 2.25 0 0 1-2.25 2.25H11l-4.75 3v-3H6.25A2.25 2.25 0 0 1 4 14.5v-6a2.25 2.25 0 0 1 2.25-2.25Z"/><path d="M8 10.5h8"/><path d="M8 13.5h5.5"/>`],
   ];
+
 
   function svg(paths){
     return `<span class="header-icon-svg" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">${paths}</svg></span>`;
@@ -45,7 +48,9 @@
 
   function addLinks(){
     removeBlockedLinks();
-    const anchor = document.getElementById('hamburgerBtnViewer') || document.getElementById('hamburgerBtn') || document.querySelector('.hamburger-btn');
+    const anchor = hasGameQuicklinks()
+      ? document.getElementById('hamburgerBtn')
+      : document.getElementById('hamburgerBtnViewer') || document.getElementById('hamburgerBtn') || document.querySelector('.hamburger-btn');
     if(!anchor) return;
 
     let after = anchor;
@@ -55,8 +60,8 @@
       let el = document.getElementById(id);
       if(!exists){
         el = makeLink(id, path, label, paths);
-        after.insertAdjacentElement('afterend', el);
       }
+      if(after.nextElementSibling !== el) after.insertAdjacentElement('afterend', el);
       after = el;
     }
     removeBlockedLinks();
