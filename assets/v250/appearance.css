@@ -6,10 +6,7 @@ html.v250-ui { height:auto; min-height:100%; }
 .v250-ui .top-actions { padding-bottom:10px; }
 .v250-ui .top-actions #search { min-width:220px; }
 .v250-ui .search-wrap { min-width:300px; }
-.v250-ui .topbar a:focus-visible,
-.v250-ui select:focus-visible,
-.v250-ui input:focus-visible,
-.v250-ui button:focus-visible { outline:2px solid var(--primary); outline-offset:3px; }
+/* Commandes du bandeau : focus natif du navigateur, comme sur v250. */
 .v250-ui #page-viewer main { padding-top:calc(var(--topbar-h) + 12px); }
 .v250-ui .top-title-tools select { max-width:240px; }
 .v250-ui #grid .card { min-width:0; }
