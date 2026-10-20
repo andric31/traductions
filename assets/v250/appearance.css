@@ -34,10 +34,20 @@ html.v250-ui { height:auto; min-height:100%; }
   border-color:var(--translator-color, var(--primary));
   box-shadow:0 8px 24px color-mix(in srgb, var(--translator-color, var(--primary)) 20%, transparent);
 }
-.v250-ui #grid .card:is([data-tr="vofr"], [data-tr="vostfr"], [data-tr="vo-fr"], [data-tr="vo_fr"]),
 .v250-ui .translator-card[data-tr="vofr"] {
   border:1px solid transparent !important;
   background:linear-gradient(var(--card), var(--card)) padding-box,
+    linear-gradient(90deg,#000091 0%,#000091 33.33%,#fff 33.33%,#fff 66.66%,#e1000f 66.66%) border-box;
+}
+/* Fond tricolore discret de l'archive d'origine, posé sur le thème actif. */
+.v250-ui #grid .card:is([data-tr="vofr"], [data-tr="vostfr"], [data-tr="vo-fr"], [data-tr="vo_fr"]) {
+  border:1px solid transparent !important;
+  background:
+    linear-gradient(90deg,
+      rgba(0,0,145,.18) 0%, rgba(0,0,145,.18) 32%,
+      rgba(255,255,255,.045) 32%, rgba(255,255,255,.045) 68%,
+      rgba(225,0,15,.16) 68%, rgba(225,0,15,.16) 100%) padding-box,
+    linear-gradient(var(--card), var(--card)) padding-box,
     linear-gradient(90deg,#000091 0%,#000091 33.33%,#fff 33.33%,#fff 66.66%,#e1000f 66.66%) border-box;
 }
 
