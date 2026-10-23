@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'gallery-v6';
+const CACHE_VERSION = 'gallery-v7-signed';
 
 export async function onRequest(context) {
   const { request } = context;
@@ -21,14 +21,14 @@ export async function onRequest(context) {
     try { u = new URL(f95Url); } catch {
       return json({ ok: false, error: 'url invalide' }, 400, headers);
     }
-    if (!String(u.hostname || '').toLowerCase().endsWith('f95zone.to')) {
+    if (!/^https?:$/.test(u.protocol) || !/^(?:www\.)?f95zone\.to$/i.test(u.hostname)) {
       return json({ ok: false, error: 'host non autorisé' }, 400, headers);
     }
 
     const cache = caches.default;
     const cacheKey = new Request(`https://cache.local/${CACHE_VERSION}/f95gallery?u=` + encodeURIComponent(f95Url), request);
     const cached = await cache.match(cacheKey);
-    if (cached) return new Response(await cached.text(), { headers });
+    if (cached && url.searchParams.get("refresh") !== "1") return new Response(await cached.text(), { headers });
 
     const resp = await fetch(f95Url, {
       headers: {
@@ -55,12 +55,17 @@ export async function onRequest(context) {
     };
 
     const body = JSON.stringify(payload);
-    await cache.put(
+    const expirations = payload.gallery.map(value => {
+      try { const e = Number(new URL(value).searchParams.get('e')); return e > 0 ? e : Infinity; }
+      catch { return Infinity; }
+    });
+    const ttl = Math.max(0, Math.min(1800, Math.floor(Math.min(...expirations) - Date.now() / 1000 - 30)));
+    if (payload.gallery.length && ttl > 0) await cache.put(
       cacheKey,
       new Response(body, {
         headers: {
           'content-type': 'application/json; charset=utf-8',
-          'cache-control': 'public, max-age=1800',
+          'cache-control': `public, max-age=${ttl}`,
         },
       })
     );
