@@ -12,6 +12,7 @@
   };
 
   const THUMB_FALLBACK_URL = "/assets/f95/image-unavailable.svg";
+  const THUMB_LOADING_URL = "/assets/f95/image-loading.svg";
 
   function isF95ImageUrl(url) {
     try { return /^(?:attachments|preview|www)\.f95zone\.to$|^f95zone\.to$/i.test(new URL(url, location.origin).hostname); }
@@ -42,7 +43,7 @@
     const out = [], positions = new Map();
     for (const raw of urls || []) {
       const url = String(raw || "").trim();
-      if (!url || isGalleryAvatarUrl(url) || url === THUMB_FALLBACK_URL) continue;
+      if (!url || isGalleryAvatarUrl(url) || (url === THUMB_FALLBACK_URL || url === THUMB_LOADING_URL)) continue;
       const key = normalizeF95MediaKey(url);
       if (!positions.has(key)) { positions.set(key, out.length); out.push(url); continue; }
       const index = positions.get(key), previous = out[index];
@@ -166,9 +167,9 @@
   function recoverCardCover(context, failedSrc) {
     if (context.coverRecovery) return context.coverRecovery;
     const { card, img, rawEntry, originalSrc } = context;
-    HOVER_GALLERY.baseSrc.set(card, THUMB_FALLBACK_URL);
+    HOVER_GALLERY.baseSrc.set(card, THUMB_LOADING_URL);
     HOVER_GALLERY.baseFallback.set(card, true);
-    if (context.request?.isBase) applyThumbState(img, THUMB_FALLBACK_URL, true, true);
+    if (context.request?.isBase) applyThumbState(img, THUMB_LOADING_URL, true, true);
 
     context.coverRecovery = (async () => {
       const excluded = new Set([failedSrc]);
@@ -197,7 +198,7 @@
     const request = { src: requestedSrc, isBase };
     if (context) context.request = request;
     img.onerror = () => {
-      if (!context || context.request !== request || requestedSrc === THUMB_FALLBACK_URL) return;
+      if (!context || context.request !== request || (requestedSrc === THUMB_FALLBACK_URL || requestedSrc === THUMB_LOADING_URL)) return;
       const tried = new Set(attempted);
       tried.add(requestedSrc);
       // Un échec réel prime sur un ancien préchargement réussi.
@@ -235,7 +236,9 @@
       if (!isFallback && !usableImage(img, requestedSrc)) img.onerror();
     };
     img.referrerPolicy = "no-referrer";
-    img.title = isFallback ? "Image indisponible : aucun lien F95 accessible pour le moment." : "";
+    const isLoading = requestedSrc === THUMB_LOADING_URL;
+    img.title = isLoading ? "Chargement de l’image…" : isFallback ? "Image indisponible : aucun lien F95 accessible pour le moment." : "";
+    img.setAttribute("aria-busy", String(isLoading));
     img.classList.toggle("is-fallback", !!isFallback);
     if (img.getAttribute("src") !== requestedSrc) img.src = requestedSrc;
   }
@@ -332,14 +335,14 @@
 
     const supplied = String(fallbackUrl || "").trim() || img.getAttribute("src") || "";
     const baseSrc = supplied === "/favicon.png" ? "" : supplied;
-    const baseFallback = !baseSrc || baseSrc === THUMB_FALLBACK_URL;
+    const baseFallback = !baseSrc || baseSrc === THUMB_FALLBACK_URL || baseSrc === THUMB_LOADING_URL;
 
-    HOVER_GALLERY.baseSrc.set(card, THUMB_FALLBACK_URL);
+    HOVER_GALLERY.baseSrc.set(card, THUMB_LOADING_URL);
     HOVER_GALLERY.baseFallback.set(card, true);
     const context = { card, img, rawEntry, originalSrc: baseSrc, request: null, coverRecovery: null };
     HOVER_GALLERY.images.set(img, context);
     // La source distante n'est affichée qu'après validation, pour éviter les croix.
-    applyThumbState(img, THUMB_FALLBACK_URL, true, true);
+    applyThumbState(img, THUMB_LOADING_URL, true, true);
     const load = async () => {
       const resolved = baseFallback ? "" : await findWorkingF95Image([baseSrc]);
       if (resolved) {
