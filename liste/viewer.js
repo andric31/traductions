@@ -1259,7 +1259,7 @@
       const updateRibbon = updateKindRibbonHtml(g.__raw || g);
 
       card.innerHTML = `
-        <img src="${imgSrc}" class="thumb" alt=""
+        <img class="thumb" alt=""
              referrerpolicy="no-referrer"
              loading="lazy"
              >
