@@ -1,22 +1,44 @@
 <!DOCTYPE html>
-<html lang="fr" data-game-quicklinks="viewer" class="viewer-rating-hidden">
+<html lang="fr" data-v250-page="viewer" data-game-quicklinks="viewer" class="viewer-rating-hidden">
 <head>
   <meta charset="utf-8" />
   <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>f95list_viewer</title>
 
-  <!-- ✅ Thème instant (comme le viewer) : localStorage.viewerTheme -> <html data-theme="..."> -->
+  <!-- Thème et mode de la fiche fixés avant le premier affichage. -->
   <script>
   (function(){
-    try{
-      const t = (localStorage.getItem("viewerTheme") || "auto").trim() || "auto";
-      const root = document.documentElement; // <html>
-      root.removeAttribute("data-theme");
-      if (t !== "auto") root.setAttribute("data-theme", t);
-    }catch{}
+    const root = document.documentElement;
+    let theme = "auto";
+    try { theme = (localStorage.getItem("viewerTheme") || "auto").trim() || "auto"; } catch (_) {}
+    root.removeAttribute("data-theme");
+    if (theme !== "auto") root.setAttribute("data-theme", theme);
+    const params = new URLSearchParams(location.search);
+    if (!((params.get("id") || "").trim() || (params.get("uid") || "").trim())) return;
+    root.dataset.pageMode = "game";
+    root.classList.add("game-styles-loading");
+    // Couleurs initiales identiques aux thèmes, même avant le téléchargement des CSS.
+    const backgrounds = {"dark":"#0f1117","clair":"#f6f7fb","white":"#f6f7fb","noel":"#061611","halloween":"#08050c","valentine":"#160012","carnaval":"#0c0b14","printemps":"#f3fbf7","ete":"#fff8ef","automne":"#140e0a","hiver":"#071019","vaporwave":"#0b0620","cyberpunk":"#07060a","ocean":"#031018","forest":"#06120b","gothic":"#0a0a10","galaxy":"#040411","lava":"#120000","matrix":"#000000","ice":"#07141f","sunset":"#1a0d0d","retro":"#0d0d0d","tropical":"#001f1f","crimson":"#0e0000","steam":"#141414","sakura":"#fff5fb","desert":"#fff7ec","neon":"#05030a","midnight":"#050712","coffee":"#120c0a","paques":"#fff8f2","nouvelan":"#050510"};
+    const lightThemes = ["clair","white","printemps","ete","sakura","desert","paques"];
+    const light = theme === "auto" ? !matchMedia("(prefers-color-scheme: dark)").matches : lightThemes.includes(theme);
+    root.style.setProperty("--game-boot-bg", backgrounds[theme] || (light ? "#f6f7fb" : "#0f1117"));
+    root.style.setProperty("--game-boot-scheme", light ? "light" : "dark");
+    // Si le script d'initialisation est inaccessible, garder la fiche utilisable
+    // avec les styles historiques, qui restent actifs pendant le chargement.
+    window.__f95GameStyleFallback = setTimeout(() => {
+      window.__f95GameStyleFallbackUsed = true;
+      document.querySelectorAll("link[data-game-style]").forEach(link => { link.media = "not all"; });
+      root.classList.remove("game-styles-loading");
+    }, 8000);
   })();
   </script>
+  <style>
+    html[data-page-mode="game"]{background:var(--bg,var(--game-boot-bg));color-scheme:var(--game-boot-scheme)}
+    html.game-styles-loading body{visibility:hidden !important}
+    html[data-page-mode="game"] body #page-viewer{display:none !important}
+    html[data-page-mode="game"] body #page-game{display:block !important}
+  </style>
 
   <link id="dynamic-favicon" rel="icon" type="image/png" href="./avatar.png">
   <script>
@@ -54,17 +76,26 @@
     body:not(.mode-game) #page-game{ display:none !important; }
     body:not(.mode-game) #page-viewer{ display:block !important; }
   </style>
+  <!-- Habillage v250 inactif sur les fiches ?id= / ?uid=. -->
+  <link rel="stylesheet" href="/assets/v250/viewer.css?v=20261020-1" media="not all" data-v250-style>
+  <link rel="stylesheet" href="/assets/v250/themes.css?v=20261020-1" media="not all" data-v250-style>
+  <link rel="stylesheet" href="/assets/v250/appearance.css?v=20261020-2" media="not all" data-v250-style>
+  <script src="/assets/v250/appearance-init.js?v=20261020-1"></script>
+  <script src="/assets/v250/appearance.js?v=20261020-1" defer></script>
   <link rel="stylesheet" href="/assets/f95/engines.css?v=20261020-1">
   <script src="/assets/f95/engines.js?v=20261020-1" defer></script>
   <script src="/assets/f95/images.js?v=20261020-1" defer></script>
-  <!-- Ces styles ne s’activent que sur la fiche de jeu. -->
+  <!-- Ces styles ne s’activent que sur la fiche pilote. -->
   <link rel="stylesheet" href="/assets/v250/viewer.css?v=20261020-1" media="not all" data-game-style>
   <link rel="stylesheet" href="/assets/v250/themes.css?v=20261020-1" media="not all" data-game-style>
   <link rel="stylesheet" href="/assets/v250/game.css?v=20261020-icons-1" media="not all" data-game-style>
   <link rel="stylesheet" href="/assets/v250/game.related.css?v=20261020-game-1" media="not all" data-game-style>
-  <script src="/assets/v250/game-init.js?v=20261020-game-1"></script>
+  <script src="/assets/v250/game-init.js?v=20261023-game-load-1"></script>
 </head>
 <body>
+  <script>
+    if (document.documentElement.dataset.pageMode === "game") document.body.classList.add("mode-game");
+  </script>
 
   <!-- ✅ Popover unique pour le menu ☰ (doit être hors #page-viewer/#page-game)
        Sinon, en mode viewer, il reste dans un parent display:none et ne peut pas s'afficher. -->
@@ -285,7 +316,7 @@
     </main>
   </div>
 
-  <!-- Fiche de jeu : présentation du site principal, logique du traducteur conservée. -->
+  <!-- Fiche pilote Ant28jsp : présentation du site principal, logique du traducteur conservée. -->
   <div id="page-game" style="display:none;">
 <div class="wrap">
     <div class="gameTopLayout">
