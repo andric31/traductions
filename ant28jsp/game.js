@@ -270,16 +270,7 @@ function galleryUrlKey(raw) {
 }
 
 function dedupKeepOrder(list) {
-  const out = [];
-  const seen = new Set();
-  for (const raw of list || []) {
-    const u = String(raw || "").trim();
-    const k = galleryUrlKey(u);
-    if (!u || !k || globalThis.F95Images.isGalleryAvatarUrl(u) || seen.has(k)) continue;
-    seen.add(k);
-    out.push(u);
-  }
-  return out;
+  return globalThis.F95Images.preferFreshImages(list);
 }
 
 function getF95GalleryApiUrl(f95Url) {
@@ -414,7 +405,7 @@ async function loadF95Gallery(f95Url, fallbackUrl) {
   const baseUrl = globalThis.F95Images.getF95ThreadUrl({ url: f95Url }, fallback);
   if (!baseUrl || galleryState.loadedForUrl === baseUrl) return;
   galleryState.loadedForUrl = baseUrl;
-  const media = await globalThis.F95Images.fetchF95GalleryMedia({ url: baseUrl }, fallback);
+  const media = await globalThis.F95Images.fetchF95GalleryMedia({ url: baseUrl }, fallback, { refresh: true });
   if (galleryState.loadedForUrl !== baseUrl) return;
   const currentKey = galleryUrlKey(galleryState.urls[galleryState.index]);
   galleryState.urls = dedupKeepOrder([fallback, media.cover, ...media.gallery]);
