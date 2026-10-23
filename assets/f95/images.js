@@ -11,8 +11,9 @@
     images: new WeakMap(), // img -> current request / cover recovery
   };
 
-  const THUMB_FALLBACK_URL = "/assets/f95/image-unavailable.svg";
-  const THUMB_LOADING_URL = "/assets/f95/image-loading.svg";
+  // Visuels intégrés : aucune requête réseau, même si un fichier SVG manque au déploiement.
+  const THUMB_FALLBACK_URL = "data:image/svg+xml;charset=utf-8," + encodeURIComponent("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"480\" height=\"270\" viewBox=\"0 0 480 270\"><rect width=\"480\" height=\"270\" fill=\"#1c2030\"/><g fill=\"none\" stroke=\"#8993ac\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"212\" y=\"82\" width=\"56\" height=\"44\" rx=\"7\"/><circle cx=\"251\" cy=\"95\" r=\"4\"/><path d=\"m216 120 15-16 11 11 8-7 14 15\"/></g><text x=\"240\" y=\"165\" fill=\"#bbc3d6\" font-family=\"Arial,sans-serif\" font-size=\"19\" text-anchor=\"middle\">Image indisponible</text></svg>");
+  const THUMB_LOADING_URL = "data:image/svg+xml;charset=utf-8," + encodeURIComponent("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"480\" height=\"270\" viewBox=\"0 0 480 270\"><rect width=\"480\" height=\"270\" fill=\"#1c2030\"/><g fill=\"none\" stroke=\"#8993ac\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"212\" y=\"82\" width=\"56\" height=\"44\" rx=\"7\"/><circle cx=\"251\" cy=\"95\" r=\"4\"/><path d=\"m216 120 15-16 11 11 8-7 14 15\"/></g><text x=\"240\" y=\"165\" fill=\"#bbc3d6\" font-family=\"Arial,sans-serif\" font-size=\"18\" text-anchor=\"middle\">Chargement de l’image…</text></svg>");
 
   function isF95ImageUrl(url) {
     try { return /^(?:attachments|preview|www)\.f95zone\.to$|^f95zone\.to$/i.test(new URL(url, location.origin).hostname); }
