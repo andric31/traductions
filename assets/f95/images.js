@@ -1,17 +1,69 @@
-/* Récupération des images : correction du viewer andric31 du 20/10/2026. */
+/* Images F95 : liens signés, renouvellement et secours sans image cassée. */
 (() => {
   "use strict";
   const HOVER_GALLERY = {
-    cache: new Map(),      // f95 thread url -> Promise<{cover, gallery}>
+    cache: new Map(),      // sujet -> requête et échéance du cache
     timers: new WeakMap(), // card -> interval id
     baseSrc: new WeakMap(),
     baseFallback: new WeakMap(),
     activeToken: new WeakMap(),
-    preload: new Map(),    // complete image url -> Promise<boolean>
+    preload: new Map(),    // URL complète -> résultat et échéance
     images: new WeakMap(), // img -> current request / cover recovery
   };
 
-  const THUMB_FALLBACK_URL = "/favicon.png";
+  const THUMB_FALLBACK_URL = "/assets/f95/image-unavailable.svg";
+
+  function isF95ImageUrl(url) {
+    try { return /^(?:attachments|preview|www)\.f95zone\.to$|^f95zone\.to$/i.test(new URL(url, location.origin).hostname); }
+    catch { return false; }
+  }
+
+  function imageExpiry(url) {
+    if (!isF95ImageUrl(url)) return 0;
+    try {
+      const value = Number(new URL(url, location.origin).searchParams.get("e"));
+      return Number.isFinite(value) && value > 0 ? value * 1000 : 0;
+    } catch { return 0; }
+  }
+
+  function hasImageSignature(url) {
+    if (!isF95ImageUrl(url)) return false;
+    try { const p = new URL(url, location.origin).searchParams; return p.has("h") || p.has("e"); }
+    catch { return false; }
+  }
+
+  function isExpiredImage(url) {
+    const expiry = imageExpiry(url);
+    return !!expiry && expiry <= Date.now() + 1000;
+  }
+
+  // Même fichier : privilégier une signature récente sans déplacer la galerie.
+  function preferFreshImages(urls) {
+    const out = [], positions = new Map();
+    for (const raw of urls || []) {
+      const url = String(raw || "").trim();
+      if (!url || isGalleryAvatarUrl(url) || url === THUMB_FALLBACK_URL) continue;
+      const key = normalizeF95MediaKey(url);
+      if (!positions.has(key)) { positions.set(key, out.length); out.push(url); continue; }
+      const index = positions.get(key), previous = out[index];
+      const expired = isExpiredImage(url), previousExpired = isExpiredImage(previous);
+      if (expired !== previousExpired) {
+        if (!expired) out[index] = url;
+      } else if ((hasImageSignature(url) && !hasImageSignature(previous)) ||
+          (hasImageSignature(url) === hasImageSignature(previous) && imageExpiry(url) >= imageExpiry(previous))) out[index] = url;
+    }
+    return out;
+  }
+
+  function usableImage(img, url) {
+    // Les petites icônes d'erreur F95 peuvent être servies avec un HTTP 200.
+    return img.naturalWidth > 0 && img.naturalHeight > 0 &&
+      !(isF95ImageUrl(url) && img.naturalWidth <= 64 && img.naturalHeight <= 64);
+  }
+
+  function markImageFailed(url) {
+    HOVER_GALLERY.preload.set(String(url || "").trim(), { promise: Promise.resolve(false), until: Date.now() + 30000 });
+  }
 
   function getF95ThreadUrl(rawEntry, imageUrl) {
     const entry = rawEntry || {};
@@ -64,17 +116,20 @@
 
   function f95ImageCandidates(url) {
     const u = String(url || "").trim();
-    if (!u || isGalleryAvatarUrl(u)) return [];
+    if (!u || isGalleryAvatarUrl(u) || isExpiredImage(u)) return [];
+    // Une signature est liée à l'adresse reçue : ne changer ni hôte ni chemin.
+    if (hasImageSignature(u)) return [u];
     const preview = toF95PreviewUrl(u);
     const original = u.replace(/^https?:\/\/preview\.f95zone\.to\//i, "https://attachments.f95zone.to/");
-    // Déduplication exacte : preview et original sont deux essais distincts.
-    return [...new Set([preview, original, preview.replace(/(\/\d{4}\/\d{2})\/thumb\//i, "$1/"), original.replace(/(\/\d{4}\/\d{2})\/thumb\//i, "$1/")].filter(Boolean))];
+    return [...new Set([u, preview, original, preview.replace(/(\/\d{4}\/\d{2})\/thumb\//i, "$1/"), original.replace(/(\/\d{4}\/\d{2})\/thumb\//i, "$1/")].filter(Boolean))];
   }
 
   function preloadImage(url) {
     const u = String(url || "").trim();
-    if (!u) return Promise.resolve(false);
-    if (HOVER_GALLERY.preload.has(u)) return HOVER_GALLERY.preload.get(u);
+    if (!u || isExpiredImage(u)) return Promise.resolve(false);
+    const cached = HOVER_GALLERY.preload.get(u);
+    if (cached && cached.until > Date.now()) return cached.promise;
+    const entry = { promise: null, until: Date.now() + 8000 };
     const p = new Promise((resolve) => {
       const img = new Image();
       img.decoding = "async";
@@ -83,20 +138,22 @@
       const finish = (ok) => {
         clearTimeout(timeout);
         img.onload = img.onerror = null;
+        entry.until = Math.min(Date.now() + (ok ? 300000 : 30000), imageExpiry(u) || Infinity);
         resolve(ok);
       };
       const timeout = setTimeout(() => finish(false), 8000);
-      img.onload = () => finish(img.naturalWidth > 0);
+      img.onload = () => finish(usableImage(img, u));
       img.onerror = () => finish(false);
       img.src = u;
     });
-    HOVER_GALLERY.preload.set(u, p);
+    entry.promise = p;
+    HOVER_GALLERY.preload.set(u, entry);
     return p;
   }
 
   async function findWorkingF95Image(urls, excluded = new Set()) {
     const tried = new Set(excluded);
-    for (const url of urls) {
+    for (const url of preferFreshImages(urls)) {
       for (const candidate of f95ImageCandidates(url)) {
         if (tried.has(candidate)) continue;
         tried.add(candidate);
@@ -117,7 +174,7 @@
       const excluded = new Set([failedSrc]);
       let recovered = await findWorkingF95Image([originalSrc], excluded);
       if (!recovered) {
-        const media = await fetchF95GalleryMedia(rawEntry, originalSrc);
+        const media = await fetchF95GalleryMedia(rawEntry, originalSrc, { refresh: true });
         // La vraie cover reste prioritaire ; quelques images du même sujet servent de secours.
         recovered = await findWorkingF95Image([media.cover, ...media.gallery.slice(0, 4)], excluded);
       }
@@ -144,7 +201,7 @@
       const tried = new Set(attempted);
       tried.add(requestedSrc);
       // Un échec réel prime sur un ancien préchargement réussi.
-      HOVER_GALLERY.preload.set(requestedSrc, Promise.resolve(false));
+      markImageFailed(requestedSrc);
       if (isBase) {
         if (context.coverRecovery) {
           // Une source déjà récupérée peut aussi devenir indisponible : pas de boucle.
@@ -173,7 +230,12 @@
         }
       });
     };
+    img.onload = () => {
+      if (context && context.request !== request) return;
+      if (!isFallback && !usableImage(img, requestedSrc)) img.onerror();
+    };
     img.referrerPolicy = "no-referrer";
+    img.title = isFallback ? "Image indisponible : aucun lien F95 accessible pour le moment." : "";
     img.classList.toggle("is-fallback", !!isFallback);
     if (img.getAttribute("src") !== requestedSrc) img.src = requestedSrc;
   }
@@ -221,47 +283,37 @@
     return aa === bb;
   }
 
-  async function fetchF95GalleryMedia(rawEntry, imageUrl) {
+  async function fetchF95GalleryMedia(rawEntry, imageUrl, options = {}) {
     const f95Url = getF95ThreadUrl(rawEntry, imageUrl);
     if (!f95Url) return { cover: "", gallery: [] };
-    if (!HOVER_GALLERY.cache.has(f95Url)) {
-      const api = getF95GalleryApiUrl(f95Url);
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 12000);
-      HOVER_GALLERY.cache.set(
-        f95Url,
-        fetch(api, { credentials: "same-origin", cache: "force-cache", signal: controller.signal })
-          .then((r) => (r.ok ? r.json() : null))
-          .then((data) => {
-            const raw = Array.isArray(data?.gallery) ? data.gallery : [];
-            return {
-              cover: String(data?.cover || "").trim(),
-              gallery: raw.map((item) => String(item || "").trim()).filter((url) => url && !isGalleryAvatarUrl(url)),
-            };
-          })
-          .catch(() => ({ cover: "", gallery: [] }))
-          .finally(() => clearTimeout(timeout))
-      );
-    }
-    return HOVER_GALLERY.cache.get(f95Url);
+    const now = Date.now(), cached = HOVER_GALLERY.cache.get(f95Url);
+    if (cached && (cached.pending || (cached.until > now && (!options.refresh || (cached.refreshed && now - cached.created < 10000))))) return cached.promise;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12000);
+    const record = { refreshed: !!options.refresh, created: now, until: now + 15000, pending: true, promise: null };
+    const api = getF95GalleryApiUrl(f95Url) + (options.refresh ? "&refresh=1" : "");
+    record.promise = fetch(api, { credentials: "same-origin", cache: "no-store", signal: controller.signal })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        const gallery = preferFreshImages([data?.cover, ...(Array.isArray(data?.gallery) ? data.gallery : [])]);
+        const coverKey = normalizeF95MediaKey(data?.cover || "");
+        const cover = gallery.find(url => normalizeF95MediaKey(url) === coverKey) || gallery[0] || "";
+        const deadlines = gallery.map(imageExpiry).filter(Boolean).map(time => time - 30000);
+        record.until = Math.min(Date.now() + (gallery.length ? 300000 : 15000), ...deadlines);
+        return { cover, gallery };
+      })
+      .catch(() => ({ cover: "", gallery: [] }))
+      .finally(() => { record.pending = false; clearTimeout(timeout); });
+    HOVER_GALLERY.cache.set(f95Url, record);
+    return record.promise;
   }
 
   async function fetchHoverGalleryUrls(rawEntry, fallbackUrl) {
     const base = String(fallbackUrl || "").trim();
     const media = await fetchF95GalleryMedia(rawEntry, base);
-    const cleaned = [];
-    const seen = new Set();
-    for (const item of [base, media.cover, ...media.gallery]) {
-      const original = String(item || "").trim();
-      if (!original || original === THUMB_FALLBACK_URL || isGalleryAvatarUrl(original)) continue;
-      const preview = original === base ? base : toF95PreviewUrl(original);
-      const key = normalizeF95MediaKey(preview) || preview;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      cleaned.push(preview);
-    }
-    return cleaned;
+    return preferFreshImages([base, media.cover, ...media.gallery]);
   }
+
 
   function stopCardHoverSlideshow(card) {
     const timer = HOVER_GALLERY.timers.get(card);
@@ -278,16 +330,34 @@
     const img = card?.querySelector(".thumb");
     if (!card || !img) return;
 
-    const baseSrc = String(fallbackUrl || "").trim() || img.src;
-    const baseFallback = baseSrc === THUMB_FALLBACK_URL;
+    const supplied = String(fallbackUrl || "").trim() || img.getAttribute("src") || "";
+    const baseSrc = supplied === "/favicon.png" ? "" : supplied;
+    const baseFallback = !baseSrc || baseSrc === THUMB_FALLBACK_URL;
 
-    HOVER_GALLERY.baseSrc.set(card, baseSrc);
-    HOVER_GALLERY.baseFallback.set(card, baseFallback);
-    HOVER_GALLERY.images.set(img, { card, img, rawEntry, originalSrc: baseSrc, request: null, coverRecovery: null });
-    applyThumbState(img, baseSrc, baseFallback, true);
-    if (!baseFallback && img.complete && img.naturalWidth === 0) {
-      recoverCardCover(HOVER_GALLERY.images.get(img), baseSrc);
-    }
+    HOVER_GALLERY.baseSrc.set(card, THUMB_FALLBACK_URL);
+    HOVER_GALLERY.baseFallback.set(card, true);
+    const context = { card, img, rawEntry, originalSrc: baseSrc, request: null, coverRecovery: null };
+    HOVER_GALLERY.images.set(img, context);
+    // La source distante n'est affichée qu'après validation, pour éviter les croix.
+    applyThumbState(img, THUMB_FALLBACK_URL, true, true);
+    const load = async () => {
+      const resolved = baseFallback ? "" : await findWorkingF95Image([baseSrc]);
+      if (resolved) {
+        HOVER_GALLERY.baseSrc.set(card, resolved);
+        HOVER_GALLERY.baseFallback.set(card, false);
+        if (card.isConnected && context.request?.isBase) applyThumbState(img, resolved, false, true);
+      } else {
+        await recoverCardCover(context, baseSrc);
+      }
+    };
+    if ("IntersectionObserver" in globalThis) {
+      const observer = new IntersectionObserver(entries => {
+        if (!entries.some(entry => entry.isIntersecting)) return;
+        observer.disconnect();
+        void load();
+      }, { rootMargin: "300px" });
+      observer.observe(card);
+    } else void load();
 
     card.addEventListener("mouseleave", () => {
       HOVER_GALLERY.activeToken.set(card, null);
@@ -353,6 +423,6 @@
   globalThis.F95Images = Object.freeze({
     bindCardHoverGallery, getF95ThreadUrl, fetchF95GalleryMedia,
     findWorkingF95Image, normalizeF95MediaKey, isGalleryAvatarUrl,
-    markImageFailed(url) { HOVER_GALLERY.preload.set(String(url || "").trim(), Promise.resolve(false)); }
+    preferFreshImages, isExpiredImage, markImageFailed
   });
 })();
