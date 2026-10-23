@@ -364,6 +364,8 @@ body:not(.mode-game){
 }
 
 .cover.is-placeholder{
+  object-fit:contain;
+  object-position:center;
   background:
     radial-gradient(1200px 300px at 20% 0%, rgba(255,255,255,0.06), rgba(0,0,0,0)),
     linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0));
