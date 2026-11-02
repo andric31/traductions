@@ -257,104 +257,220 @@ function show(id, cond) {
 
 
 const galleryState = {
-  urls: [],
-  index: 0,
-  timer: null,
-  hover: false,
-  loadedForUrl: "",
-  requestToken: 0,
+  urls: [], index: 0, targetIndex: 0, timer: null, hover: false,
+  loadedForUrl: "", fallbackUrl: "", session: 0, navigation: 0,
+  pending: false, automatic: false, displayedUrl: "", displayedLogicalUrl: "",
+  displayToken: 0, failed: new Set(), metadataReady: false,
+  initialPromise: null, refreshPromise: null, refreshAttempted: false,
 };
 
-function galleryUrlKey(raw) {
-  return globalThis.F95Images.normalizeF95MediaKey(raw);
-}
-
-function dedupKeepOrder(list) {
-  return globalThis.F95Images.preferFreshImages(list);
-}
-
-function getF95GalleryApiUrl(f95Url) {
-  const u = String(f95Url || "").trim();
-  if (!u) return "";
-  return `/api/f95gallery?url=${encodeURIComponent(u)}`;
+function galleryUrlKey(url) {
+  return globalThis.F95Images.normalizeF95MediaKey(url);
 }
 
 function stopGalleryAuto() {
-  try { if (galleryState.timer) clearInterval(galleryState.timer); } catch {}
+  if (galleryState.timer) clearInterval(galleryState.timer);
   galleryState.timer = null;
 }
 
 function startGalleryAuto() {
   stopGalleryAuto();
-  if (!galleryState.hover) return;
-  if (!Array.isArray(galleryState.urls) || galleryState.urls.length < 2) return;
+  if (!galleryState.hover || galleryState.urls.length < 2) return;
   galleryState.timer = setInterval(() => {
-    galleryGoTo(galleryState.index + 1);
+    // Ne pas annuler un chargement lent toutes les trois secondes.
+    if (!galleryState.pending) galleryGoTo(galleryState.index + 1, { automatic: true });
   }, 3000);
 }
 
 function updateGalleryControls() {
-  const many = Array.isArray(galleryState.urls) && galleryState.urls.length > 1;
-  const countText = many ? `${galleryState.index + 1} / ${galleryState.urls.length}` : "";
-  const ids = ["coverPrevBtn", "coverNextBtn", "coverLightboxPrev", "coverLightboxNext"];
-  ids.forEach((id) => show(id, many));
-  const count = $("coverCount");
-  const lcount = $("coverLightboxCount");
-  if (count) { count.textContent = countText; count.style.display = many ? "" : "none"; }
-  if (lcount) { lcount.textContent = countText; lcount.style.display = many ? "" : "none"; }
+  const many = galleryState.urls.length > 1;
+  const countText = many ? (galleryState.index + 1) + " / " + galleryState.urls.length : "";
+  ["coverPrevBtn", "coverNextBtn", "coverLightboxPrev", "coverLightboxNext"].forEach((id) => show(id, many));
+  ["coverCount", "coverLightboxCount"].forEach((id) => {
+    const el = $(id);
+    if (el) { el.textContent = countText; el.style.display = many ? "" : "none"; }
+  });
+  show("coverExpandBtn", !!galleryState.displayedUrl);
 }
 
 function setLightboxBackground(url) {
   const lb = $("coverLightbox");
-  if (!lb) return;
-  const u = String(url || "").trim();
-  lb.style.setProperty("--lb-bg", u ? `url("${u.replace(/"/g, '\"')}")` : "none");
+  if (lb) lb.style.setProperty("--lb-bg", url ? "url(" + JSON.stringify(String(url)) + ")" : "none");
 }
 
-function showGalleryPlaceholder() {
-  for (const id of ["cover", "coverLightboxImg"]) {
+function showGalleryPlaceholder(loading = true) {
+  galleryState.displayToken++;
+  galleryState.displayedUrl = "";
+  galleryState.displayedLogicalUrl = "";
+  ["cover", "coverLightboxImg"].forEach((id) => {
     const img = $(id);
-    if (!img) continue;
-    img.onerror = null;
-    img.removeAttribute("src");
+    if (!img) return;
+    globalThis.F95Images.setPlaceholder(img, loading);
     if (id === "cover") img.classList.add("is-placeholder");
-  }
+  });
   setLightboxBackground("");
   updateGalleryControls();
 }
 
-async function galleryGoTo(index) {
-  if (!Array.isArray(galleryState.urls) || !galleryState.urls.length) return;
-  const token = ++galleryState.requestToken;
-  const len = galleryState.urls.length;
-  const direction = index < galleryState.index ? -1 : 1;
-  const start = ((index % len) + len) % len;
-  galleryState.index = start;
-  for (let offset = 0; offset < len; offset++) {
-    const candidate = (start + direction * offset + len) % len;
-    const u = await globalThis.F95Images.findWorkingF95Image([galleryState.urls[candidate]]);
-    // Un clic récent a priorité sur une récupération lente de l'image précédente.
-    if (galleryState.requestToken !== token) return;
-    if (!u) continue;
-    galleryState.index = candidate;
-    galleryState.urls[candidate] = u;
-    for (const id of ["cover", "coverLightboxImg"]) {
-      const img = $(id);
-      if (!img) continue;
-      img.referrerPolicy = "no-referrer";
-      img.classList.remove("is-placeholder");
-      img.onerror = () => {
-        if (galleryState.requestToken !== token) return;
-        globalThis.F95Images.markImageFailed(u);
-        galleryGoTo(galleryState.index);
-      };
-      img.src = u;
-    }
-    setLightboxBackground(u);
-    updateGalleryControls();
-    return;
+function syncGalleryIndex() {
+  const key = galleryUrlKey(galleryState.displayedLogicalUrl);
+  const found = key ? galleryState.urls.findIndex((url) => galleryUrlKey(url) === key) : -1;
+  galleryState.index = found >= 0 ? found : Math.max(0, Math.min(galleryState.index, galleryState.urls.length - 1));
+  updateGalleryControls();
+  if (galleryState.urls.length < 2) stopGalleryAuto();
+}
+
+function applyGalleryMedia(media) {
+  const urls = globalThis.F95Images.mergeGalleryUrls(galleryState.fallbackUrl, media)
+    .filter((url) => !galleryState.failed.has(url));
+  galleryState.urls = urls;
+  galleryState.metadataReady = true;
+  galleryState.originals = Array.isArray(media?.originals) ? media.originals : [];
+  syncGalleryIndex();
+}
+
+async function resolveGalleryImage(source, current) {
+  const resolved = await globalThis.F95Images.findWorkingF95Image([source]);
+  if (!resolved || !current()) return '';
+  if (!globalThis.F95Images.isF95Thumbnail(resolved)) return resolved;
+  // Une miniature signée nécessite l'adresse originale fournie par l'API.
+  if (!globalThis.F95Images.originalImageUrls([resolved]).length && !galleryState.metadataReady && galleryState.initialPromise) {
+    await galleryState.initialPromise;
+    if (!current()) return '';
   }
-  if (galleryState.requestToken === token) showGalleryPlaceholder();
+  const original = await globalThis.F95Images.findHigherResolutionImage(resolved, galleryState.originals, current);
+  return current() ? original || resolved : '';
+}
+
+async function refreshGalleryMedia(session) {
+  if (galleryState.refreshPromise) return galleryState.refreshPromise;
+  if (!galleryState.loadedForUrl || galleryState.refreshAttempted) return;
+  galleryState.refreshAttempted = true;
+  const thread = galleryState.loadedForUrl;
+  const fallback = galleryState.fallbackUrl;
+  galleryState.refreshPromise = globalThis.F95Images.fetchF95GalleryMedia(thread, fallback, { refresh: true, title:galleryState.titleHint })
+    .then((media) => {
+      if (galleryState.session === session) {
+        galleryState.failed.clear();
+        applyGalleryMedia(media);
+      }
+    }).catch(() => {});
+  return galleryState.refreshPromise;
+}
+
+function displayGalleryImage(src, logicalUrl) {
+  const token = ++galleryState.displayToken;
+  const displayedForNavigation = galleryState.navigation;
+  galleryState.displayedUrl = src;
+  galleryState.displayedLogicalUrl = logicalUrl;
+  const handleError = () => {
+    if (token !== galleryState.displayToken || galleryState.displayedUrl !== src) return;
+    // La même image est présente dans la fiche et l'agrandissement : une seule reprise.
+    globalThis.F95Images.markImageFailed(src);
+    const target = Math.max(0, galleryState.urls.findIndex((url) => galleryUrlKey(url) === galleryUrlKey(logicalUrl)));
+    const newerNavigationPending = galleryState.pending && galleryState.navigation !== displayedForNavigation;
+    showGalleryPlaceholder();
+    if (!newerNavigationPending) void galleryGoTo(target);
+  };
+  ["cover", "coverLightboxImg"].forEach((id) => {
+    const img = $(id);
+    if (!img) return;
+    img.referrerPolicy = "no-referrer";
+    img.decoding = "async";
+    img.onload = null;
+    img.onerror = handleError;
+    img.title = "";
+    img.setAttribute("aria-busy", "false");
+    img.classList.remove("is-placeholder");
+    if (img.getAttribute("src") !== src) img.src = src;
+  });
+  setLightboxBackground(src);
+  syncGalleryIndex();
+  if (galleryState.urls.length > 1) {
+    const next = galleryState.urls[(galleryState.index + 1) % galleryState.urls.length];
+    const session = galleryState.session;
+    // Préparer uniquement la suivante, avec sa résolution finale, sans l'afficher.
+    void resolveGalleryImage(next, () => session === galleryState.session && token === galleryState.displayToken).catch(() => {});
+  }
+}
+
+async function galleryGoTo(index, { automatic = false, direction = 1 } = {}) {
+  if (automatic && galleryState.pending) return false;
+  if (!galleryState.urls.length && !galleryState.initialPromise) return false;
+  const session = galleryState.session;
+  const token = ++galleryState.navigation;
+  const len = galleryState.urls.length;
+  const target = len ? ((index % len) + len) % len : 0;
+  const wantedUrl = galleryState.urls[target] || "";
+  const wantedKey = galleryUrlKey(wantedUrl);
+  const tried = new Set();
+  let checkedInitial = galleryState.metadataReady;
+  let checkedRefresh = false;
+  galleryState.targetIndex = target;
+  galleryState.pending = true;
+  galleryState.automatic = automatic;
+  const current = () => session === galleryState.session && token === galleryState.navigation;
+  const nextCandidate = () => {
+    const urls = galleryState.urls;
+    if (!urls.length) return "";
+    let first = urls.findIndex((url) => galleryUrlKey(url) === wantedKey);
+    if (first < 0) first = Math.min(target, urls.length - 1);
+    for (let offset = 0; offset < urls.length; offset++) {
+      const pos = (first + (direction < 0 ? -offset : offset) + urls.length) % urls.length;
+      const url = urls[pos];
+      if (!tried.has(url) && !galleryState.failed.has(url)) return url;
+    }
+    return "";
+  };
+  try {
+    while (current()) {
+      const source = nextCandidate();
+      if (source) {
+        tried.add(source);
+        // Garder l'image actuelle pendant la sélection et le chargement de la suivante.
+        const resolved = await resolveGalleryImage(source, current);
+        if (!current()) return false;
+        if (resolved) {
+          // Si l'API vient d'actualiser cette même image, essayer sa nouvelle URL.
+          const fresh = galleryState.urls.find((url) => galleryUrlKey(url) === galleryUrlKey(source));
+          if (fresh && fresh !== source && !tried.has(fresh)) continue;
+          if (!galleryState.urls.some((url) => galleryUrlKey(url) === galleryUrlKey(source))) {
+            galleryState.urls.push(source);
+          }
+          displayGalleryImage(resolved, source);
+          return true;
+        }
+        galleryState.failed.add(source);
+        galleryState.urls = galleryState.urls.filter((url) => url !== source);
+        syncGalleryIndex();
+      }
+      // Une URL peut fonctionner en onglet direct et échouer ici. Réutiliser les
+      // sources du sujet, puis les actualiser une seule fois si elles ont changé.
+      if (!checkedInitial && galleryState.initialPromise) {
+        checkedInitial = true;
+        await galleryState.initialPromise;
+        if (!current()) return false;
+        continue;
+      }
+      if (!checkedRefresh && (galleryState.refreshPromise || (!galleryState.refreshAttempted && galleryState.loadedForUrl))) {
+        checkedRefresh = true;
+        await refreshGalleryMedia(session);
+        if (!current()) return false;
+        tried.clear();
+        continue;
+      }
+      if (source) continue;
+      if (!galleryState.displayedUrl) showGalleryPlaceholder(false);
+      return false;
+    }
+    return false;
+  } finally {
+    if (current()) {
+      galleryState.pending = false;
+      galleryState.automatic = false;
+      if (galleryState.hover) startGalleryAuto();
+    }
+  }
 }
 
 function setupGalleryEvents() {
@@ -362,57 +478,70 @@ function setupGalleryEvents() {
   const lightbox = $("coverLightbox");
   if (!stage || stage.dataset.galleryBound === "1") return;
   stage.dataset.galleryBound = "1";
-
-  $("coverPrevBtn")?.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); galleryGoTo(galleryState.index - 1); startGalleryAuto(); });
-  $("coverNextBtn")?.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); galleryGoTo(galleryState.index + 1); startGalleryAuto(); });
-  $("coverLightboxPrev")?.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); galleryGoTo(galleryState.index - 1); });
-  $("coverLightboxNext")?.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); galleryGoTo(galleryState.index + 1); });
+  const move = (delta) => {
+    const index = galleryState.pending ? galleryState.targetIndex : galleryState.index;
+    void galleryGoTo(index + delta, { direction: delta });
+  };
+  ["coverPrevBtn", "coverLightboxPrev"].forEach((id) => $(id)?.addEventListener("click", (e) => {
+    e.preventDefault(); e.stopPropagation(); move(-1);
+  }));
+  ["coverNextBtn", "coverLightboxNext"].forEach((id) => $(id)?.addEventListener("click", (e) => {
+    e.preventDefault(); e.stopPropagation(); move(1);
+  }));
   $("coverExpandBtn")?.addEventListener("click", (e) => {
     e.preventDefault();
-    const lb = $("coverLightbox");
-    if (!lb) return;
-    const current = $("cover")?.getAttribute("src") || "";
-    setLightboxBackground(current);
-    lb.classList.remove("hidden");
-    lb.setAttribute("aria-hidden", "false");
-    const img = $("coverLightboxImg");
-    if (img && current) { img.referrerPolicy = "no-referrer"; img.src = current; }
+    if (!lightbox || !galleryState.displayedUrl) return;
+    // L'URL résolue est déjà partagée : ne jamais rétablir l'adresse brute ici.
+    setLightboxBackground(galleryState.displayedUrl);
+    lightbox.classList.remove("hidden");
+    lightbox.setAttribute("aria-hidden", "false");
+    stopGalleryAuto();
   });
   const closeLb = () => {
-    const lb = $("coverLightbox");
-    if (!lb) return;
-    lb.classList.add("hidden");
-    lb.setAttribute("aria-hidden", "true");
+    if (!lightbox) return;
+    lightbox.classList.add("hidden");
+    lightbox.setAttribute("aria-hidden", "true");
   };
   $("coverLightboxClose")?.addEventListener("click", closeLb);
   $("coverLightboxBackdrop")?.addEventListener("click", closeLb);
   lightbox?.addEventListener("click", (e) => { if (e.target === lightbox) closeLb(); });
   document.addEventListener("keydown", (e) => {
-    const lb = $("coverLightbox");
-    const isOpen = lb && !lb.classList.contains("hidden");
-    if (e.key === "Escape" && isOpen) closeLb();
-    if (!isOpen) return;
-    if (e.key === "ArrowLeft") galleryGoTo(galleryState.index - 1);
-    if (e.key === "ArrowRight") galleryGoTo(galleryState.index + 1);
+    if (!lightbox || lightbox.classList.contains("hidden")) return;
+    if (e.key === "Escape") closeLb();
+    if (e.key === "ArrowLeft") move(-1);
+    if (e.key === "ArrowRight") move(1);
   });
   stage.addEventListener("mouseenter", () => { galleryState.hover = true; startGalleryAuto(); });
-  stage.addEventListener("mouseleave", () => { galleryState.hover = false; stopGalleryAuto(); });
+  stage.addEventListener("mouseleave", () => {
+    galleryState.hover = false;
+    stopGalleryAuto();
+    if (galleryState.pending && galleryState.automatic) {
+      galleryState.navigation++;
+      galleryState.pending = false;
+      galleryState.automatic = false;
+    }
+  });
 }
 
-async function loadF95Gallery(f95Url, fallbackUrl) {
+async function loadF95Gallery(f95Url, fallbackUrl, title = "") {
   setupGalleryEvents();
-  const fallback = String(fallbackUrl || "").trim();
-  const baseUrl = globalThis.F95Images.getF95ThreadUrl({ url: f95Url }, fallback);
-  if (!baseUrl || galleryState.loadedForUrl === baseUrl) return;
-  galleryState.loadedForUrl = baseUrl;
-  const media = await globalThis.F95Images.fetchF95GalleryMedia({ url: baseUrl }, fallback, { refresh: true });
-  if (galleryState.loadedForUrl !== baseUrl) return;
-  const currentKey = galleryUrlKey(galleryState.urls[galleryState.index]);
-  galleryState.urls = dedupKeepOrder([fallback, media.cover, ...media.gallery]);
-  const currentIndex = galleryState.urls.findIndex(u => galleryUrlKey(u) === currentKey);
-  galleryState.index = currentIndex >= 0 ? currentIndex : 0;
-  if (galleryState.urls.length) galleryGoTo(galleryState.index);
-  else showGalleryPlaceholder();
+  setCover(fallbackUrl);
+  const session = galleryState.session;
+  galleryState.loadedForUrl = globalThis.F95Images.getF95ThreadUrl(f95Url, fallbackUrl);
+  galleryState.titleHint = title;
+  if (galleryState.loadedForUrl) {
+    galleryState.initialPromise = globalThis.F95Images.fetchF95GalleryMedia(f95Url, fallbackUrl, { title })
+      .then((media) => {
+        if (galleryState.session !== session) return;
+        applyGalleryMedia(media);
+        if (!galleryState.displayedUrl && !galleryState.pending && galleryState.urls.length) void galleryGoTo(0);
+        if (galleryState.hover) startGalleryAuto();
+      }).catch(() => {});
+  }
+  // L'image d'origine et les métadonnées se chargent en parallèle.
+  if (galleryState.urls.length || galleryState.initialPromise) void galleryGoTo(0);
+  else showGalleryPlaceholder(false);
+  return galleryState.initialPromise;
 }
 
 function setText(id, text) {
@@ -446,15 +575,20 @@ function showError(msg) {
 
 /** Cover sans favicon : les images indisponibles restent en placeholder. */
 function setCover(url) {
-  const img = $("cover");
-  if (!img) return;
-  const u = String(url || "").trim();
-  galleryState.requestToken++;
+  stopGalleryAuto();
+  galleryState.originals = [];
+  galleryState.session++;
+  galleryState.navigation++;
+  galleryState.fallbackUrl = String(url || "").trim();
   galleryState.loadedForUrl = "";
-  galleryState.urls = u && !globalThis.F95Images.isGalleryAvatarUrl(u) ? [u] : [];
-  galleryState.index = 0;
+  galleryState.urls = galleryState.fallbackUrl ? [galleryState.fallbackUrl] : [];
+  galleryState.index = galleryState.targetIndex = 0;
+  galleryState.pending = galleryState.automatic = false;
+  galleryState.metadataReady = false;
+  galleryState.initialPromise = galleryState.refreshPromise = null;
+  galleryState.refreshAttempted = false;
+  galleryState.failed = new Set();
   showGalleryPlaceholder();
-  if (galleryState.urls.length) galleryGoTo(0);
 }
 
 function renderTags(tags) {
@@ -1376,8 +1510,7 @@ function renderVideoBlock({ id, videoUrl }) {
     // 1) Titre + cover + tags
     setText("title", title);
     const coverUrl = display.imageUrl || entry.imageUrl || "";
-    setCover(coverUrl);
-    await loadF95Gallery(globalThis.F95Images.getF95ThreadUrl(entry, coverUrl), coverUrl);
+    await loadF95Gallery(entry, coverUrl, (entry.collection && display.title) || title);
     renderTags(display.tags || entry.tags || []);
 
     // Badges + status
